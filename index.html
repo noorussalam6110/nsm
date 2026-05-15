@@ -2,581 +2,415 @@
 <html lang="ml">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>സ്കൂൾ അഡ്മിഷൻ ടോക്കൺ സിസ്റ്റം | 14 കൗണ്ടറുകൾ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>43" TV | Google Sheets Backend Token System</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', 'Malayalam', 'Noto Sans Malayalam', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', 'Malayalam', system-ui, sans-serif;
+            background: #0a0a1a;
             min-height: 100vh;
             padding: 20px;
         }
-
-        /* Header */
-        .header {
-            background: white;
-            border-radius: 20px;
+        .tv-container {
+            max-width: 1920px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            border-radius: 30px;
             padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
         }
-
-        .header h1 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        /* Main Layout */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
-        }
-
-        /* Token Issuing Panel (Left) */
-        .issue-panel {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            height: fit-content;
-        }
-
-        .issue-panel h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .counter-select {
-            margin-bottom: 20px;
-        }
-
-        .counter-select label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .counter-select select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-
-        .counter-select select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .issue-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .issue-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
-        }
-
-        .issue-btn:active {
-            transform: translateY(0);
-        }
-
-        .stats {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-        }
-
-        .stat-item {
+        .tv-header {
+            background: linear-gradient(135deg, #e94560, #c62a40);
+            border-radius: 25px;
+            padding: 20px 30px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            font-size: 1.1em;
-        }
-
-        .stat-label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .stat-value {
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.3em;
-        }
-
-        /* Counters Grid (Right) */
-        .counters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            align-items: center;
+            flex-wrap: wrap;
             gap: 20px;
         }
-
+        .title-section h1 { font-size: 2.5rem; color: white; }
+        .title-section p { font-size: 1.2rem; color: rgba(255,255,255,0.9); }
+        .stats-section { display: flex; gap: 30px; background: rgba(0,0,0,0.3); padding: 15px 25px; border-radius: 20px; }
+        .stat-big { text-align: center; }
+        .stat-big .number { font-size: 2.2rem; font-weight: bold; color: #ffd700; }
+        .stat-big .label { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+        .time-section { background: rgba(0,0,0,0.5); padding: 15px 25px; border-radius: 20px; text-align: center; }
+        .current-time { font-size: 2rem; font-weight: bold; color: white; font-family: monospace; }
+        
+        .admin-bar {
+            background: rgba(0,0,0,0.8);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .admin-input-group { flex: 2; min-width: 250px; }
+        .admin-input-group label { display: block; color: white; font-size: 1rem; margin-bottom: 8px; font-weight: bold; }
+        .admin-input-group input { width: 100%; padding: 15px 20px; font-size: 1.3rem; font-family: monospace; border: 2px solid #e94560; border-radius: 15px; background: white; text-transform: uppercase; text-align: center; }
+        .admin-input-group select { width: 100%; padding: 15px 20px; font-size: 1.2rem; border: 2px solid #e94560; border-radius: 15px; background: white; font-weight: bold; }
+        .admin-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+        .tv-btn { padding: 15px 25px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; transition: transform 0.2s; }
+        .tv-btn:active { transform: scale(0.98); }
+        .btn-green { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
+        .btn-orange { background: linear-gradient(135deg, #ffc107, #e0a800); color: #333; }
+        .btn-red { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .btn-sync { background: linear-gradient(135deg, #17a2b8, #138496); color: white; }
+        
+        .counters-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
         .counter-card {
             background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .counter-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-        }
-
-        .counter-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 18px 12px;
             text-align: center;
-        }
-
-        .counter-header h3 {
-            font-size: 1.3em;
-        }
-
-        .current-token {
-            text-align: center;
-            padding: 20px;
-            background: #f0f0f0;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .current-token .label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .current-token .token-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-            font-family: monospace;
-            letter-spacing: 2px;
-        }
-
-        .queue-info {
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #e8f4f8;
-            border-radius: 10px;
-        }
-
-        .queue-info span {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .next-btn, .reset-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
+            transition: all 0.3s;
             cursor: pointer;
-            transition: all 0.2s;
         }
-
-        .next-btn {
-            background: #28a745;
+        .counter-card.active { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
+        .counter-card.waiting { background: linear-gradient(135deg, #FF9800, #fb8c00); color: white; }
+        .counter-number { font-size: 1.6rem; font-weight: bold; background: rgba(0,0,0,0.1); display: inline-block; padding: 5px 15px; border-radius: 30px; margin-bottom: 12px; }
+        .token-value { font-size: 2rem; font-weight: bold; font-family: monospace; }
+        .queue-count { font-size: 1.1rem; margin-top: 8px; padding: 5px; background: rgba(0,0,0,0.1); border-radius: 20px; }
+        
+        .sync-status {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            text-align: center;
             color: white;
+            font-size: 0.9rem;
         }
-
-        .next-btn:hover {
-            background: #218838;
-        }
-
-        .reset-btn {
-            background: #ffc107;
-            color: #333;
-        }
-
-        .reset-btn:hover {
-            background: #e0a800;
-        }
-
-        .queue-list {
-            margin-top: 15px;
-            max-height: 120px;
-            overflow-y: auto;
-            font-size: 0.85em;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
-
-        .queue-list h4 {
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .queue-item {
-            padding: 3px 5px;
-            background: #f9f9f9;
-            margin: 2px 0;
-            border-radius: 5px;
-            font-family: monospace;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            .counters-grid {
-                grid-template-columns: 1fr;
-            }
-            .header h1 {
-                font-size: 1.5em;
-            }
-        }
-
-        /* Toast Notification */
+        .sync-status.success { background: #28a745; }
+        .sync-status.error { background: #dc3545; }
+        .sync-status.syncing { background: #ffc107; color: #333; }
+        
+        @media (max-width: 1200px) { .counters-grid { grid-template-columns: repeat(7, 1fr); gap: 10px; } .token-value { font-size: 1.3rem; } }
+        @media (max-width: 1000px) { .counters-grid { grid-template-columns: repeat(4, 1fr); } }
+        
         .toast {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
             background: #333;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s ease;
+            color: #ffd700;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
             z-index: 1000;
+            animation: fadeInUp 0.3s ease;
         }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(50px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🏫 സ്കൂൾ അഡ്മിഷൻ ടോക്കൺ സിസ്റ്റം</h1>
-        <p>14 കൗണ്ടറുകൾ | റിയൽ-ടൈം ക്യൂ മാനേജ്മെന്റ്</p>
-    </div>
-
-    <div class="dashboard">
-        <!-- Left Panel: Token Issuing -->
-        <div class="issue-panel">
-            <h2>🎫 പുതിയ ടോക്കൺ എടുക്കുക</h2>
-            <div class="counter-select">
-                <label>📌 കൗണ്ടർ തിരഞ്ഞെടുക്കുക:</label>
-                <select id="counterSelect">
-                    <option value="auto">🤖 ഓട്ടോമാറ്റിക് (കുറഞ്ഞ ക്യൂ)</option>
-                    <option value="1">കൗണ്ടർ 1 - രജിസ്ട്രേഷൻ</option>
-                    <option value="2">കൗണ്ടർ 2 - രജിസ്ട്രേഷൻ</option>
-                    <option value="3">കൗണ്ടർ 3 - രജിസ്ട്രേഷൻ</option>
-                    <option value="4">കൗണ്ടർ 4 - രേഖാ പരിശോധന</option>
-                    <option value="5">കൗണ്ടർ 5 - രേഖാ പരിശോധന</option>
-                    <option value="6">കൗണ്ടർ 6 - ഫീസ് അടക്കൽ</option>
-                    <option value="7">കൗണ്ടർ 7 - ഫീസ് അടക്കൽ</option>
-                    <option value="8">കൗണ്ടർ 8 - ക്ലാസ് അലോട്ട്മെന്റ്</option>
-                    <option value="9">കൗണ്ടർ 9 - ക്ലാസ് അലോട്ട്മെന്റ്</option>
-                    <option value="10">കൗണ്ടർ 10 - ഫോട്ടോ & ബയോമെട്രിക്</option>
-                    <option value="11">കൗണ്ടർ 11 - ഫോട്ടോ & ബയോമെട്രിക്</option>
-                    <option value="12">കൗണ്ടർ 12 - യൂണിഫോം & ബുക്ക്</option>
-                    <option value="13">കൗണ്ടർ 13 - യൂണിഫോം & ബുക്ക്</option>
-                    <option value="14">കൗണ്ടർ 14 - ജനറൽ ഹെൽപ്</option>
-                </select>
+    <div class="tv-container">
+        <div class="tv-header">
+            <div class="title-section">
+                <h1>🏫 സ്കൂൾ അഡ്മിഷൻ 2025</h1>
+                <p>14 കൗണ്ടറുകൾ | Google Sheets Backend</p>
             </div>
-            <button class="issue-btn" onclick="issueToken()">🎟️ ടോക്കൺ എടുക്കുക</button>
-
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-label">📊 ആകെ ടോക്കണുകൾ:</span>
-                    <span class="stat-value" id="totalTokens">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">⏳ കാത്തിരിക്കുന്നവർ:</span>
-                    <span class="stat-value" id="waitingCount">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">✅ സേവനം പൂർത്തിയായവർ:</span>
-                    <span class="stat-value" id="completedCount">0</span>
-                </div>
+            <div class="stats-section">
+                <div class="stat-big"><div class="number" id="totalTokens">0</div><div class="label">ആകെ ടോക്കൺ</div></div>
+                <div class="stat-big"><div class="number" id="activeTokens">0</div><div class="label">🟢 സേവനത്തിൽ</div></div>
+                <div class="stat-big"><div class="number" id="waitingTokens">0</div><div class="label">🟠 ക്യൂവിൽ</div></div>
+            </div>
+            <div class="time-section">
+                <div class="current-time" id="currentTime">--:--:--</div>
+                <div class="current-date" id="currentDate">---</div>
             </div>
         </div>
 
-        <!-- Right Panel: Counters Grid -->
+        <div class="admin-bar">
+            <div class="admin-input-group">
+                <label>🎫 ടോക്കൺ നമ്പർ (ഉദാ: C1-001)</label>
+                <input type="text" id="tokenInput" placeholder="C1-001" autocomplete="off">
+            </div>
+            <div class="admin-input-group">
+                <label>📌 കൗണ്ടർ തിരഞ്ഞെടുക്കുക</label>
+                <select id="counterSelect">
+                    <option value="auto">🤖 ഓട്ടോമാറ്റിക് (കുറഞ്ഞ ക്യൂ)</option>
+                    <option value="1">കൗണ്ടർ 1</option><option value="2">കൗണ്ടർ 2</option><option value="3">കൗണ്ടർ 3</option>
+                    <option value="4">കൗണ്ടർ 4</option><option value="5">കൗണ്ടർ 5</option><option value="6">കൗണ്ടർ 6</option>
+                    <option value="7">കൗണ്ടർ 7</option><option value="8">കൗണ്ടർ 8</option><option value="9">കൗണ്ടർ 9</option>
+                    <option value="10">കൗണ്ടർ 10</option><option value="11">കൗണ്ടർ 11</option><option value="12">കൗണ്ടർ 12</option>
+                    <option value="13">കൗണ്ടർ 13</option><option value="14">കൗണ്ടർ 14</option>
+                </select>
+            </div>
+            <div class="admin-buttons">
+                <button class="tv-btn btn-green" onclick="addToken()">➕ പുതിയ ടോക്കൺ</button>
+                <button class="tv-btn btn-orange" onclick="updateStatus('pending')">🟠 Pending</button>
+                <button class="tv-btn btn-red" onclick="updateStatus('closed')">🔴 Closed</button>
+                <button class="tv-btn btn-sync" onclick="syncFromSheet()">🔄 Sync</button>
+            </div>
+        </div>
+
         <div class="counters-grid" id="countersGrid"></div>
+        
+        <div class="sync-status" id="syncStatus">✅ Connected to Google Sheets | Auto-sync every 10 seconds</div>
     </div>
 
     <script>
-        // Data Structure for 14 Counters
+        // Google Apps Script Web App URL - REPLACE WITH YOUR URL AFTER DEPLOYMENT
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbxx0qvy3cIgshoNOLUg-Q5lJk16nMurCm64FY5-vA6DuwiO3PEP08hRhGb3-eA0iVyZ/exec'; // Important: Replace this!
+        
         let counters = [];
         let allTokens = [];
-        let nextTokenIds = {};
-
+        
         // Initialize 14 counters
         for(let i = 1; i <= 14; i++) {
-            counters.push({
-                id: i,
-                name: getCounterName(i),
-                currentToken: null,
-                queue: [],
-                servedCount: 0,
-                lastTokenId: 0
-            });
-            nextTokenIds[i] = 1;
+            counters.push({ id: i, currentToken: null, queue: [], servedCount: 0 });
         }
-
-        function getCounterName(counterId) {
-            const names = {
-                1: "രജിസ്ട്രേഷൻ",
-                2: "രജിസ്ട്രേഷൻ",
-                3: "രജിസ്ട്രേഷൻ",
-                4: "രേഖാ പരിശോധന",
-                5: "രേഖാ പരിശോധന",
-                6: "ഫീസ് അടക്കൽ",
-                7: "ഫീസ് അടക്കൽ",
-                8: "ക്ലാസ് അലോട്ട്മെന്റ്",
-                9: "ക്ലാസ് അലോട്ട്മെന്റ്",
-                10: "ഫോട്ടോ & ബയോമെട്രിക്",
-                11: "ഫോട്ടോ & ബയോമെട്രിക്",
-                12: "യൂണിഫോം & ബുക്ക്",
-                13: "യൂണിഫോം & ബുക്ക്",
-                14: "ജനറൽ ഹെൽപ്"
-            };
-            return names[counterId] || "സേവനം";
-        }
-
-        function getCounterWithShortestQueue() {
-            let shortest = counters[0];
-            for(let i = 1; i < counters.length; i++) {
-                if(counters[i].queue.length < shortest.queue.length) {
-                    shortest = counters[i];
+        
+        // Fetch all tokens from Google Sheets
+        async function syncFromSheet() {
+            const statusDiv = document.getElementById('syncStatus');
+            statusDiv.textContent = '🔄 Syncing from Google Sheets...';
+            statusDiv.className = 'sync-status syncing';
+            
+            try {
+                const response = await fetch(`${GAS_URL}?action=get_tokens`);
+                const data = await response.json();
+                
+                if(data.success && data.tokens) {
+                    allTokens = data.tokens;
+                    rebuildCountersFromTokens();
+                    statusDiv.textContent = '✅ Sync successful! Data loaded from Google Sheets';
+                    statusDiv.className = 'sync-status success';
+                    setTimeout(() => {
+                        statusDiv.textContent = '✅ Connected to Google Sheets | Auto-sync every 10 seconds';
+                        statusDiv.className = 'sync-status';
+                    }, 3000);
+                } else {
+                    throw new Error(data.error || 'Sync failed');
                 }
+            } catch(error) {
+                console.error('Sync error:', error);
+                statusDiv.textContent = '❌ Sync failed! Check Apps Script URL and deployment';
+                statusDiv.className = 'sync-status error';
             }
-            return shortest;
+            
+            renderCounters();
+            updateStats();
         }
-
-        function issueToken() {
+        
+        // Rebuild counters data from tokens array
+        function rebuildCountersFromTokens() {
+            // Reset counters
+            for(let i = 1; i <= 14; i++) {
+                counters[i-1] = { id: i, currentToken: null, queue: [], servedCount: 0 };
+            }
+            
+            // Process tokens to build queues
+            const activeTokens = allTokens.filter(t => t.status === 'active');
+            const pendingTokens = allTokens.filter(t => t.status === 'pending');
+            const closedTokens = allTokens.filter(t => t.status === 'closed');
+            
+            // For each counter, build its queue
+            for(let counter of counters) {
+                // Get active tokens for this counter (current serving)
+                const activeForCounter = activeTokens.filter(t => t.counter == counter.id);
+                if(activeForCounter.length > 0) {
+                    counter.currentToken = activeForCounter[0];
+                }
+                
+                // Get pending tokens for this counter (queue)
+                const pendingForCounter = pendingTokens.filter(t => t.counter == counter.id);
+                counter.queue = pendingForCounter;
+                
+                // Count served tokens
+                counter.servedCount = closedTokens.filter(t => t.counter == counter.id).length;
+            }
+        }
+        
+        // Add token to Google Sheets
+        async function addToken() {
+            const input = document.getElementById('tokenInput');
+            let tokenNumber = input.value.trim().toUpperCase();
             const selectedValue = document.getElementById('counterSelect').value;
-            let targetCounter;
-
-            if(selectedValue === 'auto') {
-                targetCounter = getCounterWithShortestQueue();
-                showToast(`🤖 ഓട്ടോമാറ്റിക്: കുറഞ്ഞ ക്യൂ ഉള്ള കൗണ്ടർ ${targetCounter.id} ലേക്ക് അയക്കുന്നു...`);
-            } else {
-                const counterId = parseInt(selectedValue);
-                targetCounter = counters.find(c => c.id === counterId);
-            }
-
-            // Generate Token Number
-            const tokenId = nextTokenIds[targetCounter.id]++;
-            const tokenNumber = `C${targetCounter.id}-${tokenId.toString().padStart(3, '0')}`;
             
-            const token = {
-                number: tokenNumber,
-                counterId: targetCounter.id,
-                issuedAt: new Date(),
-                status: 'waiting'
-            };
-
-            targetCounter.queue.push(token);
-            allTokens.push(token);
-
-            // Show Token on Screen (Toast notification)
-            showToast(`✅ ടോക്കൺ നമ്പർ: ${tokenNumber}\n📌 കൗണ്ടർ: ${targetCounter.id}\n⏳ നിങ്ങളുടെ മുൻപിൽ ${targetCounter.queue.length - 1} പേർ`, 5000);
-
-            // Update display
-            renderCounters();
-            updateStats();
-
-            // Speak the token (optional)
-            speak(`ടോക്കൺ ${tokenNumber}, കൗണ്ടർ ${targetCounter.id} ലേക്ക്`);
-        }
-
-        function callNext(counterId) {
-            const counter = counters.find(c => c.id === counterId);
+            let targetCounter = selectedValue === 'auto' ? getCounterWithShortestQueue() : counters.find(c => c.id == selectedValue);
             
-            if(counter.queue.length === 0) {
-                showToast(`⚠️ കൗണ്ടർ ${counterId} ൽ ടോക്കണുകൾ ഇല്ല`, 2000);
-                return;
-            }
-
-            const nextToken = counter.queue.shift();
-            
-            // If there was a current token, move to served
-            if(counter.currentToken) {
-                counter.servedCount++;
+            if(!tokenNumber) {
+                // Auto generate token number
+                const nextId = targetCounter.queue.length + (targetCounter.currentToken ? 1 : 0) + 1;
+                tokenNumber = `C${targetCounter.id}-${nextId.toString().padStart(3, '0')}`;
             }
             
-            counter.currentToken = nextToken;
-            nextToken.status = 'serving';
-            
-            // Announce
-            speak(`കൗണ്ടർ ${counterId} ലേക്ക്, ടോക്കൺ ${nextToken.number}`);
-            showToast(`🔔 കൗണ്ടർ ${counterId}: ${nextToken.number} നെ വിളിക്കുന്നു...`, 3000);
-            
-            renderCounters();
-            updateStats();
-        }
-
-        function resetCurrent(counterId) {
-            const counter = counters.find(c => c.id === counterId);
-            
-            if(!counter.currentToken) {
-                showToast(`⚠️ കൗണ്ടർ ${counterId} ൽ നിലവിൽ ടോക്കൺ ഇല്ല`, 2000);
+            // Validate format
+            const tokenRegex = /^C[0-9]+-[0-9]+$/;
+            if(!tokenRegex.test(tokenNumber)) {
+                showToast('⚠️ തെറ്റായ ഫോർമാറ്റ്! ഉദാ: C1-001');
                 return;
             }
             
-            // Move current token back to queue front
-            counter.queue.unshift(counter.currentToken);
-            counter.currentToken = null;
+            // Send to Google Sheets
+            const statusDiv = document.getElementById('syncStatus');
+            statusDiv.textContent = '📤 Saving to Google Sheets...';
+            statusDiv.className = 'sync-status syncing';
             
-            showToast(`↩️ കൗണ്ടർ ${counterId}: നിലവിലെ ടോക്കൺ വീണ്ടും ക്യൂവിൽ ചേർത്തു`, 2000);
-            renderCounters();
-            updateStats();
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'add_token',
+                        token_number: tokenNumber,
+                        counter: targetCounter.id
+                    })
+                });
+                
+                showToast(`✅ ${tokenNumber} added to counter ${targetCounter.id}`);
+                await syncFromSheet(); // Refresh data
+                
+            } catch(error) {
+                console.error('Add token error:', error);
+                showToast('❌ Failed to add token! Check connection');
+            }
+            
+            input.value = '';
+            input.focus();
         }
-
+        
+        // Update token status
+        async function updateStatus(status) {
+            const input = document.getElementById('tokenInput');
+            let tokenNumber = input.value.trim().toUpperCase();
+            
+            if(!tokenNumber) {
+                showToast('⚠️ Enter token number!');
+                return;
+            }
+            
+            const statusDiv = document.getElementById('syncStatus');
+            statusDiv.textContent = `📤 Updating ${tokenNumber} to ${status}...`;
+            statusDiv.className = 'sync-status syncing';
+            
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'update_status',
+                        token_number: tokenNumber,
+                        status: status
+                    })
+                });
+                
+                showToast(`✅ ${tokenNumber} → ${status}`);
+                await syncFromSheet();
+                
+            } catch(error) {
+                console.error('Update error:', error);
+                showToast('❌ Update failed!');
+            }
+            
+            input.value = '';
+            input.focus();
+        }
+        
+        function getCounterWithShortestQueue() {
+            return counters.reduce((shortest, c) => c.queue.length < shortest.queue.length ? c : shortest, counters[0]);
+        }
+        
         function renderCounters() {
             const grid = document.getElementById('countersGrid');
-            grid.innerHTML = '';
+            if(!grid) return;
             
+            grid.innerHTML = '';
             counters.forEach(counter => {
+                const hasQueue = counter.queue.length > 0;
+                const isActive = counter.currentToken !== null;
                 const card = document.createElement('div');
-                card.className = 'counter-card';
-                
-                const queuePreview = counter.queue.slice(0, 3).map(t => t.number).join(', ');
-                const moreCount = counter.queue.length > 3 ? ` + ${counter.queue.length - 3} more` : '';
-                
+                card.className = `counter-card ${isActive ? 'active' : (hasQueue ? 'waiting' : '')}`;
+                card.onclick = () => callNext(counter.id);
                 card.innerHTML = `
-                    <div class="counter-header">
-                        <h3>🏪 കൗണ്ടർ ${counter.id}</h3>
-                        <small>${counter.name}</small>
-                    </div>
-                    <div class="current-token">
-                        <div class="label">നിലവിലെ ടോക്കൺ</div>
-                        <div class="token-number">${counter.currentToken ? counter.currentToken.number : '---'}</div>
-                    </div>
-                    <div class="queue-info">
-                        📋 ക്യൂവിൽ: <span>${counter.queue.length}</span> പേർ
-                    </div>
-                    <div class="action-buttons">
-                        <button class="next-btn" onclick="callNext(${counter.id})">⏩ അടുത്തത്</button>
-                        <button class="reset-btn" onclick="resetCurrent(${counter.id})">🔄 റീസെറ്റ്</button>
-                    </div>
-                    ${counter.queue.length > 0 ? `
-                        <div class="queue-list">
-                            <h4>അടുത്ത ടോക്കണുകൾ:</h4>
-                            <div class="queue-item">${queuePreview}${moreCount}</div>
-                        </div>
-                    ` : ''}
+                    <div class="counter-number">🏪 ${counter.id}</div>
+                    <div class="token-value">${counter.currentToken ? counter.currentToken.number : '---'}</div>
+                    <div class="queue-count">🟠 ക്യൂ: ${counter.queue.length}</div>
+                    <div style="font-size:0.7rem; margin-top:5px;">✅ ${counter.servedCount} served</div>
                 `;
                 grid.appendChild(card);
             });
         }
-
+        
+        function callNext(counterId) {
+            const counter = counters.find(c => c.id === counterId);
+            if(counter.queue.length === 0) {
+                showToast(`⚠️ Counter ${counterId} has no tokens`);
+                return;
+            }
+            if(counter.currentToken) counter.servedCount++;
+            const nextToken = counter.queue.shift();
+            counter.currentToken = nextToken;
+            renderCounters();
+            updateStats();
+            showToast(`🔔 Counter ${counterId}: ${nextToken.number}`);
+            speak(`കൗണ്ടർ ${counterId}, ടോക്കൺ ${nextToken.number}`);
+        }
+        
         function updateStats() {
             const total = allTokens.length;
+            const active = counters.filter(c => c.currentToken !== null).length;
             const waiting = counters.reduce((sum, c) => sum + c.queue.length, 0);
-            const completed = counters.reduce((sum, c) => sum + c.servedCount, 0) + 
-                             (counters.filter(c => c.currentToken).length);
-            
             document.getElementById('totalTokens').textContent = total;
-            document.getElementById('waitingCount').textContent = waiting;
-            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('activeTokens').textContent = active;
+            document.getElementById('waitingTokens').textContent = waiting;
         }
-
-        function showToast(message, duration = 3000) {
+        
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-IN');
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('ml-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        
+        function showToast(message, duration = 2000) {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.style.whiteSpace = 'pre-line';
             toast.textContent = message;
             document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, duration);
+            setTimeout(() => toast.remove(), duration);
         }
-
+        
         function speak(message) {
             if('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(message);
                 utterance.lang = 'ml-IN';
-                utterance.rate = 0.9;
+                utterance.rate = 0.85;
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(utterance);
             }
         }
-
-        // Auto-refresh every second
+        
+        // Auto refresh from sheet every 10 seconds
         setInterval(() => {
-            renderCounters();
-            updateStats();
-        }, 1000);
-
-        // Initial render
+            syncFromSheet();
+            updateTime();
+        }, 10000);
+        
+        // Initial load
+        setTimeout(() => {
+            syncFromSheet();
+            updateTime();
+        }, 500);
+        
         renderCounters();
-        updateStats();
-
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') {
-                issueToken();
-            }
-        });
     </script>
 </body>
 </html>
