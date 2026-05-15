@@ -2,24 +2,20 @@
 <html lang="ml">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>43" TV | Google Sheets Backend Token System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TV Display | Google Sheets Backend Token System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
-            font-family: 'Segoe UI', 'Malayalam', system-ui, sans-serif;
+            font-family: 'Anek Malayalam', sans-serif;
             background: #0a0a1a;
             min-height: 100vh;
             padding: 20px;
         }
-        .tv-container {
-            max-width: 1920px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
-            border-radius: 30px;
-            padding: 20px;
-        }
-        .tv-header {
+        .display-container { max-width: 1920px; margin: 0 auto; }
+        
+        .display-header {
             background: linear-gradient(135deg, #e94560, #c62a40);
             border-radius: 25px;
             padding: 20px 30px;
@@ -30,362 +26,178 @@
             flex-wrap: wrap;
             gap: 20px;
         }
-        .title-section h1 { font-size: 2.5rem; color: white; }
-        .title-section p { font-size: 1.2rem; color: rgba(255,255,255,0.9); }
-        .stats-section { display: flex; gap: 30px; background: rgba(0,0,0,0.3); padding: 15px 25px; border-radius: 20px; }
-        .stat-big { text-align: center; }
-        .stat-big .number { font-size: 2.2rem; font-weight: bold; color: #ffd700; }
-        .stat-big .label { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
-        .time-section { background: rgba(0,0,0,0.5); padding: 15px 25px; border-radius: 20px; text-align: center; }
-        .current-time { font-size: 2rem; font-weight: bold; color: white; font-family: monospace; }
+        .title h1 { font-size: 2rem; color: white; }
+        .title p { color: rgba(255,255,255,0.9); }
+        .stats-info { display: flex; gap: 25px; }
+        .stat { text-align: center; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 15px; }
+        .stat .value { font-size: 1.8rem; font-weight: 800; color: #ffd700; }
+        .stat .label { font-size: 0.8rem; color: rgba(255,255,255,0.8); }
+        .time-box { background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 15px; text-align: center; }
+        .time-box .time { font-size: 1.8rem; font-weight: 700; color: white; }
         
-        .admin-bar {
-            background: rgba(0,0,0,0.8);
+        .announcement-bar {
+            background: linear-gradient(135deg, #1a1a2e, #0f0c29);
             border-radius: 20px;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 25px;
             display: flex;
+            align-items: center;
             gap: 20px;
-            flex-wrap: wrap;
-            align-items: flex-end;
+            border-left: 8px solid #e94560;
         }
-        .admin-input-group { flex: 2; min-width: 250px; }
-        .admin-input-group label { display: block; color: white; font-size: 1rem; margin-bottom: 8px; font-weight: bold; }
-        .admin-input-group input { width: 100%; padding: 15px 20px; font-size: 1.3rem; font-family: monospace; border: 2px solid #e94560; border-radius: 15px; background: white; text-transform: uppercase; text-align: center; }
-        .admin-input-group select { width: 100%; padding: 15px 20px; font-size: 1.2rem; border: 2px solid #e94560; border-radius: 15px; background: white; font-weight: bold; }
-        .admin-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
-        .tv-btn { padding: 15px 25px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; transition: transform 0.2s; }
-        .tv-btn:active { transform: scale(0.98); }
-        .btn-green { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
-        .btn-orange { background: linear-gradient(135deg, #ffc107, #e0a800); color: #333; }
-        .btn-red { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
-        .btn-sync { background: linear-gradient(135deg, #17a2b8, #138496); color: white; }
+        .announcement-icon { font-size: 3rem; }
+        .announcement-text { flex: 1; font-size: 2rem; font-weight: 800; color: #ffd700; letter-spacing: 2px; }
+        .speaker-btn { background: #e94560; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; }
         
         .counters-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 15px;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
         .counter-card {
             background: white;
             border-radius: 20px;
-            padding: 18px 12px;
+            padding: 20px 10px;
             text-align: center;
             transition: all 0.3s;
-            cursor: pointer;
         }
-        .counter-card.active { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
+        .counter-card.active { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; transform: scale(1.02); box-shadow: 0 0 0 3px #ffd700; }
         .counter-card.waiting { background: linear-gradient(135deg, #FF9800, #fb8c00); color: white; }
-        .counter-number { font-size: 1.6rem; font-weight: bold; background: rgba(0,0,0,0.1); display: inline-block; padding: 5px 15px; border-radius: 30px; margin-bottom: 12px; }
-        .token-value { font-size: 2rem; font-weight: bold; font-family: monospace; }
-        .queue-count { font-size: 1.1rem; margin-top: 8px; padding: 5px; background: rgba(0,0,0,0.1); border-radius: 20px; }
+        .counter-number { font-size: 2rem; font-weight: 800; background: rgba(0,0,0,0.15); display: inline-block; padding: 5px 20px; border-radius: 40px; margin-bottom: 15px; }
+        .current-token-number { font-size: 3.5rem; font-weight: 800; font-family: monospace; letter-spacing: 4px; margin: 15px 0; }
+        .queue-badge { font-size: 1.2rem; font-weight: 700; background: rgba(0,0,0,0.15); display: inline-block; padding: 5px 15px; border-radius: 30px; }
+        .footer { background: rgba(0,0,0,0.5); border-radius: 20px; padding: 15px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem; }
         
-        .sync-status {
-            background: #1a1a2e;
-            border-radius: 20px;
-            padding: 10px 20px;
-            margin-top: 20px;
-            text-align: center;
-            color: white;
-            font-size: 0.9rem;
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5;box-shadow:0 0 0 3px #ffd700} }
+        .blink { animation: blink 0.5s ease-in-out 3; }
+        
+        @media (max-width: 1400px) {
+            .counters-grid { grid-template-columns: repeat(7, 1fr); gap: 12px; }
+            .current-token-number { font-size: 2.5rem; }
+            .announcement-text { font-size: 1.5rem; }
         }
-        .sync-status.success { background: #28a745; }
-        .sync-status.error { background: #dc3545; }
-        .sync-status.syncing { background: #ffc107; color: #333; }
-        
-        @media (max-width: 1200px) { .counters-grid { grid-template-columns: repeat(7, 1fr); gap: 10px; } .token-value { font-size: 1.3rem; } }
         @media (max-width: 1000px) { .counters-grid { grid-template-columns: repeat(4, 1fr); } }
         
-        .toast {
+        .status-badge {
             position: fixed;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: #ffd700;
-            padding: 20px 40px;
-            border-radius: 50px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            z-index: 1000;
-            animation: fadeInUp 0.3s ease;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(50px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.7rem;
         }
     </style>
 </head>
 <body>
-    <div class="tv-container">
-        <div class="tv-header">
-            <div class="title-section">
-                <h1>🏫 സ്കൂൾ അഡ്മിഷൻ 2025</h1>
-                <p>14 കൗണ്ടറുകൾ | Google Sheets Backend</p>
+    <div class="display-container">
+        <div class="display-header">
+            <div class="title"><h1>🏫 സ്കൂൾ അഡ്മിഷൻ 2025</h1><p>Google Sheets Backend | ടോക്കൺ സിസ്റ്റം</p></div>
+            <div class="stats-info">
+                <div class="stat"><div class="value" id="displayActive">0</div><div class="label">🟢 സേവനത്തിൽ</div></div>
+                <div class="stat"><div class="value" id="displayWaiting">0</div><div class="label">🟠 ക്യൂവിൽ</div></div>
+                <div class="stat"><div class="value" id="displayCompleted">0</div><div class="label">✅ പൂർത്തിയായി</div></div>
             </div>
-            <div class="stats-section">
-                <div class="stat-big"><div class="number" id="totalTokens">0</div><div class="label">ആകെ ടോക്കൺ</div></div>
-                <div class="stat-big"><div class="number" id="activeTokens">0</div><div class="label">🟢 സേവനത്തിൽ</div></div>
-                <div class="stat-big"><div class="number" id="waitingTokens">0</div><div class="label">🟠 ക്യൂവിൽ</div></div>
-            </div>
-            <div class="time-section">
-                <div class="current-time" id="currentTime">--:--:--</div>
-                <div class="current-date" id="currentDate">---</div>
-            </div>
+            <div class="time-box"><div class="time" id="currentTime">--:--:--</div><div style="font-size:0.7rem" id="currentDate">---</div></div>
         </div>
 
-        <div class="admin-bar">
-            <div class="admin-input-group">
-                <label>🎫 ടോക്കൺ നമ്പർ (ഉദാ: C1-001)</label>
-                <input type="text" id="tokenInput" placeholder="C1-001" autocomplete="off">
-            </div>
-            <div class="admin-input-group">
-                <label>📌 കൗണ്ടർ തിരഞ്ഞെടുക്കുക</label>
-                <select id="counterSelect">
-                    <option value="auto">🤖 ഓട്ടോമാറ്റിക് (കുറഞ്ഞ ക്യൂ)</option>
-                    <option value="1">കൗണ്ടർ 1</option><option value="2">കൗണ്ടർ 2</option><option value="3">കൗണ്ടർ 3</option>
-                    <option value="4">കൗണ്ടർ 4</option><option value="5">കൗണ്ടർ 5</option><option value="6">കൗണ്ടർ 6</option>
-                    <option value="7">കൗണ്ടർ 7</option><option value="8">കൗണ്ടർ 8</option><option value="9">കൗണ്ടർ 9</option>
-                    <option value="10">കൗണ്ടർ 10</option><option value="11">കൗണ്ടർ 11</option><option value="12">കൗണ്ടർ 12</option>
-                    <option value="13">കൗണ്ടർ 13</option><option value="14">കൗണ്ടർ 14</option>
-                </select>
-            </div>
-            <div class="admin-buttons">
-                <button class="tv-btn btn-green" onclick="addToken()">➕ പുതിയ ടോക്കൺ</button>
-                <button class="tv-btn btn-orange" onclick="updateStatus('pending')">🟠 Pending</button>
-                <button class="tv-btn btn-red" onclick="updateStatus('closed')">🔴 Closed</button>
-                <button class="tv-btn btn-sync" onclick="syncFromSheet()">🔄 Sync</button>
-            </div>
+        <div class="announcement-bar">
+            <div class="announcement-icon">📢</div>
+            <div class="announcement-text" id="announcementText">🎤 ടോക്കൺ വിളിക്കുന്നത് ഇവിടെ കാണാം...</div>
+            <button class="speaker-btn" onclick="repeatAnnouncement()">🔊</button>
         </div>
 
         <div class="counters-grid" id="countersGrid"></div>
-        
-        <div class="sync-status" id="syncStatus">✅ Connected to Google Sheets | Auto-sync every 10 seconds</div>
+
+        <div class="footer"><span>🔄 Google Sheets വഴി ഓട്ടോമാറ്റിക് സമന്വയം | അപ്ഡേറ്റ് ചെയ്യുന്നത്: </span><span id="lastUpdated">---</span></div>
+        <div class="status-badge" id="syncStatus">🟢 Connected</div>
     </div>
 
     <script>
-        // Google Apps Script Web App URL - REPLACE WITH YOUR URL AFTER DEPLOYMENT
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbxx0qvy3cIgshoNOLUg-Q5lJk16nMurCm64FY5-vA6DuwiO3PEP08hRhGb3-eA0iVyZ/exec'; // Important: Replace this!
+        // REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyMk_czBFDnDG7auCAxZC3EL_EYW-hK-8qvzYoLsNlVESA7ZGOcfnU-cO-MU0M-FsMT/exec';
         
         let counters = [];
-        let allTokens = [];
+        let lastAnnouncement = '';
+        let pollingInterval = null;
         
-        // Initialize 14 counters
-        for(let i = 1; i <= 14; i++) {
-            counters.push({ id: i, currentToken: null, queue: [], servedCount: 0 });
-        }
-        
-        // Fetch all tokens from Google Sheets
-        async function syncFromSheet() {
-            const statusDiv = document.getElementById('syncStatus');
-            statusDiv.textContent = '🔄 Syncing from Google Sheets...';
-            statusDiv.className = 'sync-status syncing';
-            
+        async function fetchAllData() {
             try {
-                const response = await fetch(`${GAS_URL}?action=get_tokens`);
-                const data = await response.json();
+                const response = await fetch(`${GAS_URL}?action=get_all_data`);
+                const result = await response.json();
                 
-                if(data.success && data.tokens) {
-                    allTokens = data.tokens;
-                    rebuildCountersFromTokens();
-                    statusDiv.textContent = '✅ Sync successful! Data loaded from Google Sheets';
-                    statusDiv.className = 'sync-status success';
-                    setTimeout(() => {
-                        statusDiv.textContent = '✅ Connected to Google Sheets | Auto-sync every 10 seconds';
-                        statusDiv.className = 'sync-status';
-                    }, 3000);
+                if(result.success && result.data) {
+                    counters = result.data.counters || [];
+                    updateDisplay();
+                    updateStats();
+                    
+                    // Check for new announcement
+                    for(let counter of counters) {
+                        if(counter.lastAnnouncement && counter.lastAnnouncement !== lastAnnouncement) {
+                            lastAnnouncement = counter.lastAnnouncement;
+                            document.getElementById('announcementText').textContent = lastAnnouncement;
+                            setTimeout(() => {
+                                if(document.getElementById('announcementText').textContent === lastAnnouncement) {
+                                    document.getElementById('announcementText').textContent = '🎤 ടോക്കൺ വിളിക്കുന്നത് ഇവിടെ കാണാം...';
+                                }
+                            }, 8000);
+                        }
+                    }
+                    
+                    document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+                    document.getElementById('syncStatus').textContent = '🟢 Connected';
+                    document.getElementById('syncStatus').style.background = '#28a745';
                 } else {
-                    throw new Error(data.error || 'Sync failed');
+                    throw new Error('Failed to fetch data');
                 }
             } catch(error) {
-                console.error('Sync error:', error);
-                statusDiv.textContent = '❌ Sync failed! Check Apps Script URL and deployment';
-                statusDiv.className = 'sync-status error';
-            }
-            
-            renderCounters();
-            updateStats();
-        }
-        
-        // Rebuild counters data from tokens array
-        function rebuildCountersFromTokens() {
-            // Reset counters
-            for(let i = 1; i <= 14; i++) {
-                counters[i-1] = { id: i, currentToken: null, queue: [], servedCount: 0 };
-            }
-            
-            // Process tokens to build queues
-            const activeTokens = allTokens.filter(t => t.status === 'active');
-            const pendingTokens = allTokens.filter(t => t.status === 'pending');
-            const closedTokens = allTokens.filter(t => t.status === 'closed');
-            
-            // For each counter, build its queue
-            for(let counter of counters) {
-                // Get active tokens for this counter (current serving)
-                const activeForCounter = activeTokens.filter(t => t.counter == counter.id);
-                if(activeForCounter.length > 0) {
-                    counter.currentToken = activeForCounter[0];
-                }
-                
-                // Get pending tokens for this counter (queue)
-                const pendingForCounter = pendingTokens.filter(t => t.counter == counter.id);
-                counter.queue = pendingForCounter;
-                
-                // Count served tokens
-                counter.servedCount = closedTokens.filter(t => t.counter == counter.id).length;
+                console.error('Fetch error:', error);
+                document.getElementById('syncStatus').textContent = '🔴 Connection Error';
+                document.getElementById('syncStatus').style.background = '#dc3545';
             }
         }
         
-        // Add token to Google Sheets
-        async function addToken() {
-            const input = document.getElementById('tokenInput');
-            let tokenNumber = input.value.trim().toUpperCase();
-            const selectedValue = document.getElementById('counterSelect').value;
-            
-            let targetCounter = selectedValue === 'auto' ? getCounterWithShortestQueue() : counters.find(c => c.id == selectedValue);
-            
-            if(!tokenNumber) {
-                // Auto generate token number
-                const nextId = targetCounter.queue.length + (targetCounter.currentToken ? 1 : 0) + 1;
-                tokenNumber = `C${targetCounter.id}-${nextId.toString().padStart(3, '0')}`;
-            }
-            
-            // Validate format
-            const tokenRegex = /^C[0-9]+-[0-9]+$/;
-            if(!tokenRegex.test(tokenNumber)) {
-                showToast('⚠️ തെറ്റായ ഫോർമാറ്റ്! ഉദാ: C1-001');
-                return;
-            }
-            
-            // Send to Google Sheets
-            const statusDiv = document.getElementById('syncStatus');
-            statusDiv.textContent = '📤 Saving to Google Sheets...';
-            statusDiv.className = 'sync-status syncing';
-            
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'add_token',
-                        token_number: tokenNumber,
-                        counter: targetCounter.id
-                    })
-                });
-                
-                showToast(`✅ ${tokenNumber} added to counter ${targetCounter.id}`);
-                await syncFromSheet(); // Refresh data
-                
-            } catch(error) {
-                console.error('Add token error:', error);
-                showToast('❌ Failed to add token! Check connection');
-            }
-            
-            input.value = '';
-            input.focus();
-        }
-        
-        // Update token status
-        async function updateStatus(status) {
-            const input = document.getElementById('tokenInput');
-            let tokenNumber = input.value.trim().toUpperCase();
-            
-            if(!tokenNumber) {
-                showToast('⚠️ Enter token number!');
-                return;
-            }
-            
-            const statusDiv = document.getElementById('syncStatus');
-            statusDiv.textContent = `📤 Updating ${tokenNumber} to ${status}...`;
-            statusDiv.className = 'sync-status syncing';
-            
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'update_status',
-                        token_number: tokenNumber,
-                        status: status
-                    })
-                });
-                
-                showToast(`✅ ${tokenNumber} → ${status}`);
-                await syncFromSheet();
-                
-            } catch(error) {
-                console.error('Update error:', error);
-                showToast('❌ Update failed!');
-            }
-            
-            input.value = '';
-            input.focus();
-        }
-        
-        function getCounterWithShortestQueue() {
-            return counters.reduce((shortest, c) => c.queue.length < shortest.queue.length ? c : shortest, counters[0]);
-        }
-        
-        function renderCounters() {
+        function updateDisplay() {
             const grid = document.getElementById('countersGrid');
             if(!grid) return;
             
             grid.innerHTML = '';
             counters.forEach(counter => {
-                const hasQueue = counter.queue.length > 0;
-                const isActive = counter.currentToken !== null;
+                const hasQueue = counter.queue && counter.queue.length > 0;
+                const isActive = counter.currentToken !== null && counter.currentToken !== '---';
+                
                 const card = document.createElement('div');
                 card.className = `counter-card ${isActive ? 'active' : (hasQueue ? 'waiting' : '')}`;
-                card.onclick = () => callNext(counter.id);
+                card.setAttribute('data-counter', counter.id);
+                
                 card.innerHTML = `
-                    <div class="counter-number">🏪 ${counter.id}</div>
-                    <div class="token-value">${counter.currentToken ? counter.currentToken.number : '---'}</div>
-                    <div class="queue-count">🟠 ക്യൂ: ${counter.queue.length}</div>
-                    <div style="font-size:0.7rem; margin-top:5px;">✅ ${counter.servedCount} served</div>
+                    <div class="counter-number">🏪 കൗണ്ടർ ${counter.id}</div>
+                    <div class="current-token-number">${counter.currentToken && counter.currentToken !== '---' ? counter.currentToken : '---'}</div>
+                    <div class="queue-badge">🟠 ക്യൂ: ${counter.queue ? counter.queue.length : 0}</div>
+                    ${counter.queue && counter.queue.length > 0 ? `<div style="font-size:0.8rem; margin-top:8px;">⏩ അടുത്തത്: ${counter.queue[0]}</div>` : ''}
+                    <div style="font-size:0.7rem; margin-top:8px;">✅ ${counter.servedCount || 0} സേവനങ്ങൾ</div>
                 `;
                 grid.appendChild(card);
             });
         }
         
-        function callNext(counterId) {
-            const counter = counters.find(c => c.id === counterId);
-            if(counter.queue.length === 0) {
-                showToast(`⚠️ Counter ${counterId} has no tokens`);
-                return;
-            }
-            if(counter.currentToken) counter.servedCount++;
-            const nextToken = counter.queue.shift();
-            counter.currentToken = nextToken;
-            renderCounters();
-            updateStats();
-            showToast(`🔔 Counter ${counterId}: ${nextToken.number}`);
-            speak(`കൗണ്ടർ ${counterId}, ടോക്കൺ ${nextToken.number}`);
-        }
-        
         function updateStats() {
-            const total = allTokens.length;
-            const active = counters.filter(c => c.currentToken !== null).length;
-            const waiting = counters.reduce((sum, c) => sum + c.queue.length, 0);
-            document.getElementById('totalTokens').textContent = total;
-            document.getElementById('activeTokens').textContent = active;
-            document.getElementById('waitingTokens').textContent = waiting;
+            const active = counters.filter(c => c.currentToken && c.currentToken !== '---').length;
+            const waiting = counters.reduce((sum, c) => sum + (c.queue ? c.queue.length : 0), 0);
+            const completed = counters.reduce((sum, c) => sum + (c.servedCount || 0), 0);
+            
+            document.getElementById('displayActive').textContent = active;
+            document.getElementById('displayWaiting').textContent = waiting;
+            document.getElementById('displayCompleted').textContent = completed;
         }
         
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-IN');
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('ml-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        }
-        
-        function showToast(message, duration = 2000) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), duration);
+        function repeatAnnouncement() {
+            if(lastAnnouncement) {
+                document.getElementById('announcementText').textContent = lastAnnouncement;
+                speak(lastAnnouncement);
+            }
         }
         
         function speak(message) {
@@ -398,19 +210,23 @@
             }
         }
         
-        // Auto refresh from sheet every 10 seconds
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-IN');
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('ml-IN', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+        }
+        
+        // Poll every 3 seconds
         setInterval(() => {
-            syncFromSheet();
+            fetchAllData();
             updateTime();
-        }, 10000);
+        }, 3000);
         
         // Initial load
-        setTimeout(() => {
-            syncFromSheet();
-            updateTime();
-        }, 500);
-        
-        renderCounters();
+        fetchAllData();
+        updateTime();
     </script>
 </body>
 </html>
