@@ -1,2038 +1,582 @@
-
 <!DOCTYPE html>
-
-<html lang="zxx" dir="ltr">
-
-
+<html lang="ml">
 <head>
-   <meta charset="utf-8">
-   <title>Samastha Kerala Jem-iyyathul Ulama</title>
-   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-   <meta name="keywords" content="samastha">
-  
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/fonts.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/font-awesome.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/font-awesome.min.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/magnific-popup.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/owl.carousel.min.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/owl.theme.default.min.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/bootstrap.min.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/slider/pe-icon-7-stroke.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/slider/settings.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/slider/layers.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/slider/navigation.css">
-   <!-- video -->
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/jquery.fancybox.min.css" media="screen" />
-   
-   <!-- LOADING FONTS AND ICONS -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>സ്കൂൾ അഡ്മിഷൻ ടോക്കൺ സിസ്റ്റം | 14 കൗണ്ടറുകൾ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/style.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/animate.css">
-   <link rel="stylesheet" type="text/css" href="https://samastha.info/assets/css/responsive.css">
-   <script type="text/javascript" src="../../../../ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js"></script>
+        body {
+            font-family: 'Segoe UI', 'Malayalam', 'Noto Sans Malayalam', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-   <!--favicon-->
-   <link rel="shortcut icon" type="image/png" href="https://samastha.info/assets/images/fav-icon.png">
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        /* Main Layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        /* Token Issuing Panel (Left) */
+        .issue-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            height: fit-content;
+        }
+
+        .issue-panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .counter-select {
+            margin-bottom: 20px;
+        }
+
+        .counter-select label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .counter-select select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .counter-select select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .issue-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .issue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+        }
+
+        .issue-btn:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .stat-value {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        /* Counters Grid (Right) */
+        .counters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .counter-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .counter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .counter-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .counter-header h3 {
+            font-size: 1.3em;
+        }
+
+        .current-token {
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .current-token .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .current-token .token-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .queue-info {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #e8f4f8;
+            border-radius: 10px;
+        }
+
+        .queue-info span {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .next-btn, .reset-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .next-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .next-btn:hover {
+            background: #218838;
+        }
+
+        .reset-btn {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .reset-btn:hover {
+            background: #e0a800;
+        }
+
+        .queue-list {
+            margin-top: 15px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 0.85em;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .queue-list h4 {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .queue-item {
+            padding: 3px 5px;
+            background: #f9f9f9;
+            margin: 2px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .counters-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
-
 <body>
-   <!-- <div class="page-loader">
-      <div class="spinner"></div>
-      <div class="txt">Samastha Kerala Jem-iyyathul Ulama</div>
-   </div> -->
-   <!-- top to return -->
-   <a href="javascript:;" id="return-to-top" class="change-bg2"> <i class="fas fa-angle-double-up"></i></a>
-   <!-- header start -->
-   <div class="main-header-wrapper1">
-      <div class="right-sidebar" id="right-sidebar">
-         <div class="toggle-top-header">
-            <button class="sidebar-close"></button>
-         </div>
-         <div class="toggle-content">
-            <div class="container custom-container">
-               <div class="search-box">
-                  <input type="text" class="form-control" placeholder="Search Here">
-                  <span><svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                           d="M7.49833 0.000312674C3.3688 0.000312674 0 3.36934 0 7.49864C0 11.6279 3.36902 14.997 7.49833 14.997C9.2042 14.997 10.7819 14.4241 12.0444 13.4582L17.2855 18.7073C17.676 19.0978 18.3167 19.0978 18.7072 18.7073C19.0976 18.3169 19.0976 17.684 18.7072 17.2936L13.458 12.0444C14.4236 10.782 14.9968 9.20393 14.9968 7.49833C14.9968 3.3688 11.6276 0 7.49846 0L7.49833 0.000312674ZM7.49833 1.99985C10.5472 1.99985 12.9975 4.45002 12.9975 7.49904C12.9975 10.5481 10.5473 12.9982 7.49833 12.9982C4.44931 12.9982 1.99914 10.5481 1.99914 7.49904C1.99914 4.45002 4.44931 1.99985 7.49833 1.99985V1.99985Z"
-                           fill="white" />
-                     </svg>
-                  </span>
-               </div>
-            </div>
-         </div>
-      </div>
-      <div class="header-top">
-         <div class="auto-container">
-            <div class="inner-container">
-               <div class="d-flex justify-content-between align-items-center flex-wrap"style="background-color:#74501e;">
-                  <div class="left-box d-flex align-items-center flex-wrap">
-                     <!-- Info List -->
-                     <ul class="header-top_list">
-                        <li class="text-white"><a class="text-white" href="/cdn-cgi/l/email-protection#3645575b5745425e575a574f575b76515b575f5a1855595b"><i class="fa fa-envelope " aria-hidden="true" style="font-size: 25px;"></i>&nbsp;<span class="__cf_email__" data-cfemail="5a293b373b292e323b363b233b371a3d373b333674393537">[email&#160;protected]</span>                        </li>
-                        <li><a class="text-white" href="tel:0495-2300642"><i class="fa fa-mobile" aria-hidden="true" style="font-size: 25px;"></i>&nbsp;0495-2300642</a></li>
-                     <li ><a class="text-white" href="tel:0494-2400256"><i class="fa fa-phone" aria-hidden="true" style="font-size: 25px;"></i>&nbsp;0494-2400256</li>
-                     </ul>
-                
-                  </div>
-                  <ul class="header-top_list-two" >
-                     <li class="nav-item ">
-                  <a class="nav-link btn btn-outline-light" href="https://result.samastha.info/"><strong>Exam Result</strong> </a>
-                      </li>
-                  <li class="nav-item ">
-                  <a class="nav-link btn btn-outline-light" href="https://samastha.info/history"><strong>History</strong> </a>
-                      </li>
-
-                      <li class="nav-item ">
-                     <a class="nav-link btn btn-outline-light" href="https://samastha.info/org"><strong>Organizations</strong> </a></li>
-                     <!-- <li><span class="icon fa-solid fa-moon fa-fw"></span>Sunset At: 4:50 PM</li> -->
-                     <li class="nav-item me-2 ">
-                                 <a class="nav-link btn btn-outline-light" href="https://www.suprabhaatham.com/" target="_blank"><strong>Publications</strong> </a>
-                      </li>
-                    
-                     
-                  </ul>
-               </div>
-            </div>
-         </div>
-      </div>
-      <div class="sb-main-header1"style="background-color: #4b310c;">
-         <div class="menu-items-wrapper menu-item-wrapper3 d-xl-block d-lg-block d-md-none d-sm-none d-none">
-            <div class="container custom-container">
-               <div class="row" >
-                  <div class="col-lg-6 col-md-12">
-                     <div class="index1-logo d-flex">
-                        <a href="#">
-                           <img src="https://samastha.info/assets/images/logo.png" alt="logo"> </a>
-                           <a href="#">
-                           <h5 class=" fs-bold ps-2 " style="color: white"><strong>Samastha Kerala Jem-iyyathul Ulama (SKJU)</strong></h5>
-                           <p style="font-size: 14px;" class="text-white ps-2 pb-3">	Francis Road, Calicut – 3 Kerala, India.</p>
-                        </a>
-                     </div>
-                  </div>
-                  <div class="col-lg-6 col-md-12">
-                     <div class="my-menu-header">
-                        <nav class="navbar navbar-expand-lg pt-1">
-                           <ul class="navbar-nav">
-                              <li class="nav-item nav-border">
-                                 <a class="nav-link" href="https://samastha.info/home">Home </a>
-                               
-                              </li>
-                              <li class="nav-item nav-border">
-                                 <a class="nav-link" href="https://samastha.info/about">About</a>
-                              </li>
-                         
-                              <li class="nav-item nav-border">
-                                 <a class="nav-link" href="https://samastha.info/blog">News</a>
-                              </li>
-                       <!--          <li class="nav-item nav-border">
-                                 <a class="nav-link" href="https://result.samastha.info/"> Exam Result</a>
-                              </li> -->
-                          
-                         <li class="nav-item nav-border">
-                                 <a class="nav-link" href="#">Gallery <span><i
-                                          class="fas fa-chevron-down"></i></span></a>
-                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="https://samastha.info/gallery">Images</a></li>
-                                    <li><a class="dropdown-item" href="https://samastha.info/youtube">Videos</a></li>
-                                 </ul>
-                              </li>
-                             
-                              <li class="nav-item nav-border">
-                                 <a class="nav-link" href="https://samastha.info/team">Mushawara </a>
-                                
-                              </li>
-                              <li class="nav-item ">
-                                 <a class="nav-link" href="https://samastha.info/contact">Contact</a>
-                              </li>
-                           </ul>
-                        </nav>
-                        <ul
-                           class="d-xl-flex d-lg-flex d-md-none d-sm-none d-none justify-content-end align-items-center social-media-icons">
-
-                           <li>
-                              <a href="javascript:;">
-                                 <span class="sidebar-toggle" style="color: #d39542;">
-                                 </span>
-                              </a>
-                           </li>
-                           <li>
-                              <a class="redButton" href="https://samastha.info/skimvb"><span>SKIMVB Website</span></a>
-                           </li>
-
-                        </ul>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <!-- responsive menu bar start -->
-         <div class="mobile-menu-wrapper d-xl-none d-lg-none d-md-block d-sm-block">
-            <div class="container">
-               <div class="row">
-                  <div class=" col-md-4 col-sm-4 col-4">
-                     <div class="mobile-logo">
-                        <a href="#">
-                           <img src="https://samastha.info/assets/images/footer-logo.png" alt="logo" style="width: 150px; height: 57px;">
-                        </a>
-                     </div>
-                  </div>
-                  <div class="col-md-8 col-sm-8 col-8">
-                     <div class="d-flex  justify-content-end me-4">
-                        <div class="social-media-icons">
-                           <ul>
-                              <li>
-                                 <a href="javascript:;">
-                                    <span class="sidebar-toggle">
-                                       <svg width="19" height="19" viewBox="0 0 19 19" fill="none"
-                                          xmlns="http://www.w3.org/2000/svg">
-                                          <path
-                                             d="M7.49833 0.000312674C3.3688 0.000312674 0 3.36934 0 7.49864C0 11.6279 3.36902 14.997 7.49833 14.997C9.2042 14.997 10.7819 14.4241 12.0444 13.4581L17.2855 18.7073C17.676 19.0978 18.3167 19.0978 18.7072 18.7073C19.0976 18.3169 19.0976 17.684 18.7072 17.2936L13.458 12.0444C14.4236 10.782 14.9968 9.20393 14.9968 7.49833C14.9968 3.3688 11.6276 0 7.49846 0L7.49833 0.000312674ZM7.49833 1.99985C10.5472 1.99985 12.9975 4.45002 12.9975 7.49904C12.9975 10.5481 10.5473 12.9982 7.49833 12.9982C4.44931 12.9982 1.99914 10.5481 1.99914 7.49904C1.99914 4.45002 4.44931 1.99985 7.49833 1.99985Z"
-                                             fill="white" />
-                                       </svg>
-
-                                    </span>
-                                 </a>
-                              </li>
-                           </ul>
-                        </div>
-                        <div class="d-flex">
-                           <div class="toggle-main-wrapper click-toggle" id="sidebar-toggle">
-                              <span class="line"></span>
-                              <span class="line"></span>
-                              <span class="line"></span>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div id="sidebar">
-            <div class="sidebar_logo">
-               <a href="index.html"><img src="https://samastha.info/assets/images/footer-logo.png" alt="logo"></a>
-            </div>
-
-            <div id='cssmenu'>
-               <ul class="float_left">
-                  <li>
-                     <a href="https://samastha.info/home">Home</a>
-                 
-                  </li>
-                  <li><a href="https://samastha.info/about">About</a></li>
-
-                  <li >
-                     <a  href="https://samastha.info/blog">News</a>
-                  </li>
-                  <li >
-                     <a  href="https://www.suprabhaatham.com/"target="_blank">Publications</a>
-                  </li>
-                  
-                 <li class="has-sub">
-                     <a href="javascript:;">Gallery</a>
-                     <ul>
-                        <li><a href="https://samastha.info/gallery">Images</a></li>
-                        <li><a href="https://samastha.info/youtube">Video</a></li>
-                     </ul>
-                  </li>
-
-           <!--          <li >
-                     <a  href="https://result.samastha.info/">Exam Result</a>
-                  </li> -->
-                  <li>
-                     <a href="https://samastha.info/org">Organizations</a>
-                  
-                  </li>
-                  <li>
-                     <a href="https://samastha.info/history">History</a>
-                  
-                  </li>
-                  <li >
-                     <a href="https://samastha.info/team">Mushawara</a>
-             
-                  </li>
-                  <li><a href="https://samastha.info/contact">Contact Us</a></li>
-               </ul>
-               <div class="center-btn">
-                  <a class="redButton" href="https://samastha.info/skimvb"><span>SKIMVB</span></a>
-               </div>
-            </div>
-         </div>
-         <!-- responsive menu End -->
-      </div>
-   </div>
-   <!-- header end -->
-   <!-- banner slider -->
-   <div class="ibadat-main-banner-wrapper">
-      <section class="example">
-         <article class="content">
-            <div id="rev_slider_1050_1_wrapper" class="rev_slider_wrapper fullscreen-container"
-               data-alias="webproduct-light" data-source="gallery" style="background-color:transparent;padding:0px;">
-               <!-- START REVOLUTION SLIDER 5.4.1 fullscreen mode -->
-               <div id="rev_slider_1050_1" class="rev_slider fullscreenbanner" style="display:none;"
-                  data-version="5.4.1">
-                  <ul>
-                  
-            
-                                       <!-- SLIDE  -->
-                     <li data-index="rs-2938" data-transition="slidevertical" data-slotamount="1" data-hideafterloop="0"
-                        data-hideslideonmobile="off" data-easein="default" data-easeout="default"
-                        data-masterspeed="1500" data-thumb="https://samastha.info/assets/images/slider/express_bglight-100x50.jpg" data-rotate="0"
-                        data-fstransition="fade" data-fsmasterspeed="1500" data-fsslotamount="7"
-                        data-saveperformance="off" data-title="Intro" data-param1="" data-param2="" data-param3=""
-                        data-param4="" data-param5="" data-param6="" data-param7="" data-param8="" data-param9=""
-                        data-param10="" data-description="" >
-                        <!-- MAIN IMAGE -->
-                        <img src="https://samastha.info/irsys/images/banner/1764318432_24e6745490b3a781b027.jpg" alt="" data-bgposition="center center"
-                           data-bgfit="cover" data-bgrepeat="no-repeat" class="rev-slidebg" data-no-retina>
-        
-                     
-                     </li>
-                                          <!-- SLIDE  -->
-                     <li data-index="rs-2938" data-transition="slidevertical" data-slotamount="1" data-hideafterloop="0"
-                        data-hideslideonmobile="off" data-easein="default" data-easeout="default"
-                        data-masterspeed="1500" data-thumb="https://samastha.info/assets/images/slider/express_bglight-100x50.jpg" data-rotate="0"
-                        data-fstransition="fade" data-fsmasterspeed="1500" data-fsslotamount="7"
-                        data-saveperformance="off" data-title="Intro" data-param1="" data-param2="" data-param3=""
-                        data-param4="" data-param5="" data-param6="" data-param7="" data-param8="" data-param9=""
-                        data-param10="" data-description="" >
-                        <!-- MAIN IMAGE -->
-                        <img src="https://samastha.info/irsys/images/banner/1764310455_b2ab7ec9c6215b419e88.jpg" alt="" data-bgposition="center center"
-                           data-bgfit="cover" data-bgrepeat="no-repeat" class="rev-slidebg" data-no-retina>
-        
-                     
-                     </li>
-                                          <!-- SLIDE  -->
-                     <li data-index="rs-2938" data-transition="slidevertical" data-slotamount="1" data-hideafterloop="0"
-                        data-hideslideonmobile="off" data-easein="default" data-easeout="default"
-                        data-masterspeed="1500" data-thumb="https://samastha.info/assets/images/slider/express_bglight-100x50.jpg" data-rotate="0"
-                        data-fstransition="fade" data-fsmasterspeed="1500" data-fsslotamount="7"
-                        data-saveperformance="off" data-title="Intro" data-param1="" data-param2="" data-param3=""
-                        data-param4="" data-param5="" data-param6="" data-param7="" data-param8="" data-param9=""
-                        data-param10="" data-description="" >
-                        <!-- MAIN IMAGE -->
-                        <img src="https://samastha.info/irsys/images/banner/1764332183_6fde7b85723866b91d6b.jpeg" alt="" data-bgposition="center center"
-                           data-bgfit="cover" data-bgrepeat="no-repeat" class="rev-slidebg" data-no-retina>
-        
-                     
-                     </li>
-                                       </ul>
-               </div>
-               <!-- END REVOLUTION SLIDER -->
-            </div>
-         </article>
-      </section>
-   </div>
-
-
-
-</div>
-   <!-- Audio -->
-    <div class="ibadat-audio-main-wrapper flashnews" style="background-color:#3d3227;">
-      <div class="container custom-container">
-         <div class="ibadat-audio-wrapper">
-            <div class="row" >
-               <div class="col-lg-2 p-1 flash-phone">
-                  <h6 style="padding-left: 20px; font-size: 18px;" class="text-white"><strong>Flash News <i class="fa fa-bullhorn" aria-hidden="true"></i></strong></h6>
-               </div>
-               <div class="col-lg-10 p-1">
-        
-                  <h6 style="font-size: 15px;" class="text-white">
-                     <marquee><strong><strong>
-                                             സമസ്​ത 100-ാം വാര്‍ഷിക അന്താരാഷ്ട്ര മഹാ സമ്മേളനം 2026 ഫെബ്രുവരി 4 - 8 വരക്കല്‍ മുല്ലക്കോയ തങ്ങള്‍ നഗര്‍, കുണിയ, കാസര്‍ഗോഡ്                        &nbsp; &nbsp; &nbsp; &nbsp;**** &nbsp; &nbsp; &nbsp; &nbsp;
-                        </strong></marquee>
-                  </h6>
-                 
-               </div>
-      
-            </div>
-         </div>
-      </div>
-   </div> 
-
-<!-- ...........new btn.................. -->
-<!-- <div class="container">
-    <div style="display: flex; justify-content: center;">
-        <a class="redButton" id="openModal"> <span>Wayanad Fund Receipt Download</span> </a>
-    </div>
-</div>
- -->
-<!-- ...........new btn.................. -->
-
-<style>
-
-.countdown-wrapper {
-  width: 100%;
-  /*padding: 20px 0;*/
-  text-align: right;
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-
-.countdown-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 15px;
-  text-align: right;
-  color: #ffffff;
-}
-
-.countdown-grid {
-  display: flex;
-  justify-content: flex-end;
-  gap: 20px;
-}
-
-
-.count-item {
-  text-align: center;
-}
-
-.count-box {
-  width: 85px;
-  height: 110px;
-  background: #d7672b;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.count-label {
-  margin-top: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  color: #fff;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-/* Bounce animation */
-.pulse { animation: pop .35s ease; }
-
-@keyframes pop {
-  0% { transform: scale(.85); opacity:.6; }
-  60% { transform: scale(1.15); opacity:1; }
-  100% { transform: scale(1); }
-}
-</style>
-<style>
-   .countdown-container {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.countdown-image img {
-  width: 210px;
-  height: auto;
-  border-radius: 10px;
-}
-
-.countdown-content {
-  flex: 1;
-  color: #fff;
-}
-
-.countdown-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 15px;
-}
-
-.countdown-grid {
-  display: flex;
-  gap: 20px;
-}
-
-.count-item {
-  text-align: center;
-}
-
-.count-box {
-  font-size: 28px;
-  background: rgba(0,0,0,0.25);
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 700;
-}
-
-.count-label {
-  margin-top: 5px;
-  font-size: 14px;
-}
-
-</style>
-<style>
-
-
-@media (max-width: 768px) {
-  .countdown-container {
-    flex-direction: column; 
-    text-align: center;
-  }
-
-  .countdown-image {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .countdown-image img {
-    width: 100%px;
-    height: 80px;
-  }
-
-  .countdown-text h1 {
-    font-size: 30px !important;
-  }
-
-  .countdown-text h4 {
-    font-size: 20px;
-  }
-
-  .countdown-text h5 {
-    font-size: 18px;
-  }
-
-  .count-box {
-    font-size: 22px;
-    min-width: 50px;
-    padding: 8px 12px;
-  }
- 
-}
-</style>
-<!-- ===================== SECTION HTML ===================== -->
-<section class="countdown-wrapper" data-target="2026-02-04T00:00:00" style="background-color:#834f28; ">
-  <div class="countdown-container">
-
-    <!-- LEFT IMAGE -->
-  <div class="countdown-image d-flex">
-  
-  <!-- <img src="https://samastha.info/assets/images/countdownlogo.jpg" alt="Event Image"> -->
-
-  <div class="countdown-text">
-<img src="https://samastha.info/assets/images/countdownbg.jpg" alt="Event Image" style="width: 100%;">
-  </div>
-
-</div>
-
-    <!-- RIGHT COUNTDOWN -->
-    <div class="countdown-content">
-      <div class="countdown-title">Our big event is coming</div>
-
-      <div class="countdown-grid">
-        <div class="count-item">
-          <div class="count-box" id="cd-days">0</div>
-          <div class="count-label">Days</div>
-        </div>
-
-        <div class="count-item">
-          <div class="count-box" id="cd-hours">0</div>
-          <div class="count-label">Hours</div>
-        </div>
-
-        <div class="count-item">
-          <div class="count-box" id="cd-minutes">0</div>
-          <div class="count-label">Minutes</div>
-        </div>
-
-        <div class="count-item">
-          <div class="count-box" id="cd-seconds">0</div>
-          <div class="count-label">Seconds</div>
-        </div>
-      </div>
+    <div class="header">
+        <h1>🏫 സ്കൂൾ അഡ്മിഷൻ ടോക്കൺ സിസ്റ്റം</h1>
+        <p>14 കൗണ്ടറുകൾ | റിയൽ-ടൈം ക്യൂ മാനേജ്മെന്റ്</p>
     </div>
 
-  </div>
-</section>
+    <div class="dashboard">
+        <!-- Left Panel: Token Issuing -->
+        <div class="issue-panel">
+            <h2>🎫 പുതിയ ടോക്കൺ എടുക്കുക</h2>
+            <div class="counter-select">
+                <label>📌 കൗണ്ടർ തിരഞ്ഞെടുക്കുക:</label>
+                <select id="counterSelect">
+                    <option value="auto">🤖 ഓട്ടോമാറ്റിക് (കുറഞ്ഞ ക്യൂ)</option>
+                    <option value="1">കൗണ്ടർ 1 - രജിസ്ട്രേഷൻ</option>
+                    <option value="2">കൗണ്ടർ 2 - രജിസ്ട്രേഷൻ</option>
+                    <option value="3">കൗണ്ടർ 3 - രജിസ്ട്രേഷൻ</option>
+                    <option value="4">കൗണ്ടർ 4 - രേഖാ പരിശോധന</option>
+                    <option value="5">കൗണ്ടർ 5 - രേഖാ പരിശോധന</option>
+                    <option value="6">കൗണ്ടർ 6 - ഫീസ് അടക്കൽ</option>
+                    <option value="7">കൗണ്ടർ 7 - ഫീസ് അടക്കൽ</option>
+                    <option value="8">കൗണ്ടർ 8 - ക്ലാസ് അലോട്ട്മെന്റ്</option>
+                    <option value="9">കൗണ്ടർ 9 - ക്ലാസ് അലോട്ട്മെന്റ്</option>
+                    <option value="10">കൗണ്ടർ 10 - ഫോട്ടോ & ബയോമെട്രിക്</option>
+                    <option value="11">കൗണ്ടർ 11 - ഫോട്ടോ & ബയോമെട്രിക്</option>
+                    <option value="12">കൗണ്ടർ 12 - യൂണിഫോം & ബുക്ക്</option>
+                    <option value="13">കൗണ്ടർ 13 - യൂണിഫോം & ബുക്ക്</option>
+                    <option value="14">കൗണ്ടർ 14 - ജനറൽ ഹെൽപ്</option>
+                </select>
+            </div>
+            <button class="issue-btn" onclick="issueToken()">🎟️ ടോക്കൺ എടുക്കുക</button>
 
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">📊 ആകെ ടോക്കണുകൾ:</span>
+                    <span class="stat-value" id="totalTokens">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">⏳ കാത്തിരിക്കുന്നവർ:</span>
+                    <span class="stat-value" id="waitingCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">✅ സേവനം പൂർത്തിയായവർ:</span>
+                    <span class="stat-value" id="completedCount">0</span>
+                </div>
+            </div>
+        </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-(function(){
-  const box = document.querySelector('.countdown-wrapper');
-  const targetAttr = box.getAttribute('data-target');
-  let target = new Date(targetAttr);
+        <!-- Right Panel: Counters Grid -->
+        <div class="counters-grid" id="countersGrid"></div>
+    </div>
 
-  if (isNaN(target)) {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    target = d;
-  }
+    <script>
+        // Data Structure for 14 Counters
+        let counters = [];
+        let allTokens = [];
+        let nextTokenIds = {};
 
-  const ids = {
-    days: 'cd-days',
-    hours: 'cd-hours',
-    minutes: 'cd-minutes',
-    seconds: 'cd-seconds'
-  };
-
-  const els = {};
-  Object.keys(ids).forEach(k => els[k] = document.getElementById(ids[k]));
-
-  function pad(n) { 
-    return String(n).padStart(2, '0'); 
-  }
-
-  function calc() {
-    const now = new Date();
-    const diff = Math.max(0, target - now);
-    const sec = Math.floor(diff / 1000);
-    return {
-      diff,
-      days: Math.floor(sec / 86400),
-      hours: Math.floor((sec % 86400) / 3600),
-      minutes: Math.floor((sec % 3600) / 60),
-      seconds: sec % 60
-    };
-  }
-
-  function update() {
-    const c = calc();
-
-    Object.keys(c).forEach(k => {
-      if (!els[k]) return;
-
-      const v = (k === 'days') ? c[k] : pad(c[k]);
-
-      if (els[k].textContent !== v) {
-
-        els[k].textContent = v;
-
-      
-        if (k === 'seconds') {
-          els[k].classList.remove('pulse');
-          void els[k].offsetWidth;
-          els[k].classList.add('pulse');
+        // Initialize 14 counters
+        for(let i = 1; i <= 14; i++) {
+            counters.push({
+                id: i,
+                name: getCounterName(i),
+                currentToken: null,
+                queue: [],
+                servedCount: 0,
+                lastTokenId: 0
+            });
+            nextTokenIds[i] = 1;
         }
 
-        // ❌ Disable animation for DAYS completely
-        if (k === 'days') {
-          els[k].classList.remove('pulse');
+        function getCounterName(counterId) {
+            const names = {
+                1: "രജിസ്ട്രേഷൻ",
+                2: "രജിസ്ട്രേഷൻ",
+                3: "രജിസ്ട്രേഷൻ",
+                4: "രേഖാ പരിശോധന",
+                5: "രേഖാ പരിശോധന",
+                6: "ഫീസ് അടക്കൽ",
+                7: "ഫീസ് അടക്കൽ",
+                8: "ക്ലാസ് അലോട്ട്മെന്റ്",
+                9: "ക്ലാസ് അലോട്ട്മെന്റ്",
+                10: "ഫോട്ടോ & ബയോമെട്രിക്",
+                11: "ഫോട്ടോ & ബയോമെട്രിക്",
+                12: "യൂണിഫോം & ബുക്ക്",
+                13: "യൂണിഫോം & ബുക്ക്",
+                14: "ജനറൽ ഹെൽപ്"
+            };
+            return names[counterId] || "സേവനം";
         }
-      }
-    });
 
-    if (c.diff <= 0) clearInterval(intv);
-  }
-
-  const intv = setInterval(update, 1000);
-  update();
-})();
-</script>
-
-
-   <!-- About us -->
-   <div class="ibadat-about-main-wrapper">
-      <div class="container custom-container">
-         <div class="ibadat-about-main-content-wrapper">
-            <div class="about-text-wrappper">
-               <div class="left-title">
-                  <h4 class="text-dark">About Us <span><img src="https://samastha.info/assets/images/home/line.png" alt="line"></span> </h4>
-                  <h2 style="font-size: 35px;">Samastha Kerala Jem-Iyyathul Ulama</h2>
-                  <p>Kerala Muslims, who constitute 24.7% of the total population of the state, have their own characteristics and peculiarities that distinguish them from other Muslim communities in India. Islam entered South India much early compared to the Northern parts of the country. Arab traders and missionaries propagated their faith by their own ideal manners, persuasion and example. The direct relation of Kerala Muslims with Arabian Islam alienates them from what is called Indo-Persian Islam. In contrast to the rest of Muslims in India, Kerala Muslims observe the Shafi’i school of law. </p>
-               </div>
-               <div class="about-mission-wrapper">
-                  <div class="about-mission">
-                     <div class="mission-icon-wrapper">
-                        <div class="mission-icon">
-                           <span>
-                              <svg width="32" height="38" viewBox="0 0 32 38" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                 <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M3.54559e-05 1.26728V36.7327C3.54559e-05 37.4308 0.552061 38 1.23227 38C1.91247 38 2.4645 37.4308 2.4645 36.7327V21.544H13.5363C13.8627 21.544 14.1758 21.6769 14.4073 21.9154C14.6378 22.1525 14.7685 22.4755 14.7685 22.8113V25.3496C14.7685 26.0491 15.3194 26.6169 16.0007 26.6169H30.7678C31.448 26.6169 32 26.0491 32 25.3496V6.34014C32 5.63945 31.448 5.07285 30.7678 5.07285H18.4652C18.1373 5.07285 17.8243 4.93848 17.5927 4.70143C17.3622 4.46324 17.2329 4.14133 17.2329 3.80556V3.80188C17.2329 2.79312 16.8435 1.82628 16.1498 1.11399C15.4561 0.400567 14.516 0 13.5362 0H1.23223C0.552025 0 3.54559e-05 0.567718 3.54559e-05 1.26728ZM14.7868 13.9402V3.80187C14.7868 3.46609 14.6377 3.14276 14.4072 2.906C14.1756 2.66781 13.8626 2.53458 13.5362 2.53458H2.46438V19.0094H13.5362C14.5159 19.0094 15.456 19.41 16.1497 20.1234C16.8434 20.8357 17.2328 21.8026 17.2328 22.8113V24.0823H29.5354V7.60745H18.4651C18.0473 7.60745 17.6383 7.53391 17.2513 7.39586V13.9402C17.2513 14.6398 16.6993 15.2075 16.0191 15.2075C15.3389 15.2075 14.7868 14.6398 14.7868 13.9402Z"
-                                    fill="white" />
-                              </svg>
-                           </span>
-                        </div>
-                        <h3>Mission</h3>
-                     </div>
-                     <div class="mission-content">
-                     <p>
-                    
-                    The mission of Samastha Kerala Jamiathul Ulema is to propagate the ideology of Ahlussunnathi Waljamaath in between the muslim community and to defend ...
-                 </p>
-                     </div>
-                  </div>
-                  <div class="about-mission">
-                     <div class="mission-icon-wrapper">
-                        <div class="mission-icon">
-                           <span>
-                              <svg width="30" height="26" viewBox="0 0 42 26" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                 <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M21.0012 0.000888475C12.3635 0.00123846 4.39284 4.73538 0.158458 12.3782H0.158803C-0.0528192 12.7596 -0.0528192 13.2257 0.158113 13.6075C4.38852 21.2568 12.3601 25.9964 21.0009 26V25.9996H21.0023C29.64 25.9965 37.6098 21.2596 41.8415 13.6143C42.0528 13.2329 42.0528 12.7668 41.8415 12.3854C37.6097 4.74022 29.6396 0.00447901 21.0023 0H21.0012V0.000888475ZM21.0009 2.50913C28.5167 2.51193 35.459 6.50351 39.3334 13.0008C35.4583 19.4974 28.5167 23.4879 21.0018 23.4915C13.4836 23.4887 6.53924 19.4943 2.66486 12.9936C6.54233 6.49903 13.4851 2.50913 21 2.50913H21.0009ZM20.9999 5.39702C16.8783 5.39702 13.5106 8.81611 13.5106 13.0005C13.5106 17.1845 16.8783 20.6036 20.9999 20.6036C25.121 20.6036 28.4888 17.1845 28.4888 13.0005C28.4888 8.81611 25.121 5.39702 20.9999 5.39702ZM20.9999 7.90526C23.7858 7.90526 26.0179 10.1714 26.0179 13.0001C26.0179 15.8285 23.7858 18.0946 20.9999 18.0946C18.2136 18.0946 15.9815 15.8285 15.9815 13.0001C15.9815 10.1714 18.2136 7.90526 20.9999 7.90526Z"
-                                    fill="white" />
-                              </svg>
-                           </span>
-                        </div>
-                       <h3>Vision</h3>
-                     </div>
-                     <div class="mission-content">
-                     <p>
-                    
-                    The vision of Samastha Kerala Jamiathul Ulema is to extend absolute services to muslim community which will lead to strengthen the existence and advan...
-                 </p>
-                     </div>
-                  </div>
-               </div>
-               <a class="redButton" href="https://samastha.info/vision"> <span>Vision & Mission</span> </a>
-            </div>
-            <div class="about-img-wrapper">
-               <div class="circle-img">
-                  <img src="https://samastha.info/assets/images/home/circle.png" alt="">
-                  <div class="img-bless">
-                     <img src="https://samastha.info/irsys/images/frontpage/1751446903_937d5a9d8e5d63c5a193.jpg" alt="">
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
-   <!-- five pillars -->
-   <div class="ibadat-five-pillars-main-wrapper ">
-      <div class="container custom-container service-slider-wrapper">
-         <div class="center-title">
-            <h4> Samastha</h4>
-            <h2>Organizations</h2>
-            
-         </div>
-         <div class="pillars-main-wrapper owl-carousel owl-theme" style="padding-left: 10px;">
-         
-                     
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/1">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Kerala Islam Matha Vidyabhyasa Board</strong> </h4>
-                  <span>SKIMVB </span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1705906017_8b10ff2aeb5b0f8a675e.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/2">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Kerala Jam’eyyat ul-Mu’allimeen Central Council</strong> </h4>
-                  <span>SKJMCC</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1705906250_7c14b14f675b82b543e4.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/3">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Sunni Mahallu Federation</strong> </h4>
-                  <span>SMF</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1705914806_4baad25c408fd4a0fb0e.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/4">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Sunni Yuvajana Sangham </strong> </h4>
-                  <span>SYS</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1708066267_662cb855c6bf7e53b472.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/5">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Kerala Sunni Students Federation </strong> </h4>
-                  <span>SKSSF</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1705915070_766f38cb727043e77af0.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/6">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Kerala Madrasa Management Association</strong> </h4>
-                  <span>SKMMA</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1711342666_bdf2681796f381f9d1c1.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/7">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Kerala Jam-iyyathul Quthabah</strong> </h4>
-                  <span>SKJQ</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1705915374_4ced8e9b5961f9ae1b14.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/8">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha kerala Jam-iyyathul Mudariseen </strong> </h4>
-                  <span>SKJM</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1711344858_ee480a35a93ca42b2657.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/9">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Employees’ Association</strong> </h4>
-                  <span>SEA</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1705915717_a4941b5e56cec238cfe6.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/10">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Kerala Jam-iyyathul Mufathisheen</strong> </h4>
-                  <span>SKJMF</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1711344808_ce8b37566b08711b51c0.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/11">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Legal Cell</strong> </h4>
-                  <span>SLC</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1711344824_78a5563e1720499c7b7b.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/12">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Pravasi Cell</strong> </h4>
-                  <span>SPC</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1705916129_6650d4d65eed602a030b.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/13">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Islamic Centre </strong> </h4>
-                  <span>SIC</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1705916243_5a74f6255c293e19bfae.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                        
-            <div class="border-img-wrapper wow fadeInUp" data-wow-delay="300ms" style="width: 100%;height:400px;">
-            <a href="https://samastha.info/org-details/14">
-               <div class="pillard-block-wrapper text-center item">
-                  <h4 style="font-size: 17px;">Samastha Kerala Sunni Bala Vedi</strong> </h4>
-                  <span>SKSBV</span>
-                  <div class="pillars-icon">
-                     <img src="https://samastha.info/irsys/images/org/1708066761_91ca5e01ea4d23443435.png">
-                  </div>
-               </div>
-         </a>
-            </div>
-                     </div>
-      </div>
-   </div>
-   <!-- charity -->
-   <div style="margin-top: 90px;" >
-      <div class="container text-center mb-5">
-      <div class="center-title">
-            <h4> Samastha</h4>
-            <h2 class="text-dark">Latest News</h2>
-            
-         </div>
-      </div>
-   <div class="ibadat-blog-main-wrapper " >
-   
-      <div class="container custom-container">
-      
-         <div class="blog-main-wrapper">
-            <div class="left-title">
-               <h4>Latest News <span><img src="https://samastha.info/assets/images/home/line.png" alt="line"></span> </h4>
-               <!-- <h2>Our Latest News</h2> -->
-               <p>It has survived not only five centuries, but also
-                  the leap into electronic typesetting, remaining</p>
-                                    <div class="post-recent-wrapper d-flex mt-3 border-cus" style="background-color: #f8f2e8;">
-                     <div class="recent-img mt-2 mb-2">
-                     <a href="https://samastha.info/news-details/168"><img style="width:100px;height:75px;" src="https://samastha.info/irsys/images/news/1765803628_29e08d0374d25f5c7b86.jpeg" alt="" class="flex-shrink-0"></a>
-                     </div>
-                     <div class="recent-text mt-2 mb-2 ">
-                        <h6 class="ps-2">
-                           <a href="https://samastha.info/news-details/168" >സമസ്ത ശതാബ്ദി ശന്ദേശ യാത്ര വന്‍വിജയമാക്കുക സമസ്ത കേരള ഇസ്ലാം മത വിദ്യാഭ്യാസ ബോര്‍ഡ്</a>
-                           <p>2025-12-15</p>
-                        </h6>
-                        
-                     </div>
-                    
-                  </div>
-                                    <div class="post-recent-wrapper d-flex mt-3 border-cus" style="background-color: #f8f2e8;">
-                     <div class="recent-img mt-2 mb-2">
-                     <a href="https://samastha.info/news-details/169"><img style="width:100px;height:75px;" src="https://samastha.info/irsys/images/news/1765803590_e36a019dd3cd2f5cfbf6.jpeg" alt="" class="flex-shrink-0"></a>
-                     </div>
-                     <div class="recent-text mt-2 mb-2 ">
-                        <h6 class="ps-2">
-                           <a href="https://samastha.info/news-details/169" >സമസ്ത ശതാബ്ദി യാത്രക്കും നൂറാം വാര്‍ഷിക സമ്മേളനത്തിനും മദ്റസകള്‍ക്ക് അവധി നല്‍കി</a>
-                           <p>2025-12-15</p>
-                        </h6>
-                        
-                     </div>
-                    
-                  </div>
-                                    <div class="post-recent-wrapper d-flex mt-3 border-cus" style="background-color: #f8f2e8;">
-                     <div class="recent-img mt-2 mb-2">
-                     <a href="https://samastha.info/news-details/167"><img style="width:100px;height:75px;" src="https://samastha.info/irsys/images/news/" alt="" class="flex-shrink-0"></a>
-                     </div>
-                     <div class="recent-text mt-2 mb-2 ">
-                        <h6 class="ps-2">
-                           <a href="https://samastha.info/news-details/167" >സമസ്ത നൂറാം വാർഷികം: എസ് കെ എം എം എ സംസ്ഥാന പ്രതിനിധി സമ്മേളനം   30 ന് തിരൂരിൽ</a>
-                           <p>2025-12-06</p>
-                        </h6>
-                        
-                     </div>
-                    
-                  </div>
-                            
-            </div>
-            <div class="blog-slider">
-               <div class="owl-carousel owl-theme">
-                                 <div class="item">
-                     <div class="service-box-wrapper" style="height: 530px;">
-                        <div class="service-img">
-                        <a href="https://samastha.info/news-details/168">
-                           <img src="https://samastha.info/irsys/images/news/1765803628_29e08d0374d25f5c7b86.jpeg" alt="img">
-                           </a>
-                        </div>
-                        <div class="service-text">
-                           <div class="date">
-                              <p>
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="" />
-                                    </svg>
-                                 </span>
-                                 2025-12-15                              </p>
-                    
-                           </div>
-                           <h5><a href="https://samastha.info/news-details/168">സമസ്ത ശതാബ്ദി ശന്ദേശ യാത്ര വന്‍വിജയമാക്കുക സമസ്ത കേരള ഇസ്ലാം മത വിദ്യാഭ്യാസ ബോര്‍ഡ്</a></h5>
-                          <p>സമസ്ത ശതാബ്ദി ശന്ദേശ യാത്ര വന്‍വിജയമാക്കുക സമസ്ത കേരള ഇസ്ലാം മത വിദ്യാഭ്യാസ ബോര്‍ഡ്</p>
-                        
-                           <a class="read-btn" href="https://samastha.info/news-details/168">
-                              Read More
-                              <span>
-                                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                       d="M9.3 10.85C9.1 10.65 9.004 10.4083 9.012 10.125C9.02067 9.84167 9.125 9.6 9.325 9.4L12.15 6.575H1C0.716667 6.575 0.479 6.479 0.287 6.287C0.0956668 6.09567 0 5.85833 0 5.575C0 5.29167 0.0956668 5.054 0.287 4.862C0.479 4.67067 0.716667 4.575 1 4.575H12.15L9.3 1.725C9.1 1.525 9 1.28733 9 1.012C9 0.737333 9.1 0.5 9.3 0.3C9.5 0.0999997 9.73767 0 10.013 0C10.2877 0 10.525 0.0999997 10.725 0.3L15.3 4.875C15.4 4.975 15.471 5.08333 15.513 5.2C15.5543 5.31667 15.575 5.44167 15.575 5.575C15.575 5.70833 15.5543 5.83333 15.513 5.95C15.471 6.06667 15.4 6.175 15.3 6.275L10.7 10.875C10.5167 11.0583 10.2877 11.15 10.013 11.15C9.73767 11.15 9.5 11.05 9.3 10.85Z"
-                                       fill="" />
-                                 </svg>
-                              </span>
-                           </a>
-                        </div>
-                     </div>
-                  </div>
-                                    <div class="item">
-                     <div class="service-box-wrapper" style="height: 530px;">
-                        <div class="service-img">
-                        <a href="https://samastha.info/news-details/169">
-                           <img src="https://samastha.info/irsys/images/news/1765803590_e36a019dd3cd2f5cfbf6.jpeg" alt="img">
-                           </a>
-                        </div>
-                        <div class="service-text">
-                           <div class="date">
-                              <p>
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="" />
-                                    </svg>
-                                 </span>
-                                 2025-12-15                              </p>
-                    
-                           </div>
-                           <h5><a href="https://samastha.info/news-details/169">സമസ്ത ശതാബ്ദി യാത്രക്കും നൂറാം വാര്‍ഷിക സമ്മേളനത്തിനും മദ്റസകള്‍ക്ക് അവധി നല്‍കി</a></h5>
-                          <p>സമസ്ത ശതാബ്ദി യാത്രക്കും നൂറാം വാര്‍ഷിക സമ്മേളനത്തിനും മദ്റസകള്‍ക്ക് അവധി നല്‍കി</p>
-                        
-                           <a class="read-btn" href="https://samastha.info/news-details/169">
-                              Read More
-                              <span>
-                                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                       d="M9.3 10.85C9.1 10.65 9.004 10.4083 9.012 10.125C9.02067 9.84167 9.125 9.6 9.325 9.4L12.15 6.575H1C0.716667 6.575 0.479 6.479 0.287 6.287C0.0956668 6.09567 0 5.85833 0 5.575C0 5.29167 0.0956668 5.054 0.287 4.862C0.479 4.67067 0.716667 4.575 1 4.575H12.15L9.3 1.725C9.1 1.525 9 1.28733 9 1.012C9 0.737333 9.1 0.5 9.3 0.3C9.5 0.0999997 9.73767 0 10.013 0C10.2877 0 10.525 0.0999997 10.725 0.3L15.3 4.875C15.4 4.975 15.471 5.08333 15.513 5.2C15.5543 5.31667 15.575 5.44167 15.575 5.575C15.575 5.70833 15.5543 5.83333 15.513 5.95C15.471 6.06667 15.4 6.175 15.3 6.275L10.7 10.875C10.5167 11.0583 10.2877 11.15 10.013 11.15C9.73767 11.15 9.5 11.05 9.3 10.85Z"
-                                       fill="" />
-                                 </svg>
-                              </span>
-                           </a>
-                        </div>
-                     </div>
-                  </div>
-                                    <div class="item">
-                     <div class="service-box-wrapper" style="height: 530px;">
-                        <div class="service-img">
-                        <a href="https://samastha.info/news-details/167">
-                           <img src="https://samastha.info/irsys/images/news/" alt="img">
-                           </a>
-                        </div>
-                        <div class="service-text">
-                           <div class="date">
-                              <p>
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="" />
-                                    </svg>
-                                 </span>
-                                 2025-12-06                              </p>
-                    
-                           </div>
-                           <h5><a href="https://samastha.info/news-details/167">സമസ്ത നൂറാം വാർഷികം: എസ് കെ എം എം എ സംസ്ഥാന പ്രതിനിധി സമ്മേളനം   30 ന് തിരൂരിൽ</a></h5>
-                          <p>സമസ്ത നൂറാം വാർഷികം: എസ് കെ എം എം എ സംസ്ഥാന പ്രതിനിധി സമ്മേളനം   30 ന് തിരൂരിൽ</p>
-                        
-                           <a class="read-btn" href="https://samastha.info/news-details/167">
-                              Read More
-                              <span>
-                                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                       d="M9.3 10.85C9.1 10.65 9.004 10.4083 9.012 10.125C9.02067 9.84167 9.125 9.6 9.325 9.4L12.15 6.575H1C0.716667 6.575 0.479 6.479 0.287 6.287C0.0956668 6.09567 0 5.85833 0 5.575C0 5.29167 0.0956668 5.054 0.287 4.862C0.479 4.67067 0.716667 4.575 1 4.575H12.15L9.3 1.725C9.1 1.525 9 1.28733 9 1.012C9 0.737333 9.1 0.5 9.3 0.3C9.5 0.0999997 9.73767 0 10.013 0C10.2877 0 10.525 0.0999997 10.725 0.3L15.3 4.875C15.4 4.975 15.471 5.08333 15.513 5.2C15.5543 5.31667 15.575 5.44167 15.575 5.575C15.575 5.70833 15.5543 5.83333 15.513 5.95C15.471 6.06667 15.4 6.175 15.3 6.275L10.7 10.875C10.5167 11.0583 10.2877 11.15 10.013 11.15C9.73767 11.15 9.5 11.05 9.3 10.85Z"
-                                       fill="" />
-                                 </svg>
-                              </span>
-                           </a>
-                        </div>
-                     </div>
-                  </div>
-                                    <div class="item">
-                     <div class="service-box-wrapper" style="height: 530px;">
-                        <div class="service-img">
-                        <a href="https://samastha.info/news-details/166">
-                           <img src="https://samastha.info/irsys/images/news/" alt="img">
-                           </a>
-                        </div>
-                        <div class="service-text">
-                           <div class="date">
-                              <p>
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="" />
-                                    </svg>
-                                 </span>
-                                 2025-12-05                              </p>
-                    
-                           </div>
-                           <h5><a href="https://samastha.info/news-details/166">ത്രിതല പഞ്ചായത്ത് തെരഞ്ഞെടുപ്പ് സമസ്ത: മദ്റസകള്‍ക്കും സ്ഥാപനങ്ങള്‍ക്കും അവധി</a></h5>
-                          <p>ത്രിതല പഞ്ചായത്ത് തെരഞ്ഞെടുപ്പ് സമസ്ത: മദ്റസകള്‍ക്കും സ്ഥാപനങ്ങള്‍ക്കും അവധി</p>
-                        
-                           <a class="read-btn" href="https://samastha.info/news-details/166">
-                              Read More
-                              <span>
-                                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                       d="M9.3 10.85C9.1 10.65 9.004 10.4083 9.012 10.125C9.02067 9.84167 9.125 9.6 9.325 9.4L12.15 6.575H1C0.716667 6.575 0.479 6.479 0.287 6.287C0.0956668 6.09567 0 5.85833 0 5.575C0 5.29167 0.0956668 5.054 0.287 4.862C0.479 4.67067 0.716667 4.575 1 4.575H12.15L9.3 1.725C9.1 1.525 9 1.28733 9 1.012C9 0.737333 9.1 0.5 9.3 0.3C9.5 0.0999997 9.73767 0 10.013 0C10.2877 0 10.525 0.0999997 10.725 0.3L15.3 4.875C15.4 4.975 15.471 5.08333 15.513 5.2C15.5543 5.31667 15.575 5.44167 15.575 5.575C15.575 5.70833 15.5543 5.83333 15.513 5.95C15.471 6.06667 15.4 6.175 15.3 6.275L10.7 10.875C10.5167 11.0583 10.2877 11.15 10.013 11.15C9.73767 11.15 9.5 11.05 9.3 10.85Z"
-                                       fill="" />
-                                 </svg>
-                              </span>
-                           </a>
-                        </div>
-                     </div>
-                  </div>
-                                    <div class="item">
-                     <div class="service-box-wrapper" style="height: 530px;">
-                        <div class="service-img">
-                        <a href="https://samastha.info/news-details/163">
-                           <img src="https://samastha.info/irsys/images/news/" alt="img">
-                           </a>
-                        </div>
-                        <div class="service-text">
-                           <div class="date">
-                              <p>
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="" />
-                                    </svg>
-                                 </span>
-                                 2025-11-22                              </p>
-                    
-                           </div>
-                           <h5><a href="https://samastha.info/news-details/163">സമസ്ത 100-ാം വാര്‍ഷിക മഹാ സമ്മേളനം ചരിത്ര വിജയമാക്കുക</a></h5>
-                          <p>സമസ്ത 100-ാം വാര്‍ഷിക മഹാ സമ്മേളനം ചരിത്ര വിജയമാക്കുക</p>
-                        
-                           <a class="read-btn" href="https://samastha.info/news-details/163">
-                              Read More
-                              <span>
-                                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                       d="M9.3 10.85C9.1 10.65 9.004 10.4083 9.012 10.125C9.02067 9.84167 9.125 9.6 9.325 9.4L12.15 6.575H1C0.716667 6.575 0.479 6.479 0.287 6.287C0.0956668 6.09567 0 5.85833 0 5.575C0 5.29167 0.0956668 5.054 0.287 4.862C0.479 4.67067 0.716667 4.575 1 4.575H12.15L9.3 1.725C9.1 1.525 9 1.28733 9 1.012C9 0.737333 9.1 0.5 9.3 0.3C9.5 0.0999997 9.73767 0 10.013 0C10.2877 0 10.525 0.0999997 10.725 0.3L15.3 4.875C15.4 4.975 15.471 5.08333 15.513 5.2C15.5543 5.31667 15.575 5.44167 15.575 5.575C15.575 5.70833 15.5543 5.83333 15.513 5.95C15.471 6.06667 15.4 6.175 15.3 6.275L10.7 10.875C10.5167 11.0583 10.2877 11.15 10.013 11.15C9.73767 11.15 9.5 11.05 9.3 10.85Z"
-                                       fill="" />
-                                 </svg>
-                              </span>
-                           </a>
-                        </div>
-                     </div>
-                  </div>
-                                    <div class="item">
-                     <div class="service-box-wrapper" style="height: 530px;">
-                        <div class="service-img">
-                        <a href="https://samastha.info/news-details/164">
-                           <img src="https://samastha.info/irsys/images/news/" alt="img">
-                           </a>
-                        </div>
-                        <div class="service-text">
-                           <div class="date">
-                              <p>
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="" />
-                                    </svg>
-                                 </span>
-                                 2025-11-22                              </p>
-                    
-                           </div>
-                           <h5><a href="https://samastha.info/news-details/164">ഉമീദ് വഖഫ് പോർട്ടൽ രജിസ്ട്രേഷൻ; വ്യക്തത വരുത്തണം:  സമസ്ത ലീഗൽ സെൽ</a></h5>
-                          <p>ഉമീദ് വഖഫ് പോർട്ടൽ രജിസ്ട്രേഷൻ; വ്യക്തത വരുത്തണം:  സമസ്ത ലീഗൽ സെൽ</p>
-                        
-                           <a class="read-btn" href="https://samastha.info/news-details/164">
-                              Read More
-                              <span>
-                                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                       d="M9.3 10.85C9.1 10.65 9.004 10.4083 9.012 10.125C9.02067 9.84167 9.125 9.6 9.325 9.4L12.15 6.575H1C0.716667 6.575 0.479 6.479 0.287 6.287C0.0956668 6.09567 0 5.85833 0 5.575C0 5.29167 0.0956668 5.054 0.287 4.862C0.479 4.67067 0.716667 4.575 1 4.575H12.15L9.3 1.725C9.1 1.525 9 1.28733 9 1.012C9 0.737333 9.1 0.5 9.3 0.3C9.5 0.0999997 9.73767 0 10.013 0C10.2877 0 10.525 0.0999997 10.725 0.3L15.3 4.875C15.4 4.975 15.471 5.08333 15.513 5.2C15.5543 5.31667 15.575 5.44167 15.575 5.575C15.575 5.70833 15.5543 5.83333 15.513 5.95C15.471 6.06667 15.4 6.175 15.3 6.275L10.7 10.875C10.5167 11.0583 10.2877 11.15 10.013 11.15C9.73767 11.15 9.5 11.05 9.3 10.85Z"
-                                       fill="" />
-                                 </svg>
-                              </span>
-                           </a>
-                        </div>
-                     </div>
-                  </div>
-                                    <div class="item">
-                     <div class="service-box-wrapper" style="height: 530px;">
-                        <div class="service-img">
-                        <a href="https://samastha.info/news-details/165">
-                           <img src="https://samastha.info/irsys/images/news/" alt="img">
-                           </a>
-                        </div>
-                        <div class="service-text">
-                           <div class="date">
-                              <p>
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="" />
-                                    </svg>
-                                 </span>
-                                 2025-11-22                              </p>
-                    
-                           </div>
-                           <h5><a href="https://samastha.info/news-details/165">ഉമീദ് വഖഫ് പോർട്ടൽ രജിസ്ട്രേഷൻ; വ്യക്തത വരുത്തണം:  സമസ്ത ലീഗൽ സെൽ</a></h5>
-                          <p>ഉമീദ് വഖഫ് പോർട്ടൽ രജിസ്ട്രേഷൻ; വ്യക്തത വരുത്തണം:  സമസ്ത ലീഗൽ സെൽ</p>
-                        
-                           <a class="read-btn" href="https://samastha.info/news-details/165">
-                              Read More
-                              <span>
-                                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                       d="M9.3 10.85C9.1 10.65 9.004 10.4083 9.012 10.125C9.02067 9.84167 9.125 9.6 9.325 9.4L12.15 6.575H1C0.716667 6.575 0.479 6.479 0.287 6.287C0.0956668 6.09567 0 5.85833 0 5.575C0 5.29167 0.0956668 5.054 0.287 4.862C0.479 4.67067 0.716667 4.575 1 4.575H12.15L9.3 1.725C9.1 1.525 9 1.28733 9 1.012C9 0.737333 9.1 0.5 9.3 0.3C9.5 0.0999997 9.73767 0 10.013 0C10.2877 0 10.525 0.0999997 10.725 0.3L15.3 4.875C15.4 4.975 15.471 5.08333 15.513 5.2C15.5543 5.31667 15.575 5.44167 15.575 5.575C15.575 5.70833 15.5543 5.83333 15.513 5.95C15.471 6.06667 15.4 6.175 15.3 6.275L10.7 10.875C10.5167 11.0583 10.2877 11.15 10.013 11.15C9.73767 11.15 9.5 11.05 9.3 10.85Z"
-                                       fill="" />
-                                 </svg>
-                              </span>
-                           </a>
-                        </div>
-                     </div>
-                  </div>
-                                    <div class="item">
-                     <div class="service-box-wrapper" style="height: 530px;">
-                        <div class="service-img">
-                        <a href="https://samastha.info/news-details/162">
-                           <img src="https://samastha.info/irsys/images/news/" alt="img">
-                           </a>
-                        </div>
-                        <div class="service-text">
-                           <div class="date">
-                              <p>
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="" />
-                                    </svg>
-                                 </span>
-                                 2025-11-20                              </p>
-                    
-                           </div>
-                           <h5><a href="https://samastha.info/news-details/162">സമസ്ത 100-ാം വാര്‍ഷികം പ്രീ ക്യാമ്പ് ജനുവരിയില്‍</a></h5>
-                          <p>സമസ്ത 100-ാം വാര്‍ഷികം പ്രീ ക്യാമ്പ് ജനുവരിയില്‍</p>
-                        
-                           <a class="read-btn" href="https://samastha.info/news-details/162">
-                              Read More
-                              <span>
-                                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                       d="M9.3 10.85C9.1 10.65 9.004 10.4083 9.012 10.125C9.02067 9.84167 9.125 9.6 9.325 9.4L12.15 6.575H1C0.716667 6.575 0.479 6.479 0.287 6.287C0.0956668 6.09567 0 5.85833 0 5.575C0 5.29167 0.0956668 5.054 0.287 4.862C0.479 4.67067 0.716667 4.575 1 4.575H12.15L9.3 1.725C9.1 1.525 9 1.28733 9 1.012C9 0.737333 9.1 0.5 9.3 0.3C9.5 0.0999997 9.73767 0 10.013 0C10.2877 0 10.525 0.0999997 10.725 0.3L15.3 4.875C15.4 4.975 15.471 5.08333 15.513 5.2C15.5543 5.31667 15.575 5.44167 15.575 5.575C15.575 5.70833 15.5543 5.83333 15.513 5.95C15.471 6.06667 15.4 6.175 15.3 6.275L10.7 10.875C10.5167 11.0583 10.2877 11.15 10.013 11.15C9.73767 11.15 9.5 11.05 9.3 10.85Z"
-                                       fill="" />
-                                 </svg>
-                              </span>
-                           </a>
-                        </div>
-                     </div>
-                  </div>
-                                   
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
-</div>
-<!-- ...history....... -->
-
-<div class="ibadat-home-sec-upcoming-wrapper mt-3">
-   <div class="container custom-container">
-      <div class="home-sec-title">
-         <h4>Samastha</h4>
-         <h2>Samastha History</h2>
-      </div>
-      <div class="home-sec-up-slider-wrapper">
-         <div class="">
-            <div class="item">
-               <div class="upcoming-item">
-                  <div class="upcoming-img">
-                     <img src="https://samastha.info/irsys/images/frontpage/1706074644_859f0bb74b90d51e4be0.jpg" alt="img">
-                  </div>
-                  <div class="upcoming-content" style="height:400px;">
-                     <h4><a href="#;">Samastha History</a></h4>
-                     <p>
-                    
-                        Samastha Kerala Jam’eyyat ul-Ulama (All Kerala Ulama Organisation), known as Samastha, is an association of eminent Sunni scholars who enjoy the highest support base among Kerala Muslims. The formation of Samastha was the response of these traditional Ulama to the conditions of post-1921 period in which Kerala Muslim community generally witnessed a radical shift from the folds of individual lead...
-                     </p>
-                     <div class="">
-         <a class="redButton" href="https://samastha.info/history"><span>View History</span></a>
-      </div>
-                  </div>
-      
-               </div>
-        
-            </div>
-
-      
-         </div>
-
-      </div>
-   </div>
-</div>
-
-   <!-- upcoming events -->
-   <div class="ibadat-upcoming-events-main-wrapper">
-      <div class="container custom-container">
-         <div class="center-title">
-            <h4>Samastha</h4>
-            <h2>Latest Events</h2>
-         </div>
-         <div class="upcoming-main-wrapper">
-            <div class="upcoming-img">
-               <img src="https://samastha.info/irsys/images/frontpage/1765791389_a131a2f960b113501a16.jpeg" alt="img">
-               
-            </div>
-            <div class="upcoming-text">
-               <h5>സമസ്ത 100ാം വാര്‍ഷിക മഹാ സമ്മേളനം കന്യാകുമാരി നിന്നും മംഗലാപുരത്തേക്ക് സന്ദേശ യാത്ര നടത്തും</h5>
-               <p>ചേളാരി: ആദര്‍ശ വിശുദ്ധി നൂറ്റാണ്ടുകളിലൂടെ എന്ന പ്രമേയത്തെ അടിസ്ഥാനമാക്കി 2026 ഫെബ്രുവരി 4 മുതല്‍ 8 വരെ കാസര്‍ഗോഡ് കുണിയ വരക്കല്‍ മുല്ലക്കോയ തങ്ങള്‍ നഗറില്‍ നടക്കുന്ന സമസ്ത 100ാം വാര്‍ഷിക അന്താരാഷ്ട്ര മഹാ സമ്മേളനത്തിന്റെ ഭാഗമായി 2025 ഡിസംബര്‍ 19 മുതല്‍ 28 വരെ കന്യാകുമാരിയില്‍ നിന്നും മംഗലാപുരത്തേക്ക് സമസ്ത പ്രസിഡന്റിന്റെ നേതൃത്വത്തില്‍ സന്ദേശ യാത്ര നടത്താന്‍ ചേളാരി സമസ്താലയത്തില്‍ ചേര്‍ന്ന സമസ്ത മുശാവറ യോഗം തീരുമാനിച്ചു. യാത്രയെ സമസ്ത കേരള ജംഇയ്യത്തുല്‍ ഉലമാ ഭാരവാഹികളും മുശാവറ അംഗങ്ങളും പോഷക സംഘടനാ നേതാക്കളും അനുഗമിക്കും. മൂന്ന് സംസ്ഥാനങ്ങളെ ബന്ധിപ്പിച്ചു കൊണ്ട് നടത്തുന്ന യാത്രക്ക് ജില്ലകളില്‍ ഒരു കേന്ദ്രത്തില്‍ വെച്ച് സ്വീകരണം നല്‍കും. അന്താരാഷ്ട്ര പ്രചരണ സമ്മേളനം ഒക്ടോബര്‍ ആദ്യത്തില്‍ യു.എ.ഇയിലും, ദേശീയ പ്രചാരണ സമ്മേളനം ഒക്ടോബര്‍ മധ്യത്തില്‍ ന്യൂഡല്‍ഹിയില്‍ വെച്ച് നടത്താനും തീരുമാനിച്ചു. വിവിധ സംസ്ഥാനങ്ങളിലും പ്രത്യേകം പ്രചാരണ സമ്മേളനങ്ങള്‍ സംഘടിപ്പിക്കും. സമ്മേളനത്തോടനുബന്ധിച്ച് നഗരിയി</p>
-                <a class="redButton" href="https://samastha.info/event"><span>Read More</span></a>
-              
-            </div>
-         </div>
-      </div>
-   </div>
-   <!-- our service -->
-   <div class="ibadat-stay-connected-main-wrapper">
-      <div class="container custom-container">
-         <div class="stay-connected-wrapper">
-            <div class="left-title">
-               <h4>Samastha <span><img src="https://samastha.info/assets/images/home/line-white.png" alt="line"></span> </h4>
-               <h2 >Youtube&nbsp;&nbsp;</h2>
-               <p>The vision of Samastha Kerala Jamiathul Ulema is to extend absolute services to muslim community 
-               </p>
-            </div>
-            <div class="stay-img-wrapper">
-                      <div class="video video-box-wrapper" style="background-image:url(https://samastha.info/irsys/images/video/1745312705_c94268304746336a9c7f.jpg);">
-                
-                  <div class="playbtn"><a data-fancybox="" href="https://www.youtube.com/watch?v=gM2bW0IFa5Y"  data-vbtype="video" data-autoplay="true"><span></span></a></div>
-               
-                  <div class="img-text"style="width:400px;">
-                  
-                     <p class="text-white p-2 mb-5">DOCUMENTARY 2025</p>
-                  </div>
-              
-            </div>
-                           <div class="video video-box-wrapper" style="background-image:url(https://samastha.info/irsys/images/video/1735639760_22c62827f7f86254ac5c.jpeg);">
-                
-                  <div class="playbtn"><a data-fancybox="" href="https://www.youtube.com/watch?v=JE63vFfCZrw&amp;t=1696s"  data-vbtype="video" data-autoplay="true"><span></span></a></div>
-               
-                  <div class="img-text"style="width:400px;">
-                  
-                     <p class="text-white p-2 mb-5">സനാഇയ്യ ബിരുദദാന സമ്മേളനം | ക്രസന്റ് എസ്.എൻ.ഇ.സി ഷീ ക്യാംപസ് വെളിമുക്ക് </p>
-                  </div>
-              
-            </div>
-                 
-    
-            </div>
-         </div>
-      </div>
-   </div>
- 
-   
-<!-- team  -->
-<div class="ibadat-our-team-main-wrapper">
-   <div class="container custom-container">
-      <div class="center-title">
-         <h4>Samastha</h4>
-         <h2>Meet Our Mushawara</h2>
-      </div>
-      <div class="our-team-main-box">
-               <div class="team-wrapper">
-            <div class="team-img">
-               <img src="https://samastha.info/irsys/images/team/1752752675_9c9137885ddd02412273.jpeg" alt="img">
-               <ul class="media-icon">
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M11.6689 0H4.33105C1.94287 0 0 1.94287 0 4.33105V11.669C0 14.0571 1.94287 16 4.33105 16H11.669C14.0571 16 16 14.0571 16 11.669V4.33105C16 1.94287 14.0571 0 11.6689 0ZM15.062 11.669C15.062 13.5399 13.5399 15.062 11.6689 15.062H4.33105C2.46009 15.062 0.937998 13.5399 0.937998 11.669V4.33105C0.937998 2.46009 2.46009 0.937998 4.33105 0.937998H11.669C13.5399 0.937998 15.062 2.46009 15.062 4.33105V11.669Z"
-                                 fill="" />
-                              <path
-                                 d="M8 3.62501C5.58765 3.62501 3.62512 5.58751 3.62512 7.99988C3.62512 10.4123 5.58762 12.3748 8 12.3748C10.4124 12.3748 12.3749 10.4123 12.3749 7.99988C12.3749 5.58751 10.4124 3.62501 8 3.62501ZM8 11.4368C6.105 11.4368 4.56312 9.89504 4.56312 7.99988C4.56312 6.10488 6.105 4.56301 8 4.56301C9.89515 4.56301 11.4369 6.10488 11.4369 7.99988C11.4369 9.89504 9.89515 11.4368 8 11.4368ZM12.4795 2.07129C11.7666 2.07129 11.1868 2.65126 11.1868 3.36401C11.1868 4.07691 11.7666 4.65685 12.4795 4.65685C13.1924 4.65685 13.7723 4.07691 13.7723 3.36404C13.7723 2.65116 13.1924 2.07129 12.4795 2.07129ZM12.4795 3.71876C12.2839 3.71876 12.1247 3.55957 12.1247 3.36401C12.1247 3.16835 12.2839 3.00929 12.4795 3.00929C12.6752 3.00929 12.8343 3.16835 12.8343 3.36401C12.8343 3.55957 12.6752 3.71876 12.4795 3.71876Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="11" height="17" viewBox="0 0 11 17" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M8.92466 3.0388H10.5881V0.00184842H7.56515C7.31298 -0.00864433 4.23895 -0.0674036 3.4422 2.97095C3.43066 3.00277 3.17604 3.72538 3.17604 5.41331L0.411896 5.4217V8.60695L3.17953 8.59891V17.0005H7.40706V8.60625H10.2051V5.41261H7.40706V4.40775C7.40706 3.78309 7.67043 3.0388 8.92466 3.0388ZM9.50561 6.11178V7.90638H6.70754V16.3006H3.87905V7.89729L1.11141 7.90534V6.11912L3.88639 6.11108L3.87905 5.75537C3.84267 3.96741 4.09765 3.21543 4.10919 3.1794C4.79682 0.562511 7.42245 0.69402 7.53507 0.701015L9.8886 0.701715V2.33963H8.92466C7.29024 2.33963 6.70789 3.40779 6.70789 4.4074V6.11178H9.50561Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M3.91304 14.6944H0V4.5858H3.91304V14.6944ZM0.652133 14.0423H3.26091V5.23794H0.652133V14.0423ZM15 14.6944H11.087V9.15098C11.087 8.61073 10.649 8.17272 10.1087 8.17272C9.56836 8.17272 9.13047 8.61073 9.13047 9.15098V14.6944H5.21743V4.5858H9.13047V5.242C9.7211 4.81498 10.4315 4.58533 11.1603 4.5858C13.2758 4.5858 15 6.30183 15 8.41325V14.6944ZM11.7391 14.0423H14.3478V8.41322C14.3434 6.65663 12.9169 5.23567 11.1603 5.23794C10.3574 5.23794 9.60324 5.57623 9.04078 6.18764L8.47821 6.80315V5.23794H5.86956V14.0423H8.47821V9.15098C8.47821 8.25046 9.20821 7.52058 10.1087 7.52058C11.0091 7.52058 11.7391 8.25046 11.7391 9.15098V14.0423ZM1.95652 3.93355C0.87591 3.93355 0 3.05764 0 1.97703C0 0.89654 0.87591 0.0205078 1.95652 0.0205078C3.03713 0.0205078 3.91304 0.89654 3.91304 1.97703C3.91078 3.05666 3.03615 3.93141 1.95652 3.93355ZM1.95652 0.672763C1.23618 0.672763 0.652133 1.25672 0.652133 1.97703C0.652133 2.69746 1.23618 3.28142 1.95652 3.28142C2.67686 3.28142 3.26091 2.69746 3.26091 1.97703C3.26091 1.25672 2.67683 0.672763 1.95652 0.672763Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M12.9221 10.1162C12.8181 10.0577 12.7003 9.99137 12.5583 9.90594C12.479 9.85807 12.3794 9.79265 12.2738 9.72338C11.7319 9.36769 11.3213 9.11594 10.9718 9.11594C10.8899 9.11594 10.8125 9.1298 10.7419 9.15703C10.4357 9.27495 10.1842 9.58999 9.94104 9.89462C9.85191 10.0062 9.72435 10.166 9.64696 10.2374C9.33991 10.1816 8.69232 9.78043 7.9935 9.08161C7.29385 8.38196 6.89259 7.73363 6.83751 7.42732C6.90884 7.34964 7.06986 7.22114 7.18216 7.13144C7.48564 6.88916 7.79945 6.63863 7.91803 6.33335C8.06929 5.94112 7.79207 5.47203 7.35176 4.80126C7.28249 4.69568 7.21703 4.59597 7.16953 4.51735C7.08377 4.37482 7.01749 4.2569 6.959 4.15296C6.71893 3.72632 6.56033 3.44434 5.96433 3.44434C5.57751 3.44434 5.03061 3.80987 4.66016 4.17236C4.12178 4.69929 3.82524 5.30763 3.82524 5.88653C3.82627 7.45882 4.70376 9.26089 6.23274 10.8324C6.23536 10.8351 6.23799 10.8358 6.24069 10.8384C7.81225 12.3674 9.61529 13.2419 11.1875 13.2419H11.1882C11.7663 13.2419 12.3748 12.9488 12.9017 12.4107C13.2645 12.0403 13.6305 11.4973 13.6305 11.1108C13.6306 10.5149 13.3487 10.3563 12.9221 10.1162ZM11.1877 12.4296C9.84847 12.4286 8.21477 11.617 6.8168 10.2584C5.45807 8.86028 4.64646 7.22647 4.64559 5.88735C4.64559 5.07733 5.69674 4.30718 5.97163 4.26498C6.02778 4.26522 6.05723 4.26854 6.07126 4.27092C6.1076 4.31276 6.17983 4.44114 6.24414 4.55545C6.30234 4.65889 6.37481 4.78768 6.4671 4.94104C6.52288 5.03345 6.59244 5.13939 6.66607 5.25153C6.8054 5.46382 7.08549 5.89055 7.1327 6.0727C7.05375 6.18447 6.80876 6.38003 6.67045 6.49044C6.31645 6.77308 6.01072 7.01712 6.01072 7.36203C6.01158 8.19513 7.08467 9.33291 7.41353 9.66177C7.7424 9.99063 8.88017 11.0637 9.71504 11.0645C10.0577 11.0634 10.3007 10.759 10.5822 10.4065C10.6932 10.2674 10.8899 10.021 11.0022 9.94244C11.1841 9.98932 11.6114 10.2697 11.8238 10.4092C11.936 10.4828 12.0419 10.5523 12.1348 10.6085C12.2877 10.7005 12.4164 10.7729 12.5199 10.8311C12.6342 10.8954 12.7626 10.9677 12.8044 11.004C12.8068 11.018 12.8101 11.0475 12.8104 11.1036C12.7678 11.3782 11.9974 12.4286 11.1877 12.4296Z"
-                                 fill="" />
-                              <path
-                                 d="M16.8829 8.53935C16.8541 6.32283 15.9644 4.22832 14.3778 2.64163C12.7619 1.0257 10.6288 0.135742 8.37158 0.135742C6.19262 0.135742 4.15423 0.974183 2.63181 2.49656C1.28084 3.84753 0.451996 5.64935 0.297818 7.57015C0.151597 9.39256 0.615525 11.2368 1.60618 12.7874L0.253398 16.444C0.230451 16.5061 0.222841 16.5727 0.231215 16.6383C0.23959 16.7039 0.263701 16.7665 0.301494 16.8208C0.339286 16.875 0.38964 16.9194 0.448262 16.95C0.506884 16.9806 0.572036 16.9965 0.638166 16.9965C0.692142 16.9965 0.746611 16.9809 0.79825 16.959L4.32145 15.4597C5.66644 16.2968 7.20436 16.7282 8.78354 16.7282H8.7837C10.9623 16.7282 13.0006 15.8998 14.5229 14.3776C16.0736 12.8268 16.9118 10.7599 16.8829 8.53935ZM13.9427 13.8075C12.5754 15.1749 10.7431 15.9279 8.7835 15.9279C7.29164 15.9278 5.84018 15.4912 4.586 14.665C4.52957 14.6279 4.46482 14.6052 4.39752 14.5991C4.33022 14.593 4.26245 14.6036 4.20025 14.63L1.35229 15.8379L2.44741 12.8778C2.46999 12.8167 2.47771 12.7511 2.46994 12.6865C2.46216 12.6219 2.43912 12.56 2.4027 12.506C0.389816 9.52397 0.730123 5.55834 3.21185 3.07664C4.57932 1.70918 6.41173 0.956055 8.37158 0.956055C10.4097 0.956055 12.3367 1.76066 13.7977 3.22168C15.2323 4.65624 16.0367 6.54854 16.0627 8.55002C16.0886 10.5474 15.3357 12.4145 13.9427 13.8075Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-               </ul>
-            </div>
-            <div class="team-text text-center">
-               <h3> <a href="#">SAYYID MUHAMMED JIFRI MUTHU KOYA THANGAL</a> </h3>
-               <p>President</p>
-            </div>
-         </div>
-                  <div class="team-wrapper">
-            <div class="team-img">
-               <img src="https://samastha.info/irsys/images/team/1752752693_41a466bb962ee5c984e8.jpeg" alt="img">
-               <ul class="media-icon">
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M11.6689 0H4.33105C1.94287 0 0 1.94287 0 4.33105V11.669C0 14.0571 1.94287 16 4.33105 16H11.669C14.0571 16 16 14.0571 16 11.669V4.33105C16 1.94287 14.0571 0 11.6689 0ZM15.062 11.669C15.062 13.5399 13.5399 15.062 11.6689 15.062H4.33105C2.46009 15.062 0.937998 13.5399 0.937998 11.669V4.33105C0.937998 2.46009 2.46009 0.937998 4.33105 0.937998H11.669C13.5399 0.937998 15.062 2.46009 15.062 4.33105V11.669Z"
-                                 fill="" />
-                              <path
-                                 d="M8 3.62501C5.58765 3.62501 3.62512 5.58751 3.62512 7.99988C3.62512 10.4123 5.58762 12.3748 8 12.3748C10.4124 12.3748 12.3749 10.4123 12.3749 7.99988C12.3749 5.58751 10.4124 3.62501 8 3.62501ZM8 11.4368C6.105 11.4368 4.56312 9.89504 4.56312 7.99988C4.56312 6.10488 6.105 4.56301 8 4.56301C9.89515 4.56301 11.4369 6.10488 11.4369 7.99988C11.4369 9.89504 9.89515 11.4368 8 11.4368ZM12.4795 2.07129C11.7666 2.07129 11.1868 2.65126 11.1868 3.36401C11.1868 4.07691 11.7666 4.65685 12.4795 4.65685C13.1924 4.65685 13.7723 4.07691 13.7723 3.36404C13.7723 2.65116 13.1924 2.07129 12.4795 2.07129ZM12.4795 3.71876C12.2839 3.71876 12.1247 3.55957 12.1247 3.36401C12.1247 3.16835 12.2839 3.00929 12.4795 3.00929C12.6752 3.00929 12.8343 3.16835 12.8343 3.36401C12.8343 3.55957 12.6752 3.71876 12.4795 3.71876Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="11" height="17" viewBox="0 0 11 17" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M8.92466 3.0388H10.5881V0.00184842H7.56515C7.31298 -0.00864433 4.23895 -0.0674036 3.4422 2.97095C3.43066 3.00277 3.17604 3.72538 3.17604 5.41331L0.411896 5.4217V8.60695L3.17953 8.59891V17.0005H7.40706V8.60625H10.2051V5.41261H7.40706V4.40775C7.40706 3.78309 7.67043 3.0388 8.92466 3.0388ZM9.50561 6.11178V7.90638H6.70754V16.3006H3.87905V7.89729L1.11141 7.90534V6.11912L3.88639 6.11108L3.87905 5.75537C3.84267 3.96741 4.09765 3.21543 4.10919 3.1794C4.79682 0.562511 7.42245 0.69402 7.53507 0.701015L9.8886 0.701715V2.33963H8.92466C7.29024 2.33963 6.70789 3.40779 6.70789 4.4074V6.11178H9.50561Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M3.91304 14.6944H0V4.5858H3.91304V14.6944ZM0.652133 14.0423H3.26091V5.23794H0.652133V14.0423ZM15 14.6944H11.087V9.15098C11.087 8.61073 10.649 8.17272 10.1087 8.17272C9.56836 8.17272 9.13047 8.61073 9.13047 9.15098V14.6944H5.21743V4.5858H9.13047V5.242C9.7211 4.81498 10.4315 4.58533 11.1603 4.5858C13.2758 4.5858 15 6.30183 15 8.41325V14.6944ZM11.7391 14.0423H14.3478V8.41322C14.3434 6.65663 12.9169 5.23567 11.1603 5.23794C10.3574 5.23794 9.60324 5.57623 9.04078 6.18764L8.47821 6.80315V5.23794H5.86956V14.0423H8.47821V9.15098C8.47821 8.25046 9.20821 7.52058 10.1087 7.52058C11.0091 7.52058 11.7391 8.25046 11.7391 9.15098V14.0423ZM1.95652 3.93355C0.87591 3.93355 0 3.05764 0 1.97703C0 0.89654 0.87591 0.0205078 1.95652 0.0205078C3.03713 0.0205078 3.91304 0.89654 3.91304 1.97703C3.91078 3.05666 3.03615 3.93141 1.95652 3.93355ZM1.95652 0.672763C1.23618 0.672763 0.652133 1.25672 0.652133 1.97703C0.652133 2.69746 1.23618 3.28142 1.95652 3.28142C2.67686 3.28142 3.26091 2.69746 3.26091 1.97703C3.26091 1.25672 2.67683 0.672763 1.95652 0.672763Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M12.9221 10.1162C12.8181 10.0577 12.7003 9.99137 12.5583 9.90594C12.479 9.85807 12.3794 9.79265 12.2738 9.72338C11.7319 9.36769 11.3213 9.11594 10.9718 9.11594C10.8899 9.11594 10.8125 9.1298 10.7419 9.15703C10.4357 9.27495 10.1842 9.58999 9.94104 9.89462C9.85191 10.0062 9.72435 10.166 9.64696 10.2374C9.33991 10.1816 8.69232 9.78043 7.9935 9.08161C7.29385 8.38196 6.89259 7.73363 6.83751 7.42732C6.90884 7.34964 7.06986 7.22114 7.18216 7.13144C7.48564 6.88916 7.79945 6.63863 7.91803 6.33335C8.06929 5.94112 7.79207 5.47203 7.35176 4.80126C7.28249 4.69568 7.21703 4.59597 7.16953 4.51735C7.08377 4.37482 7.01749 4.2569 6.959 4.15296C6.71893 3.72632 6.56033 3.44434 5.96433 3.44434C5.57751 3.44434 5.03061 3.80987 4.66016 4.17236C4.12178 4.69929 3.82524 5.30763 3.82524 5.88653C3.82627 7.45882 4.70376 9.26089 6.23274 10.8324C6.23536 10.8351 6.23799 10.8358 6.24069 10.8384C7.81225 12.3674 9.61529 13.2419 11.1875 13.2419H11.1882C11.7663 13.2419 12.3748 12.9488 12.9017 12.4107C13.2645 12.0403 13.6305 11.4973 13.6305 11.1108C13.6306 10.5149 13.3487 10.3563 12.9221 10.1162ZM11.1877 12.4296C9.84847 12.4286 8.21477 11.617 6.8168 10.2584C5.45807 8.86028 4.64646 7.22647 4.64559 5.88735C4.64559 5.07733 5.69674 4.30718 5.97163 4.26498C6.02778 4.26522 6.05723 4.26854 6.07126 4.27092C6.1076 4.31276 6.17983 4.44114 6.24414 4.55545C6.30234 4.65889 6.37481 4.78768 6.4671 4.94104C6.52288 5.03345 6.59244 5.13939 6.66607 5.25153C6.8054 5.46382 7.08549 5.89055 7.1327 6.0727C7.05375 6.18447 6.80876 6.38003 6.67045 6.49044C6.31645 6.77308 6.01072 7.01712 6.01072 7.36203C6.01158 8.19513 7.08467 9.33291 7.41353 9.66177C7.7424 9.99063 8.88017 11.0637 9.71504 11.0645C10.0577 11.0634 10.3007 10.759 10.5822 10.4065C10.6932 10.2674 10.8899 10.021 11.0022 9.94244C11.1841 9.98932 11.6114 10.2697 11.8238 10.4092C11.936 10.4828 12.0419 10.5523 12.1348 10.6085C12.2877 10.7005 12.4164 10.7729 12.5199 10.8311C12.6342 10.8954 12.7626 10.9677 12.8044 11.004C12.8068 11.018 12.8101 11.0475 12.8104 11.1036C12.7678 11.3782 11.9974 12.4286 11.1877 12.4296Z"
-                                 fill="" />
-                              <path
-                                 d="M16.8829 8.53935C16.8541 6.32283 15.9644 4.22832 14.3778 2.64163C12.7619 1.0257 10.6288 0.135742 8.37158 0.135742C6.19262 0.135742 4.15423 0.974183 2.63181 2.49656C1.28084 3.84753 0.451996 5.64935 0.297818 7.57015C0.151597 9.39256 0.615525 11.2368 1.60618 12.7874L0.253398 16.444C0.230451 16.5061 0.222841 16.5727 0.231215 16.6383C0.23959 16.7039 0.263701 16.7665 0.301494 16.8208C0.339286 16.875 0.38964 16.9194 0.448262 16.95C0.506884 16.9806 0.572036 16.9965 0.638166 16.9965C0.692142 16.9965 0.746611 16.9809 0.79825 16.959L4.32145 15.4597C5.66644 16.2968 7.20436 16.7282 8.78354 16.7282H8.7837C10.9623 16.7282 13.0006 15.8998 14.5229 14.3776C16.0736 12.8268 16.9118 10.7599 16.8829 8.53935ZM13.9427 13.8075C12.5754 15.1749 10.7431 15.9279 8.7835 15.9279C7.29164 15.9278 5.84018 15.4912 4.586 14.665C4.52957 14.6279 4.46482 14.6052 4.39752 14.5991C4.33022 14.593 4.26245 14.6036 4.20025 14.63L1.35229 15.8379L2.44741 12.8778C2.46999 12.8167 2.47771 12.7511 2.46994 12.6865C2.46216 12.6219 2.43912 12.56 2.4027 12.506C0.389816 9.52397 0.730123 5.55834 3.21185 3.07664C4.57932 1.70918 6.41173 0.956055 8.37158 0.956055C10.4097 0.956055 12.3367 1.76066 13.7977 3.22168C15.2323 4.65624 16.0367 6.54854 16.0627 8.55002C16.0886 10.5474 15.3357 12.4145 13.9427 13.8075Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-               </ul>
-            </div>
-            <div class="team-text text-center">
-               <h3> <a href="#">PROF. K. ALIKUTTY MUSLIYAR</a> </h3>
-               <p>General Secretary</p>
-            </div>
-         </div>
-                  <div class="team-wrapper">
-            <div class="team-img">
-               <img src="https://samastha.info/irsys/images/team/1752753689_c5c62284ccd47dee6e47.jpeg" alt="img">
-               <ul class="media-icon">
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M11.6689 0H4.33105C1.94287 0 0 1.94287 0 4.33105V11.669C0 14.0571 1.94287 16 4.33105 16H11.669C14.0571 16 16 14.0571 16 11.669V4.33105C16 1.94287 14.0571 0 11.6689 0ZM15.062 11.669C15.062 13.5399 13.5399 15.062 11.6689 15.062H4.33105C2.46009 15.062 0.937998 13.5399 0.937998 11.669V4.33105C0.937998 2.46009 2.46009 0.937998 4.33105 0.937998H11.669C13.5399 0.937998 15.062 2.46009 15.062 4.33105V11.669Z"
-                                 fill="" />
-                              <path
-                                 d="M8 3.62501C5.58765 3.62501 3.62512 5.58751 3.62512 7.99988C3.62512 10.4123 5.58762 12.3748 8 12.3748C10.4124 12.3748 12.3749 10.4123 12.3749 7.99988C12.3749 5.58751 10.4124 3.62501 8 3.62501ZM8 11.4368C6.105 11.4368 4.56312 9.89504 4.56312 7.99988C4.56312 6.10488 6.105 4.56301 8 4.56301C9.89515 4.56301 11.4369 6.10488 11.4369 7.99988C11.4369 9.89504 9.89515 11.4368 8 11.4368ZM12.4795 2.07129C11.7666 2.07129 11.1868 2.65126 11.1868 3.36401C11.1868 4.07691 11.7666 4.65685 12.4795 4.65685C13.1924 4.65685 13.7723 4.07691 13.7723 3.36404C13.7723 2.65116 13.1924 2.07129 12.4795 2.07129ZM12.4795 3.71876C12.2839 3.71876 12.1247 3.55957 12.1247 3.36401C12.1247 3.16835 12.2839 3.00929 12.4795 3.00929C12.6752 3.00929 12.8343 3.16835 12.8343 3.36401C12.8343 3.55957 12.6752 3.71876 12.4795 3.71876Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="11" height="17" viewBox="0 0 11 17" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M8.92466 3.0388H10.5881V0.00184842H7.56515C7.31298 -0.00864433 4.23895 -0.0674036 3.4422 2.97095C3.43066 3.00277 3.17604 3.72538 3.17604 5.41331L0.411896 5.4217V8.60695L3.17953 8.59891V17.0005H7.40706V8.60625H10.2051V5.41261H7.40706V4.40775C7.40706 3.78309 7.67043 3.0388 8.92466 3.0388ZM9.50561 6.11178V7.90638H6.70754V16.3006H3.87905V7.89729L1.11141 7.90534V6.11912L3.88639 6.11108L3.87905 5.75537C3.84267 3.96741 4.09765 3.21543 4.10919 3.1794C4.79682 0.562511 7.42245 0.69402 7.53507 0.701015L9.8886 0.701715V2.33963H8.92466C7.29024 2.33963 6.70789 3.40779 6.70789 4.4074V6.11178H9.50561Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M3.91304 14.6944H0V4.5858H3.91304V14.6944ZM0.652133 14.0423H3.26091V5.23794H0.652133V14.0423ZM15 14.6944H11.087V9.15098C11.087 8.61073 10.649 8.17272 10.1087 8.17272C9.56836 8.17272 9.13047 8.61073 9.13047 9.15098V14.6944H5.21743V4.5858H9.13047V5.242C9.7211 4.81498 10.4315 4.58533 11.1603 4.5858C13.2758 4.5858 15 6.30183 15 8.41325V14.6944ZM11.7391 14.0423H14.3478V8.41322C14.3434 6.65663 12.9169 5.23567 11.1603 5.23794C10.3574 5.23794 9.60324 5.57623 9.04078 6.18764L8.47821 6.80315V5.23794H5.86956V14.0423H8.47821V9.15098C8.47821 8.25046 9.20821 7.52058 10.1087 7.52058C11.0091 7.52058 11.7391 8.25046 11.7391 9.15098V14.0423ZM1.95652 3.93355C0.87591 3.93355 0 3.05764 0 1.97703C0 0.89654 0.87591 0.0205078 1.95652 0.0205078C3.03713 0.0205078 3.91304 0.89654 3.91304 1.97703C3.91078 3.05666 3.03615 3.93141 1.95652 3.93355ZM1.95652 0.672763C1.23618 0.672763 0.652133 1.25672 0.652133 1.97703C0.652133 2.69746 1.23618 3.28142 1.95652 3.28142C2.67686 3.28142 3.26091 2.69746 3.26091 1.97703C3.26091 1.25672 2.67683 0.672763 1.95652 0.672763Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-                  <li>
-                     <a href="javascript:;">
-                        <span>
-                           <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M12.9221 10.1162C12.8181 10.0577 12.7003 9.99137 12.5583 9.90594C12.479 9.85807 12.3794 9.79265 12.2738 9.72338C11.7319 9.36769 11.3213 9.11594 10.9718 9.11594C10.8899 9.11594 10.8125 9.1298 10.7419 9.15703C10.4357 9.27495 10.1842 9.58999 9.94104 9.89462C9.85191 10.0062 9.72435 10.166 9.64696 10.2374C9.33991 10.1816 8.69232 9.78043 7.9935 9.08161C7.29385 8.38196 6.89259 7.73363 6.83751 7.42732C6.90884 7.34964 7.06986 7.22114 7.18216 7.13144C7.48564 6.88916 7.79945 6.63863 7.91803 6.33335C8.06929 5.94112 7.79207 5.47203 7.35176 4.80126C7.28249 4.69568 7.21703 4.59597 7.16953 4.51735C7.08377 4.37482 7.01749 4.2569 6.959 4.15296C6.71893 3.72632 6.56033 3.44434 5.96433 3.44434C5.57751 3.44434 5.03061 3.80987 4.66016 4.17236C4.12178 4.69929 3.82524 5.30763 3.82524 5.88653C3.82627 7.45882 4.70376 9.26089 6.23274 10.8324C6.23536 10.8351 6.23799 10.8358 6.24069 10.8384C7.81225 12.3674 9.61529 13.2419 11.1875 13.2419H11.1882C11.7663 13.2419 12.3748 12.9488 12.9017 12.4107C13.2645 12.0403 13.6305 11.4973 13.6305 11.1108C13.6306 10.5149 13.3487 10.3563 12.9221 10.1162ZM11.1877 12.4296C9.84847 12.4286 8.21477 11.617 6.8168 10.2584C5.45807 8.86028 4.64646 7.22647 4.64559 5.88735C4.64559 5.07733 5.69674 4.30718 5.97163 4.26498C6.02778 4.26522 6.05723 4.26854 6.07126 4.27092C6.1076 4.31276 6.17983 4.44114 6.24414 4.55545C6.30234 4.65889 6.37481 4.78768 6.4671 4.94104C6.52288 5.03345 6.59244 5.13939 6.66607 5.25153C6.8054 5.46382 7.08549 5.89055 7.1327 6.0727C7.05375 6.18447 6.80876 6.38003 6.67045 6.49044C6.31645 6.77308 6.01072 7.01712 6.01072 7.36203C6.01158 8.19513 7.08467 9.33291 7.41353 9.66177C7.7424 9.99063 8.88017 11.0637 9.71504 11.0645C10.0577 11.0634 10.3007 10.759 10.5822 10.4065C10.6932 10.2674 10.8899 10.021 11.0022 9.94244C11.1841 9.98932 11.6114 10.2697 11.8238 10.4092C11.936 10.4828 12.0419 10.5523 12.1348 10.6085C12.2877 10.7005 12.4164 10.7729 12.5199 10.8311C12.6342 10.8954 12.7626 10.9677 12.8044 11.004C12.8068 11.018 12.8101 11.0475 12.8104 11.1036C12.7678 11.3782 11.9974 12.4286 11.1877 12.4296Z"
-                                 fill="" />
-                              <path
-                                 d="M16.8829 8.53935C16.8541 6.32283 15.9644 4.22832 14.3778 2.64163C12.7619 1.0257 10.6288 0.135742 8.37158 0.135742C6.19262 0.135742 4.15423 0.974183 2.63181 2.49656C1.28084 3.84753 0.451996 5.64935 0.297818 7.57015C0.151597 9.39256 0.615525 11.2368 1.60618 12.7874L0.253398 16.444C0.230451 16.5061 0.222841 16.5727 0.231215 16.6383C0.23959 16.7039 0.263701 16.7665 0.301494 16.8208C0.339286 16.875 0.38964 16.9194 0.448262 16.95C0.506884 16.9806 0.572036 16.9965 0.638166 16.9965C0.692142 16.9965 0.746611 16.9809 0.79825 16.959L4.32145 15.4597C5.66644 16.2968 7.20436 16.7282 8.78354 16.7282H8.7837C10.9623 16.7282 13.0006 15.8998 14.5229 14.3776C16.0736 12.8268 16.9118 10.7599 16.8829 8.53935ZM13.9427 13.8075C12.5754 15.1749 10.7431 15.9279 8.7835 15.9279C7.29164 15.9278 5.84018 15.4912 4.586 14.665C4.52957 14.6279 4.46482 14.6052 4.39752 14.5991C4.33022 14.593 4.26245 14.6036 4.20025 14.63L1.35229 15.8379L2.44741 12.8778C2.46999 12.8167 2.47771 12.7511 2.46994 12.6865C2.46216 12.6219 2.43912 12.56 2.4027 12.506C0.389816 9.52397 0.730123 5.55834 3.21185 3.07664C4.57932 1.70918 6.41173 0.956055 8.37158 0.956055C10.4097 0.956055 12.3367 1.76066 13.7977 3.22168C15.2323 4.65624 16.0367 6.54854 16.0627 8.55002C16.0886 10.5474 15.3357 12.4145 13.9427 13.8075Z"
-                                 fill="" />
-                           </svg>
-                        </span>
-                     </a>
-                  </li>
-               </ul>
-            </div>
-            <div class="team-text text-center">
-               <h3> <a href="#">P.P. UMER MUSLIYAR</a> </h3>
-               <p>Treasurer</p>
-            </div>
-         </div>
-                  
-         
-      </div>
-      <div class="center-btn">
-         <a class="redButton" href="https://samastha.info/team"><span>View Mushawara</span></a>
-      </div>
-   </div>
-</div>
-
-   <!-- Testimonial client -->
-   <div class="ibadat-testimonial-main-wrapper mb-5" style="margin-top: 50px;">
-      <div class="container custom-container">
-         <div class="ibadat-test-main-block">
-            <div class="testimonial-slider">
-               <div class="owl-carousel owl-theme">
-                                 <div class="item">
-                     
-                     <div class="testimonial-wrappper">
-                        <div class="left-title">
-                           <h4>messages<span><img src="https://samastha.info/assets/images/home/line.png" alt="line"></span> </h4>
-                           <h2> messages</h2>
-                           <p>Samastha Kerala Jamiathul Ulema is an authoritative body of highest Scholars in Islam since 1925 to propagate the ideology of Ahlussunnathi wal jamaath which was the routine of the holy prophet Muhammed S. W.A. T. and the following stalwarts. We have been standing firm and steadfast with our mission and responsibility phasing to the centenary of our holy organization.                           </p>
-                        
-                        </div>
-                        <div class="quotes-img">
-                           <img src="https://samastha.info/assets/images/home/quotation.png" alt="img">
-                        </div>
-                        <div class="client-profile-wrapper">
-                           <div class="client-profile">
-                              <img src="https://samastha.info/irsys/images/testimonials/1705742754_c65f29857f7bfc167c7e.png" alt="img">
-                           </div>
-                           <div class="client-text">
-                            
-                              <h4>Muhammad Jifri Muthukkoya Thangal</h4>
-                              <p>President</p>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                                    <div class="item">
-                     
-                     <div class="testimonial-wrappper">
-                        <div class="left-title">
-                           <h4>messages<span><img src="https://samastha.info/assets/images/home/line.png" alt="line"></span> </h4>
-                           <h2> messages</h2>
-                           <p>Samastha Kerala Jamiathul Ulema has been serving the muslim community in particular and the society in general by providing religious and secular guide lines since 1925. 
-The samastha leads and monitors many educatipnal streams from pre primary level to higher education level. Whereas 10936 madrasas have been running under the SKIMV Board, a subordinate committee under Samastha since 1951.
-A revelution has been created already in the field of religious and material education by the influence, guidance and interference of Samastha. 
-Under the auspice of Samastha, there are tens of thousands of Arabic Colleges for higher education, masjids, mahallus and hundreds of Yatheemkhanas as well in the field of education and guidance.                           </p>
-                        
-                        </div>
-                        <div class="quotes-img">
-                           <img src="https://samastha.info/assets/images/home/quotation.png" alt="img">
-                        </div>
-                        <div class="client-profile-wrapper">
-                           <div class="client-profile">
-                              <img src="https://samastha.info/irsys/images/testimonials/1707208885_7ae80944b81269658432.png" alt="img">
-                           </div>
-                           <div class="client-text">
-                            
-                              <h4>Prof. K. Alikutty Musliyar</h4>
-                              <p>General Secretary</p>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                                   
-                  
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
-
-<!-- The Modal -->
-<!-- <div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>Your content goes here.</p>
-    </div>
-</div> -->
-   <!-- Gallery -->
-      <!-- Modal Structure -->
- <div id="myModal" class="modal">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="downloadModalLabel">Download Receipt</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form id="downloadForm" method="POST" action="https://samastha.info/getrecipt">
-          <div class="form-group">
-            <label for="transactionId">Transaction ID</label>
-            <input type="text" class="form-control" id="transactionId" name="transactionid" required>
-          </div>
-          <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-          </div>
-               <div class="form-group">
-            <label for="place">Place</label>
-            <input type="text" class="form-control" id="place" name="place" required>
-          </div>
-             <div class="form-group">
-            <label for="address">Address</label>
-            <input type="text" class="form-control" id="address" name="address" required>
-          </div>
- 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" >Download</button>
-      </div>
-    </div>
-           </form>
-  </div>
-</div> 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    // Get the modal
-    var modal = document.getElementById("myModal");
-
-    // Get the button that opens the modal
-    var btn = document.getElementById("openModal");
-
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks the button, open the modal 
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
+        function getCounterWithShortestQueue() {
+            let shortest = counters[0];
+            for(let i = 1; i < counters.length; i++) {
+                if(counters[i].queue.length < shortest.queue.length) {
+                    shortest = counters[i];
+                }
+            }
+            return shortest;
         }
-    }
-</script>
 
-  <footer class="ibadat-footer-main-wrapper">
-      <div class="container custom-container">
-         <div class="row">
-            <div class="col-xl-4 col-lg-6 col-md-6 col-12">
-               <div class="footer-logo">
-                  <a href="#"> 
-                     <!-- <img src="https://samastha.info/assets/images/home/footer-logo.png" alt="logo"> -->
-                     <h2 class="text-white"><strong>
-                        Samastha Kerala
-                        Jem-iyyathul Ulama</strong></h2>
-                   </a>
-                  <p>Samastha Kerala Jem-iyyathul Ulama Francis Road, Calicut – 3 Kerala, India                  <p> Samastha Kerala Jem-iyyathul Ulama (All Kerala Ulama Organization), known as Samastha.</p>
-                  </p>
-               </div>
-               <div class="social-icon">
-                  <ul>
-                  <li>
-                        <a href="https://www.facebook.com/profile.php?id=61570250103898"target="_blank">
-                           <svg width="15" height="25" viewBox="0 0 15 25" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M12.5363 4.46882H14.9825V0.00271826H10.537C10.1662 -0.0127123 5.64554 -0.0991229 4.47385 4.36904C4.45688 4.41585 4.08243 5.47849 4.08243 7.96075L0.0175171 7.97309V12.6573L4.08757 12.6455V25.0007H10.3045V12.6563H14.4193V7.95972H10.3045V6.48199C10.3045 5.56336 10.6918 4.46882 12.5363 4.46882ZM13.3906 8.98791V11.627H9.27583V23.9714H5.11627V11.6137L1.04622 11.6255V8.99871L5.12707 8.98688L5.11627 8.46378C5.06278 5.83442 5.43774 4.72857 5.45472 4.67559C6.46593 0.827222 10.3272 1.02062 10.4928 1.0309L13.9538 1.03193V3.44064H12.5363C10.1327 3.44064 9.27634 5.01146 9.27634 6.48148V8.98791H13.3906Z"
-                                 fill="white" />
-                           </svg>
-                        </a>
-                     </li>
-                     <li>
-                        <a href="https://www.instagram.com/skimvb_updates/?igsh=MWJsZHF4d2E4cTR0cw%3D%3D#"target="_blank">
-                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <g clip-path="url(#clip0_195_1418)">
-                                 <path
-                                    d="M17.5034 0H6.49658C2.91431 0 0 2.91431 0 6.49658V17.5036C0 21.0856 2.91431 24 6.49658 24H17.5036C21.0856 24 24 21.0856 24 17.5036V6.49658C24 2.91431 21.0856 0 17.5034 0ZM22.593 17.5036C22.593 20.3098 20.3098 22.593 17.5034 22.593H6.49658C3.69013 22.593 1.407 20.3098 1.407 17.5036V6.49658C1.407 3.69013 3.69013 1.407 6.49658 1.407H17.5036C20.3098 1.407 22.593 3.69013 22.593 6.49658V17.5036Z"
-                                    fill="white" />
-                                 <path
-                                    d="M12 5.438C8.38148 5.438 5.43768 8.38175 5.43768 12.0003C5.43768 15.6189 8.38143 18.5626 12 18.5626C15.6186 18.5626 18.5623 15.6189 18.5623 12.0003C18.5623 8.38175 15.6186 5.438 12 5.438ZM12 17.1556C9.1575 17.1556 6.84468 14.843 6.84468 12.0003C6.84468 9.15781 9.1575 6.845 12 6.845C14.8427 6.845 17.1553 9.15781 17.1553 12.0003C17.1553 14.843 14.8427 17.1556 12 17.1556ZM18.7192 3.10742C17.6499 3.10742 16.7802 3.97737 16.7802 5.0465C16.7802 6.11586 17.6499 6.98577 18.7192 6.98577C19.7886 6.98577 20.6585 6.11586 20.6585 5.04655C20.6585 3.97723 19.7886 3.10742 18.7192 3.10742ZM18.7192 5.57862C18.4259 5.57862 18.1871 5.33984 18.1871 5.0465C18.1871 4.75302 18.4259 4.51442 18.7192 4.51442C19.0127 4.51442 19.2515 4.75302 19.2515 5.0465C19.2515 5.33984 19.0127 5.57862 18.7192 5.57862Z"
-                                    fill="white" />
-                              </g>
-                              <defs>
-                                 <clipPath id="clip0_195_1418">
-                                    <rect width="24" height="24" fill="white" />
-                                 </clipPath>
-                              </defs>
-                           </svg>
-                        </a>
-                     </li>
+        function issueToken() {
+            const selectedValue = document.getElementById('counterSelect').value;
+            let targetCounter;
+
+            if(selectedValue === 'auto') {
+                targetCounter = getCounterWithShortestQueue();
+                showToast(`🤖 ഓട്ടോമാറ്റിക്: കുറഞ്ഞ ക്യൂ ഉള്ള കൗണ്ടർ ${targetCounter.id} ലേക്ക് അയക്കുന്നു...`);
+            } else {
+                const counterId = parseInt(selectedValue);
+                targetCounter = counters.find(c => c.id === counterId);
+            }
+
+            // Generate Token Number
+            const tokenId = nextTokenIds[targetCounter.id]++;
+            const tokenNumber = `C${targetCounter.id}-${tokenId.toString().padStart(3, '0')}`;
+            
+            const token = {
+                number: tokenNumber,
+                counterId: targetCounter.id,
+                issuedAt: new Date(),
+                status: 'waiting'
+            };
+
+            targetCounter.queue.push(token);
+            allTokens.push(token);
+
+            // Show Token on Screen (Toast notification)
+            showToast(`✅ ടോക്കൺ നമ്പർ: ${tokenNumber}\n📌 കൗണ്ടർ: ${targetCounter.id}\n⏳ നിങ്ങളുടെ മുൻപിൽ ${targetCounter.queue.length - 1} പേർ`, 5000);
+
+            // Update display
+            renderCounters();
+            updateStats();
+
+            // Speak the token (optional)
+            speak(`ടോക്കൺ ${tokenNumber}, കൗണ്ടർ ${targetCounter.id} ലേക്ക്`);
+        }
+
+        function callNext(counterId) {
+            const counter = counters.find(c => c.id === counterId);
+            
+            if(counter.queue.length === 0) {
+                showToast(`⚠️ കൗണ്ടർ ${counterId} ൽ ടോക്കണുകൾ ഇല്ല`, 2000);
+                return;
+            }
+
+            const nextToken = counter.queue.shift();
+            
+            // If there was a current token, move to served
+            if(counter.currentToken) {
+                counter.servedCount++;
+            }
+            
+            counter.currentToken = nextToken;
+            nextToken.status = 'serving';
+            
+            // Announce
+            speak(`കൗണ്ടർ ${counterId} ലേക്ക്, ടോക്കൺ ${nextToken.number}`);
+            showToast(`🔔 കൗണ്ടർ ${counterId}: ${nextToken.number} നെ വിളിക്കുന്നു...`, 3000);
+            
+            renderCounters();
+            updateStats();
+        }
+
+        function resetCurrent(counterId) {
+            const counter = counters.find(c => c.id === counterId);
+            
+            if(!counter.currentToken) {
+                showToast(`⚠️ കൗണ്ടർ ${counterId} ൽ നിലവിൽ ടോക്കൺ ഇല്ല`, 2000);
+                return;
+            }
+            
+            // Move current token back to queue front
+            counter.queue.unshift(counter.currentToken);
+            counter.currentToken = null;
+            
+            showToast(`↩️ കൗണ്ടർ ${counterId}: നിലവിലെ ടോക്കൺ വീണ്ടും ക്യൂവിൽ ചേർത്തു`, 2000);
+            renderCounters();
+            updateStats();
+        }
+
+        function renderCounters() {
+            const grid = document.getElementById('countersGrid');
+            grid.innerHTML = '';
+            
+            counters.forEach(counter => {
+                const card = document.createElement('div');
+                card.className = 'counter-card';
                 
-                     <li>
-                        <a href="https://whatsapp.com/channel/0029Vao7unLJpe8lX9M6Xl3d"target="_blank">
-                           <svg width="25" height="25" viewBox="0 0 25 25" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M17.7644 14.4231C17.6406 14.3535 17.5003 14.2746 17.3313 14.1729C17.237 14.1159 17.1184 14.038 16.9927 13.9555C16.3476 13.5321 15.8587 13.2324 15.4426 13.2324C15.3452 13.2324 15.253 13.2489 15.1689 13.2813C14.8044 13.4217 14.505 13.7967 14.2155 14.1594C14.1094 14.2922 13.9576 14.4825 13.8654 14.5675C13.4999 14.501 12.729 14.0234 11.897 13.1915C11.0641 12.3586 10.5864 11.5868 10.5208 11.2221C10.6058 11.1296 10.7975 10.9767 10.9312 10.8699C11.2924 10.5814 11.666 10.2832 11.8072 9.91978C11.9873 9.45283 11.6572 8.89438 11.1331 8.09585C11.0506 7.97017 10.9727 7.85146 10.9161 7.75786C10.814 7.58818 10.7351 7.4478 10.6655 7.32407C10.3797 6.81616 10.1909 6.48047 9.48135 6.48047C9.02085 6.48047 8.36978 6.91562 7.92876 7.34717C7.28784 7.97446 6.93481 8.69868 6.93481 9.38784C6.93604 11.2596 7.98066 13.4049 9.80088 15.2758C9.804 15.279 9.80713 15.2798 9.81035 15.2829C11.6813 17.1032 13.8277 18.1442 15.6995 18.1442H15.7002C16.3884 18.1442 17.1129 17.7953 17.7401 17.1547C18.172 16.7137 18.6078 16.0674 18.6078 15.6072C18.6078 14.8978 18.2723 14.709 17.7644 14.4231ZM15.6997 17.1772C14.1053 17.176 12.1604 16.2098 10.4962 14.5925C8.87866 12.928 7.91245 10.983 7.91143 9.38882C7.91143 8.42451 9.16279 7.50767 9.49004 7.45742C9.55689 7.45771 9.59194 7.46167 9.60864 7.4645C9.6519 7.51431 9.73789 7.66714 9.81445 7.80322C9.88374 7.92637 9.97002 8.07969 10.0799 8.26226C10.1463 8.37227 10.2291 8.49839 10.3167 8.63189C10.4826 8.88462 10.8161 9.39263 10.8723 9.60947C10.7783 9.74253 10.4866 9.97534 10.322 10.1068C9.90054 10.4433 9.53657 10.7338 9.53657 11.1444C9.5376 12.1362 10.8151 13.4907 11.2066 13.8822C11.5981 14.2737 12.9526 15.5512 13.9465 15.5521C14.3544 15.5508 14.6437 15.1884 14.9788 14.7687C15.1109 14.6032 15.3452 14.3098 15.4788 14.2163C15.6954 14.2721 16.204 14.606 16.4569 14.772C16.5904 14.8596 16.7165 14.9424 16.8272 15.0092C17.0091 15.1187 17.1624 15.205 17.2856 15.2743C17.4216 15.3508 17.5745 15.4369 17.6243 15.4801C17.6271 15.4968 17.6311 15.5318 17.6314 15.5986C17.5808 15.9256 16.6636 17.176 15.6997 17.1772Z"
-                                 fill="white" />
-                              <path
-                                 d="M22.4797 12.5463C22.4454 9.90757 21.3862 7.41411 19.4974 5.5252C17.5736 3.60146 15.0343 2.54199 12.3471 2.54199C9.75313 2.54199 7.32647 3.54014 5.51407 5.35249C3.90577 6.96079 2.91905 9.10581 2.7355 11.3925C2.56143 13.562 3.11373 15.7575 4.29307 17.6035L2.68262 21.9566C2.6553 22.0305 2.64624 22.1098 2.65621 22.1879C2.66618 22.266 2.69489 22.3405 2.73988 22.4051C2.78487 22.4697 2.84481 22.5225 2.9146 22.5589C2.98439 22.5954 3.06195 22.6144 3.14068 22.6144C3.20494 22.6144 3.26978 22.5958 3.33125 22.5696L7.52554 20.7848C9.12671 21.7813 10.9576 22.295 12.8376 22.295H12.8377C15.4313 22.295 17.8579 21.3087 19.6701 19.4966C21.5162 17.6504 22.514 15.1897 22.4797 12.5463ZM18.9795 18.8179C17.3516 20.4458 15.1704 21.3422 12.8375 21.3421C11.0615 21.3421 9.33355 20.8223 7.84048 19.8388C7.7733 19.7945 7.69622 19.7675 7.6161 19.7603C7.53598 19.753 7.45531 19.7656 7.38125 19.7971L3.99083 21.2351L5.29454 17.7111C5.32142 17.6384 5.33061 17.5603 5.32136 17.4834C5.3121 17.4064 5.28467 17.3328 5.24131 17.2685C2.84502 13.7185 3.25015 8.99746 6.20459 6.04307C7.83252 4.41514 10.014 3.51855 12.3471 3.51855C14.7734 3.51855 17.0675 4.47642 18.8068 6.21572C20.5147 7.92354 21.4722 10.1763 21.5032 12.559C21.5341 14.9368 20.6378 17.1596 18.9795 18.8179Z"
-                                 fill="white" />
-                           </svg>
-                        </a>
-                     </li>
-                   
-                      <li>
-    <a href="https://www.youtube.com/@SAMASTHAONLINEOFFICAL" target="_blank">
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-youtube text-white" viewBox="0 0 16 16">
-            <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/>
-        </svg>
-    </a>
-</li>
+                const queuePreview = counter.queue.slice(0, 3).map(t => t.number).join(', ');
+                const moreCount = counter.queue.length > 3 ? ` + ${counter.queue.length - 3} more` : '';
+                
+                card.innerHTML = `
+                    <div class="counter-header">
+                        <h3>🏪 കൗണ്ടർ ${counter.id}</h3>
+                        <small>${counter.name}</small>
+                    </div>
+                    <div class="current-token">
+                        <div class="label">നിലവിലെ ടോക്കൺ</div>
+                        <div class="token-number">${counter.currentToken ? counter.currentToken.number : '---'}</div>
+                    </div>
+                    <div class="queue-info">
+                        📋 ക്യൂവിൽ: <span>${counter.queue.length}</span> പേർ
+                    </div>
+                    <div class="action-buttons">
+                        <button class="next-btn" onclick="callNext(${counter.id})">⏩ അടുത്തത്</button>
+                        <button class="reset-btn" onclick="resetCurrent(${counter.id})">🔄 റീസെറ്റ്</button>
+                    </div>
+                    ${counter.queue.length > 0 ? `
+                        <div class="queue-list">
+                            <h4>അടുത്ത ടോക്കണുകൾ:</h4>
+                            <div class="queue-item">${queuePreview}${moreCount}</div>
+                        </div>
+                    ` : ''}
+                `;
+                grid.appendChild(card);
+            });
+        }
 
+        function updateStats() {
+            const total = allTokens.length;
+            const waiting = counters.reduce((sum, c) => sum + c.queue.length, 0);
+            const completed = counters.reduce((sum, c) => sum + c.servedCount, 0) + 
+                             (counters.filter(c => c.currentToken).length);
+            
+            document.getElementById('totalTokens').textContent = total;
+            document.getElementById('waitingCount').textContent = waiting;
+            document.getElementById('completedCount').textContent = completed;
+        }
 
+        function showToast(message, duration = 3000) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.whiteSpace = 'pre-line';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, duration);
+        }
 
-                  </ul>
-               </div>
-            </div>
-            <div class="col-xl-2 col-lg-6 col-md-6 col-12">
-               <div class="footer-link">
-                  <h4>Quik Links</h4>
-                  <ul>
-                     <li><a href="https://samastha.info/home">Home</a></li>
-                     <li><a href="https://samastha.info/about">About Us</a></li>
-                   
-                     <li><a href="https://samastha.info/blog">News</a></li>
-                     <li><a href="https://samastha.info/org">Organizations</a></li>
-                     <li><a href="https://samastha.info/history">History</a></li>
-                     <li><a href="https://samastha.info/team">Mushawara</a></li>
-                     <li><a href="https://samastha.info/receipt">Wayanad Receipt</a></li>
-                     <li><a href="https://samastha.info/contact">Contact Us</a></li>
-                  </ul>
-               </div>
-            </div>
-            <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-               <div class="footer-link">
-                  <h4>Latest Posts</h4>
-                                    <div class="footer-blog">
-                  <div class="">
-                     <a href="https://samastha.info/news-details/168"><img style="width:114px;height:94px;" src="https://samastha.info/irsys/images/news/1765803628_29e08d0374d25f5c7b86.jpeg" alt="" class="flex-shrink-0"></a>
-                        <div class="insta-icon"><a href="javascript:;"><i class="fa fa-newspaper-o"></i></a></div>
-                     </div>
-                     <div class="footer-text">
-                        <p style="font-size:12px;"><a href="#">     <a href="https://samastha.info/news-details/168" >സമസ്ത ശതാബ്ദി ശന്ദേശ യാത്ര വന്‍വിജയമാക്കുക സമസ്ത കേരള ഇസ്ലാം മത വിദ്യാഭ്യാസ ബോര്‍ഡ്</a></a>
-                        </p>
-                        <ul class="date-details">
-                           <li>
-                              <a href="javascript:;">
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="#E5AE49" />
-                                    </svg>
-                                 </span>
-                                 2025-12-15                              </a>
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-                                    <div class="footer-blog">
-                  <div class="">
-                     <a href="https://samastha.info/news-details/169"><img style="width:114px;height:94px;" src="https://samastha.info/irsys/images/news/1765803590_e36a019dd3cd2f5cfbf6.jpeg" alt="" class="flex-shrink-0"></a>
-                        <div class="insta-icon"><a href="javascript:;"><i class="fa fa-newspaper-o"></i></a></div>
-                     </div>
-                     <div class="footer-text">
-                        <p style="font-size:12px;"><a href="#">     <a href="https://samastha.info/news-details/169" >സമസ്ത ശതാബ്ദി യാത്രക്കും നൂറാം വാര്‍ഷിക സമ്മേളനത്തിനും മദ്റസകള്‍ക്ക് അവധി നല്‍കി</a></a>
-                        </p>
-                        <ul class="date-details">
-                           <li>
-                              <a href="javascript:;">
-                                 <span>
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                       <path
-                                          d="M17 2H15V1C15 0.734784 14.8946 0.48043 14.7071 0.292893C14.5196 0.105357 14.2652 0 14 0C13.7348 0 13.4804 0.105357 13.2929 0.292893C13.1054 0.48043 13 0.734784 13 1V2H7V1C7 0.734784 6.89464 0.48043 6.70711 0.292893C6.51957 0.105357 6.26522 0 6 0C5.73478 0 5.48043 0.105357 5.29289 0.292893C5.10536 0.48043 5 0.734784 5 1V2H3C2.20435 2 1.44129 2.31607 0.87868 2.87868C0.316071 3.44129 0 4.20435 0 5V17C0 17.7956 0.316071 18.5587 0.87868 19.1213C1.44129 19.6839 2.20435 20 3 20H17C17.7956 20 18.5587 19.6839 19.1213 19.1213C19.6839 18.5587 20 17.7956 20 17V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2ZM18 17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H3C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V10H18V17ZM18 8H2V5C2 4.73478 2.10536 4.48043 2.29289 4.29289C2.48043 4.10536 2.73478 4 3 4H5V5C5 5.26522 5.10536 5.51957 5.29289 5.70711C5.48043 5.89464 5.73478 6 6 6C6.26522 6 6.51957 5.89464 6.70711 5.70711C6.89464 5.51957 7 5.26522 7 5V4H13V5C13 5.26522 13.1054 5.51957 13.2929 5.70711C13.4804 5.89464 13.7348 6 14 6C14.2652 6 14.5196 5.89464 14.7071 5.70711C14.8946 5.51957 15 5.26522 15 5V4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V8Z"
-                                          fill="#E5AE49" />
-                                    </svg>
-                                 </span>
-                                 2025-12-15                              </a>
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-                                 </div>
-            </div>
-            <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-               <div class="footer-link">
-                  <h4>Contact Us</h4>
-                  <div class="footer-contact-wrapper">
-                     <div class="contact-icon">
-                        <span>
-                           <svg width="19" height="25" viewBox="0 0 19 25" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M9.37495 0C4.20009 0 0 4.19994 0 9.37495C0 11.8 1.3249 14.2248 1.75001 14.8999C3.35001 17.5749 8.22522 24.2248 8.42508 24.4998C8.65009 24.8247 9.00017 24.9999 9.375 24.9999C9.75001 24.9999 10.075 24.825 10.3249 24.4998C10.525 24.2247 15.3996 17.5748 17 14.8999C17.3999 14.2249 18.75 11.7999 18.75 9.37495C18.7504 4.20009 14.5504 0 9.37554 0H9.37495ZM16.05 14.3249C14.475 16.9498 9.47513 23.775 9.42504 23.8496C9.4001 23.8746 9.37498 23.8997 9.37498 23.8997L9.32491 23.8496C9.27485 23.7746 4.27478 16.9497 2.69993 14.3249C2.32492 13.6999 1.09994 11.4999 1.09994 9.37495C1.10032 4.79998 4.82512 1.09999 9.37539 1.09999C13.9257 1.09999 17.6504 4.79988 17.6504 9.37495C17.6504 11.4999 16.4254 13.7 16.0504 14.3249H16.05Z"
-                                 fill="white" />
-                              <path
-                                 d="M9.37496 5.25C7.09995 5.25 5.25 7.09995 5.25 9.37496C5.25 11.65 7.09995 13.4999 9.37496 13.4999C11.65 13.4999 13.4999 11.65 13.4999 9.37496C13.4999 7.09995 11.65 5.25 9.37496 5.25ZM9.37496 12.3999C7.69998 12.3999 6.34989 11.0499 6.34989 9.37486C6.34989 7.69983 7.69993 6.34979 9.37496 6.34979C11.05 6.34979 12.4 7.69983 12.4 9.37486C12.4 11.0249 11.05 12.3999 9.37496 12.3999Z"
-                                 fill="white" />
-                           </svg>
-                        </span>
-                     </div>
-                     <div class="contact-text">
-                        <p>Samastha Kerala Jem-iyyathul Ulama Francis Road, Calicut – 3 Kerala, India                        </p>
-                     </div>
-                  </div>
-                  <div class="footer-contact-wrapper">
-                     <div class="contact-icon">
-                        <span>
-                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M22.8453 17.9138C21.8456 16.0936 20.3242 14.5564 18.323 13.3452C17.7675 13.0085 17.0606 13.0925 16.6045 13.5486L14.5657 15.5872C14.3697 15.7832 14.0612 15.8269 13.8158 15.6948C12.4066 14.9339 11.1493 14.0051 10.0789 12.9344C9.00779 11.8634 8.07906 10.606 7.31871 9.19767C7.18601 8.95188 7.23013 8.64353 7.42605 8.44779L9.46472 6.40896C9.92114 5.95253 10.0048 5.24593 9.66825 4.69061C8.45705 2.6893 6.91973 1.16773 5.10052 0.168759C4.64898 -0.0809191 4.08203 -0.0518466 3.65317 0.24466C2.32448 1.17439 1.17123 2.34486 0.225793 3.72392C0.02615 4.01536 -0.0456917 4.38271 0.0286859 4.73211C2.24028 15.1161 8.39211 21.2633 18.3143 23.0035C18.3885 23.0163 18.4637 23.0227 18.5386 23.0227C18.8005 23.0227 19.0605 22.9445 19.2758 22.7972C20.6605 21.8504 21.8358 20.6941 22.7708 19.358C23.0653 18.9313 23.0942 18.3642 22.8454 17.9142L22.8453 17.9138ZM21.9086 18.7582C21.0482 19.9878 19.9629 21.055 18.6831 21.9303C18.6307 21.9658 18.5607 21.9792 18.4953 21.9689C9.03654 20.3099 3.16924 14.4368 1.05524 4.51284C1.0407 4.44438 1.05422 4.37118 1.09141 4.31709C1.96519 3.04232 3.02951 1.9616 4.25204 1.10657C4.30766 1.06785 4.37324 1.04841 4.43849 1.04841C4.49208 1.04841 4.5455 1.0616 4.59368 1.08831C6.25031 1.99796 7.65542 3.39273 8.76976 5.23432C8.85513 5.3753 8.83552 5.5528 8.72192 5.6664L6.68325 7.70523C6.16174 8.2264 6.04308 9.04526 6.39436 9.69643C7.20322 11.1945 8.19297 12.5338 9.33592 13.6769C10.4783 14.8195 11.8177 15.8092 13.3166 16.6185C13.9681 16.9704 14.7866 16.8512 15.3076 16.3297L17.3464 14.2909C17.4602 14.1775 17.6375 14.1579 17.7785 14.2432H17.7787C19.6201 15.3579 21.0149 16.7629 21.9253 18.4208C21.984 18.5261 21.9764 18.6597 21.9084 18.7582L21.9086 18.7582Z"
-                                 fill="white" />
-                           </svg>
-                        </span>
-                     </div>
-                     <div class="contact-text">
-                        <p> <a href="tel: 0495-2300642"> 0495-2300642</a> <br>
-                           <a href="tel:0494-2400256">0494-2400256</a>
-                        </p>
-                     </div>
-                  </div>
-                  <div class="footer-contact-wrapper">
-                     <div class="contact-icon">
-                        <span>
-                           <svg width="25" height="17" viewBox="0 0 25 17" fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 d="M2.46382 16.68H22.5364C23.1899 16.6795 23.816 16.4198 24.2779 15.9579C24.7399 15.496 24.9995 14.8696 25 14.2164V2.46358C24.9995 1.81038 24.7398 1.18398 24.2779 0.722066C23.816 0.260149 23.1898 0.000476572 22.5364 0H2.46382C1.81038 0.000465372 1.18398 0.260161 0.722063 0.722066C0.260153 1.18398 0.000476837 1.81044 0 2.46358V14.2164C0.000465393 14.8696 0.260159 15.496 0.722063 15.9579C1.18398 16.4199 1.81044 16.6795 2.46382 16.68ZM22.5364 0.834C22.9685 0.834466 23.3828 1.0062 23.6883 1.31173C23.9938 1.61727 24.1656 2.03148 24.166 2.46361V14.2165C24.1656 14.6486 23.9938 15.0628 23.6883 15.3683C23.3828 15.6739 22.9686 15.8456 22.5364 15.8461H2.46382C2.03169 15.8456 1.61749 15.6739 1.31194 15.3683C1.00641 15.0628 0.83444 14.6486 0.833975 14.2165V2.46361C0.83444 2.03148 1.00641 1.61728 1.31194 1.31173C1.61748 1.0062 2.03168 0.834465 2.46382 0.834H22.5364Z"
-                                 fill="white" />
-                              <path
-                                 d="M12.4998 10.4252C13.0057 10.4227 13.4984 10.263 13.9093 9.96819L24.5845 2.46219H24.5847C24.7744 2.32908 24.8202 2.06729 24.6871 1.87764C24.554 1.68776 24.2925 1.64192 24.1026 1.77502L13.4274 9.28102C13.1567 9.47556 12.8317 9.58028 12.4982 9.58028C12.1647 9.58028 11.8399 9.47556 11.5692 9.28102L0.894012 1.77502H0.89378C0.803724 1.70335 0.688307 1.6724 0.574512 1.68892C0.46072 1.70545 0.358797 1.76827 0.292942 1.86252C0.226852 1.95676 0.202888 2.07404 0.226389 2.18667C0.249889 2.2993 0.318773 2.39703 0.416739 2.45707L11.0919 9.96308H11.0922C11.5022 10.2593 11.9942 10.4208 12.4998 10.4252Z"
-                                 fill="white" />
-                              <path
-                                 d="M22.6746 14.7615C22.8459 14.762 22.9997 14.6577 23.063 14.4988C23.1263 14.3396 23.086 14.1581 22.9615 14.0408L16.445 7.88115C16.3659 7.79877 16.2565 7.75246 16.1425 7.75293C16.0285 7.7534 15.9196 7.80064 15.8412 7.88371C15.7627 7.96655 15.7218 8.07802 15.7278 8.19181C15.7339 8.30584 15.7862 8.41241 15.8728 8.48664L22.3881 14.6481C22.4656 14.7214 22.5685 14.7621 22.6751 14.7617L22.6746 14.7615Z"
-                                 fill="white" />
-                              <path
-                                 d="M2.32502 14.7622C2.43159 14.7627 2.53421 14.722 2.6117 14.6487L9.29384 8.32039C9.37435 8.2443 9.42112 8.13935 9.42392 8.02882C9.42694 7.91829 9.38599 7.81102 9.30989 7.73073C9.15142 7.56365 8.8873 7.55644 8.72023 7.71491L2.03631 14.0414C1.91158 14.1587 1.87132 14.3402 1.93462 14.4994C1.99791 14.6583 2.15196 14.7625 2.323 14.7621L2.32502 14.7622Z"
-                                 fill="white" />
-                           </svg>
-                        </span>
-                     </div>
-                     <div class="contact-text">
-                        <p>
-                           <a href="/cdn-cgi/l/email-protection#0d7e6c606c7e79656c616c746c604d6a606c6461236e6260"><span class="__cf_email__" data-cfemail="3645575b5745425e575a574f575b76515b575f5a1855595b">[email&#160;protected]</span></a><br>
+        function speak(message) {
+            if('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.lang = 'ml-IN';
+                utterance.rate = 0.9;
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            }
+        }
 
-                         
-                        </p>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-   </footer>
-   <div class="bottom-footer">
-      <div class="container custom-container">
-         <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-             <p>
-  &copy; 2025 Samastha Kerala Jem-iyyathul Ulama. and Designed and developed by <a href='https://irsys.in/'><span class="text-white">IRSYS Technologies<span></a></p>
+        // Auto-refresh every second
+        setInterval(() => {
+            renderCounters();
+            updateStats();
+        }, 1000);
 
-            </div>
-         </div>
-      </div>
-   </div>
-   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"62ed4bf9ab7c4f08b9a2524237dbd020","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+        // Initial render
+        renderCounters();
+        updateStats();
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') {
+                issueToken();
+            }
+        });
+    </script>
 </body>
-
-
 </html>
-   <script src="https://samastha.info/assets/js/jquery-3.6.0.min.js"></script>
-   <script src="https://samastha.info/assets/js/bootstrap.min.js"></script>
-   <script src="https://samastha.info/assets/js/wow.min.js"></script>
-   <script src="https://samastha.info/assets/js/jquery.magnific-popup.js"></script>
-   <script src="https://samastha.info/assets/js/owl.carousel.min.js"></script>
-   <script src="https://samastha.info/assets/js/contact_form.js"></script>
-   <!-- REVOLUTION JS FILES -->
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/jquery.themepunch.tools.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/jquery.themepunch.revolution.min.js"></script>
-   <!-- slider -->
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.actions.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.carousel.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.kenburn.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.layeranimation.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.migration.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.navigation.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.parallax.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.slideanims.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/revolution.extension.video.min.js"></script>
-   <script type="text/javascript" src="https://samastha.info/assets/js/slider-js/warning.js"></script>
-   <!-- ...video... -->
-   <script src="https://samastha.info/assets/js/jquery.fancybox.min.js"></script> 
-   <script src="https://samastha.info/assets/js/custom.js"></script>
-
-
-  <script type="text/javascript">
-      var tpj = jQuery;
-  
-      var revapi1050;
-      tpj(document).ready(function () {
-          if (tpj("#rev_slider_1050_1").revolution == undefined) {
-              revslider_showDoubleJqueryError("#rev_slider_1050_1");
-          } else {
-              revapi1050 = tpj("#rev_slider_1050_1").show().revolution({
-                  sliderType: "standard",
-                  jsFileLocation: "revolution/js/",
-                  sliderLayout: "fullscreen",
-                  dottedOverlay: "none",
-                  delay: 3000,
-                  autoPlay: {
-                      enabled: true,
-                      delay: 3000,
-                      disableOnInteraction: false,
-                  },
-                  navigation: {
-                      onHoverStop: "off",
-                      arrows: {
-                          // style: 'uranus', // You can choose a different style for the arrows
-                          enable: true,
-                          hide_onmobile: false,
-                          hide_onleave: false,
-                          left: {
-                              h_align: "left",
-                              v_align: "center",
-                              h_offset: 20,
-                              v_offset: 0
-                          },
-                          right: {
-                              h_align: "right",
-                              v_align: "center",
-                              h_offset: 20,
-                              v_offset: 0
-                          }
-                      },
-                      // Use Font Awesome icons for bullets
-                      bullets: {
-                          enable: true,
-                          hide_onmobile: true,
-                          hide_under: 1024,
-                          nav:true,
-                          
-                          style: "fontawesome", // Set the style to fontawesome
-                          hide_onleave: false,
-                          direction: "vertical",
-                          h_align: "right",
-                          v_align: "center",
-                          h_offset: 30,
-                          v_offset: 0,
-                          space: 5,
-                          tmp: '<span class="tp-bullet fa "></span>', // Use Font Awesome span for bullet
-                      }
-                  },
-  
-                  // ... other configuration options ...
-  
-              });
-          }
-      });
-  </script> 
-  <!-- <style>
-   .tp-leftarrow.gyges,
-.tp-rightarrow.gyges {
-
-    background-color: #000;
-    color: red;
-    background-image:url(assets/images/next.png);
-    background-repeat: no-repeat;
-    
-  
-}
-
-   </style> -->
-
-
-
-<!-- .tparrows:before -->
-
-<!--  -->
