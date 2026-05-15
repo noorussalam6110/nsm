@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>സ്കൂൾ അഡ്മിഷൻ ടോക്കൺ സിസ്റ്റം | 14 കൗണ്ടറുകൾ</title>
+    <title>അഡ്മിൻ ടോക്കൺ അലോട്ട്മെന്റ് സിസ്റ്റം | സ്കൂൾ അഡ്മിഷൻ</title>
     <style>
         * {
             margin: 0;
@@ -12,70 +12,103 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Malayalam', 'Noto Sans Malayalam', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', 'Malayalam', system-ui, sans-serif;
+            background: #1a1a2e;
             min-height: 100vh;
             padding: 20px;
         }
 
-        /* Header */
-        .header {
-            background: white;
+        /* Header with Admin Panel */
+        .admin-header {
+            background: linear-gradient(135deg, #16213e, #0f3460);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            color: white;
         }
 
-        .header h1 {
-            color: #667eea;
-            font-size: 2em;
+        .admin-header h1 {
+            font-size: 1.8em;
             margin-bottom: 10px;
         }
 
-        .header p {
-            color: #666;
-            font-size: 1.1em;
+        .admin-header p {
+            opacity: 0.8;
         }
 
-        /* Main Layout */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        /* Token Issuing Panel (Left) */
-        .issue-panel {
+        .tab-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #e94560;
+            box-shadow: 0 5px 15px rgba(233,69,96,0.3);
+        }
+
+        .tab-btn:hover {
+            background: rgba(233,69,96,0.7);
+        }
+
+        /* Main Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Admin Allotment Panel */
+        .allotment-panel {
             background: white;
             border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            height: fit-content;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .issue-panel h2 {
-            color: #667eea;
+        .allotment-panel h2 {
+            color: #16213e;
             margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
+            border-left: 5px solid #e94560;
+            padding-left: 15px;
         }
 
-        .counter-select {
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             margin-bottom: 20px;
         }
 
-        .counter-select label {
-            display: block;
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
             font-weight: bold;
             margin-bottom: 8px;
             color: #333;
         }
 
-        .counter-select select {
-            width: 100%;
+        .form-group input, .form-group select {
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 10px;
@@ -83,61 +116,66 @@
             transition: all 0.3s;
         }
 
-        .counter-select select:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #e94560;
         }
 
-        .issue-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .allot-btn {
+            background: linear-gradient(135deg, #e94560, #c62a40);
             color: white;
             border: none;
-            padding: 15px;
-            font-size: 1.2em;
+            padding: 14px 30px;
+            font-size: 1.1em;
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-top: 10px;
         }
 
-        .issue-btn:hover {
+        .allot-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+            box-shadow: 0 10px 20px rgba(233,69,96,0.3);
         }
 
-        .issue-btn:active {
-            transform: translateY(0);
+        /* Statistics Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .stats {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            font-size: 1.1em;
+        .stat-card .stat-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
         }
 
-        .stat-label {
+        .stat-card .stat-value {
+            font-size: 2em;
             font-weight: bold;
-            color: #555;
+            color: #e94560;
         }
 
-        .stat-value {
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.3em;
+        .stat-card .stat-label {
+            color: #666;
+            margin-top: 5px;
         }
 
-        /* Counters Grid (Right) */
+        /* Counters Grid */
         .counters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
 
@@ -146,8 +184,7 @@
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-            animation: fadeIn 0.5s ease;
+            transition: all 0.3s;
         }
 
         .counter-card:hover {
@@ -155,61 +192,67 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
 
-        .counter-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .counter-title {
+            background: linear-gradient(135deg, #16213e, #0f3460);
             color: white;
-            padding: 10px 15px;
+            padding: 10px;
             border-radius: 10px;
-            margin-bottom: 15px;
             text-align: center;
-        }
-
-        .counter-header h3 {
-            font-size: 1.3em;
+            margin-bottom: 15px;
         }
 
         .current-token {
-            text-align: center;
-            padding: 20px;
-            background: #f0f0f0;
+            background: #f8f9fa;
+            padding: 15px;
             border-radius: 10px;
+            text-align: center;
             margin-bottom: 15px;
         }
 
         .current-token .label {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: #666;
-            margin-bottom: 5px;
         }
 
-        .current-token .token-number {
-            font-size: 2.5em;
+        .current-token .token {
+            font-size: 2em;
             font-weight: bold;
-            color: #667eea;
+            color: #e94560;
             font-family: monospace;
-            letter-spacing: 2px;
         }
 
-        .queue-info {
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 10px;
+        .applicant-info {
             background: #e8f4f8;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
         }
 
-        .queue-info span {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #667eea;
+        .queue-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
         }
 
-        .action-buttons {
+        .queue-item {
+            background: #f1f3f5;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: 0.85em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-group {
             display: flex;
             gap: 10px;
         }
 
-        .next-btn, .reset-btn {
+        .btn-next, .btn-skip {
             flex: 1;
             padding: 10px;
             border: none;
@@ -219,150 +262,180 @@
             transition: all 0.2s;
         }
 
-        .next-btn {
+        .btn-next {
             background: #28a745;
             color: white;
         }
 
-        .next-btn:hover {
+        .btn-next:hover {
             background: #218838;
         }
 
-        .reset-btn {
+        .btn-skip {
             background: #ffc107;
             color: #333;
         }
 
-        .reset-btn:hover {
+        .btn-skip:hover {
             background: #e0a800;
         }
 
-        .queue-list {
-            margin-top: 15px;
-            max-height: 120px;
-            overflow-y: auto;
+        /* All Tokens List Table */
+        .tokens-table {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .tokens-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tokens-table th, .tokens-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tokens-table th {
+            background: #16213e;
+            color: white;
+        }
+
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.85em;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
+            font-weight: bold;
         }
 
-        .queue-list h4 {
-            color: #666;
-            margin-bottom: 5px;
-        }
+        .status-waiting { background: #ffc107; color: #333; }
+        .status-serving { background: #28a745; color: white; }
+        .status-completed { background: #6c757d; color: white; }
 
-        .queue-item {
-            padding: 3px 5px;
-            background: #f9f9f9;
-            margin: 2px 0;
-            border-radius: 5px;
-            font-family: monospace;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            .counters-grid {
-                grid-template-columns: 1fr;
-            }
-            .header h1 {
-                font-size: 1.5em;
-            }
-        }
-
-        /* Toast Notification */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: #333;
+            background: #16213e;
             color: white;
             padding: 15px 25px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             animation: slideIn 0.3s ease;
             z-index: 1000;
         }
 
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .counters-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🏫 സ്കൂൾ അഡ്മിഷൻ ടോക്കൺ സിസ്റ്റം</h1>
-        <p>14 കൗണ്ടറുകൾ | റിയൽ-ടൈം ക്യൂ മാനേജ്മെന്റ്</p>
+    <div class="admin-header">
+        <h1>👨‍💼 അഡ്മിൻ ടോക്കൺ അലോട്ട്മെന്റ് സിസ്റ്റം</h1>
+        <p>സ്കൂൾ അഡ്മിഷൻ 2025 - 14 കൗണ്ടറുകൾ | അഡ്മിൻ കൺട്രോൾ</p>
     </div>
 
-    <div class="dashboard">
-        <!-- Left Panel: Token Issuing -->
-        <div class="issue-panel">
-            <h2>🎫 പുതിയ ടോക്കൺ എടുക്കുക</h2>
-            <div class="counter-select">
-                <label>📌 കൗണ്ടർ തിരഞ്ഞെടുക്കുക:</label>
-                <select id="counterSelect">
-                    <option value="auto">🤖 ഓട്ടോമാറ്റിക് (കുറഞ്ഞ ക്യൂ)</option>
-                    <option value="1">കൗണ്ടർ 1 - രജിസ്ട്രേഷൻ</option>
-                    <option value="2">കൗണ്ടർ 2 - രജിസ്ട്രേഷൻ</option>
-                    <option value="3">കൗണ്ടർ 3 - രജിസ്ട്രേഷൻ</option>
-                    <option value="4">കൗണ്ടർ 4 - രേഖാ പരിശോധന</option>
-                    <option value="5">കൗണ്ടർ 5 - രേഖാ പരിശോധന</option>
-                    <option value="6">കൗണ്ടർ 6 - ഫീസ് അടക്കൽ</option>
-                    <option value="7">കൗണ്ടർ 7 - ഫീസ് അടക്കൽ</option>
-                    <option value="8">കൗണ്ടർ 8 - ക്ലാസ് അലോട്ട്മെന്റ്</option>
-                    <option value="9">കൗണ്ടർ 9 - ക്ലാസ് അലോട്ട്മെന്റ്</option>
-                    <option value="10">കൗണ്ടർ 10 - ഫോട്ടോ & ബയോമെട്രിക്</option>
-                    <option value="11">കൗണ്ടർ 11 - ഫോട്ടോ & ബയോമെട്രിക്</option>
-                    <option value="12">കൗണ്ടർ 12 - യൂണിഫോം & ബുക്ക്</option>
-                    <option value="13">കൗണ്ടർ 13 - യൂണിഫോം & ബുക്ക്</option>
-                    <option value="14">കൗണ്ടർ 14 - ജനറൽ ഹെൽപ്</option>
-                </select>
-            </div>
-            <button class="issue-btn" onclick="issueToken()">🎟️ ടോക്കൺ എടുക്കുക</button>
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('allot')">🎫 ടോക്കൺ അലോട്ട് ചെയ്യുക</button>
+        <button class="tab-btn" onclick="switchTab('dashboard')">📺 കൗണ്ടർ ഡാഷ്ബോർഡ്</button>
+        <button class="tab-btn" onclick="switchTab('tokens')">📋 എല്ലാ ടോക്കണുകളും</button>
+    </div>
 
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-label">📊 ആകെ ടോക്കണുകൾ:</span>
-                    <span class="stat-value" id="totalTokens">0</span>
+    <!-- Tab 1: Allot Token -->
+    <div id="tab-allot" class="tab-content active">
+        <div class="allotment-panel">
+            <h2>🎫 പുതിയ ടോക്കൺ അലോട്ട് ചെയ്യുക</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>👤 അപേക്ഷകന്റെ പേര് *</label>
+                    <input type="text" id="applicantName" placeholder="ഉദാ: മുഹമ്മദ് ഫാരിസ്">
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">⏳ കാത്തിരിക്കുന്നവർ:</span>
-                    <span class="stat-value" id="waitingCount">0</span>
+                <div class="form-group">
+                    <label>📞 ഫോൺ നമ്പർ</label>
+                    <input type="tel" id="applicantPhone" placeholder="9876543210">
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">✅ സേവനം പൂർത്തിയായവർ:</span>
-                    <span class="stat-value" id="completedCount">0</span>
+                <div class="form-group">
+                    <label>🎓 ക്ലാസ് / അപേക്ഷാ വിവരം</label>
+                    <input type="text" id="applicantClass" placeholder="ഉദാ: 1st Standard / LKG">
+                </div>
+                <div class="form-group">
+                    <label>📌 കൗണ്ടർ തിരഞ്ഞെടുക്കുക *</label>
+                    <select id="counterSelect">
+                        <option value="1">കൗണ്ടർ 1 - രജിസ്ട്രേഷൻ</option>
+                        <option value="2">കൗണ്ടർ 2 - രജിസ്ട്രേഷൻ</option>
+                        <option value="3">കൗണ്ടർ 3 - രജിസ്ട്രേഷൻ</option>
+                        <option value="4">കൗണ്ടർ 4 - രേഖാ പരിശോധന</option>
+                        <option value="5">കൗണ്ടർ 5 - രേഖാ പരിശോധന</option>
+                        <option value="6">കൗണ്ടർ 6 - ഫീസ് അടക്കൽ</option>
+                        <option value="7">കൗണ്ടർ 7 - ഫീസ് അടക്കൽ</option>
+                        <option value="8">കൗണ്ടർ 8 - ക്ലാസ് അലോട്ട്മെന്റ്</option>
+                        <option value="9">കൗണ്ടർ 9 - ക്ലാസ് അലോട്ട്മെന്റ്</option>
+                        <option value="10">കൗണ്ടർ 10 - ഫോട്ടോ & ബയോമെട്രിക്</option>
+                        <option value="11">കൗണ്ടർ 11 - ഫോട്ടോ & ബയോമെട്രിക്</option>
+                        <option value="12">കൗണ്ടർ 12 - യൂണിഫോം & ബുക്ക്</option>
+                        <option value="13">കൗണ്ടർ 13 - യൂണിഫോം & ബുക്ക്</option>
+                        <option value="14">കൗണ്ടർ 14 - ജനറൽ ഹെൽപ്</option>
+                    </select>
                 </div>
             </div>
+            <button class="allot-btn" onclick="allotToken()">✅ ടോക്കൺ അലോട്ട് ചെയ്യുക</button>
         </div>
 
-        <!-- Right Panel: Counters Grid -->
+        <!-- Statistics -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">🎫</div>
+                <div class="stat-value" id="totalTokensStat">0</div>
+                <div class="stat-label">ആകെ ടോക്കണുകൾ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-value" id="waitingStat">0</div>
+                <div class="stat-label">കാത്തിരിക്കുന്നു</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-value" id="servingStat">0</div>
+                <div class="stat-label">സേവനത്തിൽ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="completedStat">0</div>
+                <div class="stat-label">പൂർത്തിയായവ</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Counter Dashboard -->
+    <div id="tab-dashboard" class="tab-content">
         <div class="counters-grid" id="countersGrid"></div>
     </div>
 
+    <!-- Tab 3: All Tokens List -->
+    <div id="tab-tokens" class="tab-content">
+        <div class="tokens-table">
+            <table id="tokensTable">
+                <thead>
+                    <tr><th>ടോക്കൺ നമ്പർ</th><th>അപേക്ഷകന്റെ പേര്</th><th>ഫോൺ</th><th>കൗണ്ടർ</th><th>സ്റ്റാറ്റസ്</th><th>സമയം</th></tr>
+                </thead>
+                <tbody id="tokensTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
-        // Data Structure for 14 Counters
+        // Data Structure
         let counters = [];
         let allTokens = [];
         let nextTokenIds = {};
@@ -374,186 +447,196 @@
                 name: getCounterName(i),
                 currentToken: null,
                 queue: [],
-                servedCount: 0,
-                lastTokenId: 0
+                servedCount: 0
             });
             nextTokenIds[i] = 1;
         }
 
-        function getCounterName(counterId) {
-            const names = {
-                1: "രജിസ്ട്രേഷൻ",
-                2: "രജിസ്ട്രേഷൻ",
-                3: "രജിസ്ട്രേഷൻ",
-                4: "രേഖാ പരിശോധന",
-                5: "രേഖാ പരിശോധന",
-                6: "ഫീസ് അടക്കൽ",
-                7: "ഫീസ് അടക്കൽ",
-                8: "ക്ലാസ് അലോട്ട്മെന്റ്",
-                9: "ക്ലാസ് അലോട്ട്മെന്റ്",
-                10: "ഫോട്ടോ & ബയോമെട്രിക്",
-                11: "ഫോട്ടോ & ബയോമെട്രിക്",
-                12: "യൂണിഫോം & ബുക്ക്",
-                13: "യൂണിഫോം & ബുക്ക്",
-                14: "ജനറൽ ഹെൽപ്"
-            };
-            return names[counterId] || "സേവനം";
+        function getCounterName(id) {
+            const names = {1:"രജിസ്ട്രേഷൻ",2:"രജിസ്ട്രേഷൻ",3:"രജിസ്ട്രേഷൻ",4:"രേഖാ പരിശോധന",5:"രേഖാ പരിശോധന",6:"ഫീസ് അടക്കൽ",7:"ഫീസ് അടക്കൽ",8:"ക്ലാസ് അലോട്ട്മെന്റ്",9:"ക്ലാസ് അലോട്ട്മെന്റ്",10:"ഫോട്ടോ & ബയോമെട്രിക്",11:"ഫോട്ടോ & ബയോമെട്രിക്",12:"യൂണിഫോം & ബുക്ക്",13:"യൂണിഫോം & ബുക്ക്",14:"ജനറൽ ഹെൽപ്"};
+            return names[id];
         }
 
-        function getCounterWithShortestQueue() {
-            let shortest = counters[0];
-            for(let i = 1; i < counters.length; i++) {
-                if(counters[i].queue.length < shortest.queue.length) {
-                    shortest = counters[i];
-                }
-            }
-            return shortest;
-        }
+        function allotToken() {
+            const name = document.getElementById('applicantName').value.trim();
+            const phone = document.getElementById('applicantPhone').value.trim();
+            const classInfo = document.getElementById('applicantClass').value.trim();
+            const counterId = parseInt(document.getElementById('counterSelect').value);
 
-        function issueToken() {
-            const selectedValue = document.getElementById('counterSelect').value;
-            let targetCounter;
-
-            if(selectedValue === 'auto') {
-                targetCounter = getCounterWithShortestQueue();
-                showToast(`🤖 ഓട്ടോമാറ്റിക്: കുറഞ്ഞ ക്യൂ ഉള്ള കൗണ്ടർ ${targetCounter.id} ലേക്ക് അയക്കുന്നു...`);
-            } else {
-                const counterId = parseInt(selectedValue);
-                targetCounter = counters.find(c => c.id === counterId);
+            if(!name) {
+                showToast("⚠️ അപേക്ഷകന്റെ പേര് നിർബന്ധമാണ്!");
+                return;
             }
 
-            // Generate Token Number
-            const tokenId = nextTokenIds[targetCounter.id]++;
-            const tokenNumber = `C${targetCounter.id}-${tokenId.toString().padStart(3, '0')}`;
-            
+            const counter = counters.find(c => c.id === counterId);
+            const tokenId = nextTokenIds[counterId]++;
+            const tokenNumber = `C${counterId}-${tokenId.toString().padStart(3, '0')}`;
+
             const token = {
                 number: tokenNumber,
-                counterId: targetCounter.id,
-                issuedAt: new Date(),
+                counterId: counterId,
+                applicantName: name,
+                phone: phone || '-',
+                classInfo: classInfo || '-',
+                issuedAt: new Date().toLocaleTimeString(),
                 status: 'waiting'
             };
 
-            targetCounter.queue.push(token);
+            counter.queue.push(token);
             allTokens.push(token);
 
-            // Show Token on Screen (Toast notification)
-            showToast(`✅ ടോക്കൺ നമ്പർ: ${tokenNumber}\n📌 കൗണ്ടർ: ${targetCounter.id}\n⏳ നിങ്ങളുടെ മുൻപിൽ ${targetCounter.queue.length - 1} പേർ`, 5000);
+            showToast(`✅ ടോക്കൺ അലോട്ട് ചെയ്തു: ${tokenNumber}\n👤 ${name}\n📌 കൗണ്ടർ ${counterId}`, 4000);
 
-            // Update display
-            renderCounters();
-            updateStats();
+            // Clear only name field for quick next entry, keep others?
+            document.getElementById('applicantName').value = '';
+            document.getElementById('applicantPhone').value = '';
+            document.getElementById('applicantClass').value = '';
 
-            // Speak the token (optional)
-            speak(`ടോക്കൺ ${tokenNumber}, കൗണ്ടർ ${targetCounter.id} ലേക്ക്`);
+            updateAllDisplays();
+            speak(`ടോക്കൺ ${tokenNumber}, ${name} ന് കൗണ്ടർ ${counterId} ലേക്ക് അലോട്ട് ചെയ്തു`);
         }
 
         function callNext(counterId) {
             const counter = counters.find(c => c.id === counterId);
-            
             if(counter.queue.length === 0) {
-                showToast(`⚠️ കൗണ്ടർ ${counterId} ൽ ടോക്കണുകൾ ഇല്ല`, 2000);
+                showToast(`⚠️ കൗണ്ടർ ${counterId} ൽ ടോക്കണുകൾ ഇല്ല`);
                 return;
             }
 
             const nextToken = counter.queue.shift();
-            
-            // If there was a current token, move to served
             if(counter.currentToken) {
+                counter.currentToken.status = 'completed';
                 counter.servedCount++;
             }
-            
             counter.currentToken = nextToken;
             nextToken.status = 'serving';
+
+            showToast(`🔔 കൗണ്ടർ ${counterId}: ${nextToken.number} - ${nextToken.applicantName} നെ വിളിക്കുന്നു`);
+            speak(`കൗണ്ടർ ${counterId}, ടോക്കൺ ${nextToken.number}, ${nextToken.applicantName}`);
             
-            // Announce
-            speak(`കൗണ്ടർ ${counterId} ലേക്ക്, ടോക്കൺ ${nextToken.number}`);
-            showToast(`🔔 കൗണ്ടർ ${counterId}: ${nextToken.number} നെ വിളിക്കുന്നു...`, 3000);
-            
-            renderCounters();
-            updateStats();
+            updateAllDisplays();
         }
 
-        function resetCurrent(counterId) {
+        function skipToken(counterId) {
             const counter = counters.find(c => c.id === counterId);
-            
             if(!counter.currentToken) {
-                showToast(`⚠️ കൗണ്ടർ ${counterId} ൽ നിലവിൽ ടോക്കൺ ഇല്ല`, 2000);
+                showToast(`⚠️ കൗണ്ടർ ${counterId} ൽ നിലവിൽ ടോക്കൺ ഇല്ല`);
                 return;
             }
-            
-            // Move current token back to queue front
-            counter.queue.unshift(counter.currentToken);
+
+            const skippedToken = counter.currentToken;
+            skippedToken.status = 'waiting';
+            counter.queue.unshift(skippedToken);
             counter.currentToken = null;
-            
-            showToast(`↩️ കൗണ്ടർ ${counterId}: നിലവിലെ ടോക്കൺ വീണ്ടും ക്യൂവിൽ ചേർത്തു`, 2000);
-            renderCounters();
-            updateStats();
+
+            showToast(`↩️ കൗണ്ടർ ${counterId}: ${skippedToken.number} ടോക്കൺ സ്കിപ്പ് ചെയ്തു (ക്യൂവിലേക്ക് മാറ്റി)`);
+            updateAllDisplays();
         }
 
         function renderCounters() {
             const grid = document.getElementById('countersGrid');
-            grid.innerHTML = '';
+            if(!grid) return;
             
+            grid.innerHTML = '';
             counters.forEach(counter => {
+                const queuePreview = counter.queue.slice(0, 3).map(t => `${t.number} (${t.applicantName.split(' ')[0]})`).join(', ');
+                const moreCount = counter.queue.length > 3 ? ` + ${counter.queue.length - 3}` : '';
+                
                 const card = document.createElement('div');
                 card.className = 'counter-card';
-                
-                const queuePreview = counter.queue.slice(0, 3).map(t => t.number).join(', ');
-                const moreCount = counter.queue.length > 3 ? ` + ${counter.queue.length - 3} more` : '';
-                
                 card.innerHTML = `
-                    <div class="counter-header">
-                        <h3>🏪 കൗണ്ടർ ${counter.id}</h3>
+                    <div class="counter-title">
+                        <strong>🏪 കൗണ്ടർ ${counter.id}</strong><br>
                         <small>${counter.name}</small>
                     </div>
                     <div class="current-token">
                         <div class="label">നിലവിലെ ടോക്കൺ</div>
-                        <div class="token-number">${counter.currentToken ? counter.currentToken.number : '---'}</div>
+                        <div class="token">${counter.currentToken ? counter.currentToken.number : '---'}</div>
+                        ${counter.currentToken ? `<small>${counter.currentToken.applicantName}</small>` : ''}
                     </div>
-                    <div class="queue-info">
-                        📋 ക്യൂവിൽ: <span>${counter.queue.length}</span> പേർ
-                    </div>
-                    <div class="action-buttons">
-                        <button class="next-btn" onclick="callNext(${counter.id})">⏩ അടുത്തത്</button>
-                        <button class="reset-btn" onclick="resetCurrent(${counter.id})">🔄 റീസെറ്റ്</button>
-                    </div>
-                    ${counter.queue.length > 0 ? `
-                        <div class="queue-list">
-                            <h4>അടുത്ത ടോക്കണുകൾ:</h4>
-                            <div class="queue-item">${queuePreview}${moreCount}</div>
+                    ${counter.currentToken ? `
+                        <div class="applicant-info">
+                            📞 ${counter.currentToken.phone}<br>
+                            🎓 ${counter.currentToken.classInfo}
                         </div>
                     ` : ''}
+                    <div class="queue-list">
+                        <strong>📋 ക്യൂവിൽ (${counter.queue.length}):</strong><br>
+                        ${queuePreview || 'ഒഴിവ്'}${moreCount}
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn-next" onclick="callNext(${counter.id})">▶ അടുത്തത്</button>
+                        <button class="btn-skip" onclick="skipToken(${counter.id})">⏭ സ്കിപ്പ്</button>
+                    </div>
                 `;
                 grid.appendChild(card);
+            });
+        }
+
+        function renderTokensTable() {
+            const tbody = document.getElementById('tokensTableBody');
+            if(!tbody) return;
+            
+            tbody.innerHTML = '';
+            allTokens.slice().reverse().forEach(token => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><strong>${token.number}</strong></td>
+                    <td>${token.applicantName}</td>
+                    <td>${token.phone}</td>
+                    <td>കൗണ്ടർ ${token.counterId}</td>
+                    <td><span class="status status-${token.status}">${token.status === 'waiting' ? '⏳ ക്യൂവിൽ' : token.status === 'serving' ? '🔄 സേവനത്തിൽ' : '✅ പൂർത്തിയായി'}</span></td>
+                    <td>${token.issuedAt}</td>
+                `;
             });
         }
 
         function updateStats() {
             const total = allTokens.length;
             const waiting = counters.reduce((sum, c) => sum + c.queue.length, 0);
-            const completed = counters.reduce((sum, c) => sum + c.servedCount, 0) + 
-                             (counters.filter(c => c.currentToken).length);
+            const serving = counters.filter(c => c.currentToken).length;
+            const completed = counters.reduce((sum, c) => sum + c.servedCount, 0);
             
-            document.getElementById('totalTokens').textContent = total;
-            document.getElementById('waitingCount').textContent = waiting;
-            document.getElementById('completedCount').textContent = completed;
+            const totalEl = document.getElementById('totalTokensStat');
+            const waitingEl = document.getElementById('waitingStat');
+            const servingEl = document.getElementById('servingStat');
+            const completedEl = document.getElementById('completedStat');
+            
+            if(totalEl) totalEl.textContent = total;
+            if(waitingEl) waitingEl.textContent = waiting;
+            if(servingEl) servingEl.textContent = serving;
+            if(completedEl) completedEl.textContent = completed;
         }
 
-        function showToast(message, duration = 3000) {
+        function updateAllDisplays() {
+            renderCounters();
+            renderTokensTable();
+            updateStats();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+            
+            if(tabName === 'dashboard') renderCounters();
+            if(tabName === 'tokens') renderTokensTable();
+        }
+
+        function showToast(msg, duration=3000) {
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.style.whiteSpace = 'pre-line';
-            toast.textContent = message;
+            toast.innerHTML = msg;
             document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, duration);
+            setTimeout(() => toast.remove(), duration);
         }
 
-        function speak(message) {
+        function speak(msg) {
             if('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(message);
+                const utterance = new SpeechSynthesisUtterance(msg);
                 utterance.lang = 'ml-IN';
                 utterance.rate = 0.9;
                 window.speechSynthesis.cancel();
@@ -561,22 +644,15 @@
             }
         }
 
-        // Auto-refresh every second
+        // Auto refresh displays
         setInterval(() => {
-            renderCounters();
+            if(document.getElementById('tab-dashboard').classList.contains('active')) renderCounters();
+            if(document.getElementById('tab-tokens').classList.contains('active')) renderTokensTable();
             updateStats();
         }, 1000);
 
         // Initial render
-        renderCounters();
-        updateStats();
-
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') {
-                issueToken();
-            }
-        });
+        updateAllDisplays();
     </script>
 </body>
 </html>
