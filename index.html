@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Token System Pro | Ultimate Display | Suhail Kerala</title>
+    <title>Token System Pro | Enhanced Display & Voice | Suhail Kerala</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -20,7 +20,6 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* CSS Variables for Light/Dark Mode */
         :root {
             --bg-gradient-start: #0a0a1a;
             --bg-gradient-end: #1a1a2e;
@@ -29,11 +28,10 @@
             --text-secondary: #cbd5e1;
             --border-light: rgba(255,255,255,0.12);
             --announce-bg: linear-gradient(135deg, #0f172a, #020617);
-            --counter-idle: #1e293b;
+            --counter-idle: #334155;
             --counter-idle-border: #475569;
             --footer-color: rgba(255,255,255,0.7);
             --ticker-bg: #000000aa;
-            --btn-primary: #e94560;
             --glow-color: #facc15;
         }
         
@@ -60,7 +58,6 @@
             color: var(--text-primary);
         }
         
-        /* Mode Toggle Bar */
         .mode-toggle {
             background: #0f0f23;
             padding: 12px 16px;
@@ -103,15 +100,14 @@
         .admin-container { max-width: 1000px; margin: 0 auto; width: 100%; }
         .display-container { max-width: 1920px; margin: 0 auto; padding: 0 20px; }
         
-        /* ========== ENHANCED DISPLAY VIEW ========== */
-        /* Blink + Pulse Animation for Counter Card */
+        /* ENHANCED BLINK PULSE (3 times, brighter) */
         @keyframes pulseBlink {
             0% { transform: scale(1); background: inherit; box-shadow: 0 0 0 0 var(--glow-color); }
-            30% { transform: scale(1.05); background: #facc15; color: #1f2937; box-shadow: 0 0 0 12px rgba(250,204,21,0.4); }
-            70% { transform: scale(1.03); background: #facc15; }
+            30% { transform: scale(1.07); background: #facc15; color: #0f172a; box-shadow: 0 0 0 15px rgba(250,204,21,0.5); }
+            70% { transform: scale(1.04); background: #facc15; color: #0f172a; box-shadow: 0 0 0 8px rgba(250,204,21,0.3); }
             100% { transform: scale(1); background: inherit; box-shadow: 0 0 0 0 var(--glow-color); }
         }
-        .blink-global-card { animation: pulseBlink 0.8s ease-in-out 2; z-index: 20; }
+        .blink-global-card { animation: pulseBlink 0.9s ease-in-out 3; z-index: 20; }
         
         .call-ended-notice {
             display: inline-flex; align-items: center; justify-content: center;
@@ -125,11 +121,11 @@
             box-shadow: 0 0 8px rgba(255,255,255,0.6);
         }
         
-        /* Announcement Box - Premium Look */
+        /* Announcement Box */
         .announcement-malayalam {
             background: var(--announce-bg);
             border-radius: 56px;
-            padding: 28px 36px;
+            padding: 32px 40px;
             margin-bottom: 32px;
             border: 3px solid var(--glow-color);
             display: flex;
@@ -137,7 +133,6 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 28px;
-            transition: all 0.2s;
             box-shadow: 0 25px 40px -12px rgba(0,0,0,0.5);
         }
         @keyframes announcementFlash {
@@ -148,60 +143,51 @@
         .announcement-pulse { animation: announcementFlash 0.6s ease-in-out 2; }
         
         .malayalam-label {
-            font-size: 1.4rem;
-            font-weight: 800;
+            font-size: 1.6rem;
+            font-weight: 900;
             color: var(--glow-color);
             margin-bottom: 12px;
             letter-spacing: 2px;
             text-transform: uppercase;
         }
         .malayalam-text {
-            font-size: 3.2rem;
-            font-weight: 800;
-            color: var(--glow-color);
+            font-size: 3.8rem;
+            font-weight: 900;
+            color: var(--text-primary);
             font-family: 'Anek Malayalam', sans-serif;
             line-height: 1.3;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         .last-token-square {
             background: #0f172a;
             border: 3px solid var(--glow-color);
             border-radius: 40px;
-            padding: 20px 36px;
+            padding: 24px 42px;
             text-align: center;
-            min-width: 260px;
+            min-width: 280px;
             background: rgba(0,0,0,0.6);
             backdrop-filter: blur(8px);
         }
-        .last-token-label { font-size: 1.2rem; color: #cbd5e1; font-weight: 700; letter-spacing: 1px; }
-        .last-token-number { font-size: 7rem; font-weight: 900; color: var(--glow-color); font-family: monospace; line-height: 1; text-shadow: 0 0 10px rgba(250,204,21,0.5); }
+        .last-token-label { font-size: 1.3rem; color: #cbd5e1; font-weight: 700; letter-spacing: 1px; }
+        .last-token-number { font-size: 7rem; font-weight: 900; color: var(--glow-color); font-family: monospace; line-height: 1; text-shadow: 0 0 15px rgba(250,204,21,0.6); }
         
-        /* Time Display - Modern Glass */
         .time-box {
             background: rgba(0,0,0,0.55);
             backdrop-filter: blur(12px);
-            padding: 14px 32px;
+            padding: 16px 36px;
             border-radius: 80px;
             text-align: center;
-            min-width: 280px;
+            min-width: 300px;
             border: 1px solid rgba(255,255,255,0.2);
         }
-        .current-time { 
-            font-size: 3rem; 
-            font-weight: 800; 
-            color: white; 
-            font-family: 'Inter', monospace;
-            letter-spacing: 3px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        #displayDate { font-size: 1rem; font-weight: 600; color: #facc15; margin-top: 8px; }
+        .current-time { font-size: 3.2rem; font-weight: 800; color: white; font-family: monospace; letter-spacing: 3px; }
+        #displayDate { font-size: 1.1rem; font-weight: 600; color: #facc15; margin-top: 8px; }
         
-        /* Ticker Tape - Elegant Scroll */
         .ticker-container {
             background: var(--ticker-bg);
             backdrop-filter: blur(8px);
             border-radius: 60px;
-            padding: 14px 24px;
+            padding: 16px 28px;
             margin: 24px 0 32px 0;
             overflow: hidden;
             border: 1px solid rgba(255,215,0,0.3);
@@ -209,76 +195,40 @@
         .ticker-text {
             display: inline-block;
             white-space: nowrap;
-            animation: tickerScroll 30s linear infinite;
-            font-size: 1.6rem;
+            animation: tickerScroll 25s linear infinite;
+            font-size: 2rem;
             font-weight: 800;
             color: #ffd966;
-            letter-spacing: 1px;
         }
         @keyframes tickerScroll {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
         
-        /* Responsive Grid - Ultra Modern Cards */
+        /* DYNAMIC GRID: when fewer counters, boxes become larger */
         .counters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
             margin-bottom: 40px;
+            justify-content: center;
         }
         .counter-card {
-            border-radius: 32px;
-            padding: 24px 12px;
+            border-radius: 38px;
+            padding: 28px 12px;
             text-align: center;
             backdrop-filter: blur(4px);
             transition: all 0.2s ease;
             border: 2px solid transparent;
             background: rgba(30, 41, 59, 0.7);
-            box-shadow: 0 15px 30px -12px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
         }
-        .counter-card.idle { 
-            background: rgba(51, 65, 85, 0.8);
-            border-color: #475569;
-        }
-        .counter-card.active { 
-            background: linear-gradient(135deg, #15803d, #0f5c2f);
-            transform: scale(1.02);
-            box-shadow: 0 0 0 3px #ffd966, 0 20px 35px -10px black;
-            border-color: #facc15;
-        }
-        .counter-card.closed { 
-            background: linear-gradient(135deg, #991b1b, #7f1a1a);
-            opacity: 0.85;
-        }
-        .counter-number {
-            font-size: 2rem;
-            font-weight: 900;
-            background: rgba(0,0,0,0.3);
-            display: inline-block;
-            padding: 8px 24px;
-            border-radius: 60px;
-            margin-bottom: 20px;
-            color: white;
-            letter-spacing: 1px;
-        }
-        .display-current-token {
-            font-size: 4rem;
-            font-weight: 900;
-            font-family: monospace;
-            margin: 15px 0;
-            color: #ffd966;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            background: rgba(0,0,0,0.2);
-            border-radius: 40px;
-            padding: 10px;
-        }
-        .counter-card .call-ended-notice {
-            font-size: 0.75rem;
-            background: rgba(0,0,0,0.5);
-        }
+        .counter-card.idle { background: rgba(51, 65, 85, 0.85); border-color: #475569; }
+        .counter-card.active { background: linear-gradient(135deg, #15803d, #0f5c2f); transform: scale(1.02); box-shadow: 0 0 0 4px #ffd966; border-color: #facc15; }
+        .counter-card.closed { background: linear-gradient(135deg, #991b1b, #7f1a1a); opacity: 0.85; }
+        .counter-number { font-size: 2.2rem; font-weight: 900; background: rgba(0,0,0,0.35); display: inline-block; padding: 8px 28px; border-radius: 60px; margin-bottom: 20px; color: white; }
+        .display-current-token { font-size: 5rem; font-weight: 900; font-family: monospace; margin: 18px 0; color: #ffd966; text-shadow: 0 3px 8px rgba(0,0,0,0.4); background: rgba(0,0,0,0.25); border-radius: 50px; padding: 12px; }
         
-        /* Display Header */
         .display-header {
             display: flex;
             flex-wrap: wrap;
@@ -291,39 +241,11 @@
             border-radius: 56px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.3);
         }
-        .display-title h1 {
-            font-size: 2.3rem;
-            font-weight: 900;
-            letter-spacing: 1px;
-        }
-        .display-stats {
-            display: flex;
-            gap: 20px;
-            background: rgba(0,0,0,0.3);
-            padding: 10px 20px;
-            border-radius: 60px;
-        }
-        .display-stat {
-            text-align: center;
-            padding: 5px 15px;
-        }
-        .display-stat-number {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #ffd966;
-        }
+        .display-title h1 { font-size: 2.5rem; font-weight: 900; }
+        .display-stats { display: flex; gap: 20px; background: rgba(0,0,0,0.3); padding: 10px 24px; border-radius: 60px; }
+        .display-stat-number { font-size: 2.2rem; font-weight: 900; color: #ffd966; }
         
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: var(--footer-color);
-            font-weight: 500;
-            padding: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        /* Admin Panel Styles (Compact but clean) */
+        /* Admin panel styles (compact) */
         .custom-announcement, .token-customize, .header {
             background: var(--card-bg);
             border-radius: 32px;
@@ -331,50 +253,36 @@
             margin-bottom: 20px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         .counters-list { display: flex; flex-direction: column; gap: 16px; max-height: 580px; overflow-y: auto; }
-        .counter-item {
-            background: #f8fafc;
-            border-radius: 28px;
-            padding: 16px;
-            border-left: 6px solid #e94560;
-            color: #1e293b;
-        }
+        .counter-item { background: #f8fafc; border-radius: 28px; padding: 16px; border-left: 6px solid #e94560; color: #1e293b; }
         .counter-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
         .action-btn { flex: 1; padding: 8px 6px; border-radius: 40px; font-weight: 700; border: none; cursor: pointer; }
         .btn-call { background: #059669; color: white; }
         .btn-skip { background: #f97316; color: white; }
         .btn-repeat { background: #3b82f6; color: white; }
         .btn-danger { background: #ef4444; color: white; padding: 14px; width: 100%; border-radius: 60px; border: none; font-weight: 800; cursor: pointer; }
-        
-        .theme-toggle, .fullscreen-btn {
-            background: #2d3748;
-            border: none;
-            border-radius: 40px;
-            padding: 8px 18px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .theme-toggle, .fullscreen-btn { background: #2d3748; border: none; border-radius: 40px; padding: 8px 18px; color: white; font-weight: 600; cursor: pointer; }
         .offline-banner { background: #ef4444; color: white; text-align: center; padding: 6px; border-radius: 20px; margin-bottom: 12px; display: none; font-weight: bold; }
-        .toast { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #facc15; padding: 12px 24px; border-radius: 60px; z-index: 2000; font-weight: 800; box-shadow: 0 5px 15px black; }
+        .toast { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #facc15; padding: 12px 24px; border-radius: 60px; z-index: 2000; font-weight: 800; }
         .login-container { position: fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #0a0a1a, #1a1a2e); display: flex; justify-content: center; align-items: center; z-index: 1100; }
         .login-box { background: white; border-radius: 42px; padding: 40px 28px; width: 90%; max-width: 400px; text-align: center; }
         .login-box input { width: 100%; margin: 10px 0; padding: 12px; border-radius: 40px; border: 1px solid #ccc; }
         .login-box button { background: #e94560; border: none; padding: 12px; border-radius: 40px; color: white; font-weight: 800; width: 100%; margin-top: 8px; cursor: pointer; }
         
-        @media (max-width: 900px) {
-            .display-header { flex-direction: column; text-align: center; }
-            .malayalam-text { font-size: 2rem; }
-            .current-time { font-size: 2rem; }
-            .last-token-number { font-size: 4rem; }
-            .display-current-token { font-size: 2.5rem; }
-            .counters-grid { gap: 16px; }
-            .counter-number { font-size: 1.4rem; }
+        @media (max-width: 1000px) {
+            .counters-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+            .malayalam-text { font-size: 2.8rem; }
+            .display-current-token { font-size: 3.5rem; }
+            .last-token-number { font-size: 5rem; }
         }
-        @media (max-width: 550px) {
-            .malayalam-text { font-size: 1.5rem; }
-            .last-token-number { font-size: 3rem; }
-            .ticker-text { font-size: 1rem; }
+        @media (max-width: 700px) {
+            .display-header { flex-direction: column; text-align: center; }
+            .counters-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+            .malayalam-text { font-size: 1.8rem; }
+            .current-time { font-size: 2rem; }
+            .last-token-number { font-size: 3.5rem; }
+            .display-current-token { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -391,12 +299,8 @@
 <!-- Admin Panel -->
 <div id="adminMode" class="admin-mode">
     <div class="admin-container">
-        <div class="header">
-            <h1>📱 Admin Panel - Multi Counter Pro</h1>
-            <button class="logout-btn" onclick="logout()" style="background:rgba(0,0,0,0.2); border:none; padding:8px 18px; border-radius:40px;">Logout</button>
-        </div>
+        <div class="header"><h1>📱 Admin Panel - Multi Counter Pro</h1><button class="logout-btn" onclick="logout()" style="background:rgba(0,0,0,0.2); border:none; padding:8px 18px; border-radius:40px;">Logout</button></div>
         <div id="offlineIndicatorAdmin" class="offline-banner">⚠️ OFFLINE MODE - Changes will sync when back online</div>
-        
         <div class="custom-announcement">
             <label style="font-weight:800;">📢 CUSTOM ANNOUNCEMENT (Voice + Ticker)</label>
             <textarea id="customAnnouncementInput" rows="2" placeholder="Type message in English or Malayalam..."></textarea>
@@ -406,7 +310,6 @@
             </div>
             <div id="announceFeedback" style="margin-top: 8px; color: #86efac;"></div>
         </div>
-        
         <div class="token-customize">
             <label>🎫 Set Next Token:</label>
             <input type="number" id="nextTokenInput" min="1" value="1" style="background:#0f172a; color:white; padding:10px; border-radius:40px; width:100px;">
@@ -415,17 +318,16 @@
             <input type="text" id="tickerInput" placeholder="Scrolling text" style="flex:1; background:#0f172a; color:white; padding:10px; border-radius:40px;">
             <button onclick="updateTicker()" style="background:#8b5cf6; padding:10px 20px; border-radius:40px;">Set Ticker</button>
         </div>
-        
         <div class="counters-list" id="countersList"></div>
         <div style="margin-top: 20px;"><button class="btn-danger" onclick="resetAll()">⚠️ RESET FULL SYSTEM (All Data)</button></div>
     </div>
 </div>
 
-<!-- Enhanced Public Display -->
+<!-- Enhanced Public Display with Dynamic Grid & Smart Voice -->
 <div id="displayMode" class="display-mode">
     <div class="display-container">
         <div class="display-header">
-            <div class="display-title"><h1>DARUNNAJATH UP SCHOOL</h1><p style="font-size:1rem;">LIVE TOKEN MANAGEMENT SYSTEM</p></div>
+            <div class="display-title"><h1>DARUNNAJATH UP SCHOOL</h1><p style="font-size:1.1rem;">LIVE TOKEN MANAGEMENT SYSTEM</p></div>
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                 <div class="display-stats" id="displayStats"></div>
                 <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶ FULLSCREEN</button>
@@ -433,7 +335,6 @@
             <div class="time-box"><div class="current-time" id="displayTime">--:--:--</div><div id="displayDate"></div></div>
         </div>
         <div id="offlineIndicatorDisplay" class="offline-banner">📡 OFFLINE - RECONNECTING...</div>
-        
         <div class="announcement-malayalam" id="announcementBox">
             <div style="flex:2;">
                 <div class="malayalam-label">🎙️ LIVE ANNOUNCEMENT</div>
@@ -444,11 +345,9 @@
                 <div class="last-token-number" id="lastTokenDisplay">---</div>
             </div>
         </div>
-        
         <div class="ticker-container"><div class="ticker-text" id="tickerText">✨ Welcome to Darunnajath UP School ✨</div></div>
-        
         <div class="counters-grid" id="displayCountersGrid"></div>
-        <div class="footer">© SUHAIL KERALA | Premium Token System | Real-time Sync | 14 Counters</div>
+        <div class="footer" style="text-align: center; margin-top: 30px; color: var(--footer-color);">© SUHAIL KERALA | Premium Token System | Real-time Sync | 14 Counters</div>
     </div>
 </div>
 
@@ -461,11 +360,13 @@
     let counters = [];
     let config = { next_token_id: 1, last_called_token: null, tickerMessage: "✨ Welcome to Darunnajath UP School ✨" };
     let currentMode = 'admin';
-    let maleVoice = null;
+    let maleEnglishVoice = null;
+    let malayalamVoice = null;
     
-    // ========== VOICE QUEUE WITH CHIME ==========
+    // Voice queue with Malayalam support
     let speechQueue = [];
     let isSpeaking = false;
+    let lastProcessedTs = 0;   // avoid duplicate announcements
     
     function playChime() {
         try {
@@ -483,6 +384,18 @@
         } catch(e) { console.warn("Chime error", e); }
     }
     
+    function selectVoices() {
+        const voices = window.speechSynthesis.getVoices();
+        maleEnglishVoice = voices.find(v => v.name === "Google UK English Male") || voices.find(v => v.lang === 'en-US');
+        malayalamVoice = voices.find(v => v.lang.includes('ml'));
+    }
+    
+    function speakSmart(text) {
+        if (!text) return;
+        speechQueue.push(text);
+        processSpeechQueue();
+    }
+    
     function processSpeechQueue() {
         if (isSpeaking || speechQueue.length === 0) return;
         isSpeaking = true;
@@ -490,22 +403,22 @@
         playChime();
         setTimeout(() => {
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.9;
-            if (maleVoice) utterance.voice = maleVoice;
+            // Auto-detect Malayalam script
+            if (/[\u0D00-\u0D7F]/.test(text)) {
+                utterance.lang = 'ml-IN';
+                if (malayalamVoice) utterance.voice = malayalamVoice;
+            } else {
+                utterance.lang = 'en-US';
+                if (maleEnglishVoice) utterance.voice = maleEnglishVoice;
+            }
+            utterance.rate = 0.85;
             utterance.onend = () => { isSpeaking = false; processSpeechQueue(); };
             window.speechSynthesis.cancel();
             window.speechSynthesis.speak(utterance);
         }, 200);
     }
     
-    function speakEnglish(text) {
-        if (!text) return;
-        speechQueue.push(text);
-        processSpeechQueue();
-    }
-    
-    // ========== UI Helpers ==========
+    // UI Helpers
     function setDisplayAnnouncement(text, isCustom = false) {
         const el = document.getElementById('malayalamAnnouncementText');
         if (el) {
@@ -525,15 +438,15 @@
     function updateLastTokenUI(token) { document.getElementById('lastTokenDisplay').innerText = token || '---'; }
     function updateTickerMessage(msg) { document.getElementById('tickerText').innerText = msg; }
     
-    // ========== Firebase Actions ==========
+    // Firebase Actions
     async function sendCustomAnnouncement() {
         const input = document.getElementById('customAnnouncementInput');
         const txt = input.value.trim();
         if (!txt) { showToast("Please enter announcement text"); return; }
         try {
-            await db.ref('config').update({ custom_announcement: txt, last_announcement: txt, tickerMessage: txt });
+            await db.ref('config').update({ custom_announcement: txt, last_announcement: txt, tickerMessage: txt, voice_ts: Date.now() });
             setDisplayAnnouncement(txt, true);
-            speakEnglish(txt);
+            speakSmart(txt);
             document.getElementById('announceFeedback').innerHTML = "✅ Announcement sent & voiced!";
             setTimeout(() => document.getElementById('announceFeedback').innerHTML = "", 2500);
             input.value = "";
@@ -543,9 +456,9 @@
     async function resetAnnouncementToWelcome() {
         const welcomeMalayalam = "✨ ദാറുന്നജാത്ത് യു പി സ്കൂളിലേക്ക് സ്വാഗതം";
         const welcomeEng = "Welcome to Darunnajath UP School";
-        await db.ref('config').update({ custom_announcement: null, last_announcement: welcomeEng, tickerMessage: welcomeEng });
+        await db.ref('config').update({ custom_announcement: null, last_announcement: welcomeEng, tickerMessage: welcomeEng, voice_ts: Date.now() });
         setDisplayAnnouncement(welcomeMalayalam, false);
-        speakEnglish(welcomeEng);
+        speakSmart(welcomeEng);
         showToast("Reset to welcome message");
     }
     
@@ -559,11 +472,18 @@
         if (idx === -1 || countersArr[idx].isClosed) { showToast(`Counter ${cid} is closed`); return; }
         if (countersArr[idx].currentToken !== null) countersArr[idx].servedCount = (countersArr[idx].servedCount || 0) + 1;
         countersArr[idx].currentToken = nextToken;
+        const malayalamAnn = `ടോക്കൺ നമ്പർ ${nextToken}, കൗണ്ടർ ${cid} ലേക്ക് വരിക`;
+        const englishAnn = `Token ${nextToken} at Counter ${cid}, please come forward`;
         await db.ref('counters').set(countersArr);
-        await db.ref('config').update({ next_token_id: nextToken + 1, last_called_token: nextToken, last_announcement: `Token ${nextToken} at Counter ${cid}` });
-        const ann = `Token ${nextToken} at Counter ${cid}, please come forward`;
-        speakEnglish(ann);
-        setDisplayAnnouncement(ann, false);
+        await db.ref('config').update({ 
+            next_token_id: nextToken + 1, 
+            last_called_token: nextToken, 
+            last_announcement: englishAnn,
+            custom_announcement: malayalamAnn,
+            voice_ts: Date.now()
+        });
+        speakSmart(englishAnn);
+        setDisplayAnnouncement(malayalamAnn, true);
         updateLastTokenUI(nextToken);
         triggerBlink(cid);
         triggerCallEnded(cid);
@@ -584,7 +504,7 @@
         if (idx !== -1 && counters[idx].currentToken) {
             let tokenNum = counters[idx].currentToken;
             let ann = `Token ${tokenNum} at Counter ${cid}, please come forward`;
-            speakEnglish(ann);
+            speakSmart(ann);
             triggerBlink(cid);
             showToast(`Repeating Token ${tokenNum}`);
         } else showToast("No token to repeat");
@@ -604,7 +524,7 @@
         let fresh = [];
         for (let i = 1; i <= 14; i++) fresh.push({ id: i, currentToken: null, servedCount: 0, isClosed: false, visible: true });
         await db.ref('counters').set(fresh);
-        await db.ref('config').update({ next_token_id: 1, last_called_token: null, last_announcement: 'System Reset', custom_announcement: null });
+        await db.ref('config').update({ next_token_id: 1, last_called_token: null, last_announcement: 'System Reset', custom_announcement: null, voice_ts: Date.now() });
         showToast('System fully reset');
         setDisplayAnnouncement("System Reset - All counters ready", false);
         updateLastTokenUI(null);
@@ -620,10 +540,9 @@
         if (val) db.ref('config').update({ tickerMessage: val });
     }
     
-    function triggerBlink(cid) { db.ref('blink_effect').set({ counterId: cid, ts: Date.now() }); setTimeout(() => db.ref('blink_effect').remove(), 1500); }
+    function triggerBlink(cid) { db.ref('blink_effect').set({ counterId: cid, ts: Date.now() }); setTimeout(() => db.ref('blink_effect').remove(), 2600); }
     function triggerCallEnded(cid) { db.ref('call_ended_effect').set({ counterId: cid, ts: Date.now() }); setTimeout(() => db.ref('call_ended_effect').remove(), 1800); }
     
-    // ========== Render Functions ==========
     function renderAdminUI() {
         const listDiv = document.getElementById('countersList');
         if (!listDiv) return;
@@ -662,7 +581,7 @@
             card.innerHTML = `
                 <div class="counter-number">Counter ${c.id}</div>
                 <div class="display-current-token">${c.currentToken || '—'}</div>
-                <div style="font-size:0.9rem; opacity:0.9;">✅ ${c.servedCount || 0} Served</div>
+                <div style="font-size:0.95rem; opacity:0.9;">✅ ${c.servedCount || 0} Served</div>
                 <div class="call-ended-notice">✓ CALL ENDED</div>
             `;
             grid.appendChild(card);
@@ -677,7 +596,6 @@
         `;
     }
     
-    // ========== Offline & Helpers ==========
     function initOfflineDetection() {
         const connectedRef = db.ref('.info/connected');
         connectedRef.on('value', (snap) => {
@@ -689,13 +607,9 @@
     
     function initVoices() {
         return new Promise(resolve => {
-            if (speechSynthesis.getVoices().length) { selectVoice(); resolve(); }
-            else speechSynthesis.onvoiceschanged = () => { selectVoice(); resolve(); };
+            if (window.speechSynthesis.getVoices().length) { selectVoices(); resolve(); }
+            else window.speechSynthesis.onvoiceschanged = () => { selectVoices(); resolve(); };
         });
-    }
-    function selectVoice() {
-        const voices = speechSynthesis.getVoices();
-        maleVoice = voices.find(v => v.name.includes("Google UK English Male")) || voices.find(v => v.lang === 'en-US');
     }
     
     function toggleTheme() { document.body.classList.toggle('light-mode'); }
@@ -703,7 +617,6 @@
     function updateDisplayClock() { const now = new Date(); document.getElementById('displayTime').innerHTML = now.toLocaleTimeString(); document.getElementById('displayDate').innerHTML = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }); }
     function showToast(msg) { let t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2500); }
     
-    // ========== Firebase Data Binding ==========
     function attachFirebase() {
         db.ref('counters').on('value', (snap) => { if (snap.exists()) { counters = snap.val().map(c => ({ ...c, visible: c.visible !== false })); renderAdminUI(); renderDisplayUI(); } });
         db.ref('config').on('value', (snap) => {
@@ -715,9 +628,19 @@
                 else setDisplayAnnouncement("✨ ദാറുന്നജാത്ത് യു പി സ്കൂളിലേക്ക് സ്വാഗതം", false);
                 updateLastTokenUI(config.last_called_token);
                 if (config.tickerMessage) updateTickerMessage(config.tickerMessage);
+                
+                // Avoid duplicate voice playback using timestamp
+                if (config.voice_ts && config.voice_ts > lastProcessedTs) {
+                    lastProcessedTs = config.voice_ts;
+                    if (config.custom_announcement && !config.custom_announcement.includes("സ്വാഗതം")) {
+                        speakSmart(config.custom_announcement);
+                    } else if (config.last_announcement && !config.last_announcement.includes("Welcome")) {
+                        speakSmart(config.last_announcement);
+                    }
+                }
             }
         });
-        db.ref('blink_effect').on('value', (snap) => { if (snap.exists()) { let cid = snap.val().counterId; let card = document.querySelector(`.counter-card[data-counter-id='${cid}']`); if (card) { card.classList.add('blink-global-card'); setTimeout(() => card.classList.remove('blink-global-card'), 1500); } } });
+        db.ref('blink_effect').on('value', (snap) => { if (snap.exists()) { let cid = snap.val().counterId; let card = document.querySelector(`.counter-card[data-counter-id='${cid}']`); if (card) { card.classList.add('blink-global-card'); setTimeout(() => card.classList.remove('blink-global-card'), 2600); } } });
         db.ref('call_ended_effect').on('value', (snap) => { if (snap.exists()) { let cid = snap.val().counterId; let card = document.querySelector(`.counter-card[data-counter-id='${cid}']`); let notice = card?.querySelector('.call-ended-notice'); if (notice) { notice.classList.add('visible-white'); setTimeout(() => notice.classList.remove('visible-white'), 1800); } } });
     }
     
@@ -726,7 +649,6 @@
         db.ref('config').once('value', snap => { if (!snap.exists()) db.ref('config').set({ next_token_id: 1, last_called_token: null, last_announcement: '', tickerMessage: "✨ Welcome to Darunnajath UP School ✨" }); });
     }
     
-    // ========== Authentication & Mode ==========
     function login() { const email = document.getElementById('loginEmail').value, pw = document.getElementById('loginPassword').value; auth.signInWithEmailAndPassword(email, pw).then(() => { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('modeToggle').style.display = 'flex'; initData(); attachFirebase(); initVoices(); initOfflineDetection(); setMode('admin'); }).catch(e => document.getElementById('loginError').innerText = e.message); }
     function createAdminAccount() { const email = document.getElementById('loginEmail').value, pw = document.getElementById('loginPassword').value; auth.createUserWithEmailAndPassword(email, pw).then(() => alert("Admin created! Login now.")).catch(e => alert(e.message)); }
     function logout() { auth.signOut().then(() => location.reload()); }
@@ -735,11 +657,9 @@
     auth.onAuthStateChanged(user => { if (user) { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('modeToggle').style.display = 'flex'; initData(); attachFirebase(); initVoices(); initOfflineDetection(); setMode('admin'); } });
     setInterval(() => { if (currentMode === 'display') updateDisplayClock(); }, 1000);
     
-    // Event listeners
     document.getElementById('sendCustomAnnouncementBtn')?.addEventListener('click', sendCustomAnnouncement);
     document.getElementById('resetAnnouncementBtn')?.addEventListener('click', resetAnnouncementToWelcome);
     
-    // Expose global functions
     window.callNewToken = callNewToken; window.skipToken = skipToken; window.repeatToken = repeatToken; window.toggleCounterClose = toggleCounterClose;
     window.resetAll = resetAll; window.updateNextToken = updateNextToken; window.updateTicker = updateTicker;
     window.toggleTheme = toggleTheme; window.toggleFullscreen = toggleFullscreen; window.setMode = setMode;
