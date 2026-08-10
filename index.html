@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        /* ===== CSS (same as before – kept compact) ===== */
+        /* ===== CSS (compact) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Anek Malayalam', 'Inter', sans-serif; }
         body {
             background: radial-gradient(circle at 10% 20%, rgba(15,25,55,0.95), rgba(5,10,30,0.98));
@@ -47,6 +47,8 @@
         .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: #3b82f6; color: #93c5fd; }
         .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
         .btn-block { width: 100%; display: block; }
+        .btn-expired { background: #475569; color: #94a3b8; cursor: not-allowed; opacity: 0.6; }
+        .btn-expired:hover { transform: none; box-shadow: none; }
         input, select, textarea {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.1);
@@ -168,12 +170,16 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
         .modal-glass { background: rgba(10,20,40,0.95); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; max-width: 600px; width: 100%; padding: 28px; max-height: 90vh; overflow-y: auto; }
         .modal-glass h3 { color: #fbbf24; font-weight: 700; }
+        .modal-glass .modal-btn-group { display: flex; gap: 12px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
 
         .copy-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .copy-btn:hover { background: #fbbf24; color: #0f172a; }
 
         .help-btn { position: fixed; bottom: 20px; right: 24px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; padding: 10px 20px; color: rgba(255,255,255,0.5); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px); z-index: 100; }
         .help-btn:hover { background: rgba(59,130,246,0.2); border-color: #3b82f6; color: #93c5fd; }
+
+        .btn-view-questions { background: linear-gradient(95deg, #fbbf24, #f59e0b); color: #0f172a; font-size: 1.1rem; padding: 14px 28px; }
+        .btn-view-questions:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(251,191,36,0.3); }
 
         @media (max-width:768px) {
             .dashboard-header { padding: 0.8rem 1.2rem; flex-direction: column; align-items: stretch; gap: 0.5rem; }
@@ -182,6 +188,7 @@
             .login-panel { padding: 1.5rem; }
             .login-title { font-size: 1.6rem; }
             .admin-table-wrap table { font-size: 0.7rem; min-width: 320px; }
+            .btn-view-questions { font-size: 0.95rem; padding: 12px 20px; }
         }
         @media (max-width:480px) {
             .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
@@ -295,6 +302,7 @@
                 <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="text-white-50">Your Score</div></div></div>
             </div>
 
+            <!-- Timer -->
             <div id="timerArea" class="hidden timer-wrapper">
                 <div class="timer-ring-container" id="timerRingContainer">
                     <svg viewBox="0 0 160 160">
@@ -306,21 +314,70 @@
                 </div>
             </div>
 
+            <!-- Status & View Questions Button -->
             <div id="statusArea">
-                <div class="status-box" id="waitingMsg"><div class="icon">⏳</div><h2>മത്സരത്തിന് സമയമായിട്ടില്ല</h2><p id="waitingTimeText">ദയവായി കാത്തിരിക്കുക...</p></div>
-                <div class="status-box hidden" id="endedMsg"><div class="icon">🚫</div><h2>ഇന്നത്തെ മത്സരം അവസാനിച്ചു</h2><p>നാളെ വീണ്ടും വരൂ!</p></div>
+                <div class="status-box" id="waitingMsg">
+                    <div class="icon">⏳</div>
+                    <h2>മത്സരത്തിന് സമയമായിട്ടില്ല</h2>
+                    <p id="waitingTimeText">ദയവായി കാത്തിരിക്കുക...</p>
+                </div>
+                <div class="status-box hidden" id="endedMsg">
+                    <div class="icon">🚫</div>
+                    <h2>ഇന്നത്തെ മത്സരം അവസാനിച്ചു</h2>
+                    <p>നാളെ വീണ്ടും വരൂ!</p>
+                </div>
             </div>
 
-            <div id="startArea" class="hidden text-center mt-3"><button class="btn btn-primary" id="startQuizBtn">🚀 ക്വിസ് ആരംഭിക്കുക</button></div>
-            <div id="questionsArea" class="hidden"><div id="questionsContainer"></div><button class="btn btn-success btn-block mt-3" id="submitQuizBtn">📤 സമർപ്പിക്കുക</button></div>
-            <div id="submittedArea" class="hidden"><div class="status-box"><div class="icon">✅</div><h2>നന്ദി!</h2><p>നിങ്ങളുടെ ഉത്തരങ്ങൾ രേഖപ്പെടുത്തി. ഫലപ്രഖ്യാപന സമയത്ത് റാങ്കിംഗ് ലഭ്യമാകും.</p></div></div>
+            <!-- View Questions Button (shows when session is active) -->
+            <div id="viewQuestionsArea" class="hidden text-center mt-3">
+                <button class="btn btn-view-questions" id="viewQuestionsBtn" style="max-width:380px; margin:0 auto;">
+                    📝 ചോദ്യങ്ങൾ കാണുക
+                </button>
+                <div id="quizStatusMessage" class="mt-2 text-white-50" style="font-size:0.9rem;"></div>
+            </div>
 
+            <!-- Questions Area (hidden until view button clicked) -->
+            <div id="questionsArea" class="hidden">
+                <div id="questionsContainer"></div>
+                <button class="btn btn-success btn-block mt-3" id="submitQuizBtn">📤 സമർപ്പിക്കുക</button>
+            </div>
+
+            <!-- Submitted -->
+            <div id="submittedArea" class="hidden">
+                <div class="status-box">
+                    <div class="icon">✅</div>
+                    <h2>നന്ദി!</h2>
+                    <p>നിങ്ങളുടെ ഉത്തരങ്ങൾ രേഖപ്പെടുത്തി. ഫലപ്രഖ്യാപന സമയത്ത് റാങ്കിംഗ് ലഭ്യമാകും.</p>
+                </div>
+            </div>
+
+            <!-- Ranking -->
             <div id="rankingArea" class="hidden">
                 <div class="glass-card p-4">
                     <div class="flex-between"><h3 style="color:#fbbf24;">🏆 നിങ്ങളുടെ സ്കോർ</h3><span class="badge" id="rankCountBadge">0 പേർ</span></div>
                     <div id="publicationCountdown" class="publication-box"><p>📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p><div class="pub-timer" id="publicationTimer">05:00</div></div>
                     <div id="rankListContainer"><div class="text-center text-white-50">Loading...</div></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirmModal" class="modal-overlay hidden">
+        <div class="modal-glass">
+            <h3 style="color:#fbbf24;">⚠️ ശ്രദ്ധിക്കുക</h3>
+            <p style="color:#94a3b8; margin-top: 8px;">
+                <strong>ചോദ്യങ്ങളിലേക്ക് പ്രവേശിച്ചാൽ പിന്നീട് ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.</strong>
+                <br><br>
+                ദയവായി ഉറപ്പാക്കുക:
+                <br>• നിങ്ങൾ തയ്യാറാണോ?
+                <br>• സമയപരിധി മനസ്സിലാക്കിയിട്ടുണ്ടോ?
+                <br><br>
+                <span style="color:#fbbf24;">"തുടങ്ങുക" ക്ലിക്ക് ചെയ്താൽ ക്വിസ് ആരംഭിക്കും.</span>
+            </p>
+            <div class="modal-btn-group">
+                <button class="btn btn-outline btn-sm" id="cancelConfirmBtn">❌ ഇല്ല, പിന്നീട്</button>
+                <button class="btn btn-success btn-sm" id="proceedConfirmBtn">✅ അതെ, തുടങ്ങുക</button>
             </div>
         </div>
     </div>
@@ -425,20 +482,17 @@
         // ================================================================
         // TIMEZONE HELPERS
         // ================================================================
-        // Convert local datetime-local string to UTC ISO string
         function localToUTC(localDateTime) {
             if (!localDateTime) return '';
             const d = new Date(localDateTime);
             if (isNaN(d)) return '';
-            return d.toISOString(); // UTC
+            return d.toISOString();
         }
 
-        // Convert UTC ISO string to local datetime-local string for input
         function utcToLocal(utcISO) {
             if (!utcISO) return '';
             const d = new Date(utcISO);
             if (isNaN(d)) return '';
-            // Get local date/time in ISO format without timezone (YYYY-MM-DDTHH:mm)
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
@@ -447,7 +501,6 @@
             return `${year}-${month}-${day}T${hours}:${minutes}`;
         }
 
-        // Format UTC to IST for display
         function formatDate(d) {
             if (!d) return '';
             return new Date(d).toLocaleString('ml-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
@@ -707,12 +760,14 @@
         }
 
         // ================================================================
-        // PARENT QUIZ (unchanged)
+        // PARENT DASHBOARD (with View Questions button)
         // ================================================================
         window.questions = [];
         window.answers = {};
         window.isSubmitted = false;
         window.currentAttemptId = null;
+        window.hasViewedQuestions = false;
+        window.quizStarted = false;
 
         async function renderParentDashboard() {
             if (!window.currentUser || !window.currentSession) return;
@@ -722,7 +777,8 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
-            ['waitingMsg', 'endedMsg', 'startArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
+            // Hide all sections
+            ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
                 .forEach(id => document.getElementById(id).classList.add('hidden'));
 
             if (now < start) {
@@ -735,6 +791,7 @@
                 return;
             }
 
+            // Active session - check if already attempted
             const { data: attempt } = await _supabase
                 .from('Attempt')
                 .select('id, status, score')
@@ -743,9 +800,12 @@
                 .maybeSingle();
 
             if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
+                // Already submitted - show submitted and ranking
                 document.getElementById('submittedArea').classList.remove('hidden');
-                if (new Date() > pubTime) await loadParentRanking(pubTime);
-                else {
+                document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
+                if (now > pubTime) {
+                    await loadParentRanking(pubTime);
+                } else {
                     const check = setInterval(() => {
                         if (new Date() > pubTime) { clearInterval(check);
                             loadParentRanking(pubTime); }
@@ -753,34 +813,118 @@
                 }
                 return;
             }
-            if (attempt) window.currentAttemptId = attempt.id;
 
+            // Check if already viewed questions today (has an attempt in STARTED state)
+            if (attempt && attempt.status === 'STARTED') {
+                window.currentAttemptId = attempt.id;
+                window.hasViewedQuestions = true;
+                window.quizStarted = true;
+                // Show expired state
+                document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                document.getElementById('viewQuestionsBtn').textContent = '🔒 Expired (Already Started)';
+                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                document.getElementById('viewQuestionsBtn').disabled = true;
+                document.getElementById('quizStatusMessage').textContent =
+                    '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                // But also show the questions if they were started (resume)
+                await loadQuestionsAndStart(true);
+                return;
+            }
+
+            // Check if there's a login track that indicates they viewed questions before
+            // (We'll use a custom flag - but we check if they have an attempt even if not completed)
+            const { data: anyAttempt } = await _supabase
+                .from('Attempt')
+                .select('id')
+                .eq('studentId', window.currentUser.id)
+                .eq('sessionDay', window.currentSession.day)
+                .maybeSingle();
+
+            if (anyAttempt) {
+                window.hasViewedQuestions = true;
+                window.currentAttemptId = anyAttempt.id;
+                document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                document.getElementById('viewQuestionsBtn').textContent = '🔒 Expired';
+                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                document.getElementById('viewQuestionsBtn').disabled = true;
+                document.getElementById('quizStatusMessage').textContent =
+                    '⚠️ നിങ്ങൾ ഇതിനകം ചോദ്യങ്ങൾ കണ്ടു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                // Load questions anyway so they can continue if they started
+                await loadQuestionsAndStart(true);
+                return;
+            }
+
+            // Fresh view - show the View Questions button
+            document.getElementById('viewQuestionsArea').classList.remove('hidden');
+            document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
+            document.getElementById('viewQuestionsBtn').className = 'btn btn-view-questions';
+            document.getElementById('viewQuestionsBtn').disabled = false;
+            document.getElementById('quizStatusMessage').textContent =
+                '⏳ ക്വിസ് ആരംഭിക്കാൻ തയ്യാറാണോ? "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക.';
+
+            // Load questions in background (but don't show yet)
             const { data: qs } = await _supabase
                 .from('Question')
                 .select('*')
                 .eq('sessionDay', window.currentSession.day)
                 .order('id', { ascending: true });
 
-            if (!qs || qs.length === 0) {
-                showToast('No questions for this day', 'error');
-                return;
-            }
-            window.questions = qs;
-            window.answers = {};
-            document.getElementById('questionCountDisplay').textContent = qs.length;
-
-            if (!attempt) {
-                document.getElementById('startArea').classList.remove('hidden');
-                document.getElementById('startQuizBtn').onclick = startParentQuiz;
+            if (qs && qs.length > 0) {
+                window.questions = qs;
+                document.getElementById('questionCountDisplay').textContent = qs.length;
             } else {
-                startParentQuiz(true);
+                showToast('No questions for this day', 'error');
+            }
+
+            // Attach click handler for the view button with confirmation
+            document.getElementById('viewQuestionsBtn').onclick = function() {
+                if (this.disabled) return;
+                // Show confirmation modal
+                document.getElementById('confirmModal').classList.remove('hidden');
+            };
+        }
+
+        // ================================================================
+        // CONFIRMATION MODAL
+        // ================================================================
+        document.getElementById('cancelConfirmBtn').addEventListener('click', function() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        });
+
+        document.getElementById('proceedConfirmBtn').addEventListener('click', async function() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            // Proceed to start quiz
+            await startParentQuiz(false);
+        });
+
+        // ================================================================
+        // PARENT QUIZ (with view state)
+        // ================================================================
+        async function loadQuestionsAndStart(resume = false) {
+            if (window.questions.length === 0) {
+                const { data: qs } = await _supabase
+                    .from('Question')
+                    .select('*')
+                    .eq('sessionDay', window.currentSession.day)
+                    .order('id', { ascending: true });
+                if (qs && qs.length > 0) {
+                    window.questions = qs;
+                    document.getElementById('questionCountDisplay').textContent = qs.length;
+                } else {
+                    showToast('No questions for this day', 'error');
+                    return;
+                }
+            }
+            // If we have questions and we haven't started, start
+            if (!window.quizStarted && window.questions.length > 0) {
+                await startParentQuiz(resume);
             }
         }
 
         async function startParentQuiz(resume = false) {
             try {
-                if (!resume) {
-                    const { data: att } = await _supabase
+                if (!resume && !window.currentAttemptId) {
+                    const { data: att, error: aErr } = await _supabase
                         .from('Attempt')
                         .insert({
                             studentId: window.currentUser.id,
@@ -789,10 +933,22 @@
                         })
                         .select()
                         .single();
+
+                    if (aErr) throw new Error('Failed to start quiz.');
                     window.currentAttemptId = att.id;
+                    window.hasViewedQuestions = true;
+                    window.quizStarted = true;
                 }
 
-                document.getElementById('startArea').classList.add('hidden');
+                // Mark view questions button as expired
+                document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                document.getElementById('viewQuestionsBtn').textContent = '🔒 Expired';
+                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                document.getElementById('viewQuestionsBtn').disabled = true;
+                document.getElementById('quizStatusMessage').textContent =
+                    '⚠️ നിങ്ങൾ ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+
+                // Show questions and timer
                 document.getElementById('questionsArea').classList.remove('hidden');
                 document.getElementById('timerArea').classList.remove('hidden');
 
@@ -811,6 +967,8 @@
                         submitParentQuiz(true);
                     }
                 }, 1000);
+
+                showToast('✅ ക്വിസ് ആരംഭിച്ചു. ഭാഗ്യം!', 'success');
             } catch (err) {
                 showToast(err.message, 'error');
             }
@@ -854,7 +1012,9 @@
 
             document.getElementById('submitQuizBtn').onclick = () => {
                 if (Object.keys(window.answers).length === 0) { showToast('Select at least one answer', 'error'); return; }
-                if (confirm('Submit? This cannot be undone.')) submitParentQuiz(false);
+                if (confirm('Are you sure you want to submit? This cannot be undone.')) {
+                    submitParentQuiz(false);
+                }
             };
         }
 
@@ -888,15 +1048,18 @@
                 document.getElementById('timerArea').classList.add('hidden');
                 document.getElementById('submittedArea').classList.remove('hidden');
                 document.getElementById('scoreDisplay').textContent = score;
-                showToast('✅ Submitted!', 'success');
+                showToast('✅ Submitted successfully!', 'success');
 
                 const end = new Date(window.currentSession.endTime);
                 const pubTime = new Date(end.getTime() + 5 * 60000);
-                if (new Date() > pubTime) await loadParentRanking(pubTime);
-                else {
+                if (new Date() > pubTime) {
+                    await loadParentRanking(pubTime);
+                } else {
                     const check = setInterval(() => {
-                        if (new Date() > pubTime) { clearInterval(check);
-                            loadParentRanking(pubTime); }
+                        if (new Date() > pubTime) {
+                            clearInterval(check);
+                            loadParentRanking(pubTime);
+                        }
                     }, 5000);
                 }
             } catch (err) {
@@ -1001,7 +1164,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL
+        // ADMIN PANEL (unchanged, kept from previous)
         // ================================================================
         window.adminCurrentDay = 1;
         window.questionsCache = [];
@@ -1051,7 +1214,6 @@
             const duration = parseInt(document.getElementById('newDuration').value);
             if (!day || !startLocal || !endLocal || !duration) { showToast('Fill all fields', 'error'); return; }
 
-            // Convert local to UTC
             const startUTC = localToUTC(startLocal);
             const endUTC = localToUTC(endLocal);
             if (!startUTC || !endUTC) { showToast('Invalid date/time', 'error'); return; }
@@ -1129,18 +1291,15 @@
                     return;
                 }
 
-                // Quick Set dropdown
                 let opts = '';
                 sessions.forEach(s => opts += `<option value="${s.day}">Day ${s.day}</option>`);
                 document.getElementById('quickDay').innerHTML = opts;
                 const first = sessions[0];
                 document.getElementById('quickDay').value = first.day;
-                // Convert UTC to local for display in input
                 document.getElementById('quickStart').value = utcToLocal(first.startTime);
                 document.getElementById('quickEnd').value = utcToLocal(first.endTime);
                 document.getElementById('quickDuration').value = first.duration || 15;
 
-                // Table
                 let html = `<table><thead><tr><th>Day</th><th>Start</th><th>End</th><th>Duration</th><th>Actions</th></tr></thead><tbody>`;
                 sessions.forEach(s => {
                     const localStart = utcToLocal(s.startTime);
@@ -1159,7 +1318,6 @@
                 html += `</tbody></table>`;
                 table.innerHTML = html;
 
-                // Update listeners for row updates
                 table.querySelectorAll('.update-row-btn').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const row = this.closest('tr');
@@ -1188,7 +1346,6 @@
                     });
                 });
 
-                // Update day tabs for Questions & Rankings
                 const days = sessions.map(s => s.day);
                 const qContainer = document.getElementById('questionDayTabs');
                 if (qContainer) {
@@ -1329,7 +1486,6 @@
                 html += `</tbody></table>`;
                 table.innerHTML = html;
 
-                // Update active tab
                 document.querySelectorAll('#adminDayTabsContainer .day-tab').forEach(tab => {
                     tab.classList.toggle('active', parseInt(tab.dataset.day) === day);
                 });
@@ -1383,7 +1539,6 @@
                 html += `</tbody></table>`;
                 container.innerHTML = html;
 
-                // Active tab
                 document.querySelectorAll('#rankDayTabs .day-tab').forEach(tab => {
                     tab.classList.toggle('active', parseInt(tab.dataset.day) === day);
                 });
@@ -1404,8 +1559,10 @@
                 '2. Sessions: Add/Delete days, edit times\n' +
                 '3. Questions: Add/Edit/Delete\n' +
                 '4. Parents: Register to get ID\n' +
-                '5. Rankings appear after session ends (+5 min)\n' +
-                '6. Rankings show Submit Time'
+                '5. Click "View Questions" to start quiz\n' +
+                '6. Once started, cannot re-enter today\n' +
+                '7. Rankings appear after session ends (+5 min)\n' +
+                '8. Rankings show Submit Time'
             );
         }
 
@@ -1420,9 +1577,9 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Quiz System Ready (TimeZone Fixed)');
+        console.log('🚀 Quiz System Ready (View Questions + Confirmation)');
         console.log('🔑 Admin: ADMIN123');
-        console.log('✅ All times stored in UTC, displayed in IST.');
+        console.log('✅ Click "View Questions" to start quiz (with confirmation)');
     </script>
 
 </body>
