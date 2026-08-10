@@ -2609,7 +2609,7 @@
             }
         }
 
-        // ---- Admin Rankings (with Overall) ----
+        // ---- Admin Rankings (with Overall - fixed version without join) ----
         async function loadAdminRankings(day) {
             window.adminRankDay = day;
             const container = document.getElementById('adminRankListContainer');
@@ -2626,7 +2626,7 @@
                     // Fetch all completed attempts across all days
                     const { data, error } = await _supabase
                         .from('Attempt')
-                        .select('*, Student(name)')
+                        .select('*')
                         .eq('status', 'COMPLETED');
                     if (error) throw error;
                     attempts = data;
@@ -2634,7 +2634,7 @@
                     // Fetch for specific day
                     const { data, error } = await _supabase
                         .from('Attempt')
-                        .select('*, Student(name)')
+                        .select('*')
                         .eq('sessionDay', day)
                         .eq('status', 'COMPLETED');
                     if (error) throw error;
@@ -2646,16 +2646,25 @@
                     return;
                 }
 
+                // Get student names
+                const studentIds = [...new Set(attempts.map(a => a.studentId))];
+                const { data: students, error: stuErr } = await _supabase
+                    .from('Student')
+                    .select('studentId, name')
+                    .in('studentId', studentIds);
+                if (stuErr) throw stuErr;
+                const studentMap = {};
+                students.forEach(s => studentMap[s.studentId] = s.name);
+
                 let ranked;
                 if (day === 'overall') {
-                    // Group by studentId, sum scores, sum times
                     const map = {};
                     attempts.forEach(a => {
                         const sid = a.studentId;
                         if (!map[sid]) {
                             map[sid] = {
                                 studentId: sid,
-                                name: a.Student?.name || 'Unknown',
+                                name: studentMap[sid] || 'Unknown',
                                 totalScore: 0,
                                 totalTime: 0,
                                 count: 0
@@ -2671,14 +2680,12 @@
                         return a.totalTime - b.totalTime;
                     });
                 } else {
-                    // per day ranking
                     ranked = attempts.map(a => ({
                         ...a,
-                        timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000),
+                        name: studentMap[a.studentId] || 'Unknown',
                         totalScore: a.score || 0,
                         totalTime: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000),
-                        count: 1,
-                        name: a.Student?.name || 'Unknown'
+                        count: 1
                     }));
                     ranked.sort((a, b) => {
                         if (a.totalScore !== b.totalScore) return b.totalScore - a.totalScore;
@@ -2695,16 +2702,12 @@
                     if (rank === 1) medal = '🥇 ';
                     else if (rank === 2) medal = '🥈 ';
                     else if (rank === 3) medal = '🥉 ';
-                    const name = r.name || (r.Student?.name || 'Unknown');
-                    const totalScore = r.totalScore || 0;
-                    const totalTime = r.totalTime || 0;
-                    const count = r.count || 1;
                     html += `<tr>
                         <td><strong>${medal}${rank}</strong></td>
-                        <td>${name}</td>
-                        <td style="color:#fbbf24;font-weight:700;">${totalScore}</td>
-                        <td>${totalTime} സെ</td>
-                        <td>${count}</td>
+                        <td>${r.name}</td>
+                        <td style="color:#fbbf24;font-weight:700;">${r.totalScore}</td>
+                        <td>${r.totalTime} സെ</td>
+                        <td>${r.count}</td>
                     </tr>`;
                 });
                 html += `</tbody></table></div>`;
@@ -2713,6 +2716,7 @@
             } catch (err) {
                 container.innerHTML = '<div class="text-center text-muted">Error loading</div>';
                 showToast(err.message, 'error');
+                console.error(err);
             }
         }
 
@@ -2725,9 +2729,12 @@
                 '1. രജിസ്റ്റർ ചെയ്ത് Parent ID നേടുക\n' +
                 '2. ID ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക\n' +
                 '3. "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്ത് ക്വിസ് ആരംഭിക്കുക\n' +
-                '4. ഒരിക്കൽ ക്വിസ് പേജിൽ പ്രവേശിച്ചാൽ അന്ന് വീണ്ടും പ്രവേശിക്കാനാവില്ല\n' +
+                '4. ഒരിക്കൽ ആരംഭിച്ചാൽ ഇന്ന് വീണ്ടും പ്രവേശിക്കാനാവില്ല\n' +
                 '5. സമയപരിധി കഴിഞ്ഞാൽ സ്വയം സമർപ്പിക്കും\n' +
                 '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ\n' +
+                '7. റാങ്കിൽ മൊത്തം പങ്കെടുത്തവരുടെ എണ്ണം കാണിക്കില്ല\n' +
+                '8. Admin പാനലിൽ "Overall" ടാബിൽ എല്ലാ ദിവസത്തെയും മൊത്തം റാങ്കിംഗ് കാണാം\n' +
+                '9. Admin: "ADMIN123" ഉപയോഗിച്ച് പ്രവേശിക്കുക'
             );
         }
 
@@ -2758,12 +2765,12 @@
             el.classList.toggle('active', el.dataset.view === 'home');
         });
 
-        console.log('🚀 Daily Meelad Quiz (Mobile App Style)');
+        console.log('🚀 Daily Meelad Quiz (Mobile App Style) - Fixed Overall');
         console.log('✅ Admin: ADMIN123');
         console.log('✅ Rank shows only position, not total');
         console.log('✅ Score hidden until publication');
         console.log('✅ Help in Malayalam (first point removed)');
-        console.log('✅ Overall ranking added in admin panel');
+        console.log('✅ Overall ranking added in admin panel (no join issues)');
         console.log('✅ Mobile-first UI with bottom nav');
     </script>
 
