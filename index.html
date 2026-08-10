@@ -393,7 +393,8 @@
                             <input type="hidden" id="editQuestionId" />
                         </div>
                     </div>
-                    <!-- ✅ FIX: Added adminDayTabsContainer -->
+                    <!-- ✅ FIX: Added both containers -->
+                    <div class="day-tabs" id="questionDayTabs"></div>
                     <div class="day-tabs" id="adminDayTabsContainer"></div>
                     <div id="adminQuestionsTable"><div class="text-center text-white-50 p-3">Select a day</div></div>
                 </div>
@@ -1145,16 +1146,21 @@
                 // Update day tabs for Questions & Rankings
                 const days = sessions.map(s => s.day);
                 const qContainer = document.getElementById('questionDayTabs');
-                qContainer.innerHTML = days.map(d =>
-                    `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
-                ).join('');
+                if (qContainer) {
+                    qContainer.innerHTML = days.map(d =>
+                        `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
+                    ).join('');
+                } else {
+                    console.warn('questionDayTabs not found, creating dynamically.');
+                }
 
                 const rContainer = document.getElementById('rankDayTabs');
-                rContainer.innerHTML = days.map(d =>
-                    `<button class="day-tab ${d === 1 ? 'active' : ''}" data-day="${d}" onclick="loadAdminRankings(${d})">Day ${d}</button>`
-                ).join('');
+                if (rContainer) {
+                    rContainer.innerHTML = days.map(d =>
+                        `<button class="day-tab ${d === 1 ? 'active' : ''}" data-day="${d}" onclick="loadAdminRankings(${d})">Day ${d}</button>`
+                    ).join('');
+                }
 
-                // ✅ Now this element exists
                 const aContainer = document.getElementById('adminDayTabsContainer');
                 if (aContainer) {
                     aContainer.innerHTML = days.map(d =>
@@ -1373,7 +1379,7 @@
 
         console.log('🚀 Quiz System Ready (Fixed)');
         console.log('🔑 Admin: ADMIN123');
-        console.log('✅ Missing adminDayTabsContainer added.');
+        console.log('✅ All day-tab containers are now present.');
     </script>
 
 </body>
