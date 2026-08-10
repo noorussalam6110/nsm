@@ -393,7 +393,6 @@
                             <input type="hidden" id="editQuestionId" />
                         </div>
                     </div>
-                    <!-- ✅ FIX: Added both containers -->
                     <div class="day-tabs" id="questionDayTabs"></div>
                     <div class="day-tabs" id="adminDayTabsContainer"></div>
                     <div id="adminQuestionsTable"><div class="text-center text-white-50 p-3">Select a day</div></div>
@@ -424,6 +423,38 @@
         const CIRCUMFERENCE = 2 * Math.PI * 68;
 
         // ================================================================
+        // TIMEZONE HELPERS
+        // ================================================================
+        // Convert local datetime-local string to UTC ISO string
+        function localToUTC(localDateTime) {
+            if (!localDateTime) return '';
+            const d = new Date(localDateTime);
+            if (isNaN(d)) return '';
+            return d.toISOString(); // UTC
+        }
+
+        // Convert UTC ISO string to local datetime-local string for input
+        function utcToLocal(utcISO) {
+            if (!utcISO) return '';
+            const d = new Date(utcISO);
+            if (isNaN(d)) return '';
+            // Get local date/time in ISO format without timezone (YYYY-MM-DDTHH:mm)
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        // Format UTC to IST for display
+        function formatDate(d) {
+            if (!d) return '';
+            return new Date(d).toLocaleString('ml-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
+                hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ================================================================
         // HELPERS
         // ================================================================
         function showToast(msg, type = 'info') {
@@ -433,12 +464,6 @@
             toast.innerHTML = `${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'} ${msg}`;
             container.appendChild(toast);
             setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
-        }
-
-        function formatDate(d) {
-            if (!d) return '';
-            return new Date(d).toLocaleString('ml-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
-                hour: '2-digit', minute: '2-digit' });
         }
 
         function saveId(id) {
@@ -682,7 +707,7 @@
         }
 
         // ================================================================
-        // PARENT QUIZ
+        // PARENT QUIZ (unchanged)
         // ================================================================
         window.questions = [];
         window.answers = {};
@@ -1021,10 +1046,16 @@
         // ---- Sessions ----
         document.getElementById('addDayBtn').addEventListener('click', async function() {
             const day = parseInt(document.getElementById('newDay').value);
-            const start = document.getElementById('newStart').value;
-            const end = document.getElementById('newEnd').value;
+            const startLocal = document.getElementById('newStart').value;
+            const endLocal = document.getElementById('newEnd').value;
             const duration = parseInt(document.getElementById('newDuration').value);
-            if (!day || !start || !end || !duration) { showToast('Fill all fields', 'error'); return; }
+            if (!day || !startLocal || !endLocal || !duration) { showToast('Fill all fields', 'error'); return; }
+
+            // Convert local to UTC
+            const startUTC = localToUTC(startLocal);
+            const endUTC = localToUTC(endLocal);
+            if (!startUTC || !endUTC) { showToast('Invalid date/time', 'error'); return; }
+
             try {
                 const { data: existing } = await _supabase
                     .from('QuizSession')
@@ -1032,7 +1063,12 @@
                     .eq('day', day)
                     .maybeSingle();
                 if (existing) { showToast('Day ' + day + ' already exists', 'error'); return; }
-                await _supabase.from('QuizSession').insert({ day, startTime: start, endTime: end, duration });
+                await _supabase.from('QuizSession').insert({
+                    day,
+                    startTime: startUTC,
+                    endTime: endUTC,
+                    duration
+                });
                 showToast('✅ Day ' + day + ' added', 'success');
                 document.getElementById('newDay').value = '';
                 document.getElementById('newStart').value = '';
@@ -1056,14 +1092,19 @@
 
         document.getElementById('quickSetBtn').addEventListener('click', async function() {
             const day = parseInt(document.getElementById('quickDay').value);
-            const start = document.getElementById('quickStart').value;
-            const end = document.getElementById('quickEnd').value;
+            const startLocal = document.getElementById('quickStart').value;
+            const endLocal = document.getElementById('quickEnd').value;
             const duration = parseInt(document.getElementById('quickDuration').value);
-            if (!day || !start || !end || !duration) { showToast('Fill all fields', 'error'); return; }
+            if (!day || !startLocal || !endLocal || !duration) { showToast('Fill all fields', 'error'); return; }
+
+            const startUTC = localToUTC(startLocal);
+            const endUTC = localToUTC(endLocal);
+            if (!startUTC || !endUTC) { showToast('Invalid date/time', 'error'); return; }
+
             try {
                 await _supabase
                     .from('QuizSession')
-                    .update({ startTime: start, endTime: end, duration, updatedAt: new Date() })
+                    .update({ startTime: startUTC, endTime: endUTC, duration, updatedAt: new Date() })
                     .eq('day', day);
                 showToast('✅ Day ' + day + ' updated', 'success');
                 await loadSessions();
@@ -1094,21 +1135,20 @@
                 document.getElementById('quickDay').innerHTML = opts;
                 const first = sessions[0];
                 document.getElementById('quickDay').value = first.day;
-                document.getElementById('quickStart').value = first.startTime ? new Date(first.startTime).toISOString()
-                    .slice(0, 16) : '';
-                document.getElementById('quickEnd').value = first.endTime ? new Date(first.endTime).toISOString().slice(0,
-                    16) : '';
+                // Convert UTC to local for display in input
+                document.getElementById('quickStart').value = utcToLocal(first.startTime);
+                document.getElementById('quickEnd').value = utcToLocal(first.endTime);
                 document.getElementById('quickDuration').value = first.duration || 15;
 
                 // Table
                 let html = `<table><thead><tr><th>Day</th><th>Start</th><th>End</th><th>Duration</th><th>Actions</th></tr></thead><tbody>`;
                 sessions.forEach(s => {
-                    const st = s.startTime ? new Date(s.startTime).toISOString().slice(0, 16) : '';
-                    const en = s.endTime ? new Date(s.endTime).toISOString().slice(0, 16) : '';
+                    const localStart = utcToLocal(s.startTime);
+                    const localEnd = utcToLocal(s.endTime);
                     html += `<tr>
                         <td><strong>Day ${s.day}</strong></td>
-                        <td><input type="datetime-local" class="edit-start" value="${st}" style="min-width:160px;" /></td>
-                        <td><input type="datetime-local" class="edit-end" value="${en}" style="min-width:160px;" /></td>
+                        <td><input type="datetime-local" class="edit-start" value="${localStart}" style="min-width:160px;" /></td>
+                        <td><input type="datetime-local" class="edit-end" value="${localEnd}" style="min-width:160px;" /></td>
                         <td><input type="number" class="edit-duration" value="${s.duration}" style="width:80px;" /></td>
                         <td>
                             <button class="btn btn-primary btn-sm update-row-btn" data-day="${s.day}">💾 Update</button>
@@ -1124,16 +1164,21 @@
                     btn.addEventListener('click', async function() {
                         const row = this.closest('tr');
                         const day = parseInt(this.dataset.day);
-                        const start = row.querySelector('.edit-start').value;
-                        const end = row.querySelector('.edit-end').value;
+                        const startLocal = row.querySelector('.edit-start').value;
+                        const endLocal = row.querySelector('.edit-end').value;
                         const dur = parseInt(row.querySelector('.edit-duration').value);
-                        if (!start || !end || !dur) { showToast('Fill all fields', 'error'); return; }
+                        if (!startLocal || !endLocal || !dur) { showToast('Fill all fields', 'error'); return; }
+
+                        const startUTC = localToUTC(startLocal);
+                        const endUTC = localToUTC(endLocal);
+                        if (!startUTC || !endUTC) { showToast('Invalid date/time', 'error'); return; }
+
                         this.disabled = true;
                         this.innerHTML = '⏳';
                         try {
                             await _supabase
                                 .from('QuizSession')
-                                .update({ startTime: start, endTime: end, duration: dur, updatedAt: new Date() })
+                                .update({ startTime: startUTC, endTime: endUTC, duration: dur, updatedAt: new Date() })
                                 .eq('day', day);
                             showToast('✅ Day ' + day + ' updated', 'success');
                             await loadSessions();
@@ -1150,8 +1195,6 @@
                     qContainer.innerHTML = days.map(d =>
                         `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
                     ).join('');
-                } else {
-                    console.warn('questionDayTabs not found, creating dynamically.');
                 }
 
                 const rContainer = document.getElementById('rankDayTabs');
@@ -1377,9 +1420,9 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Quiz System Ready (Fixed)');
+        console.log('🚀 Quiz System Ready (TimeZone Fixed)');
         console.log('🔑 Admin: ADMIN123');
-        console.log('✅ All day-tab containers are now present.');
+        console.log('✅ All times stored in UTC, displayed in IST.');
     </script>
 
 </body>
