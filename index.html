@@ -1461,7 +1461,7 @@
         window.questionsCache = [];
         window.isAdmin = false;
         window.currentView = 'home';
-        window.adminRankDay = 1; // currently selected day for admin rankings
+        window.adminRankDay = 1;
 
         // ================================================================
         // HELPERS
@@ -1521,12 +1521,10 @@
             document.querySelectorAll('#bottomNav .nav-item').forEach(el => {
                 el.classList.toggle('active', el.dataset.view === view);
             });
-            // Show/hide sections based on view
             const isParent = !document.getElementById('parentDashboard').classList.contains('hidden');
             const isAdmin = !document.getElementById('adminDashboard').classList.contains('hidden');
 
             if (isAdmin) {
-                // Admin navigation - switch tabs
                 if (view === 'home') switchAdminTab('sessions');
                 else if (view === 'quiz') switchAdminTab('questions');
                 else if (view === 'rank') switchAdminTab('rankings');
@@ -1536,14 +1534,12 @@
 
             if (!isParent) return;
 
-            // Parent navigation
             const dash = document.getElementById('parentDashboard');
             const allSections = dash.querySelectorAll(
                 '#statsGrid, #timerArea, #statusArea, #viewQuestionsArea, #questionsArea, #submittedArea, #rankingArea');
             allSections.forEach(el => el.classList.add('hidden'));
 
             if (view === 'home') {
-                // Show stats, status, view questions
                 document.getElementById('statsGrid').classList.remove('hidden');
                 const timer = document.getElementById('timerArea');
                 const status = document.getElementById('statusArea');
@@ -1552,22 +1548,15 @@
                 const ranking = document.getElementById('rankingArea');
                 const questions = document.getElementById('questionsArea');
 
-                // Show only what's relevant
                 if (!timer.classList.contains('hidden')) timer.classList.remove('hidden');
                 if (!status.classList.contains('hidden')) status.classList.remove('hidden');
                 if (!viewQ.classList.contains('hidden')) viewQ.classList.remove('hidden');
-                // Keep questions hidden unless active
                 if (!questions.classList.contains('hidden')) questions.classList.add('hidden');
-                // Show submitted if present
                 if (!submitted.classList.contains('hidden')) submitted.classList.remove('hidden');
-                // Show ranking if present
                 if (!ranking.classList.contains('hidden')) ranking.classList.remove('hidden');
 
-                // Re-hide any that should be hidden based on state
-                // The render function will handle this properly
                 renderParentDashboard();
             } else if (view === 'quiz') {
-                // Show questions if available
                 const qArea = document.getElementById('questionsArea');
                 if (!qArea.classList.contains('hidden')) {
                     qArea.classList.remove('hidden');
@@ -1825,12 +1814,10 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
-            // Reset visibility
             ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
             .forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('statsGrid').classList.remove('hidden');
 
-            // Score display: hide until publication
             const scoreEl = document.getElementById('scoreDisplay');
             if (now < pubTime) {
                 scoreEl.textContent = '🔒';
@@ -1858,7 +1845,6 @@
 
             if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
                 document.getElementById('submittedArea').classList.remove('hidden');
-                // Score hidden until publication
                 if (now < pubTime) {
                     document.getElementById('scoreDisplay').textContent = '🔒';
                     document.getElementById('scoreDisplay').style.fontSize = '1.4rem';
@@ -1873,7 +1859,6 @@
                         if (new Date() > pubTime) {
                             clearInterval(check);
                             loadParentRanking(pubTime);
-                            // Reveal score
                             if (attempt && attempt.score !== null) {
                                 document.getElementById('scoreDisplay').textContent = attempt.score;
                                 document.getElementById('scoreDisplay').style.fontSize = '';
@@ -2024,7 +2009,6 @@
                 }, 1000);
 
                 showToast('✅ ക്വിസ് ആരംഭിച്ചു. ഭാഗ്യം!', 'success');
-                // Navigate to quiz view
                 navigateTo('quiz');
             } catch (err) {
                 showToast(err.message, 'error');
@@ -2105,7 +2089,6 @@
                 document.getElementById('questionsArea').classList.add('hidden');
                 document.getElementById('timerArea').classList.add('hidden');
                 document.getElementById('submittedArea').classList.remove('hidden');
-                // Score hidden until publication
                 const now = new Date();
                 const end = new Date(window.currentSession.endTime);
                 const pubTime = new Date(end.getTime() + 5 * 60000);
@@ -2139,7 +2122,7 @@
         }
 
         // ================================================================
-        // PARENT RANKING - HIDES TOTAL PARTICIPANTS, SHOWS ONLY RANK
+        // PARENT RANKING - Only user's rank, no top 5 list
         // ================================================================
         async function loadParentRanking(pubTime) {
             document.getElementById('rankingArea').classList.remove('hidden');
@@ -2184,7 +2167,7 @@
             const heroContainer = document.getElementById('rankHeroContainer');
             const container = document.getElementById('rankListContainer');
             heroContainer.innerHTML = '';
-            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+            container.innerHTML = ''; // no list needed
 
             try {
                 const { data: attempts } = await _supabase
@@ -2194,13 +2177,13 @@
                     .eq('status', 'COMPLETED');
 
                 if (!attempts || attempts.length === 0) {
-                    container.innerHTML = '<div class="text-center text-muted">📭 ഇതുവരെ സമർപ്പണങ്ങളൊന്നുമില്ല.</div>';
+                    heroContainer.innerHTML = '<div class="text-center text-muted">📭 ഇതുവരെ സമർപ്പണങ്ങളൊന്നുമില്ല.</div>';
                     return;
                 }
 
                 const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
                 if (!myAttempt) {
-                    container.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
+                    heroContainer.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
                     return;
                 }
 
@@ -2218,16 +2201,11 @@
                 const timeTaken = ranked.find(a => a.id === myAttempt.id).timeTaken || 0;
                 const total = ranked.length;
 
-                // ----- HERO: Show ONLY rank, no total -----
                 const medal = getMedal(rank);
-                let rankText = rank + '-ാം സ്ഥാനം';
-                // Malayalam ordinal suffix
                 const suffix = rank === 1 ? 'ം' : rank === 2 ? 'ം' : rank === 3 ? 'ം' : 'ം';
-                rankText = rank + suffix + ' സ്ഥാനം';
+                const rankText = rank + suffix + ' സ്ഥാനം';
 
-                // Score is shown only if published (we're already past pubTime here)
-                const scoreHtml =
-                    `<div class="rank-score-visible">🏅 ${score} മാർക്ക്</div>`;
+                const scoreHtml = `<div class="rank-score-visible">🏅 ${score} മാർക്ക്</div>`;
 
                 heroContainer.innerHTML = `
                     <div class="rank-hero rank-animate">
@@ -2239,26 +2217,10 @@
                     </div>
                 `;
 
-                // ----- List: Show only top 5 (without total) -----
-                let listHtml = `<div style="margin-top:4px;"><div style="font-size:0.7rem;color:var(--text-secondary);margin-bottom:8px;text-align:center;">🏅 മികച്ച 5 പേർ</div>`;
-                const top5 = ranked.slice(0, 5);
-                top5.forEach((r, idx) => {
-                    const rk = idx + 1;
-                    const isMe = r.id === myAttempt.id;
-                    const m = getMedal(rk);
-                    listHtml += `
-                        <div class="rank-item" style="display:flex;align-items:center;padding:10px 14px;background:${isMe ? 'rgba(251,191,36,0.04)' : 'rgba(255,255,255,0.02)'};border-radius:12px;margin-bottom:6px;border:${isMe ? '1px solid rgba(251,191,36,0.1)' : '1px solid rgba(255,255,255,0.03)'};">
-                            <div style="min-width:32px;font-weight:800;font-size:16px;color:${rk===1?'var(--gold)':rk===2?'#94a3b8':rk===3?'#d97706':'#94a3b8'};">${m || rk}</div>
-                            <div style="flex:1;font-weight:${isMe?'700':'400'};font-size:0.9rem;">${r.Student?.name || 'Unknown'} ${isMe ? '👈' : ''}</div>
-                            <div style="font-weight:700;color:var(--gold);font-size:0.85rem;">${r.score ?? 0}</div>
-                        </div>
-                    `;
-                });
-                listHtml += `</div>`;
-                container.innerHTML = listHtml;
+                // No top 5 list
 
             } catch (err) {
-                container.innerHTML = '<div class="text-danger text-center">Error loading ranking.</div>';
+                heroContainer.innerHTML = '<div class="text-danger text-center">Error loading ranking.</div>';
                 showToast(err.message, 'error');
             }
         }
@@ -2274,10 +2236,8 @@
             if (tab === 'sessions') loadSessions();
             if (tab === 'questions') loadAdminQuestions(window.adminCurrentDay);
             if (tab === 'rankings') {
-                // load default day or overall? we'll load the current selected day
                 loadAdminRankings(window.adminRankDay || 1);
             }
-            // Update bottom nav
             document.querySelectorAll('#bottomNav .nav-item').forEach(el => {
                 el.classList.toggle('active',
                     (tab === 'sessions' && el.dataset.view === 'home') ||
@@ -2467,13 +2427,11 @@
                     ).join('');
                 }
 
-                // ----- Rankings tabs: add day tabs + Overall -----
                 const rContainer = document.getElementById('rankDayTabs');
                 if (rContainer) {
                     let htmlTabs = days.map(d =>
                         `<button class="day-tab ${d === window.adminRankDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminRankings(${d})">Day ${d}</button>`
                     ).join('');
-                    // Add Overall tab
                     const isOverallActive = window.adminRankDay === 'overall';
                     htmlTabs +=
                         `<button class="day-tab ${isOverallActive ? 'active' : ''}" data-day="overall" onclick="loadAdminRankings('overall')">Overall</button>`;
@@ -2609,13 +2567,12 @@
             }
         }
 
-        // ---- Admin Rankings (with Overall - fixed version without join) ----
+        // ---- Admin Rankings (with Overall - FIXED: using Student.id) ----
         async function loadAdminRankings(day) {
             window.adminRankDay = day;
             const container = document.getElementById('adminRankListContainer');
             container.innerHTML = '<div class="text-center text-muted">Loading...</div>';
 
-            // Update active tab in rankDayTabs
             document.querySelectorAll('#rankDayTabs .day-tab').forEach(tab => {
                 tab.classList.toggle('active', tab.dataset.day == day);
             });
@@ -2623,7 +2580,6 @@
             try {
                 let attempts;
                 if (day === 'overall') {
-                    // Fetch all completed attempts across all days
                     const { data, error } = await _supabase
                         .from('Attempt')
                         .select('*')
@@ -2631,7 +2587,6 @@
                     if (error) throw error;
                     attempts = data;
                 } else {
-                    // Fetch for specific day
                     const { data, error } = await _supabase
                         .from('Attempt')
                         .select('*')
@@ -2646,15 +2601,15 @@
                     return;
                 }
 
-                // Get student names
+                // Get student names using the primary key 'id' from Student
                 const studentIds = [...new Set(attempts.map(a => a.studentId))];
                 const { data: students, error: stuErr } = await _supabase
                     .from('Student')
-                    .select('studentId, name')
-                    .in('studentId', studentIds);
+                    .select('id, name')
+                    .in('id', studentIds);
                 if (stuErr) throw stuErr;
                 const studentMap = {};
-                students.forEach(s => studentMap[s.studentId] = s.name);
+                students.forEach(s => studentMap[s.id] = s.name);
 
                 let ranked;
                 if (day === 'overall') {
@@ -2693,7 +2648,6 @@
                     });
                 }
 
-                // Build table
                 let html =
                     `<div class="admin-table-wrap"><table><thead><tr><th>റാങ്ക്</th><th>രക്ഷിതാവ്</th><th>മൊത്തം സ്കോർ</th><th>ആകെ സമയം</th><th>എണ്ണം</th></tr></thead><tbody>`;
                 ranked.forEach((r, idx) => {
@@ -2760,18 +2714,15 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        // Set default view in bottom nav
         document.querySelectorAll('#bottomNav .nav-item').forEach(el => {
             el.classList.toggle('active', el.dataset.view === 'home');
         });
 
-        console.log('🚀 Daily Meelad Quiz (Mobile App Style) - Fixed Overall');
+        console.log('🚀 Daily Meelad Quiz - Fixed: Admin names, removed top 5');
         console.log('✅ Admin: ADMIN123');
-        console.log('✅ Rank shows only position, not total');
-        console.log('✅ Score hidden until publication');
-        console.log('✅ Help in Malayalam (first point removed)');
-        console.log('✅ Overall ranking added in admin panel (no join issues)');
-        console.log('✅ Mobile-first UI with bottom nav');
+        console.log('✅ Admin ranking now shows parent names correctly');
+        console.log('✅ Parent ranking shows only own rank (no top 5)');
+        console.log('✅ Overall ranking available in admin panel');
     </script>
 
 </body>
