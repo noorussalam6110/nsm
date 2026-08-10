@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        /* CSS same as before – keeping it compact */
+        /* ===== CSS (same as before – kept compact) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Anek Malayalam', 'Inter', sans-serif; }
         body {
             background: radial-gradient(circle at 10% 20%, rgba(15,25,55,0.95), rgba(5,10,30,0.98));
@@ -110,7 +110,6 @@
         }
         .form-control-glass::placeholder { color: rgba(255,255,255,0.35); font-weight: 400; font-size: 1rem; opacity: 1; }
 
-        /* Parent Quiz */
         .timer-ring-container { position: relative; width: 160px; height: 160px; margin: 0 auto; }
         .timer-ring-container svg { transform: rotate(-90deg); width: 160px; height: 160px; }
         .timer-ring-container .bg-circle { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
@@ -394,8 +393,9 @@
                             <input type="hidden" id="editQuestionId" />
                         </div>
                     </div>
-                    <div class="day-tabs" id="questionDayTabs"></div>
-                    <div id="adminQuestionsTable"><div class="text-center text-white-50 p-3">Select day</div></div>
+                    <!-- ✅ FIX: Added adminDayTabsContainer -->
+                    <div class="day-tabs" id="adminDayTabsContainer"></div>
+                    <div id="adminQuestionsTable"><div class="text-center text-white-50 p-3">Select a day</div></div>
                 </div>
             </div>
 
@@ -1081,7 +1081,6 @@
                 if (!sessions || sessions.length === 0) {
                     table.innerHTML = '<div class="text-center text-white-50 p-3">No days. Add one above.</div>';
                     document.getElementById('quickDay').innerHTML = '<option value="">No days</option>';
-                    // Update tabs
                     document.getElementById('questionDayTabs').innerHTML = '';
                     document.getElementById('rankDayTabs').innerHTML = '';
                     document.getElementById('adminDayTabsContainer').innerHTML = '';
@@ -1155,10 +1154,13 @@
                     `<button class="day-tab ${d === 1 ? 'active' : ''}" data-day="${d}" onclick="loadAdminRankings(${d})">Day ${d}</button>`
                 ).join('');
 
+                // ✅ Now this element exists
                 const aContainer = document.getElementById('adminDayTabsContainer');
-                aContainer.innerHTML = days.map(d =>
-                    `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
-                ).join('');
+                if (aContainer) {
+                    aContainer.innerHTML = days.map(d =>
+                        `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
+                    ).join('');
+                }
 
             } catch (err) {
                 table.innerHTML = '<div class="text-center text-white-50 p-3">Error loading</div>';
@@ -1369,10 +1371,9 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Quiz System Ready');
+        console.log('🚀 Quiz System Ready (Fixed)');
         console.log('🔑 Admin: ADMIN123');
-        console.log('💡 Check console for errors (F12)');
-        console.log('📞 If buttons don\'t work, tell me the console error.');
+        console.log('✅ Missing adminDayTabsContainer added.');
     </script>
 
 </body>
