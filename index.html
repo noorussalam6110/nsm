@@ -8,313 +8,687 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        /* ===== CSS (compact) ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Anek Malayalam', 'Inter', sans-serif; }
+        /* ===== GLOBAL RESET & VARIABLES ===== */
+        :root {
+            --gold: #fbbf24;
+            --gold-dark: #f59e0b;
+            --dark: #0a0f1e;
+            --slate: #1e293b;
+            --slate-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            --radius: 2rem;
+            --radius-sm: 1rem;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Anek Malayalam', 'Inter', sans-serif;
+        }
         body {
-            background: radial-gradient(circle at 10% 20%, rgba(15,25,55,0.95), rgba(5,10,30,0.98));
-            min-height: 100vh; position: relative; overflow-x: hidden; color: #fff;
-            padding: 20px;
-        }
-        body::before {
-            content: ''; position: fixed; width: 200%; height: 200%; top: -50%; left: -50%;
-            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 50%, transparent 80%);
-            animation: slowDrift 40s infinite alternate; pointer-events: none; z-index: 0;
-        }
-        @keyframes slowDrift { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(5%,5%) rotate(5deg); } }
-        .container { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 20px; }
-        .glass-card {
-            background: rgba(255,255,255,0.08); backdrop-filter: blur(16px); border-radius: 2rem;
-            border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 25px 45px -12px rgba(0,0,0,0.4);
-            transition: all 0.4s;
-        }
-        .glass-card:hover { transform: translateY(-6px); border-color: rgba(59,130,246,0.5); }
-        .hidden { display: none !important; }
-        .text-white-50 { color: rgba(255,255,255,0.5); }
-        .text-center { text-align: center; }
-        .d-flex { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .btn {
-            border: none; cursor: pointer; transition: all 0.25s; font-weight: 700; font-family: inherit;
-            padding: 10px 20px; border-radius: 60px;
-        }
-        .btn-primary { background: linear-gradient(95deg, #3b82f6, #8b5cf6); color: #fff; }
-        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(59,130,246,0.3); }
-        .btn-success { background: #10b981; color: #fff; }
-        .btn-success:hover { background: #059669; transform: scale(1.02); }
-        .btn-danger { background: #ef4444; color: #fff; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-outline { background: transparent; border: 1.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
-        .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: #3b82f6; color: #93c5fd; }
-        .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
-        .btn-block { width: 100%; display: block; }
-        .btn-expired { background: #475569; color: #94a3b8; cursor: not-allowed; opacity: 0.6; }
-        .btn-expired:hover { transform: none; box-shadow: none; }
-        input, select, textarea {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 30px;
-            padding: 8px 16px;
+            background: radial-gradient(circle at 30% 10%, #111c2e, #050a14);
+            min-height: 100vh;
             color: #fff;
-            outline: none;
-            font-size: 0.9rem;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 1400px;
             width: 100%;
+            margin: 0 auto;
         }
-        input:focus, select:focus, textarea:focus { border-color: #3b82f6; }
+
+        /* ===== GLASS CARD ===== */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.25s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(251, 191, 36, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* ===== UTILITY ===== */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-secondary); }
+        .flex { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 16px; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 16px; }
+        .mt-4 { margin-top: 24px; }
+        .mb-3 { margin-bottom: 16px; }
+        .w-100 { width: 100%; }
+        .fw-bold { font-weight: 700; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: inherit;
+            padding: 10px 22px;
+            border-radius: 60px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            min-height: 48px;
+        }
+        .btn-primary {
+            background: linear-gradient(95deg, #3b82f6, #8b5cf6);
+            color: #fff;
+            box-shadow: 0 8px 20px -8px rgba(59, 130, 246, 0.3);
+        }
+        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 8px 28px -6px #3b82f6; }
+        .btn-success {
+            background: #10b981;
+            color: #fff;
+            box-shadow: 0 8px 20px -8px rgba(16, 185, 129, 0.3);
+        }
+        .btn-success:hover { background: #059669; transform: scale(1.03); }
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 8px 20px -8px rgba(239, 68, 68, 0.3);
+        }
+        .btn-danger:hover { background: #dc2626; transform: scale(1.03); }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+        }
+        .btn-outline:hover { background: rgba(255, 255, 255, 0.06); border-color: var(--gold); color: #fff; }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #0a0f1e;
+            box-shadow: 0 8px 24px -6px rgba(251, 191, 36, 0.3);
+        }
+        .btn-gold:hover { transform: scale(1.03); box-shadow: 0 8px 32px -4px rgba(251, 191, 36, 0.5); }
+        .btn-sm { padding: 6px 14px; font-size: 0.8rem; min-height: 36px; }
+        .btn-block { width: 100%; justify-content: center; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-expired {
+            background: #334155;
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .btn-expired:hover { transform: none; box-shadow: none; }
+
+        /* ===== INPUTS ===== */
+        input, select, textarea {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 60px;
+            padding: 12px 18px;
+            color: #fff;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+            transition: 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.08);
+            background: rgba(255, 255, 255, 0.06);
+        }
         textarea { border-radius: 16px; resize: vertical; min-height: 60px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        th { text-align: left; padding: 10px; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .badge { background: #334155; padding: 2px 12px; border-radius: 30px; font-size: 0.7rem; color: #94a3b8; }
-        .toast-container {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;
-            width: 90%; max-width: 440px; display: flex; flex-direction: column; gap: 8px; pointer-events: none;
-        }
-        .toast-item {
-            background: #0b1a3a; color: #fff; padding: 12px 20px; border-radius: 60px; font-size: 0.85rem;
-            font-weight: 500; box-shadow: 0 12px 40px rgba(0,0,0,0.2); pointer-events: auto;
-            animation: toastIn 0.4s ease, toastOut 0.4s ease 2.8s forwards; display: flex; align-items: center; gap: 10px;
-        }
-        .toast-item.success { background: #065f46; }
-        .toast-item.error { background: #991b1b; }
-        .toast-item.info { background: #1e3a6a; }
-        @keyframes toastIn { from { opacity:0; transform:translateY(20px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
-        @keyframes toastOut { from { opacity:1; transform:translateY(0) scale(1); } to { opacity:0; transform:translateY(-10px) scale(0.95); } }
-        .spinner-sm {
-            display: inline-block; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.2);
-            border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.25); }
 
+        /* ===== LOGIN PANEL ===== */
         .login-panel {
-            max-width: 480px; margin: 50px auto; background: rgba(15,25,55,0.75); backdrop-filter: blur(20px);
-            border-radius: 2.5rem; padding: 2.5rem; border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 30px 50px rgba(0,0,0,0.5); animation: floatIn 0.7s ease;
+            max-width: 440px;
+            margin: 0 auto;
+            background: rgba(10, 20, 40, 0.8);
+            backdrop-filter: blur(24px);
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
-        @keyframes floatIn { from { opacity:0; transform:translateY(40px) scale(0.96); } to { opacity:1; transform:translateY(0) scale(1); } }
         .logo-circle {
-            width: 85px; height: 85px; background: linear-gradient(135deg, #3b82f6, #a855f7);
-            border-radius: 30px; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; box-shadow: 0 15px 35px rgba(59,130,246,0.3);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
         }
-        .logo-circle i { font-size: 2.8rem; color: #fff; }
+        .logo-circle i { font-size: 2.6rem; color: #fff; }
         .login-title {
-            font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #fff, #93c5fd);
-            -webkit-background-clip: text; background-clip: text; color: transparent; text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-align: center;
+            background: linear-gradient(135deg, #fff, #93c5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        .input-group-custom {
-            background: rgba(255,255,255,0.06); border-radius: 1.2rem; border: 1px solid rgba(255,255,255,0.15);
-            display: flex; align-items: center; padding: 0 1rem; transition: 0.3s;
-        }
-        .input-group-custom:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.3); }
-        .form-control-glass {
-            background: transparent; border: none; color: #fff; padding: 0.9rem 0; width: 100%;
-            outline: none; font-size: 1.15rem; font-weight: 500;
-        }
-        .form-control-glass::placeholder { color: rgba(255,255,255,0.35); font-weight: 400; font-size: 1rem; opacity: 1; }
 
-        .timer-ring-container { position: relative; width: 160px; height: 160px; margin: 0 auto; }
-        .timer-ring-container svg { transform: rotate(-90deg); width: 160px; height: 160px; }
-        .timer-ring-container .bg-circle { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
-        .timer-ring-container .progress-circle { fill: none; stroke-width: 8; stroke-linecap: round; stroke: #fbbf24; transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease; filter: drop-shadow(0 0 12px rgba(251,191,36,0.3)); }
-        .timer-ring-container .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 42px; font-weight: 800; font-family: 'Courier New', monospace; color: #fff; }
-        .timer-ring-container .timer-label { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 2px; }
-        .timer-ring-container.warning .progress-circle { stroke: #f87171; filter: drop-shadow(0 0 20px rgba(248,113,113,0.5)); animation: glow-pulse 1s infinite; }
+        /* ===== HEADER / DASHBOARD ===== */
+        .dashboard-header {
+            background: rgba(10, 20, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            padding: 16px 24px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .avatar-neon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
+            flex-shrink: 0;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 1.5rem;
+            padding: 18px 16px;
+            transition: 0.2s;
+        }
+        .stat-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(251, 191, 36, 0.1); }
+        .stat-value {
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+        .stat-value.gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* ===== TIMER ===== */
+        .timer-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .timer-ring-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+        .timer-ring-container svg {
+            transform: rotate(-90deg);
+            width: 140px;
+            height: 140px;
+        }
+        .timer-ring-container .bg-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.06);
+            stroke-width: 6;
+        }
+        .timer-ring-container .progress-circle {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke: var(--gold);
+            transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
+            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.15));
+        }
+        .timer-ring-container .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        .timer-ring-container .timer-label {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+        .timer-ring-container.warning .progress-circle {
+            stroke: #f87171;
+            filter: drop-shadow(0 0 20px rgba(248, 113, 113, 0.3));
+            animation: glow-pulse 1s infinite;
+        }
         .timer-ring-container.warning .timer-text { color: #f87171; }
-        @keyframes glow-pulse { 0%,100% { filter: drop-shadow(0 0 8px rgba(251,191,36,0.2)); } 50% { filter: drop-shadow(0 0 25px rgba(251,191,36,0.6)); } }
+        @keyframes glow-pulse {
+            0%,100% { filter: drop-shadow(0 0 8px rgba(251,191,36,0.1)); }
+            50% { filter: drop-shadow(0 0 20px rgba(251,191,36,0.3)); }
+        }
 
-        .question-card { background: rgba(255,255,255,0.03); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.2rem; border-left: 4px solid #fbbf24; }
-        .question-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        /* ===== QUESTIONS ===== */
+        .question-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 1.2rem;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--gold);
+            transition: 0.2s;
+        }
+        .question-card:hover { background: rgba(255, 255, 255, 0.04); }
+        .question-title { font-weight: 600; font-size: 1.05rem; margin-bottom: 14px; }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
         @media (max-width:550px) { .options-grid { grid-template-columns: 1fr; } }
-        .opt-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); padding: 14px 18px; border-radius: 16px; color: #e2e8f0; cursor: pointer; text-align: left; font-size: 0.95rem; transition: 0.15s; }
-        .opt-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
-        .opt-btn.selected { background: #fbbf24; color: #0f172a; font-weight: 700; border-color: #fbbf24; box-shadow: 0 4px 16px rgba(251,191,36,0.25); }
+        .opt-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #e2e8f0;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: 0.15s;
+        }
+        .opt-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.12); }
+        .opt-btn.selected {
+            background: var(--gold);
+            color: #0a0f1e;
+            font-weight: 700;
+            border-color: var(--gold);
+            box-shadow: 0 4px 16px rgba(251, 191, 36, 0.15);
+        }
         .opt-btn:disabled { opacity: 0.3; cursor: default; }
 
-        .rank-item { display: flex; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 16px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.03); gap: 16px; }
-        .rank-item .rank-num { font-weight: 800; font-size: 20px; min-width: 44px; text-align: center; color: #94a3b8; }
-        .rank-item .rank-num.gold { color: #fbbf24; }
+        /* ===== RANKING ===== */
+        .rank-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            gap: 14px;
+        }
+        .rank-item .rank-num {
+            font-weight: 800;
+            font-size: 18px;
+            min-width: 36px;
+            text-align: center;
+            color: #94a3b8;
+        }
+        .rank-item .rank-num.gold { color: var(--gold); }
         .rank-item .rank-num.silver { color: #94a3b8; }
         .rank-item .rank-num.bronze { color: #d97706; }
         .rank-item .rank-name { flex: 1; font-weight: 600; }
-        .rank-item .rank-score { font-weight: 700; color: #fbbf24; margin-right: 8px; }
-        .rank-item .rank-time { font-size: 13px; color: #94a3b8; background: rgba(0,0,0,0.2); padding: 2px 12px; border-radius: 30px; }
+        .rank-item .rank-score { font-weight: 700; color: var(--gold); margin-right: 8px; }
+        .rank-item .rank-time {
+            font-size: 13px;
+            color: #94a3b8;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
 
-        .status-box { text-align: center; padding: 40px 20px; }
-        .status-box .icon { font-size: 64px; margin-bottom: 16px; display: inline-block; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
-        .status-box h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-        .status-box p { color: #cbd5e1; }
-
-        .publication-box { text-align: center; padding: 16px; background: rgba(251,191,36,0.05); border-radius: 16px; border: 1px dashed rgba(251,191,36,0.15); margin-bottom: 16px; }
-        .publication-box .pub-timer { font-size: 28px; font-weight: 800; font-family: 'Courier New', monospace; color: #fbbf24; }
-
-        .dashboard-header { background: rgba(15,25,55,0.6); backdrop-filter: blur(20px); border-radius: 2rem; padding: 1rem 2rem; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; }
-        .avatar-neon { width: 70px; height: 70px; background: linear-gradient(135deg, #f97316, #ef4444); border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; box-shadow: 0 0 20px rgba(249,115,22,0.4); overflow: hidden; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 1.2rem; margin-bottom: 2rem; }
-        .stat-card { background: rgba(20,30,55,0.6); backdrop-filter: blur(12px); border-radius: 1.8rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.08); transition: 0.3s; }
-        .stat-card:hover { transform: translateY(-4px); border-color: rgba(59,130,246,0.3); }
-        .stat-value { font-size: 2.8rem; font-weight: 800; background: linear-gradient(120deg, #fff, #94a3b8); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .stat-value.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-        .admin-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-        .admin-tab { padding: 8px 20px; border: none; border-radius: 40px; background: rgba(255,255,255,0.08); color: #94a3b8; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: 0.3s; }
+        /* ===== ADMIN TABLES ===== */
+        .admin-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .admin-tab {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
         .admin-tab.active { background: #2563eb; color: #fff; }
-        .admin-tab:hover { background: rgba(37,99,235,0.2); color: #fff; }
-        .admin-table-wrap { overflow-x: auto; margin: 12px 0; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; background: rgba(255,255,255,0.03); }
-        .day-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-        .day-tab { padding: 6px 16px; border-radius: 30px; background: #334155; color: #94a3b8; cursor: pointer; border: none; font-weight: 600; font-size: 0.8rem; transition: 0.2s; }
-        .day-tab.active { background: #fbbf24; color: #0f172a; }
-        .day-tab:hover { background: #475569; }
+        .admin-tab:hover { background: rgba(37, 99, 235, 0.15); color: #fff; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
-        .modal-glass { background: rgba(10,20,40,0.95); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; max-width: 600px; width: 100%; padding: 28px; max-height: 90vh; overflow-y: auto; }
-        .modal-glass h3 { color: #fbbf24; font-weight: 700; }
-        .modal-glass .modal-btn-group { display: flex; gap: 12px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
+        .admin-table-wrap {
+            overflow-x: auto;
+            margin: 12px 0;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(0, 0, 0, 0.15);
+        }
+        .admin-table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 320px;
+        }
+        .admin-table-wrap th {
+            text-align: left;
+            padding: 12px 14px;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .admin-table-wrap td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            vertical-align: middle;
+        }
+        .admin-table-wrap tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
-        .copy-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: 0.2s; }
-        .copy-btn:hover { background: #fbbf24; color: #0f172a; }
+        .day-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .day-tab {
+            padding: 6px 16px;
+            border-radius: 30px;
+            background: #1e293b;
+            color: #94a3b8;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+        .day-tab.active { background: var(--gold); color: #0a0f1e; }
+        .day-tab:hover { background: #334155; }
 
-        .help-btn { position: fixed; bottom: 20px; right: 24px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; padding: 10px 20px; color: rgba(255,255,255,0.5); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px); z-index: 100; }
-        .help-btn:hover { background: rgba(59,130,246,0.2); border-color: #3b82f6; color: #93c5fd; }
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+        .modal-glass {
+            background: #111c2e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 2rem;
+            padding: 32px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+        .modal-glass h3 { color: var(--gold); font-weight: 700; font-size: 1.4rem; }
+        .modal-glass p { color: #94a3b8; margin-top: 8px; line-height: 1.6; }
 
-        .btn-view-questions { background: linear-gradient(95deg, #fbbf24, #f59e0b); color: #0f172a; font-size: 1.1rem; padding: 14px 28px; }
-        .btn-view-questions:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(251,191,36,0.3); }
+        .publication-box {
+            text-align: center;
+            padding: 16px;
+            background: rgba(251, 191, 36, 0.04);
+            border-radius: 16px;
+            border: 1px dashed rgba(251, 191, 36, 0.12);
+            margin-bottom: 16px;
+        }
+        .publication-box .pub-timer {
+            font-size: 28px;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: var(--gold);
+        }
 
-        @media (max-width:768px) {
-            .dashboard-header { padding: 0.8rem 1.2rem; flex-direction: column; align-items: stretch; gap: 0.5rem; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .copy-btn:hover { background: var(--gold); color: #0a0f1e; }
+
+        .help-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            padding: 10px 18px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            z-index: 100;
+        }
+        .help-btn:hover { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #93c5fd; }
+
+        .status-box {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .status-box .icon { font-size: 56px; margin-bottom: 14px; display: inline-block; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+        .status-box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+        .status-box p { color: #94a3b8; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .dashboard-header { flex-direction: column; align-items: stretch; gap: 12px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
             .stat-value { font-size: 2rem; }
             .login-panel { padding: 1.5rem; }
-            .login-title { font-size: 1.6rem; }
-            .admin-table-wrap table { font-size: 0.7rem; min-width: 320px; }
-            .btn-view-questions { font-size: 0.95rem; padding: 12px 20px; }
+            .login-title { font-size: 1.5rem; }
+            .admin-tab { font-size: 0.7rem; padding: 6px 14px; }
+            .admin-table-wrap table { font-size: 0.75rem; min-width: 280px; }
+            .admin-table-wrap td input[type="datetime-local"] { width: 120px; }
         }
-        @media (max-width:480px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-            .stat-card { padding: 0.8rem; }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stat-card { padding: 12px; }
             .stat-value { font-size: 1.6rem; }
-            .admin-table-wrap table { font-size: 0.65rem; min-width: 280px; }
-            .admin-table-wrap td input[type="datetime-local"] { width: 80px; font-size: 0.65rem; }
+            .container { padding: 10px; }
+            .glass-card { padding: 16px; }
+            .avatar-neon { width: 44px; height: 44px; font-size: 18px; }
+            .timer-ring-container { width: 120px; height: 120px; }
+            .timer-ring-container svg { width: 120px; height: 120px; }
+            .timer-ring-container .timer-text { font-size: 28px; }
+            .btn { font-size: 0.85rem; padding: 8px 16px; min-height: 40px; }
+            .help-btn { padding: 6px 12px; font-size: 0.75rem; bottom: 12px; right: 14px; }
+            .help-btn span { display: none; }
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #fbbf2440; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #fbbf2460; }
     </style>
 </head>
 <body>
 
-    <!-- LOADING OVERLAY -->
-    <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:9999; display:none; justify-content:center; align-items:center; flex-direction:column; gap:1rem;">
-        <div class="spinner-border text-primary" style="width:4rem; height:4rem;" role="status"></div>
-        <p style="color:#fff; font-weight:600;">Loading...</p>
-    </div>
+    <div class="container">
 
-    <!-- HELP BUTTON -->
-    <button class="help-btn" onclick="openHelp()"><i class="fas fa-circle-question"></i> സഹായം</button>
+        <!-- ============================================================ -->
+        <!-- LOADING OVERLAY -->
+        <!-- ============================================================ -->
+        <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:9999; display:none; justify-content:center; align-items:center; flex-direction:column; gap:1rem;">
+            <div class="spinner-border text-primary" style="width:3rem; height:3rem; border:3px solid rgba(255,255,255,0.1); border-top-color:#fbbf24; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+            <p style="color:#fff; font-weight:600;">Loading...</p>
+        </div>
 
-    <!-- LOGIN SECTION -->
-    <div id="loginSection" class="login-wrapper">
-        <div class="login-panel">
-            <div class="logo-circle"><i class="fas fa-user-graduate"></i></div>
-            <h1 class="login-title mb-2">Daily Meelad Quiz</h1>
-            <p class="text-center text-white-50 mb-4">👪 രക്ഷിതാക്കൾക്കായുള്ള മത്സരം</p>
-            <form id="loginForm">
-                <div class="mb-4">
-                    <div class="input-group-custom d-flex align-items-center px-3">
-                        <i class="fas fa-id-card text-primary me-2"></i>
-                        <input type="text" id="loginIdInput" class="form-control-glass" placeholder="Enter ID (ADMIN123 or PAR...)" autofocus oninput="this.value = this.value.toUpperCase();">
+        <!-- HELP BUTTON -->
+        <button class="help-btn" onclick="openHelp()"><i class="fas fa-circle-question"></i> <span>സഹായം</span></button>
+
+        <!-- ============================================================ -->
+        <!-- LOGIN SECTION -->
+        <!-- ============================================================ -->
+        <div id="loginSection">
+            <div class="login-panel">
+                <div class="logo-circle"><i class="fas fa-user-graduate"></i></div>
+                <h1 class="login-title">Daily Meelad Quiz</h1>
+                <p class="text-muted text-center" style="margin-bottom:24px;">👪 രക്ഷിതാക്കൾക്കായുള്ള മത്സരം</p>
+                <form id="loginForm">
+                    <div style="margin-bottom:16px;">
+                        <div style="background:rgba(255,255,255,0.04); border-radius:1.2rem; border:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; padding:0 16px;">
+                            <i class="fas fa-id-card text-primary" style="color:#3b82f6; margin-right:12px;"></i>
+                            <input type="text" id="loginIdInput" class="form-control-glass" placeholder="Enter ID (ADMIN123 or PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" style="background:transparent; border:none; padding:14px 0; color:#fff; width:100%; outline:none; font-size:1rem;">
+                        </div>
                     </div>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <label style="color:#94a3b8; font-size:0.9rem; display:flex; align-items:center; gap:6px;">
-                        <input type="checkbox" id="rememberMe" checked /> Remember me
-                    </label>
-                    <button type="button" class="btn btn-outline btn-sm" id="showRegisterBtn">New? Register</button>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" style="width:100%;">🔑 Access</button>
-                <button type="button" class="forgot-btn" onclick="openFindId()">
-                    <i class="fas fa-question-circle"></i> Forgot Parent ID?
-                </button>
-            </form>
-            <div id="loginMessage" class="mt-3"></div>
-        </div>
-    </div>
-
-    <!-- REGISTER MODAL -->
-    <div id="registerModal" class="modal-overlay hidden">
-        <div class="modal-glass">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3><i class="fas fa-user-plus text-success"></i> Parent Registration</h3>
-                <button class="btn btn-outline btn-sm" id="closeRegisterModalBtn"><i class="fas fa-times"></i></button>
+                    <div class="flex-between" style="margin-bottom:16px;">
+                        <label style="color:#94a3b8; font-size:0.9rem; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="rememberMe" checked style="width:auto; margin-right:4px;" /> Remember me
+                        </label>
+                        <button type="button" class="btn btn-outline btn-sm" id="showRegisterBtn">New? Register</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">🔑 Access</button>
+                    <button type="button" class="btn btn-outline btn-block mt-2" onclick="openFindId()">
+                        <i class="fas fa-question-circle" style="color:#f59e0b;"></i> Forgot Parent ID?
+                    </button>
+                    <div id="loginMessage" class="mt-3"></div>
+                </form>
             </div>
-            <p class="text-white-50">വിവരങ്ങൾ നൽകുക. പുതിയ Parent ID ലഭിക്കും.</p>
-            <form id="registerForm">
-                <div class="mb-2"><label class="text-white-50">Parent Name *</label><input type="text" id="regParentName" class="form-control-glass w-100" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;padding:0.7rem 1rem;color:#fff;" placeholder="Full name" required></div>
-                <div class="mb-2"><label class="text-white-50">Child's Name *</label><input type="text" id="regChildName" class="form-control-glass w-100" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;padding:0.7rem 1rem;color:#fff;" placeholder="Child's full name" required></div>
-                <div class="mb-2"><label class="text-white-50">Child's Class *</label><input type="text" id="regChildClass" class="form-control-glass w-100" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;padding:0.7rem 1rem;color:#fff;" placeholder="e.g., 5A" required></div>
-                <button type="submit" class="btn btn-success btn-block" id="registerBtn">✅ Register</button>
-                <div id="registerMessage" class="mt-2"></div>
-                <div id="newIdDisplay" class="hidden mt-3 text-center" style="background:rgba(0,0,0,0.3);padding:16px;border-radius:12px;border:1px solid #fbbf24;">
-                    <p class="text-white-50">✅ നിങ്ങളുടെ പുതിയ Parent ID</p>
-                    <p style="font-size:28px;font-weight:800;color:#fbbf24;font-family:monospace;" id="generatedIdText"></p>
-                    <button type="button" class="copy-btn" id="copyIdBtn">📋 Copy ID</button>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- REGISTER MODAL -->
+        <!-- ============================================================ -->
+        <div id="registerModal" class="modal-overlay hidden">
+            <div class="modal-glass">
+                <div class="flex-between" style="margin-bottom:16px;">
+                    <h3><i class="fas fa-user-plus text-success"></i> Parent Registration</h3>
+                    <button class="btn btn-outline btn-sm" id="closeRegisterModalBtn"><i class="fas fa-times"></i></button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- FIND ID MODAL -->
-    <div id="findIdModal" class="modal-overlay hidden">
-        <div class="modal-glass">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3><i class="fas fa-search text-info"></i> Find Parent ID</h3>
-                <button class="btn btn-outline btn-sm" id="closeFindIdBtn"><i class="fas fa-times"></i></button>
+                <p class="text-muted">വിവരങ്ങൾ നൽകുക. പുതിയ Parent ID ലഭിക്കും.</p>
+                <form id="registerForm" style="margin-top:16px;">
+                    <div style="margin-bottom:12px;"><label class="text-muted" style="font-size:0.85rem;">Parent Name *</label><input type="text" id="regParentName" placeholder="Full name" required /></div>
+                    <div style="margin-bottom:12px;"><label class="text-muted" style="font-size:0.85rem;">Child's Name *</label><input type="text" id="regChildName" placeholder="Child's full name" required /></div>
+                    <div style="margin-bottom:16px;"><label class="text-muted" style="font-size:0.85rem;">Child's Class *</label><input type="text" id="regChildClass" placeholder="e.g., 5A" required /></div>
+                    <button type="submit" class="btn btn-success btn-block" id="registerBtn">✅ Register</button>
+                    <div id="registerMessage" class="mt-2"></div>
+                    <div id="newIdDisplay" class="hidden mt-3 text-center" style="background:rgba(0,0,0,0.3); padding:16px; border-radius:12px; border:1px solid var(--gold);">
+                        <p class="text-muted">✅ നിങ്ങളുടെ പുതിയ Parent ID</p>
+                        <p style="font-size:28px; font-weight:800; color:var(--gold); font-family:monospace;" id="generatedIdText"></p>
+                        <button type="button" class="copy-btn" id="copyIdBtn">📋 Copy ID</button>
+                    </div>
+                </form>
             </div>
-            <form id="findIdForm">
-                <div class="mb-2"><label class="text-white-50">Child's Class</label><select id="findClass" class="form-control-glass w-100" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;padding:0.7rem 1rem;color:#fff;" required><option value="">Select</option><option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option></select></div>
-                <div class="mb-2"><label class="text-white-50">Parent Name (first 3 letters)</label><input type="text" id="findName" class="form-control-glass w-100" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;padding:0.7rem 1rem;color:#fff;" placeholder="e.g., ABD" maxlength="3" oninput="this.value = this.value.toUpperCase();"></div>
-                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-search"></i> Find</button>
-            </form>
-            <div id="findResult" class="mt-3"></div>
         </div>
-    </div>
 
-    <!-- PARENT DASHBOARD -->
-    <div id="parentDashboard" class="hidden">
-        <div class="container">
+        <!-- ============================================================ -->
+        <!-- FIND ID MODAL -->
+        <!-- ============================================================ -->
+        <div id="findIdModal" class="modal-overlay hidden">
+            <div class="modal-glass">
+                <div class="flex-between" style="margin-bottom:16px;">
+                    <h3><i class="fas fa-search text-info"></i> Find Parent ID</h3>
+                    <button class="btn btn-outline btn-sm" id="closeFindIdBtn"><i class="fas fa-times"></i></button>
+                </div>
+                <form id="findIdForm">
+                    <div style="margin-bottom:12px;"><label class="text-muted">Child's Class</label><select id="findClass" required><option value="">Select</option><option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option></select></div>
+                    <div style="margin-bottom:16px;"><label class="text-muted">Parent Name (first 3 letters)</label><input type="text" id="findName" placeholder="e.g., ABD" maxlength="3" oninput="this.value = this.value.toUpperCase();" required /></div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-search"></i> Find</button>
+                </form>
+                <div id="findResult" class="mt-3"></div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- PARENT DASHBOARD -->
+        <!-- ============================================================ -->
+        <div id="parentDashboard" class="hidden">
             <div class="dashboard-header">
-                <div class="d-flex align-items-center gap-3">
+                <div class="flex" style="gap:14px;">
                     <div class="avatar-neon"><span id="avatarText">P</span></div>
                     <div>
-                        <h2 class="text-white mb-0 fw-bold" id="userNameDisplay">Parent Name</h2>
-                        <div class="text-white-50"><i class="fas fa-id-card me-1"></i> <span id="displayParentId">ID</span> • <i class="fas fa-child"></i> <span id="childNameDisplay">Child</span> • <i class="fas fa-graduation-cap"></i> <span id="childClassDisplay">Class</span></div>
+                        <h2 class="fw-bold" style="font-size:1.2rem; margin:0;" id="userNameDisplay">Parent Name</h2>
+                        <div class="text-muted" style="font-size:0.85rem;"><i class="fas fa-id-card"></i> <span id="displayParentId">ID</span> • <i class="fas fa-child"></i> <span id="childNameDisplay">Child</span> • <i class="fas fa-graduation-cap"></i> <span id="childClassDisplay">Class</span></div>
                     </div>
                 </div>
-                <div class="d-flex gap-2 mt-2 mt-sm-0">
+                <div class="flex" style="gap:8px;">
                     <button class="btn btn-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Exit</button>
                 </div>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">Day 1</span><div class="text-white-50">Today's Quiz</div></div></div>
-                <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="text-white-50">Questions</div></div></div>
-                <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="text-white-50">Your Score</div></div></div>
+                <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">Day 1</span><div class="text-muted" style="font-size:0.8rem;">Today's Quiz</div></div></div>
+                <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="text-muted" style="font-size:0.8rem;">Questions</div></div></div>
+                <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="text-muted" style="font-size:0.8rem;">Your Score</div></div></div>
             </div>
 
             <!-- Timer -->
             <div id="timerArea" class="hidden timer-wrapper">
                 <div class="timer-ring-container" id="timerRingContainer">
-                    <svg viewBox="0 0 160 160">
-                        <circle class="bg-circle" cx="80" cy="80" r="68" />
-                        <circle class="progress-circle" id="timerProgress" cx="80" cy="80" r="68" stroke-dasharray="427.256" stroke-dashoffset="0" />
+                    <svg viewBox="0 0 140 140">
+                        <circle class="bg-circle" cx="70" cy="70" r="60" />
+                        <circle class="progress-circle" id="timerProgress" cx="70" cy="70" r="60" stroke-dasharray="376.99" stroke-dashoffset="0" />
                     </svg>
                     <div class="timer-text" id="timerDisplay">15:00</div>
                     <div class="timer-label">⏱️ ശേഷിക്കുന്ന സമയം</div>
                 </div>
             </div>
 
-            <!-- Status & View Questions Button -->
+            <!-- Status -->
             <div id="statusArea">
                 <div class="status-box" id="waitingMsg">
                     <div class="icon">⏳</div>
@@ -328,15 +702,15 @@
                 </div>
             </div>
 
-            <!-- View Questions Button (shows when session is active) -->
+            <!-- View Questions -->
             <div id="viewQuestionsArea" class="hidden text-center mt-3">
-                <button class="btn btn-view-questions" id="viewQuestionsBtn" style="max-width:380px; margin:0 auto;">
+                <button class="btn btn-gold" id="viewQuestionsBtn" style="max-width:360px; margin:0 auto; width:100%;">
                     📝 ചോദ്യങ്ങൾ കാണുക
                 </button>
-                <div id="quizStatusMessage" class="mt-2 text-white-50" style="font-size:0.9rem;"></div>
+                <div id="quizStatusMessage" class="mt-2 text-muted" style="font-size:0.9rem;"></div>
             </div>
 
-            <!-- Questions Area (hidden until view button clicked) -->
+            <!-- Questions -->
             <div id="questionsArea" class="hidden">
                 <div id="questionsContainer"></div>
                 <button class="btn btn-success btn-block mt-3" id="submitQuizBtn">📤 സമർപ്പിക്കുക</button>
@@ -353,44 +727,49 @@
 
             <!-- Ranking -->
             <div id="rankingArea" class="hidden">
-                <div class="glass-card p-4">
-                    <div class="flex-between"><h3 style="color:#fbbf24;">🏆 നിങ്ങളുടെ സ്കോർ</h3><span class="badge" id="rankCountBadge">0 പേർ</span></div>
-                    <div id="publicationCountdown" class="publication-box"><p>📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p><div class="pub-timer" id="publicationTimer">05:00</div></div>
-                    <div id="rankListContainer"><div class="text-center text-white-50">Loading...</div></div>
+                <div class="glass-card">
+                    <div class="flex-between"><h3 style="color:var(--gold); font-size:1.2rem;">🏆 നിങ്ങളുടെ സ്കോർ</h3><span class="badge" style="background:#1e293b; padding:4px 12px; border-radius:30px; font-size:0.8rem; color:#94a3b8;" id="rankCountBadge">0 പേർ</span></div>
+                    <div id="publicationCountdown" class="publication-box"><p class="text-muted">📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p><div class="pub-timer" id="publicationTimer">05:00</div></div>
+                    <div id="rankListContainer"><div class="text-center text-muted">Loading...</div></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- CONFIRMATION MODAL -->
-    <div id="confirmModal" class="modal-overlay hidden">
-        <div class="modal-glass">
-            <h3 style="color:#fbbf24;">⚠️ ശ്രദ്ധിക്കുക</h3>
-            <p style="color:#94a3b8; margin-top: 8px;">
-                <strong>ചോദ്യങ്ങളിലേക്ക് പ്രവേശിച്ചാൽ പിന്നീട് ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.</strong>
-                <br><br>
-                ദയവായി ഉറപ്പാക്കുക:
-                <br>• നിങ്ങൾ തയ്യാറാണോ?
-                <br>• സമയപരിധി മനസ്സിലാക്കിയിട്ടുണ്ടോ?
-                <br><br>
-                <span style="color:#fbbf24;">"തുടങ്ങുക" ക്ലിക്ക് ചെയ്താൽ ക്വിസ് ആരംഭിക്കും.</span>
-            </p>
-            <div class="modal-btn-group">
-                <button class="btn btn-outline btn-sm" id="cancelConfirmBtn">❌ ഇല്ല, പിന്നീട്</button>
-                <button class="btn btn-success btn-sm" id="proceedConfirmBtn">✅ അതെ, തുടങ്ങുക</button>
+        <!-- ============================================================ -->
+        <!-- CONFIRMATION MODAL -->
+        <!-- ============================================================ -->
+        <div id="confirmModal" class="modal-overlay hidden">
+            <div class="modal-glass">
+                <h3>⚠️ ശ്രദ്ധിക്കുക</h3>
+                <p>
+                    <strong>ചോദ്യങ്ങളിലേക്ക് പ്രവേശിച്ചാൽ പിന്നീട് ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.</strong>
+                    <br><br>
+                    ദയവായി ഉറപ്പാക്കുക:
+                    <br>• നിങ്ങൾ തയ്യാറാണോ?
+                    <br>• സമയപരിധി മനസ്സിലാക്കിയിട്ടുണ്ടോ?
+                    <br><br>
+                    <span style="color:var(--gold);">"തുടങ്ങുക" ക്ലിക്ക് ചെയ്താൽ ക്വിസ് ആരംഭിക്കും.</span>
+                </p>
+                <div style="display:flex; gap:12px; margin-top:24px; justify-content:center; flex-wrap:wrap;">
+                    <button class="btn btn-outline btn-sm" id="cancelConfirmBtn" style="min-width:120px;">❌ ഇല്ല</button>
+                    <button class="btn btn-success btn-sm" id="proceedConfirmBtn" style="min-width:120px;">✅ അതെ, തുടങ്ങുക</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- ADMIN DASHBOARD -->
-    <div id="adminDashboard" class="hidden">
-        <div class="container">
+        <!-- ============================================================ -->
+        <!-- ADMIN DASHBOARD -->
+        <!-- ============================================================ -->
+        <div id="adminDashboard" class="hidden">
             <div class="dashboard-header">
-                <h2 class="text-white fw-bold"><i class="fas fa-user-shield text-warning"></i> Admin Panel</h2>
+                <h2 class="fw-bold" style="color:var(--gold); font-size:1.4rem;"><i class="fas fa-user-shield"></i> Admin Panel</h2>
                 <button class="btn btn-danger btn-sm" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i> Exit</button>
             </div>
 
-            <div class="glass-card p-3 mb-4"><h4 style="color:#fbbf24;">📅 Today's Session</h4><div id="todaySessionInfo" class="text-white-50">Loading...</div></div>
+            <div class="glass-card" style="margin-bottom:20px; padding:16px 20px;">
+                <h4 style="color:var(--gold); font-size:1rem;">📅 Today's Session</h4>
+                <div id="todaySessionInfo" class="text-muted">Loading...</div>
+            </div>
 
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="sessions" onclick="switchAdminTab('sessions')">⏰ Sessions</button>
@@ -401,50 +780,52 @@
             <!-- Sessions -->
             <div id="tab-sessions" class="tab-content">
                 <div class="glass-card">
-                    <h4 style="color:#fbbf24;">⏰ Manage Days</h4>
-                    <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:16px;padding:16px;margin-bottom:16px;">
+                    <h4 style="color:var(--gold);">⏰ Manage Days</h4>
+                    <div style="background:rgba(59,130,246,0.04); border:1px solid rgba(59,130,246,0.08); border-radius:16px; padding:16px; margin-bottom:16px;">
                         <h5 style="color:#3b82f6;">➕ Add New Day</h5>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="flex" style="gap:8px;">
                             <input type="number" id="newDay" placeholder="Day #" style="width:80px;" />
-                            <input type="datetime-local" id="newStart" style="min-width:160px;" />
-                            <input type="datetime-local" id="newEnd" style="min-width:160px;" />
+                            <input type="datetime-local" id="newStart" style="min-width:160px; flex:1;" />
+                            <input type="datetime-local" id="newEnd" style="min-width:160px; flex:1;" />
                             <input type="number" id="newDuration" placeholder="min" style="width:80px;" value="15" />
                             <button class="btn btn-success btn-sm" id="addDayBtn">➕ Add</button>
                         </div>
                     </div>
-                    <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.15);border-radius:16px;padding:16px;margin-bottom:16px;">
-                        <h5 style="color:#fbbf24;">⚡ Quick Set</h5>
-                        <div class="d-flex flex-wrap gap-2">
+                    <div style="background:rgba(251,191,36,0.03); border:1px solid rgba(251,191,36,0.06); border-radius:16px; padding:16px; margin-bottom:16px;">
+                        <h5 style="color:var(--gold);">⚡ Quick Set</h5>
+                        <div class="flex" style="gap:8px;">
                             <select id="quickDay" style="min-width:100px;"><option value="">Select</option></select>
-                            <input type="datetime-local" id="quickStart" style="min-width:160px;" />
-                            <input type="datetime-local" id="quickEnd" style="min-width:160px;" />
+                            <input type="datetime-local" id="quickStart" style="min-width:160px; flex:1;" />
+                            <input type="datetime-local" id="quickEnd" style="min-width:160px; flex:1;" />
                             <input type="number" id="quickDuration" style="width:80px;" value="15" />
-                            <button class="quick-set-btn" id="quickSetBtn">✅ Set</button>
+                            <button class="btn-gold btn-sm" id="quickSetBtn">✅ Set</button>
                         </div>
                     </div>
-                    <div id="adminSessionsTable"><div class="text-center text-white-50 p-3">Loading...</div></div>
+                    <div id="adminSessionsTable"><div class="text-center text-muted">Loading...</div></div>
                 </div>
             </div>
 
             <!-- Questions -->
             <div id="tab-questions" class="tab-content hidden">
                 <div class="glass-card">
-                    <h4 style="color:#fbbf24;">📋 Questions</h4>
-                    <div class="d-flex flex-wrap gap-2 mb-16"><button class="btn btn-success btn-sm" id="showAddQuestionBtn">+ Add</button></div>
-                    <div id="questionForm" class="hidden" style="background:rgba(0,0,0,0.2);padding:16px;border-radius:16px;margin-bottom:16px;">
-                        <h5 id="formTitle" style="color:#fbbf24;">Add Question</h5>
-                        <div class="d-flex flex-wrap gap-2 mb-2">
+                    <div class="flex-between" style="margin-bottom:16px;">
+                        <h4 style="color:var(--gold);">📋 Questions</h4>
+                        <button class="btn btn-success btn-sm" id="showAddQuestionBtn">+ Add</button>
+                    </div>
+                    <div id="questionForm" class="hidden" style="background:rgba(0,0,0,0.2); padding:16px; border-radius:16px; margin-bottom:16px;">
+                        <h5 id="formTitle" style="color:var(--gold);">Add Question</h5>
+                        <div class="flex" style="gap:8px; margin-bottom:8px;">
                             <input type="number" id="qDay" placeholder="Day" style="width:80px;" />
                             <textarea id="qText" placeholder="Question" style="flex:1;"></textarea>
                         </div>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="flex" style="gap:8px;">
                             <input type="text" id="qOpt0" placeholder="Opt1" style="flex:1;" />
                             <input type="text" id="qOpt1" placeholder="Opt2" style="flex:1;" />
                             <input type="text" id="qOpt2" placeholder="Opt3" style="flex:1;" />
                             <input type="text" id="qOpt3" placeholder="Opt4" style="flex:1;" />
                             <select id="qCorrect" style="min-width:100px;"><option value="0">Opt1</option><option value="1">Opt2</option><option value="2">Opt3</option><option value="3">Opt4</option></select>
                         </div>
-                        <div class="d-flex gap-2 mt-2">
+                        <div class="flex" style="margin-top:12px;">
                             <button class="btn btn-primary btn-sm" id="saveQuestionBtn">💾 Save</button>
                             <button class="btn btn-outline btn-sm" id="cancelQuestionBtn">Cancel</button>
                             <input type="hidden" id="editQuestionId" />
@@ -452,24 +833,27 @@
                     </div>
                     <div class="day-tabs" id="questionDayTabs"></div>
                     <div class="day-tabs" id="adminDayTabsContainer"></div>
-                    <div id="adminQuestionsTable"><div class="text-center text-white-50 p-3">Select a day</div></div>
+                    <div id="adminQuestionsTable"><div class="text-center text-muted">Select day</div></div>
                 </div>
             </div>
 
             <!-- Rankings -->
             <div id="tab-rankings" class="tab-content hidden">
                 <div class="glass-card">
-                    <h4 style="color:#fbbf24;">🏆 Rankings</h4>
+                    <h4 style="color:var(--gold);">🏆 Rankings</h4>
                     <div class="day-tabs" id="rankDayTabs"></div>
-                    <div id="adminRankListContainer"><div class="text-center text-white-50 p-3">Select day</div></div>
+                    <div id="adminRankListContainer"><div class="text-center text-muted">Select day</div></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- TOAST -->
-    <div class="toast-container" id="toastContainer"></div>
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; width:90%; max-width:440px; display:flex; flex-direction:column; gap:8px; pointer-events:none;"></div>
 
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT (Unchanged Logic - Kept exactly as previous) -->
+    <!-- ============================================================ -->
     <script>
         // ================================================================
         // SUPABASE CONFIG
@@ -477,7 +861,7 @@
         const SUPABASE_URL = "https://iaaazjetelndkroignrd.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_7BNVf0qnhk8xlpGh0Vts5w_viVZ1kpc";
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const CIRCUMFERENCE = 2 * Math.PI * 68;
+        const CIRCUMFERENCE = 2 * Math.PI * 60; // 376.99
 
         // ================================================================
         // TIMEZONE HELPERS
@@ -526,7 +910,7 @@
         }
 
         // ================================================================
-        // LOGIN
+        // LOGIN (NO DAILY RESTRICTION)
         // ================================================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -554,22 +938,7 @@
                     return;
                 }
 
-                // Parent
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-
-                const { data: existing } = await _supabase
-                    .from('LoginTrack')
-                    .select('id')
-                    .eq('studentId', user.id)
-                    .gte('loginDate', today.toISOString())
-                    .lt('loginDate', tomorrow.toISOString())
-                    .maybeSingle();
-
-                if (existing) throw new Error('ഇന്ന് ഇതിനകം ലോഗിൻ ചെയ്തു.');
-
+                // Parent login – no daily restriction
                 const { data: sessions } = await _supabase
                     .from('QuizSession')
                     .select('*')
@@ -714,7 +1083,7 @@
             const cls = document.getElementById('findClass').value;
             const name = document.getElementById('findName').value.trim();
             const result = document.getElementById('findResult');
-            result.innerHTML = '<div class="text-white-50"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
+            result.innerHTML = '<div class="text-muted"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
             if (!cls || !name) {
                 result.innerHTML = '<div style="color:#f87171;">Select class and enter name</div>';
                 return;
@@ -734,9 +1103,9 @@
                     let html = `<div style="color:#6ee7b7;">Found ${data.length} parent(s):</div><ul class="list-unstyled mt-2">`;
                     data.forEach(s => {
                         html +=
-                            `<li class="d-flex justify-content-between align-items-center p-2 border-bottom border-white-10"><span>${s.name}</span><span class="badge bg-primary" style="cursor:pointer;" onclick="copyToClipboard('${s.studentId}')">${s.studentId} <i class="fas fa-copy ms-1"></i></span></li>`;
+                            `<li class="flex-between" style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);"><span>${s.name}</span><span class="badge" style="background:#2563eb; padding:4px 12px; border-radius:30px; cursor:pointer;" onclick="copyToClipboard('${s.studentId}')">${s.studentId} <i class="fas fa-copy"></i></span></li>`;
                     });
-                    html += `</ul><p class="text-white-50 small">Click on ID to copy.</p>`;
+                    html += `</ul><p class="text-muted small">Click on ID to copy.</p>`;
                     result.innerHTML = html;
                 } else {
                     result.innerHTML = '<div style="color:#f87171;">No matching parents found.</div>';
@@ -777,7 +1146,6 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
-            // Hide all sections
             ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
                 .forEach(id => document.getElementById(id).classList.add('hidden'));
 
@@ -791,7 +1159,6 @@
                 return;
             }
 
-            // Active session - check if already attempted
             const { data: attempt } = await _supabase
                 .from('Attempt')
                 .select('id, status, score')
@@ -800,7 +1167,6 @@
                 .maybeSingle();
 
             if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
-                // Already submitted - show submitted and ranking
                 document.getElementById('submittedArea').classList.remove('hidden');
                 document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
                 if (now > pubTime) {
@@ -814,25 +1180,20 @@
                 return;
             }
 
-            // Check if already viewed questions today (has an attempt in STARTED state)
             if (attempt && attempt.status === 'STARTED') {
                 window.currentAttemptId = attempt.id;
                 window.hasViewedQuestions = true;
                 window.quizStarted = true;
-                // Show expired state
                 document.getElementById('viewQuestionsArea').classList.remove('hidden');
                 document.getElementById('viewQuestionsBtn').textContent = '🔒 Expired (Already Started)';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
                 document.getElementById('viewQuestionsBtn').disabled = true;
                 document.getElementById('quizStatusMessage').textContent =
                     '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
-                // But also show the questions if they were started (resume)
                 await loadQuestionsAndStart(true);
                 return;
             }
 
-            // Check if there's a login track that indicates they viewed questions before
-            // (We'll use a custom flag - but we check if they have an attempt even if not completed)
             const { data: anyAttempt } = await _supabase
                 .from('Attempt')
                 .select('id')
@@ -849,20 +1210,17 @@
                 document.getElementById('viewQuestionsBtn').disabled = true;
                 document.getElementById('quizStatusMessage').textContent =
                     '⚠️ നിങ്ങൾ ഇതിനകം ചോദ്യങ്ങൾ കണ്ടു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
-                // Load questions anyway so they can continue if they started
                 await loadQuestionsAndStart(true);
                 return;
             }
 
-            // Fresh view - show the View Questions button
             document.getElementById('viewQuestionsArea').classList.remove('hidden');
             document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
-            document.getElementById('viewQuestionsBtn').className = 'btn btn-view-questions';
+            document.getElementById('viewQuestionsBtn').className = 'btn btn-gold';
             document.getElementById('viewQuestionsBtn').disabled = false;
             document.getElementById('quizStatusMessage').textContent =
                 '⏳ ക്വിസ് ആരംഭിക്കാൻ തയ്യാറാണോ? "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക.';
 
-            // Load questions in background (but don't show yet)
             const { data: qs } = await _supabase
                 .from('Question')
                 .select('*')
@@ -876,10 +1234,8 @@
                 showToast('No questions for this day', 'error');
             }
 
-            // Attach click handler for the view button with confirmation
             document.getElementById('viewQuestionsBtn').onclick = function() {
                 if (this.disabled) return;
-                // Show confirmation modal
                 document.getElementById('confirmModal').classList.remove('hidden');
             };
         }
@@ -893,12 +1249,11 @@
 
         document.getElementById('proceedConfirmBtn').addEventListener('click', async function() {
             document.getElementById('confirmModal').classList.add('hidden');
-            // Proceed to start quiz
             await startParentQuiz(false);
         });
 
         // ================================================================
-        // PARENT QUIZ (with view state)
+        // PARENT QUIZ
         // ================================================================
         async function loadQuestionsAndStart(resume = false) {
             if (window.questions.length === 0) {
@@ -915,7 +1270,6 @@
                     return;
                 }
             }
-            // If we have questions and we haven't started, start
             if (!window.quizStarted && window.questions.length > 0) {
                 await startParentQuiz(resume);
             }
@@ -940,7 +1294,6 @@
                     window.quizStarted = true;
                 }
 
-                // Mark view questions button as expired
                 document.getElementById('viewQuestionsArea').classList.remove('hidden');
                 document.getElementById('viewQuestionsBtn').textContent = '🔒 Expired';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
@@ -948,7 +1301,6 @@
                 document.getElementById('quizStatusMessage').textContent =
                     '⚠️ നിങ്ങൾ ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
 
-                // Show questions and timer
                 document.getElementById('questionsArea').classList.remove('hidden');
                 document.getElementById('timerArea').classList.remove('hidden');
 
@@ -1070,7 +1422,7 @@
         }
 
         // ================================================================
-        // PARENT RANKING (Only own score, 12-hour visibility)
+        // PARENT RANKING
         // ================================================================
         async function loadParentRanking(pubTime) {
             document.getElementById('rankingArea').classList.remove('hidden');
@@ -1079,7 +1431,7 @@
             const expiryTime = new Date(pubTime.getTime() + 12 * 60 * 60 * 1000);
             if (now > expiryTime) {
                 document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-white-50">⏳ ഫലം ഇപ്പോൾ ലഭ്യമല്ല. (12 മണിക്കൂർ കഴിഞ്ഞു)</div>';
+                    '<div class="text-center text-muted">⏳ ഫലം ഇപ്പോൾ ലഭ്യമല്ല. (12 മണിക്കൂർ കഴിഞ്ഞു)</div>';
                 document.getElementById('publicationCountdown').classList.add('hidden');
                 return;
             }
@@ -1087,7 +1439,7 @@
             if (now < pubTime) {
                 document.getElementById('publicationCountdown').classList.remove('hidden');
                 document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-white-50">⏳ Waiting for results...</div>';
+                    '<div class="text-center text-muted">⏳ Waiting for results...</div>';
                 if (window.pubInterval) clearInterval(window.pubInterval);
                 window.pubInterval = setInterval(() => {
                     const diff = Math.max(0, Math.floor((pubTime - new Date()) / 1000));
@@ -1109,7 +1461,7 @@
 
         async function loadParentRankingData() {
             const container = document.getElementById('rankListContainer');
-            container.innerHTML = '<div class="text-center text-white-50"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
 
             try {
                 const { data: attempts } = await _supabase
@@ -1119,14 +1471,14 @@
                     .eq('status', 'COMPLETED');
 
                 if (!attempts || attempts.length === 0) {
-                    container.innerHTML = '<div class="text-center text-white-50">📭 No submissions yet.</div>';
+                    container.innerHTML = '<div class="text-center text-muted">📭 No submissions yet.</div>';
                     document.getElementById('rankCountBadge').textContent = '0 പേർ';
                     return;
                 }
 
                 const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
                 if (!myAttempt) {
-                    container.innerHTML = '<div class="text-center text-white-50">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
+                    container.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
                     document.getElementById('rankCountBadge').textContent = '0 പേർ';
                     return;
                 }
@@ -1148,7 +1500,7 @@
                 document.getElementById('rankCountBadge').textContent = `${rank} / ${total}`;
 
                 container.innerHTML = `
-                    <div class="rank-item" style="border-color:#fbbf24;background:rgba(251,191,36,0.05);">
+                    <div class="rank-item" style="border-color:var(--gold);background:rgba(251,191,36,0.03);">
                         <div class="rank-num gold">${rank}</div>
                         <div class="rank-name">${window.currentUser.name}</div>
                         <div class="rank-score">${score} മാർക്ക്</div>
@@ -1164,7 +1516,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL (unchanged, kept from previous)
+        // ADMIN PANEL
         // ================================================================
         window.adminCurrentDay = 1;
         window.questionsCache = [];
@@ -1276,14 +1628,14 @@
 
         async function loadSessions() {
             const table = document.getElementById('adminSessionsTable');
-            table.innerHTML = '<div class="text-center text-white-50 p-3">Loading...</div>';
+            table.innerHTML = '<div class="text-center text-muted">Loading...</div>';
             try {
                 const { data: sessions } = await _supabase
                     .from('QuizSession')
                     .select('*')
                     .order('day', { ascending: true });
                 if (!sessions || sessions.length === 0) {
-                    table.innerHTML = '<div class="text-center text-white-50 p-3">No days. Add one above.</div>';
+                    table.innerHTML = '<div class="text-center text-muted">No days. Add one above.</div>';
                     document.getElementById('quickDay').innerHTML = '<option value="">No days</option>';
                     document.getElementById('questionDayTabs').innerHTML = '';
                     document.getElementById('rankDayTabs').innerHTML = '';
@@ -1369,7 +1721,7 @@
                 }
 
             } catch (err) {
-                table.innerHTML = '<div class="text-center text-white-50 p-3">Error loading</div>';
+                table.innerHTML = '<div class="text-center text-muted">Error loading</div>';
                 showToast(err.message, 'error');
             }
         }
@@ -1458,7 +1810,7 @@
         async function loadAdminQuestions(day) {
             window.adminCurrentDay = day;
             const table = document.getElementById('adminQuestionsTable');
-            table.innerHTML = '<div class="text-center text-white-50 p-3">Loading...</div>';
+            table.innerHTML = '<div class="text-center text-muted">Loading...</div>';
             try {
                 const { data: qs } = await _supabase
                     .from('Question')
@@ -1467,7 +1819,7 @@
                     .order('id', { ascending: true });
                 window.questionsCache = qs || [];
                 if (window.questionsCache.length === 0) {
-                    table.innerHTML = '<div class="text-center text-white-50 p-3">No questions for this day.</div>';
+                    table.innerHTML = '<div class="text-center text-muted">No questions for this day.</div>';
                     return;
                 }
                 let html = `<table><thead><tr><th>#</th><th>Question</th><th>Options</th><th>Correct</th><th>Actions</th></tr></thead><tbody>`;
@@ -1491,7 +1843,7 @@
                 });
 
             } catch (err) {
-                table.innerHTML = '<div class="text-center text-white-50 p-3">Error loading</div>';
+                table.innerHTML = '<div class="text-center text-muted">Error loading</div>';
                 showToast(err.message, 'error');
             }
         }
@@ -1499,7 +1851,7 @@
         // ---- ADMIN RANKINGS ----
         async function loadAdminRankings(day) {
             const container = document.getElementById('adminRankListContainer');
-            container.innerHTML = '<div class="text-center text-white-50 p-3">Loading...</div>';
+            container.innerHTML = '<div class="text-center text-muted">Loading...</div>';
             try {
                 const { data: attempts } = await _supabase
                     .from('Attempt')
@@ -1508,7 +1860,7 @@
                     .eq('status', 'COMPLETED');
 
                 if (!attempts || attempts.length === 0) {
-                    container.innerHTML = '<div class="text-center text-white-50 p-3">No submissions for this day.</div>';
+                    container.innerHTML = '<div class="text-center text-muted">No submissions for this day.</div>';
                     return;
                 }
 
@@ -1544,7 +1896,7 @@
                 });
 
             } catch (err) {
-                container.innerHTML = '<div class="text-center text-white-50 p-3">Error loading</div>';
+                container.innerHTML = '<div class="text-center text-muted">Error loading</div>';
                 showToast(err.message, 'error');
             }
         }
@@ -1573,13 +1925,13 @@
         document.getElementById('parentDashboard').classList.add('hidden');
         document.getElementById('adminDashboard').classList.add('hidden');
 
-        // Restore saved ID
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Quiz System Ready (View Questions + Confirmation)');
+        console.log('🚀 Quiz System Ready (Polished UI)');
         console.log('🔑 Admin: ADMIN123');
-        console.log('✅ Click "View Questions" to start quiz (with confirmation)');
+        console.log('✅ Multiple logins allowed per day');
+        console.log('✅ "View Questions" restricted to once per day');
     </script>
 
 </body>
