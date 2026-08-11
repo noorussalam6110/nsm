@@ -1099,7 +1099,7 @@
                     <button class="btn btn-success btn-block mt-3" id="submitQuizBtn">📤 സമർപ്പിക്കുക</button>
                 </div>
 
-                <!-- Submitted -->
+                <!-- Submitted (thank you message) -->
                 <div id="submittedArea" class="hidden">
                     <div class="status-box">
                         <div class="icon">✅</div>
@@ -1112,11 +1112,8 @@
                 <!-- Ranking Area (Today + Overall) -->
                 <div id="rankingArea" class="hidden">
                     <div class="glass-card">
-                        <!-- Today's Rank -->
                         <div id="rankHeroContainer"></div>
-                        <!-- Overall Rank -->
                         <div id="overallRankContainer"></div>
-                        <!-- Cutoff message when ranking hidden -->
                         <div id="rankingCutoffMsg" class="hidden text-center text-muted mt-3" style="font-size:clamp(0.8rem,2vw,0.9rem);">
                             ⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.
                         </div>
@@ -1297,7 +1294,7 @@
         // ================================================================
         window.currentUser = null;
         window.currentSession = null;
-        window.nextSession = null; // will store the next day's session
+        window.nextSession = null;
         window.questions = [];
         window.answers = {};
         window.isSubmitted = false;
@@ -1312,8 +1309,6 @@
         window.isAdmin = false;
         window.currentView = 'home';
         window.adminRankDay = 1;
-
-        // For auto-update ranking visibility
         window.rankingRefreshInterval = null;
 
         // ================================================================
@@ -1463,7 +1458,6 @@
                 }
 
                 window.isAdmin = false;
-                // Fetch all sessions
                 const { data: sessions, error: sessErr } = await _supabase
                     .from('QuizSession')
                     .select('*')
@@ -1472,11 +1466,9 @@
                 if (sessErr || !sessions || sessions.length === 0) throw new Error('സെഷനുകൾ ലഭ്യമല്ല.');
 
                 const now = new Date();
-                // Find current session (active or upcoming)
                 let active = sessions.find(s => now >= new Date(s.startTime) && now <= new Date(s.endTime));
                 if (!active) active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
 
-                // Find next session (day+1) for cutoff
                 const currentDay = active.day;
                 let next = sessions.find(s => s.day === currentDay + 1);
                 window.nextSession = next || null;
@@ -1671,14 +1663,11 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
-            // Determine cutoff time: nextSession.startTime - 1 hour, if exists
             let cutoffTime = null;
             if (window.nextSession) {
                 const nextStart = new Date(window.nextSession.startTime);
                 cutoffTime = new Date(nextStart.getTime() - 60 * 60 * 1000);
             }
-
-            // Store cutoff for ranking visibility check
             window._rankingCutoff = cutoffTime;
 
             ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
@@ -1686,7 +1675,6 @@
             document.getElementById('statsGrid').classList.remove('hidden');
 
             const scoreEl = document.getElementById('scoreDisplay');
-            // If before publication, show lock; else show score if available
             if (now < pubTime) {
                 scoreEl.textContent = '🔒';
                 scoreEl.style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
@@ -1694,18 +1682,13 @@
                 scoreEl.style.fontSize = '';
             }
 
-            // Check session status
             if (now < start) {
                 document.getElementById('waitingMsg').classList.remove('hidden');
                 document.getElementById('waitingTimeText').textContent =
                     `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
-                // Show ranking if within window (only if session already ended and we are in ranking window)
-                // But before start, ranking should not be shown because no one has attempted yet.
-                // We'll handle ranking display in a separate function.
                 await updateRankingVisibility(now, pubTime, cutoffTime);
                 return;
             } else if (now > end) {
-                // Session ended, handle ranking and submitted state
                 const { data: attempt } = await _supabase
                     .from('Attempt')
                     .select('id, status, score')
@@ -1714,25 +1697,25 @@
                     .maybeSingle();
 
                 if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
-                    document.getElementById('submittedArea').classList.remove('hidden');
+                    // Show submittedArea only if before publication
                     if (now < pubTime) {
+                        document.getElementById('submittedArea').classList.remove('hidden');
                         document.getElementById('scoreDisplay').textContent = '🔒';
                         document.getElementById('scoreDisplay').style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
                     } else {
+                        // After publication, we hide submittedArea (it will be hidden by updateRankingVisibility)
+                        document.getElementById('submittedArea').classList.add('hidden');
                         document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
                         document.getElementById('scoreDisplay').style.fontSize = '';
                     }
                 } else {
-                    // If no attempt, maybe show ended message? But we'll show ranking if available.
-                    // The parent may not have attempted, so we still show ranking if within window.
+                    // No attempt, maybe show ended message? But we'll let ranking decide.
                 }
-                // Show ranking if within window
                 await updateRankingVisibility(now, pubTime, cutoffTime);
                 return;
             }
 
-            // Session is active (between start and end)
-            // Check if user has an attempt
+            // Session active
             const { data: attempt } = await _supabase
                 .from('Attempt')
                 .select('id, status, score')
@@ -1741,7 +1724,6 @@
                 .maybeSingle();
 
             if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
-                // Already submitted
                 document.getElementById('submittedArea').classList.remove('hidden');
                 if (now < pubTime) {
                     document.getElementById('scoreDisplay').textContent = '🔒';
@@ -1750,13 +1732,11 @@
                     document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
                     document.getElementById('scoreDisplay').style.fontSize = '';
                 }
-                // Show ranking if within window
                 await updateRankingVisibility(now, pubTime, cutoffTime);
                 return;
             }
 
             if (attempt && attempt.status === 'STARTED') {
-                // Quiz started but not submitted
                 window.currentAttemptId = attempt.id;
                 window.hasViewedQuestions = true;
                 window.quizStarted = true;
@@ -1770,7 +1750,6 @@
                 return;
             }
 
-            // Check if any attempt exists (viewed but not started)
             const { data: anyAttempt } = await _supabase
                 .from('Attempt')
                 .select('id')
@@ -1791,7 +1770,6 @@
                 return;
             }
 
-            // No attempt yet
             document.getElementById('viewQuestionsArea').classList.remove('hidden');
             document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
             document.getElementById('viewQuestionsBtn').className = 'btn btn-gold';
@@ -1817,7 +1795,6 @@
                 document.getElementById('confirmModal').classList.remove('hidden');
             };
 
-            // Ranking not shown during active session (only after end)
             document.getElementById('rankingArea').classList.add('hidden');
         }
 
@@ -1829,21 +1806,18 @@
             const heroContainer = document.getElementById('rankHeroContainer');
             const overallContainer = document.getElementById('overallRankContainer');
             const cutoffMsg = document.getElementById('rankingCutoffMsg');
+            const submittedArea = document.getElementById('submittedArea');
 
-            // Hide everything first
             rankingArea.classList.add('hidden');
             heroContainer.innerHTML = '';
             overallContainer.innerHTML = '';
             cutoffMsg.classList.add('hidden');
 
-            // Determine if ranking should be shown
-            // Show if current time >= pubTime AND (cutoffTime is null OR current time < cutoffTime)
             let showRanking = false;
             if (now >= pubTime) {
                 if (!cutoffTime || now < cutoffTime) {
                     showRanking = true;
                 } else {
-                    // Show cutoff message
                     cutoffMsg.classList.remove('hidden');
                     cutoffMsg.textContent = '⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.';
                 }
@@ -1851,24 +1825,27 @@
 
             if (showRanking) {
                 rankingArea.classList.remove('hidden');
-                // Load today's rank and overall rank
+                submittedArea.classList.add('hidden'); // hide thank you message
                 await loadParentRankingData();
                 await loadOverallRank();
+            } else if (!cutoffMsg.classList.contains('hidden')) {
+                // cutoff message shown
+                rankingArea.classList.remove('hidden');
+                submittedArea.classList.add('hidden');
             } else {
-                // If before publication, we might still show a "waiting" message in rank area? Already handled separately.
-                // But we can hide the ranking area.
-                rankingArea.classList.add('hidden');
+                // ranking not shown and not cutoff
+                // If we are past publication but not showing ranking (should not happen), we might hide submittedArea.
+                if (now >= pubTime) {
+                    submittedArea.classList.add('hidden');
+                }
             }
 
-            // Also set up a periodic refresh (every 60 seconds) to re-evaluate visibility
+            // Set up periodic refresh (every minute)
             if (window.rankingRefreshInterval) clearInterval(window.rankingRefreshInterval);
             window.rankingRefreshInterval = setInterval(async () => {
                 const now2 = new Date();
-                // Re-evaluate visibility without full page reload
-                // We need to re-fetch cutoff and pubTime? They are stored in window scope.
-                // We'll just call a lightweight update function.
                 await updateRankingVisibility(now2, pubTime, cutoffTime);
-            }, 60000); // every minute
+            }, 60000);
         }
 
         async function loadParentRankingData() {
@@ -1935,7 +1912,6 @@
             if (!window.currentUser) return;
 
             try {
-                // Fetch all attempts for this parent across all days
                 const { data: myAttempts, error: myErr } = await _supabase
                     .from('Attempt')
                     .select('score, startTime, endTime, sessionDay')
@@ -1944,13 +1920,11 @@
 
                 if (myErr) throw myErr;
 
-                // If no attempts, hide overall
                 if (!myAttempts || myAttempts.length === 0) {
                     overallContainer.innerHTML = '';
                     return;
                 }
 
-                // Compute total score and total time for this parent
                 let totalScore = 0;
                 let totalTime = 0;
                 myAttempts.forEach(a => {
@@ -1959,8 +1933,6 @@
                     totalTime += time;
                 });
 
-                // Fetch all attempts from all parents (to compute ranks)
-                // We need all COMPLETED attempts across all days
                 const { data: allAttempts, error: allErr } = await _supabase
                     .from('Attempt')
                     .select('studentId, score, startTime, endTime')
@@ -1973,7 +1945,6 @@
                     return;
                 }
 
-                // Group by studentId and sum scores and times
                 const map = {};
                 allAttempts.forEach(a => {
                     const sid = a.studentId;
@@ -1985,7 +1956,6 @@
                     map[sid].totalTime += time;
                 });
 
-                // Convert to array and sort
                 const rankings = Object.keys(map).map(sid => ({
                     studentId: sid,
                     totalScore: map[sid].totalScore,
@@ -1996,7 +1966,6 @@
                     return a.totalTime - b.totalTime;
                 });
 
-                // Find current parent's rank
                 const myRank = rankings.findIndex(r => r.studentId === window.currentUser.id) + 1;
                 if (myRank === 0) {
                     overallContainer.innerHTML = '<div class="text-center text-muted">മൊത്തം റാങ്ക് കണ്ടെത്താനായില്ല.</div>';
@@ -2181,20 +2150,22 @@
 
                 document.getElementById('questionsArea').classList.add('hidden');
                 document.getElementById('timerArea').classList.add('hidden');
-                document.getElementById('submittedArea').classList.remove('hidden');
+                // Show submittedArea only if before publication
                 const now = new Date();
                 const end = new Date(window.currentSession.endTime);
                 const pubTime = new Date(end.getTime() + 5 * 60000);
                 if (now < pubTime) {
+                    document.getElementById('submittedArea').classList.remove('hidden');
                     document.getElementById('scoreDisplay').textContent = '🔒';
                     document.getElementById('scoreDisplay').style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
                 } else {
+                    // After publication, we don't show submittedArea; ranking will handle it.
+                    document.getElementById('submittedArea').classList.add('hidden');
                     document.getElementById('scoreDisplay').textContent = score;
                     document.getElementById('scoreDisplay').style.fontSize = '';
                 }
                 showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
 
-                // After submission, update ranking visibility (if within window)
                 const cutoffTime = window._rankingCutoff || null;
                 await updateRankingVisibility(now, pubTime, cutoffTime);
                 navigateTo('home');
@@ -2657,7 +2628,8 @@
                 '3. "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്ത് ക്വിസ് ആരംഭിക്കുക\n' +
                 '4. ഒരിക്കൽ ആരംഭിച്ചാൽ ഇന്ന് വീണ്ടും പ്രവേശിക്കാനാവില്ല\n' +
                 '5. സമയപരിധി കഴിഞ്ഞാൽ സ്വയം സമർപ്പിക്കും\n' +
-                '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ' 
+                '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ\n' +
+                '7. റാങ്കിൽ മൊത്തം പങ്കെടുത്തവരുടെ എണ്ണം കാണിക്കില്ല'
             );
         }
 
@@ -2675,6 +2647,7 @@
         console.log('✅ Admin: ADMIN123');
         console.log('✅ Parent: PARENT ID');
         console.log('✅ Today + Overall ranks shown until 1 hour before next quiz.');
+        console.log('✅ "Thank you" message hidden when rank is shown.');
         console.log('✅ Auto-refresh every minute.');
     </script>
 
