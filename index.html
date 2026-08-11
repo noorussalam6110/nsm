@@ -1503,7 +1503,7 @@
                                 ഓർക്കുക
                             </label>
                             <button type="button" class="btn-register-ghost" id="showRegisterBtn">
-                                <i class="fas fa-user-plus"></i> പുതിയ രക്ഷിതാവ് 
+                                <i class="fas fa-user-plus"></i> പുതിയ രക്ഷിതാവ്
                             </button>
                         </div>
 
@@ -1580,7 +1580,6 @@
                         <div id="rankingCutoffMsg" class="hidden text-center text-muted mt-3" style="font-size:clamp(0.8rem,2vw,0.9rem);">
                             ⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.
                         </div>
-                        <!-- NEW: Performance History Button -->
                         <button class="btn btn-gold btn-block mt-3" id="showPerformanceBtn">
                             📊 എല്ലാ ദിവസത്തെയും പ്രകടനം
                         </button>
@@ -1663,6 +1662,16 @@
                         <h4 style="color:var(--gold); font-size:clamp(0.85rem,2.5vw,1rem);">🏆 റാങ്കിംഗ്</h4>
                         <div class="day-tabs" id="rankDayTabs"></div>
                         <div id="adminRankListContainer"><div class="text-center text-muted">ദയവായി ഒരു ദിവസം തിരഞ്ഞെടുക്കുക</div></div>
+
+                        <!-- ===== RESET RANKINGS BUTTON ===== -->
+                        <div class="mt-4" style="border-top:1px solid rgba(255,255,255,0.05); padding-top:14px;">
+                            <button class="btn btn-danger btn-block" id="resetRankingsBtn" style="max-width:320px; margin:0 auto;">
+                                <i class="fas fa-trash-alt"></i> റാങ്കിംഗ് റീസെറ്റ് ചെയ്യുക
+                            </button>
+                            <p class="text-muted text-center mt-2" style="font-size:clamp(0.55rem,1.6vw,0.7rem);">
+                                ⚠️ എല്ലാ രക്ഷിതാക്കളുടെയും സ്കോറുകളും അറ്റംപ്റ്റുകളും മായ്ക്കും. ഇത് പഴയപടിയാക്കാനാവില്ല.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1676,6 +1685,7 @@
 
     <!-- ===== MODALS ===== -->
 
+    <!-- Register Modal -->
     <div id="registerModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <div class="flex-between" style="margin-bottom:12px;">
@@ -1698,6 +1708,7 @@
         </div>
     </div>
 
+    <!-- Find ID Modal -->
     <div id="findIdModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <div class="flex-between" style="margin-bottom:12px;">
@@ -1723,6 +1734,7 @@
         </div>
     </div>
 
+    <!-- Confirm Quiz Modal -->
     <div id="confirmModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <h3>⚠️ ശ്രദ്ധിക്കുക</h3>
@@ -1742,7 +1754,7 @@
         </div>
     </div>
 
-    <!-- ===== NEW: PERFORMANCE MODAL ===== -->
+    <!-- Performance Modal -->
     <div id="performanceModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <div class="flex-between" style="margin-bottom:12px;">
@@ -1752,6 +1764,29 @@
             <div id="performanceContent" style="margin-top:12px;">
                 <div class="text-center text-muted">Loading...</div>
             </div>
+        </div>
+    </div>
+
+    <!-- ===== NEW: RESET PASSWORD MODAL ===== -->
+    <div id="resetPasswordModal" class="modal-overlay hidden">
+        <div class="modal-glass">
+            <div class="flex-between" style="margin-bottom:12px;">
+                <h3><i class="fas fa-lock" style="color:#ef4444;"></i> അഡ്മിൻ പാസ്വേഡ് സ്ഥിരീകരിക്കുക</h3>
+                <button class="btn btn-outline btn-sm" id="closeResetPasswordModalBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="text-muted">റാങ്കിംഗ് റീസെറ്റ് ചെയ്യുന്നതിന് അഡ്മിൻ പാസ്വേഡ് നൽകുക.</p>
+            <form id="resetPasswordForm" style="margin-top:12px;">
+                <div style="margin-bottom:12px;">
+                    <div class="input-group-premium">
+                        <span class="icon-wrap"><i class="fas fa-key"></i></span>
+                        <input type="password" id="resetAdminPassword" placeholder="പാസ്വേഡ് നൽകുക" class="form-control-glass" style="border-radius:60px; background:transparent; border:none; padding:12px 8px; color:#fff; width:100%; outline:none; font-size:clamp(0.85rem,2.5vw,0.95rem);" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-danger btn-block" id="resetConfirmBtn">
+                    <i class="fas fa-trash-alt"></i> സ്ഥിരീകരിച്ച് റീസെറ്റ് ചെയ്യുക
+                </button>
+                <div id="resetPasswordMessage" class="mt-2 text-center"></div>
+            </form>
         </div>
     </div>
 
@@ -1768,6 +1803,7 @@
         const SUPABASE_ANON_KEY = "sb_publishable_7BNVf0qnhk8xlpGh0Vts5w_viVZ1kpc";
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const CIRCUMFERENCE = 2 * Math.PI * 60;
+        const ADMIN_PASSWORD = "ADMIN123"; // Hardcoded admin password
 
         // ================================================================
         // STATE
@@ -2549,7 +2585,6 @@
             }
 
             try {
-                // Get all attempts for this user (COMPLETED or TIMED_OUT)
                 const { data: myAttempts, error: myErr } = await _supabase
                     .from('Attempt')
                     .select('*')
@@ -2564,7 +2599,6 @@
                     return;
                 }
 
-                // Fetch all sessions to get pubTime for each day
                 const { data: sessions, error: sessErr } = await _supabase
                     .from('QuizSession')
                     .select('*')
@@ -2573,7 +2607,6 @@
                 const sessionMap = {};
                 sessions.forEach(s => { sessionMap[s.day] = s; });
 
-                // For each day, compute rank and check publication
                 const now = new Date();
                 let rows = [];
 
@@ -2590,7 +2623,6 @@
                     let timeTaken = '—';
 
                     if (isPublished) {
-                        // Compute rank for this day
                         const { data: dayAttempts, error: dayErr } = await _supabase
                             .from('Attempt')
                             .select('id, studentId, score, startTime, endTime')
@@ -2613,18 +2645,15 @@
                             rank = pos > 0 ? pos : '—';
                         }
 
-                        // Time taken
                         if (att.startTime && att.endTime) {
                             const secs = Math.floor((new Date(att.endTime) - new Date(att.startTime)) / 1000);
                             timeTaken = secs + 's';
                         }
 
-                        // Score display
                         if (att.score !== null && att.score !== undefined) {
                             score = att.score;
                         }
                     } else {
-                        // Not published yet
                         score = '🔒';
                         rank = '🔒';
                         timeTaken = '🔒';
@@ -2638,7 +2667,6 @@
                     return;
                 }
 
-                // Build table
                 let html = `
                     <div class="admin-table-wrap">
                         <table>
@@ -3310,6 +3338,82 @@
         }
 
         // ================================================================
+        // ===== NEW: RESET RANKINGS WITH PASSWORD =====
+        // ================================================================
+        document.getElementById('resetRankingsBtn').addEventListener('click', function() {
+            document.getElementById('resetPasswordModal').classList.remove('hidden');
+            document.getElementById('resetAdminPassword').value = '';
+            document.getElementById('resetPasswordMessage').innerHTML = '';
+        });
+
+        document.getElementById('closeResetPasswordModalBtn').addEventListener('click', function() {
+            document.getElementById('resetPasswordModal').classList.add('hidden');
+        });
+        document.getElementById('resetPasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.add('hidden');
+        });
+
+        document.getElementById('resetPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const password = document.getElementById('resetAdminPassword').value.trim();
+            const msg = document.getElementById('resetPasswordMessage');
+            const btn = document.getElementById('resetConfirmBtn');
+            msg.innerHTML = '';
+
+            if (!password) {
+                msg.innerHTML = '<div style="color:#f87171;">പാസ്വേഡ് നൽകുക.</div>';
+                return;
+            }
+
+            if (password !== ADMIN_PASSWORD) {
+                msg.innerHTML = '<div style="color:#f87171;">❌ തെറ്റായ പാസ്വേഡ്. വീണ്ടും ശ്രമിക്കുക.</div>';
+                document.getElementById('resetAdminPassword').value = '';
+                document.getElementById('resetAdminPassword').focus();
+                return;
+            }
+
+            // Password correct — proceed with reset
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> റീസെറ്റ് ചെയ്യുന്നു...';
+
+            try {
+                // Delete all Attempt records (this will cascade to Answer due to foreign key)
+                const { error: delAttempts } = await _supabase
+                    .from('Attempt')
+                    .delete()
+                    .neq('id', '00000000-0000-0000-0000-000000000000'); // delete all
+
+                if (delAttempts) throw new Error(delAttempts.message);
+
+                // Also delete LoginTrack records if you want a clean slate
+                const { error: delTracks } = await _supabase
+                    .from('LoginTrack')
+                    .delete()
+                    .neq('id', '00000000-0000-0000-0000-000000000000');
+
+                if (delTracks) throw new Error(delTracks.message);
+
+                showToast('✅ എല്ലാ റാങ്കിംഗുകളും വിജയകരമായി റീസെറ്റ് ചെയ്തു!', 'success');
+                msg.innerHTML = '<div style="color:#6ee7b7;">✅ റാങ്കിംഗ് റീസെറ്റ് ചെയ്തു! എല്ലാ അറ്റംപ്റ്റുകളും മായ്ച്ചു.</div>';
+
+                // Close modal after short delay
+                setTimeout(() => {
+                    document.getElementById('resetPasswordModal').classList.add('hidden');
+                    // Refresh admin rankings view
+                    loadAdminRankings(window.adminRankDay || 1);
+                }, 1500);
+
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+                msg.innerHTML = '<div style="color:#f87171;">Error: ' + err.message + '</div>';
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-trash-alt"></i> സ്ഥിരീകരിച്ച് റീസെറ്റ് ചെയ്യുക';
+            }
+        });
+
+        // ================================================================
         // HELP
         // ================================================================
         function openHelp() {
@@ -3322,7 +3426,8 @@
                 '5. സമയപരിധി കഴിഞ്ഞാൽ സ്വയം സമർപ്പിക്കും\n' +
                 '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ\n' +
                 '7. റാങ്കിംഗ് അടുത്ത ക്വിസ് തുടങ്ങുന്നതിന് 1 മണിക്കൂർ മുമ്പ് വരെ കാണാം.\n' +
-                '8. "എല്ലാ ദിവസത്തെയും പ്രകടനം" ബട്ടൺ ക്ലിക്ക് ചെയ്ത് എല്ലാ ദിവസത്തെയും സ്കോറും റാങ്കും കാണുക.'
+                '8. "എല്ലാ ദിവസത്തെയും പ്രകടനം" ബട്ടൺ ക്ലിക്ക് ചെയ്ത് എല്ലാ ദിവസത്തെയും സ്കോറും റാങ്കും കാണുക.\n' +
+                '9. അഡ്മിൻ പാനലിൽ "റാങ്കിംഗ് റീസെറ്റ് ചെയ്യുക" ബട്ടൺ ഉപയോഗിച്ച് എല്ലാ ഡാറ്റയും മായ്ക്കാം (പാസ്വേഡ്: ADMIN123).'
             );
         }
 
@@ -3341,6 +3446,7 @@
         console.log('✅ 1-hour cutoff before next quiz.');
         console.log('✅ Auto-refresh every 30 seconds.');
         console.log('✅ Performance history button added.');
+        console.log('✅ Reset Rankings with password: ADMIN123');
     </script>
 
 </body>
