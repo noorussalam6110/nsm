@@ -505,7 +505,6 @@
             -webkit-text-fill-color: #fff;
         }
 
-        /* ===== UPDATED LOGIN OPTIONS (Mobile Friendly) ===== */
         .login-options {
             display: flex;
             justify-content: space-between;
@@ -535,7 +534,6 @@
             border-radius: 4px;
         }
 
-        /* ===== REGISTER BUTTON (Mobile Friendly) ===== */
         .btn-register-ghost {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -567,7 +565,6 @@
             font-size: 0.9em;
         }
 
-        /* Buttons — premium */
         .btn-login-primary {
             border: none;
             cursor: pointer;
@@ -599,19 +596,6 @@
         .btn-login-primary:hover {
             box-shadow: 0 12px 40px -8px rgba(59, 130, 246, 0.35);
             transform: translateY(-1px);
-        }
-        .btn-login-primary .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(0);
-            animation: ripple-anim 0.6s ease-out forwards;
-        }
-        @keyframes ripple-anim {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
         }
 
         .btn-login-secondary {
@@ -1365,7 +1349,6 @@
             }
         }
 
-        /* ===== EXTRA MOBILE FRIENDLY TWEAKS ===== */
         @media (max-width: 360px) {
             .login-panel {
                 padding: 1.2rem 1rem 1.2rem;
@@ -1473,14 +1456,12 @@
         <div id="appBar">
             <div style="display:flex;align-items:center;gap:4px;">
                 <button class="back-btn" id="backBtn" onclick="goBack()"><i class="fas fa-chevron-left"></i></button>
-                <!-- Title is now always "Noorussalam Madrasa" -->
                 <div class="app-title" id="appTitle">
                     <i class="fas fa-star"></i> Noorussalam Madrasa
                 </div>
             </div>
             <div class="app-actions">
                 <button class="btn-icon" id="helpBtn" onclick="openHelp()"><i class="fas fa-circle-question"></i></button>
-                <!-- Logout button hidden by default, shown only when logged in -->
                 <button class="btn-icon danger" id="logoutTopBtn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
@@ -1488,9 +1469,8 @@
         <!-- ===== CONTENT AREA ===== -->
         <div id="contentArea">
 
-            <!-- LOGIN SECTION — REDESIGNED -->
+            <!-- LOGIN SECTION -->
             <div id="loginSection">
-                <!-- Animated BG -->
                 <div class="login-bg-particles">
                     <span></span><span></span><span></span><span></span>
                     <span></span><span></span><span></span><span></span>
@@ -1517,7 +1497,6 @@
                             <input type="text" id="loginIdInput" placeholder="Parent ID നൽകുക" autofocus oninput="this.value = this.value.toUpperCase();" />
                         </div>
 
-                        <!-- UPDATED: Register Button Styled & Mobile Friendly -->
                         <div class="login-options">
                             <label>
                                 <input type="checkbox" id="rememberMe" checked />
@@ -1794,6 +1773,7 @@
         window.currentView = 'home';
         window.adminRankDay = 1;
         window.rankingRefreshInterval = null;
+        window.sessionCheckInterval = null; // for auto-refresh
 
         // ================================================================
         // HELPERS
@@ -1939,7 +1919,6 @@
                     document.getElementById('adminDashboard').classList.remove('hidden');
                     document.getElementById('parentDashboard').classList.add('hidden');
                     document.getElementById('backBtn').classList.remove('visible');
-                    // Show logout button
                     document.getElementById('logoutTopBtn').classList.add('visible');
                     loadAdminData();
                     showToast('Admin Panel തുറന്നു', 'success');
@@ -1973,11 +1952,14 @@
                 document.getElementById('parentDashboard').classList.remove('hidden');
                 document.getElementById('adminDashboard').classList.add('hidden');
                 document.getElementById('backBtn').classList.remove('visible');
-                // Show logout button
                 document.getElementById('logoutTopBtn').classList.add('visible');
 
                 document.getElementById('quizDayDisplay').textContent = 'Day ' + active.day;
                 renderParentDashboard();
+
+                // Start session check interval for auto-refresh
+                startSessionCheck();
+
                 showToast('സ്വാഗതം, ' + user.name + '!', 'success');
 
             } catch (err) {
@@ -1996,6 +1978,7 @@
             if (window.timerInterval) clearInterval(window.timerInterval);
             if (window.pubInterval) clearInterval(window.pubInterval);
             if (window.rankingRefreshInterval) clearInterval(window.rankingRefreshInterval);
+            if (window.sessionCheckInterval) clearInterval(window.sessionCheckInterval);
             window.currentUser = null;
             window.currentSession = null;
             window.nextSession = null;
@@ -2005,11 +1988,56 @@
             document.getElementById('adminDashboard').classList.add('hidden');
             document.getElementById('loginIdInput').value = '';
             document.getElementById('backBtn').classList.remove('visible');
-            // Hide logout button
             document.getElementById('logoutTopBtn').classList.remove('visible');
             showToast('പുറത്തുകടന്നു', 'info');
         }
         document.getElementById('logoutTopBtn').addEventListener('click', logout);
+
+        // ================================================================
+        // SESSION CHECK (Auto-refresh)
+        // ================================================================
+        function startSessionCheck() {
+            if (window.sessionCheckInterval) clearInterval(window.sessionCheckInterval);
+            window.sessionCheckInterval = setInterval(() => {
+                if (window.currentUser && !window.isAdmin) {
+                    // Re-fetch sessions to see if active session changed
+                    refreshSessionAndRender();
+                }
+            }, 30000); // every 30 seconds
+        }
+
+        async function refreshSessionAndRender() {
+            try {
+                const { data: sessions, error } = await _supabase
+                    .from('QuizSession')
+                    .select('*')
+                    .order('day');
+                if (error) throw error;
+                if (!sessions || sessions.length === 0) return;
+
+                const now = new Date();
+                let active = sessions.find(s => now >= new Date(s.startTime) && now <= new Date(s.endTime));
+                if (!active) active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
+
+                const currentDay = active.day;
+                let next = sessions.find(s => s.day === currentDay + 1);
+                window.nextSession = next || null;
+
+                // If active session changed, update UI
+                if (!window.currentSession || window.currentSession.day !== active.day) {
+                    window.currentSession = active;
+                    document.getElementById('quizDayDisplay').textContent = 'Day ' + active.day;
+                    renderParentDashboard();
+                } else {
+                    // Still same session, but we might need to update ranking visibility
+                    // because time might have crossed publication or next start cutoff
+                    // Just call renderParentDashboard again
+                    renderParentDashboard();
+                }
+            } catch (err) {
+                console.warn('Session refresh error:', err);
+            }
+        }
 
         // ================================================================
         // REGISTRATION
@@ -2159,12 +2187,11 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
-            let cutoffTime = null;
+            // Calculate next session start (if any)
+            let nextStart = null;
             if (window.nextSession) {
-                const nextStart = new Date(window.nextSession.startTime);
-                cutoffTime = new Date(nextStart.getTime() - 60 * 60 * 1000);
+                nextStart = new Date(window.nextSession.startTime);
             }
-            window._rankingCutoff = cutoffTime;
 
             ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
             .forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -2182,7 +2209,7 @@
                 document.getElementById('waitingMsg').classList.remove('hidden');
                 document.getElementById('waitingTimeText').textContent =
                     `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
-                await updateRankingVisibility(now, pubTime, cutoffTime);
+                await updateRankingVisibility(now, pubTime, nextStart);
                 return;
             } else if (now > end) {
                 const { data: attempt } = await _supabase
@@ -2205,7 +2232,7 @@
                 } else {
                     // No attempt
                 }
-                await updateRankingVisibility(now, pubTime, cutoffTime);
+                await updateRankingVisibility(now, pubTime, nextStart);
                 return;
             }
 
@@ -2226,7 +2253,7 @@
                     document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
                     document.getElementById('scoreDisplay').style.fontSize = '';
                 }
-                await updateRankingVisibility(now, pubTime, cutoffTime);
+                await updateRankingVisibility(now, pubTime, nextStart);
                 return;
             }
 
@@ -2293,9 +2320,9 @@
         }
 
         // ================================================================
-        // RANKING VISIBILITY & DATA LOAD
+        // RANKING VISIBILITY — WITH 1-HOUR CUTOFF
         // ================================================================
-        async function updateRankingVisibility(now, pubTime, cutoffTime) {
+        async function updateRankingVisibility(now, pubTime, nextStart) {
             const rankingArea = document.getElementById('rankingArea');
             const heroContainer = document.getElementById('rankHeroContainer');
             const overallContainer = document.getElementById('overallRankContainer');
@@ -2309,11 +2336,19 @@
 
             let showRanking = false;
             if (now >= pubTime) {
-                if (!cutoffTime || now < cutoffTime) {
-                    showRanking = true;
+                // If there is a next session, check if we are within 1 hour before it starts
+                if (nextStart) {
+                    const oneHourBefore = new Date(nextStart.getTime() - 60 * 60 * 1000);
+                    if (now < oneHourBefore) {
+                        showRanking = true;
+                    } else {
+                        // Within 1 hour of next start, show cutoff message
+                        cutoffMsg.classList.remove('hidden');
+                        cutoffMsg.textContent = '⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.';
+                    }
                 } else {
-                    cutoffMsg.classList.remove('hidden');
-                    cutoffMsg.textContent = '⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.';
+                    // No next session, show ranking indefinitely
+                    showRanking = true;
                 }
             }
 
@@ -2323,6 +2358,7 @@
                 await loadParentRankingData();
                 await loadOverallRank();
             } else if (!cutoffMsg.classList.contains('hidden')) {
+                // cutoff message already shown
                 rankingArea.classList.remove('hidden');
                 submittedArea.classList.add('hidden');
             } else {
@@ -2331,10 +2367,11 @@
                 }
             }
 
+            // Keep ranking refresh interval for updated ranks (e.g., new submissions)
             if (window.rankingRefreshInterval) clearInterval(window.rankingRefreshInterval);
             window.rankingRefreshInterval = setInterval(async () => {
                 const now2 = new Date();
-                await updateRankingVisibility(now2, pubTime, cutoffTime);
+                await updateRankingVisibility(now2, pubTime, nextStart);
             }, 60000);
         }
 
@@ -2643,6 +2680,10 @@
                 const now = new Date();
                 const end = new Date(window.currentSession.endTime);
                 const pubTime = new Date(end.getTime() + 5 * 60000);
+                let nextStart = null;
+                if (window.nextSession) {
+                    nextStart = new Date(window.nextSession.startTime);
+                }
                 if (now < pubTime) {
                     document.getElementById('submittedArea').classList.remove('hidden');
                     document.getElementById('scoreDisplay').textContent = '🔒';
@@ -2654,8 +2695,7 @@
                 }
                 showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
 
-                const cutoffTime = window._rankingCutoff || null;
-                await updateRankingVisibility(now, pubTime, cutoffTime);
+                await updateRankingVisibility(now, pubTime, nextStart);
                 navigateTo('home');
             } catch (err) {
                 showToast('സമർപ്പിക്കുന്നതിൽ പിശക്: ' + err.message, 'error');
@@ -3106,7 +3146,7 @@
         }
 
         // ================================================================
-        // HELP - Malayalam, no admin hints
+        // HELP
         // ================================================================
         function openHelp() {
             alert(
@@ -3116,7 +3156,8 @@
                 '3. "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്ത് ക്വിസ് ആരംഭിക്കുക\n' +
                 '4. ഒരിക്കൽ ആരംഭിച്ചാൽ ഇന്ന് വീണ്ടും പ്രവേശിക്കാനാവില്ല\n' +
                 '5. സമയപരിധി കഴിഞ്ഞാൽ സ്വയം സമർപ്പിക്കും\n' +
-                '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ'
+                '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ\n' +
+                '7. റാങ്കിംഗ് അടുത്ത ക്വിസ് തുടങ്ങുന്നതിന് 1 മണിക്കൂർ മുമ്പ് വരെ കാണാം.'
             );
         }
 
@@ -3132,10 +3173,9 @@
 
         console.log('🚀 Daily Meelad Quiz - Full Screen');
         console.log('✅ Admin: ADMIN123');
-        console.log('✅ Parent: PARENT ID');
-        console.log('✅ Today + Overall ranks shown until 1 hour before next quiz.');
-        console.log('✅ "Thank you" message hidden when rank is shown.');
-        console.log('✅ Auto-refresh every minute.');
+        console.log('✅ 1-hour cutoff before next quiz.');
+        console.log('✅ Auto-refresh every 30 seconds.');
+        console.log('✅ Ranking visible until 1 hour before next session.');
     </script>
 
 </body>
