@@ -1357,20 +1357,120 @@
             }
         }
 
-        @media (max-width: 360px) {
+        /* ================================================================
+                   MOBILE-FIRST LOGIN PAGE FIXES
+                   ================================================================ */
+        @media (max-width: 480px) {
+            #loginSection {
+                padding: 4px;
+                align-items: center;
+            }
             .login-panel {
-                padding: 1.2rem 1rem 1.2rem;
-                border-radius: 1.8rem;
+                max-width: 100%;
+                margin: 0 4px;
+                padding: 1rem 0.8rem 1.2rem;
+                border-radius: 1.6rem;
             }
             .login-logo-ring {
-                width: 60px;
-                height: 60px;
+                width: 56px;
+                height: 56px;
             }
             .login-logo-ring .logo-icon {
-                width: 44px;
-                height: 44px;
-                font-size: 1.4rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
             }
+            .login-title {
+                font-size: clamp(1rem, 4.5vw, 1.3rem);
+            }
+            .login-sub {
+                font-size: clamp(0.55rem, 1.8vw, 0.7rem);
+                margin-bottom: 10px;
+            }
+            .input-group-premium {
+                padding: 0 12px;
+            }
+            .input-group-premium input {
+                padding: 10px 4px;
+                font-size: 0.85rem;
+            }
+            .btn-login-primary {
+                min-height: 44px;
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            .btn-login-secondary {
+                min-height: 38px;
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+            .btn-register-ghost {
+                min-height: 32px;
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+            .login-options {
+                gap: 4px;
+            }
+            .login-options label {
+                font-size: 0.7rem;
+            }
+            #loginMessage {
+                font-size: 0.7rem;
+                min-height: 18px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .login-panel {
+                padding: 0.8rem 0.6rem 1rem;
+                border-radius: 1.2rem;
+            }
+            .login-logo-ring {
+                width: 48px;
+                height: 48px;
+            }
+            .login-logo-ring .logo-icon {
+                width: 34px;
+                height: 34px;
+                font-size: 1rem;
+            }
+            .login-title {
+                font-size: 0.95rem;
+            }
+            .login-sub {
+                font-size: 0.5rem;
+                margin-bottom: 6px;
+            }
+            .input-group-premium input {
+                font-size: 0.8rem;
+                padding: 8px 4px;
+            }
+            .btn-login-primary {
+                min-height: 38px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            .btn-login-secondary {
+                min-height: 32px;
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+            .btn-register-ghost {
+                min-height: 28px;
+                font-size: 0.65rem;
+            }
+        }
+
+        /* Ensure content area doesn't add extra padding on small screens */
+        @media (max-width: 480px) {
+            #contentArea {
+                padding: 8px 6px 12px;
+            }
+        }
+
+        /* Other existing media queries remain below */
+        @media (max-width: 360px) {
             .login-options {
                 flex-direction: column;
                 align-items: stretch;
@@ -1384,26 +1484,6 @@
                 justify-content: center;
                 width: 100%;
                 white-space: normal;
-            }
-            .btn-login-primary {
-                min-height: 44px;
-                padding: 10px 14px;
-                font-size: 0.85rem;
-            }
-            .btn-login-secondary {
-                min-height: 38px;
-                padding: 8px 14px;
-                font-size: 0.75rem;
-            }
-            .input-group-premium input {
-                padding: 10px 6px;
-                font-size: 0.85rem;
-            }
-            .input-group-premium {
-                padding: 0 12px;
-            }
-            #contentArea {
-                padding: 8px 8px 12px;
             }
         }
 
@@ -1505,20 +1585,20 @@
                             <input type="text" id="loginIdInput" placeholder="Parent ID നൽകുക" autofocus oninput="this.value = this.value.toUpperCase();" />
                         </div>
 
-                        <!-- Login options: remember me + (no register button here now) -->
+                        <!-- Login options: remember me -->
                         <div class="login-options">
                             <label>
                                 <input type="checkbox" id="rememberMe" checked />
                                 ഓർക്കുക
                             </label>
-                            <!-- empty space, but we keep the label only -->
+                            <!-- empty space -->
                         </div>
 
                         <button type="submit" class="btn-login-primary" id="loginSubmitBtn">
                             <i class="fas fa-key"></i> പ്രവേശിക്കുക
                         </button>
 
-                        <!-- Register button moved here, below login -->
+                        <!-- Register button moved below login -->
                         <button type="button" class="btn-register-ghost" id="showRegisterBtn">
                             <i class="fas fa-user-plus"></i> പുതിയ രക്ഷിതാവ്
                         </button>
@@ -1810,7 +1890,7 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT -->
+    <!-- JAVASCRIPT (same as before – no changes needed) -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
