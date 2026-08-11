@@ -40,8 +40,6 @@
             align-items: center;
             touch-action: manipulation;
         }
-
-        /* ===== APP SHELL ===== */
         #appShell {
             width: 100%;
             height: 100dvh;
@@ -55,7 +53,7 @@
             box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
             margin: 0 auto;
         }
-        @media (min-width: 480px) {
+        @media (min-width:480px) {
             #appShell {
                 border-radius: 32px;
                 height: 96vh;
@@ -64,8 +62,6 @@
                 max-width: 480px;
             }
         }
-
-        /* ===== APP BAR ===== */
         #appBar {
             display: flex;
             align-items: center;
@@ -151,8 +147,6 @@
             background: rgba(255, 255, 255, 0.08);
             color: #fff;
         }
-
-        /* ===== CONTENT AREA ===== */
         #contentArea {
             flex: 1;
             overflow-y: auto;
@@ -171,8 +165,6 @@
             background: rgba(251, 191, 36, 0.2);
             border-radius: 10px;
         }
-
-        /* ===== GLASS CARD ===== */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
@@ -186,8 +178,6 @@
         .glass-card:last-child {
             margin-bottom: 0;
         }
-
-        /* ===== LOGIN PANEL ===== */
         .login-panel {
             background: rgba(10, 20, 40, 0.7);
             backdrop-filter: blur(24px);
@@ -272,8 +262,6 @@
             outline: none;
             font-size: clamp(0.85rem, 2.5vw, 1rem);
         }
-
-        /* ===== BUTTONS ===== */
         .btn {
             border: none;
             cursor: pointer;
@@ -359,8 +347,6 @@
             transform: none;
             box-shadow: none;
         }
-
-        /* ===== STATS ===== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -397,8 +383,6 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-
-        /* ===== TIMER ===== */
         .timer-wrapper {
             display: flex;
             justify-content: center;
@@ -467,8 +451,6 @@
                 filter: drop-shadow(0 0 24px rgba(248, 113, 113, 0.25));
             }
         }
-
-        /* ===== QUESTION CARDS ===== */
         .question-card {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 1.2rem;
@@ -487,7 +469,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 6px;
         }
-        @media (max-width: 380px) {
+        @media (max-width:380px) {
             .options-grid {
                 grid-template-columns: 1fr;
             }
@@ -521,8 +503,6 @@
             cursor: default;
             transform: none !important;
         }
-
-        /* ===== RANKING ===== */
         .rank-hero {
             text-align: center;
             padding: 18px 12px 16px;
@@ -594,8 +574,6 @@
                 opacity: 1;
             }
         }
-
-        /* ===== STATUS BOXES ===== */
         .status-box {
             text-align: center;
             padding: 30px 16px;
@@ -624,8 +602,6 @@
             color: #94a3b8;
             font-size: clamp(0.8rem, 2vw, 0.9rem);
         }
-
-        /* ===== PUBLICATION COUNTDOWN ===== */
         .pub-box {
             text-align: center;
             padding: 14px;
@@ -645,8 +621,6 @@
             color: var(--text-secondary);
             margin-top: 2px;
         }
-
-        /* ===== MODALS ===== */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -692,8 +666,6 @@
             line-height: 1.5;
             font-size: clamp(0.85rem, 2.5vw, 0.95rem);
         }
-
-        /* ===== ADMIN TABLES ===== */
         .admin-tabs {
             display: flex;
             gap: 4px;
@@ -773,8 +745,6 @@
         .day-tab:active {
             transform: scale(0.95);
         }
-
-        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             bottom: 20px;
@@ -821,8 +791,6 @@
                 transform: translateY(0);
             }
         }
-
-        /* ===== HELP FAB ===== */
         .help-fab {
             position: fixed;
             bottom: 20px;
@@ -853,8 +821,6 @@
             border-color: #3b82f6;
             color: #93c5fd;
         }
-
-        /* ===== UTILITY ===== */
         .hidden {
             display: none !important;
         }
@@ -946,9 +912,7 @@
                 transform: rotate(360deg);
             }
         }
-
-        /* ===== EXTRA TINY SCREEN FIXES ===== */
-        @media (max-width: 380px) {
+        @media (max-width:380px) {
             #appBar {
                 padding: 2px 8px;
                 min-height: 42px;
@@ -1006,6 +970,33 @@
             #contentArea {
                 padding: 8px 8px 12px;
             }
+        }
+
+        /* Ranking overall card */
+        .rank-overall {
+            text-align: center;
+            padding: 16px 12px;
+            background: rgba(59, 130, 246, 0.04);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(59, 130, 246, 0.06);
+            margin-bottom: 14px;
+        }
+        .rank-overall .rank-number {
+            font-size: clamp(2.2rem, 10vw, 3rem);
+            font-weight: 800;
+            color: #60a5fa;
+            line-height: 1;
+        }
+        .rank-overall .rank-label {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .rank-overall .rank-score {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            color: #93c5fd;
+            font-weight: 600;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -1108,7 +1099,7 @@
                     <button class="btn btn-success btn-block mt-3" id="submitQuizBtn">📤 സമർപ്പിക്കുക</button>
                 </div>
 
-                <!-- Submitted -->
+                <!-- Submitted (thank you message) -->
                 <div id="submittedArea" class="hidden">
                     <div class="status-box">
                         <div class="icon">✅</div>
@@ -1118,11 +1109,14 @@
                     </div>
                 </div>
 
-                <!-- Ranking -->
+                <!-- Ranking Area (Today + Overall) -->
                 <div id="rankingArea" class="hidden">
                     <div class="glass-card">
                         <div id="rankHeroContainer"></div>
-                        <div id="rankListContainer"></div>
+                        <div id="overallRankContainer"></div>
+                        <div id="rankingCutoffMsg" class="hidden text-center text-muted mt-3" style="font-size:clamp(0.8rem,2vw,0.9rem);">
+                            ⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1140,7 +1134,6 @@
                     <button class="admin-tab" data-tab="rankings" onclick="switchAdminTab('rankings')">📊 റാങ്കിംഗ്</button>
                 </div>
 
-                <!-- Sessions -->
                 <div id="tab-sessions" class="tab-content">
                     <div class="glass-card">
                         <h4 style="color:var(--gold); font-size:clamp(0.85rem,2.5vw,1rem);">⏰ ദിവസങ്ങൾ കൈകാര്യം ചെയ്യുക</h4>
@@ -1168,7 +1161,6 @@
                     </div>
                 </div>
 
-                <!-- Questions -->
                 <div id="tab-questions" class="tab-content hidden">
                     <div class="glass-card">
                         <div class="flex-between" style="margin-bottom:10px;">
@@ -1199,7 +1191,6 @@
                     </div>
                 </div>
 
-                <!-- Rankings -->
                 <div id="tab-rankings" class="tab-content hidden">
                     <div class="glass-card">
                         <h4 style="color:var(--gold); font-size:clamp(0.85rem,2.5vw,1rem);">🏆 റാങ്കിംഗ്</h4>
@@ -1218,7 +1209,6 @@
 
     <!-- ===== MODALS ===== -->
 
-    <!-- REGISTER MODAL -->
     <div id="registerModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <div class="flex-between" style="margin-bottom:12px;">
@@ -1241,7 +1231,6 @@
         </div>
     </div>
 
-    <!-- FIND ID MODAL -->
     <div id="findIdModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <div class="flex-between" style="margin-bottom:12px;">
@@ -1267,7 +1256,6 @@
         </div>
     </div>
 
-    <!-- CONFIRM MODAL -->
     <div id="confirmModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <h3>⚠️ ശ്രദ്ധിക്കുക</h3>
@@ -1287,7 +1275,6 @@
         </div>
     </div>
 
-    <!-- ===== TOAST ===== -->
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ============================================================ -->
@@ -1307,6 +1294,7 @@
         // ================================================================
         window.currentUser = null;
         window.currentSession = null;
+        window.nextSession = null;
         window.questions = [];
         window.answers = {};
         window.isSubmitted = false;
@@ -1321,6 +1309,7 @@
         window.isAdmin = false;
         window.currentView = 'home';
         window.adminRankDay = 1;
+        window.rankingRefreshInterval = null;
 
         // ================================================================
         // HELPERS
@@ -1373,7 +1362,7 @@
         }
 
         // ================================================================
-        // NAVIGATION (simplified - no bottom nav)
+        // NAVIGATION
         // ================================================================
         function navigateTo(view) {
             window.currentView = view;
@@ -1469,16 +1458,20 @@
                 }
 
                 window.isAdmin = false;
-                const { data: sessions } = await _supabase
+                const { data: sessions, error: sessErr } = await _supabase
                     .from('QuizSession')
                     .select('*')
                     .order('day');
 
-                if (!sessions || sessions.length === 0) throw new Error('സെഷനുകൾ ലഭ്യമല്ല.');
+                if (sessErr || !sessions || sessions.length === 0) throw new Error('സെഷനുകൾ ലഭ്യമല്ല.');
 
                 const now = new Date();
                 let active = sessions.find(s => now >= new Date(s.startTime) && now <= new Date(s.endTime));
                 if (!active) active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
+
+                const currentDay = active.day;
+                let next = sessions.find(s => s.day === currentDay + 1);
+                window.nextSession = next || null;
 
                 await _supabase.from('LoginTrack').insert({ studentId: user.id, day: active.day });
 
@@ -1507,8 +1500,10 @@
         function logout() {
             if (window.timerInterval) clearInterval(window.timerInterval);
             if (window.pubInterval) clearInterval(window.pubInterval);
+            if (window.rankingRefreshInterval) clearInterval(window.rankingRefreshInterval);
             window.currentUser = null;
             window.currentSession = null;
+            window.nextSession = null;
             window.isAdmin = false;
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('parentDashboard').classList.add('hidden');
@@ -1668,6 +1663,13 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
+            let cutoffTime = null;
+            if (window.nextSession) {
+                const nextStart = new Date(window.nextSession.startTime);
+                cutoffTime = new Date(nextStart.getTime() - 60 * 60 * 1000);
+            }
+            window._rankingCutoff = cutoffTime;
+
             ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
             .forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('statsGrid').classList.remove('hidden');
@@ -1684,12 +1686,36 @@
                 document.getElementById('waitingMsg').classList.remove('hidden');
                 document.getElementById('waitingTimeText').textContent =
                     `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
+                await updateRankingVisibility(now, pubTime, cutoffTime);
                 return;
             } else if (now > end) {
-                await loadParentRanking(pubTime);
+                const { data: attempt } = await _supabase
+                    .from('Attempt')
+                    .select('id, status, score')
+                    .eq('studentId', window.currentUser.id)
+                    .eq('sessionDay', window.currentSession.day)
+                    .maybeSingle();
+
+                if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
+                    // Show submittedArea only if before publication
+                    if (now < pubTime) {
+                        document.getElementById('submittedArea').classList.remove('hidden');
+                        document.getElementById('scoreDisplay').textContent = '🔒';
+                        document.getElementById('scoreDisplay').style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
+                    } else {
+                        // After publication, we hide submittedArea (it will be hidden by updateRankingVisibility)
+                        document.getElementById('submittedArea').classList.add('hidden');
+                        document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
+                        document.getElementById('scoreDisplay').style.fontSize = '';
+                    }
+                } else {
+                    // No attempt, maybe show ended message? But we'll let ranking decide.
+                }
+                await updateRankingVisibility(now, pubTime, cutoffTime);
                 return;
             }
 
+            // Session active
             const { data: attempt } = await _supabase
                 .from('Attempt')
                 .select('id, status, score')
@@ -1706,20 +1732,7 @@
                     document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
                     document.getElementById('scoreDisplay').style.fontSize = '';
                 }
-                if (now > pubTime) {
-                    await loadParentRanking(pubTime);
-                } else {
-                    const check = setInterval(() => {
-                        if (new Date() > pubTime) {
-                            clearInterval(check);
-                            loadParentRanking(pubTime);
-                            if (attempt && attempt.score !== null) {
-                                document.getElementById('scoreDisplay').textContent = attempt.score;
-                                document.getElementById('scoreDisplay').style.fontSize = '';
-                            }
-                        }
-                    }, 5000);
-                }
+                await updateRankingVisibility(now, pubTime, cutoffTime);
                 return;
             }
 
@@ -1781,6 +1794,201 @@
                 if (this.disabled) return;
                 document.getElementById('confirmModal').classList.remove('hidden');
             };
+
+            document.getElementById('rankingArea').classList.add('hidden');
+        }
+
+        // ================================================================
+        // RANKING VISIBILITY & DATA LOAD
+        // ================================================================
+        async function updateRankingVisibility(now, pubTime, cutoffTime) {
+            const rankingArea = document.getElementById('rankingArea');
+            const heroContainer = document.getElementById('rankHeroContainer');
+            const overallContainer = document.getElementById('overallRankContainer');
+            const cutoffMsg = document.getElementById('rankingCutoffMsg');
+            const submittedArea = document.getElementById('submittedArea');
+
+            rankingArea.classList.add('hidden');
+            heroContainer.innerHTML = '';
+            overallContainer.innerHTML = '';
+            cutoffMsg.classList.add('hidden');
+
+            let showRanking = false;
+            if (now >= pubTime) {
+                if (!cutoffTime || now < cutoffTime) {
+                    showRanking = true;
+                } else {
+                    cutoffMsg.classList.remove('hidden');
+                    cutoffMsg.textContent = '⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.';
+                }
+            }
+
+            if (showRanking) {
+                rankingArea.classList.remove('hidden');
+                submittedArea.classList.add('hidden'); // hide thank you message
+                await loadParentRankingData();
+                await loadOverallRank();
+            } else if (!cutoffMsg.classList.contains('hidden')) {
+                // cutoff message shown
+                rankingArea.classList.remove('hidden');
+                submittedArea.classList.add('hidden');
+            } else {
+                // ranking not shown and not cutoff
+                // If we are past publication but not showing ranking (should not happen), we might hide submittedArea.
+                if (now >= pubTime) {
+                    submittedArea.classList.add('hidden');
+                }
+            }
+
+            // Set up periodic refresh (every minute)
+            if (window.rankingRefreshInterval) clearInterval(window.rankingRefreshInterval);
+            window.rankingRefreshInterval = setInterval(async () => {
+                const now2 = new Date();
+                await updateRankingVisibility(now2, pubTime, cutoffTime);
+            }, 60000);
+        }
+
+        async function loadParentRankingData() {
+            const heroContainer = document.getElementById('rankHeroContainer');
+            if (!window.currentUser || !window.currentSession) return;
+
+            try {
+                const { data: attempts, error } = await _supabase
+                    .from('Attempt')
+                    .select('*, Student(name)')
+                    .eq('sessionDay', window.currentSession.day)
+                    .eq('status', 'COMPLETED');
+
+                if (error) throw error;
+
+                if (!attempts || attempts.length === 0) {
+                    heroContainer.innerHTML = '<div class="text-center text-muted">📭 ഇതുവരെ സമർപ്പണങ്ങളൊന്നുമില്ല.</div>';
+                    return;
+                }
+
+                const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
+                if (!myAttempt) {
+                    heroContainer.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
+                    return;
+                }
+
+                const ranked = attempts.map(a => ({
+                    ...a,
+                    timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000)
+                }));
+                ranked.sort((a, b) => {
+                    if (a.score !== b.score) return (b.score || 0) - (a.score || 0);
+                    return (a.timeTaken || 9999) - (b.timeTaken || 9999);
+                });
+
+                const rank = ranked.findIndex(a => a.id === myAttempt.id) + 1;
+                const score = myAttempt.score || 0;
+                const timeTaken = ranked.find(a => a.id === myAttempt.id).timeTaken || 0;
+
+                const medal = getMedal(rank);
+                const suffix = rank === 1 ? 'ം' : rank === 2 ? 'ം' : rank === 3 ? 'ം' : 'ം';
+                const rankText = rank + suffix + ' സ്ഥാനം';
+
+                const scoreHtml = `<div class="rank-score-visible">🏅 ${score} മാർക്ക്</div>`;
+
+                heroContainer.innerHTML = `
+                    <div class="rank-hero rank-animate">
+                        ${medal ? `<div class="rank-big"><span class="medal">${medal}</span></div>` : ''}
+                        <div class="rank-big" style="${medal ? 'font-size:clamp(2.5rem,10vw,3rem);' : ''}">${rankText}</div>
+                        <div class="rank-label">${medal ? '🏆 ഇന്നത്തെ റാങ്ക്' : 'ഇന്നത്തെ റാങ്ക്'}</div>
+                        ${scoreHtml}
+                        <div class="rank-sub">⏱️ ${timeTaken} സെക്കൻഡ്</div>
+                    </div>
+                `;
+
+            } catch (err) {
+                heroContainer.innerHTML = '<div class="text-danger text-center">Error loading ranking.</div>';
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function loadOverallRank() {
+            const overallContainer = document.getElementById('overallRankContainer');
+            if (!window.currentUser) return;
+
+            try {
+                const { data: myAttempts, error: myErr } = await _supabase
+                    .from('Attempt')
+                    .select('score, startTime, endTime, sessionDay')
+                    .eq('studentId', window.currentUser.id)
+                    .eq('status', 'COMPLETED');
+
+                if (myErr) throw myErr;
+
+                if (!myAttempts || myAttempts.length === 0) {
+                    overallContainer.innerHTML = '';
+                    return;
+                }
+
+                let totalScore = 0;
+                let totalTime = 0;
+                myAttempts.forEach(a => {
+                    totalScore += a.score || 0;
+                    const time = a.endTime ? Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000) : 0;
+                    totalTime += time;
+                });
+
+                const { data: allAttempts, error: allErr } = await _supabase
+                    .from('Attempt')
+                    .select('studentId, score, startTime, endTime')
+                    .eq('status', 'COMPLETED');
+
+                if (allErr) throw allErr;
+
+                if (!allAttempts || allAttempts.length === 0) {
+                    overallContainer.innerHTML = '<div class="text-center text-muted">മൊത്തം റാങ്കിന് ഡാറ്റയില്ല.</div>';
+                    return;
+                }
+
+                const map = {};
+                allAttempts.forEach(a => {
+                    const sid = a.studentId;
+                    if (!map[sid]) {
+                        map[sid] = { totalScore: 0, totalTime: 0 };
+                    }
+                    map[sid].totalScore += a.score || 0;
+                    const time = a.endTime ? Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000) : 0;
+                    map[sid].totalTime += time;
+                });
+
+                const rankings = Object.keys(map).map(sid => ({
+                    studentId: sid,
+                    totalScore: map[sid].totalScore,
+                    totalTime: map[sid].totalTime
+                }));
+                rankings.sort((a, b) => {
+                    if (a.totalScore !== b.totalScore) return b.totalScore - a.totalScore;
+                    return a.totalTime - b.totalTime;
+                });
+
+                const myRank = rankings.findIndex(r => r.studentId === window.currentUser.id) + 1;
+                if (myRank === 0) {
+                    overallContainer.innerHTML = '<div class="text-center text-muted">മൊത്തം റാങ്ക് കണ്ടെത്താനായില്ല.</div>';
+                    return;
+                }
+
+                const medal = getMedal(myRank);
+                const suffix = myRank === 1 ? 'ം' : myRank === 2 ? 'ം' : myRank === 3 ? 'ം' : 'ം';
+                const rankText = myRank + suffix + ' സ്ഥാനം';
+
+                overallContainer.innerHTML = `
+                    <div class="rank-overall rank-animate">
+                        ${medal ? `<div class="rank-number" style="font-size:clamp(2.5rem,10vw,3rem);">${medal}</div>` : ''}
+                        <div class="rank-number">${rankText}</div>
+                        <div class="rank-label">🏅 മൊത്തം റാങ്ക് (എല്ലാ ദിവസങ്ങളും)</div>
+                        <div class="rank-score">📊 ${totalScore} മാർക്ക് (${myAttempts.length} ദിവസം)</div>
+                    </div>
+                `;
+
+            } catch (err) {
+                overallContainer.innerHTML = '<div class="text-danger text-center">Error loading overall rank.</div>';
+                showToast(err.message, 'error');
+            }
         }
 
         // ================================================================
@@ -1942,136 +2150,29 @@
 
                 document.getElementById('questionsArea').classList.add('hidden');
                 document.getElementById('timerArea').classList.add('hidden');
-                document.getElementById('submittedArea').classList.remove('hidden');
+                // Show submittedArea only if before publication
                 const now = new Date();
                 const end = new Date(window.currentSession.endTime);
                 const pubTime = new Date(end.getTime() + 5 * 60000);
                 if (now < pubTime) {
+                    document.getElementById('submittedArea').classList.remove('hidden');
                     document.getElementById('scoreDisplay').textContent = '🔒';
                     document.getElementById('scoreDisplay').style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
                 } else {
+                    // After publication, we don't show submittedArea; ranking will handle it.
+                    document.getElementById('submittedArea').classList.add('hidden');
                     document.getElementById('scoreDisplay').textContent = score;
                     document.getElementById('scoreDisplay').style.fontSize = '';
                 }
                 showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
 
-                if (now > pubTime) {
-                    await loadParentRanking(pubTime);
-                } else {
-                    const check = setInterval(() => {
-                        if (new Date() > pubTime) {
-                            clearInterval(check);
-                            loadParentRanking(pubTime);
-                            document.getElementById('scoreDisplay').textContent = score;
-                            document.getElementById('scoreDisplay').style.fontSize = '';
-                        }
-                    }, 5000);
-                }
+                const cutoffTime = window._rankingCutoff || null;
+                await updateRankingVisibility(now, pubTime, cutoffTime);
                 navigateTo('home');
             } catch (err) {
                 showToast('സമർപ്പിക്കുന്നതിൽ പിശക്: ' + err.message, 'error');
                 window.isSubmitted = false;
                 document.getElementById('submitQuizBtn').disabled = false;
-            }
-        }
-
-        // ================================================================
-        // PARENT RANKING - Only user's rank, no top 5 list
-        // ================================================================
-        async function loadParentRanking(pubTime) {
-            document.getElementById('rankingArea').classList.remove('hidden');
-            const now = new Date();
-
-            const expiryTime = new Date(pubTime.getTime() + 12 * 60 * 60 * 1000);
-            if (now > expiryTime) {
-                document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-muted">⏳ ഫലം ഇപ്പോൾ ലഭ്യമല്ല. (12 മണിക്കൂർ കഴിഞ്ഞു)</div>';
-                document.getElementById('rankHeroContainer').innerHTML = '';
-                return;
-            }
-
-            if (now < pubTime) {
-                document.getElementById('rankHeroContainer').innerHTML = `
-                    <div class="pub-box">
-                        <div class="pub-timer" id="publicationTimer">05:00</div>
-                        <div class="pub-label">📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</div>
-                    </div>
-                `;
-                document.getElementById('rankListContainer').innerHTML = '';
-                if (window.pubInterval) clearInterval(window.pubInterval);
-                window.pubInterval = setInterval(() => {
-                    const diff = Math.max(0, Math.floor((pubTime - new Date()) / 1000));
-                    const mins = Math.floor(diff / 60);
-                    const secs = diff % 60;
-                    const el = document.getElementById('publicationTimer');
-                    if (el) el.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-                    if (diff <= 0) {
-                        clearInterval(window.pubInterval);
-                        loadParentRankingData();
-                    }
-                }, 1000);
-                return;
-            } else {
-                await loadParentRankingData();
-            }
-        }
-
-        async function loadParentRankingData() {
-            const heroContainer = document.getElementById('rankHeroContainer');
-            const container = document.getElementById('rankListContainer');
-            heroContainer.innerHTML = '';
-            container.innerHTML = '';
-
-            try {
-                const { data: attempts } = await _supabase
-                    .from('Attempt')
-                    .select('*, Student(name)')
-                    .eq('sessionDay', window.currentSession.day)
-                    .eq('status', 'COMPLETED');
-
-                if (!attempts || attempts.length === 0) {
-                    heroContainer.innerHTML = '<div class="text-center text-muted">📭 ഇതുവരെ സമർപ്പണങ്ങളൊന്നുമില്ല.</div>';
-                    return;
-                }
-
-                const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
-                if (!myAttempt) {
-                    heroContainer.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
-                    return;
-                }
-
-                const ranked = attempts.map(a => ({
-                    ...a,
-                    timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000)
-                }));
-                ranked.sort((a, b) => {
-                    if (a.score !== b.score) return (b.score || 0) - (a.score || 0);
-                    return (a.timeTaken || 9999) - (b.timeTaken || 9999);
-                });
-
-                const rank = ranked.findIndex(a => a.id === myAttempt.id) + 1;
-                const score = myAttempt.score || 0;
-                const timeTaken = ranked.find(a => a.id === myAttempt.id).timeTaken || 0;
-
-                const medal = getMedal(rank);
-                const suffix = rank === 1 ? 'ം' : rank === 2 ? 'ം' : rank === 3 ? 'ം' : 'ം';
-                const rankText = rank + suffix + ' സ്ഥാനം';
-
-                const scoreHtml = `<div class="rank-score-visible">🏅 ${score} മാർക്ക്</div>`;
-
-                heroContainer.innerHTML = `
-                    <div class="rank-hero rank-animate">
-                        ${medal ? `<div class="rank-big"><span class="medal">${medal}</span></div>` : ''}
-                        <div class="rank-big" style="${medal ? 'font-size:clamp(2.5rem,10vw,3rem);' : ''}">${rankText}</div>
-                        <div class="rank-label">${medal ? '🏆 നിങ്ങളുടെ റാങ്ക്' : 'നിങ്ങളുടെ റാങ്ക്'}</div>
-                        ${scoreHtml}
-                        <div class="rank-sub">⏱️ ${timeTaken} സെക്കൻഡ്</div>
-                    </div>
-                `;
-
-            } catch (err) {
-                heroContainer.innerHTML = '<div class="text-danger text-center">Error loading ranking.</div>';
-                showToast(err.message, 'error');
             }
         }
 
@@ -2517,7 +2618,7 @@
         }
 
         // ================================================================
-        // HELP - Malayalam, first point removed
+        // HELP - Malayalam, no admin hints
         // ================================================================
         function openHelp() {
             alert(
@@ -2528,15 +2629,9 @@
                 '4. ഒരിക്കൽ ആരംഭിച്ചാൽ ഇന്ന് വീണ്ടും പ്രവേശിക്കാനാവില്ല\n' +
                 '5. സമയപരിധി കഴിഞ്ഞാൽ സ്വയം സമർപ്പിക്കും\n' +
                 '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ\n' +
-                '7. റാങ്കിൽ മൊത്തം പങ്കെടുത്തവരുടെ എണ്ണം കാണിക്കില്ല\n' +
-                '8. Admin പാനലിൽ "Overall" ടാബിൽ എല്ലാ ദിവസത്തെയും മൊത്തം റാങ്കിംഗ് കാണാം\n' +
-                '9. Admin: "ADMIN123" ഉപയോഗിച്ച് പ്രവേശിക്കുക'
+                '7. റാങ്കിൽ മൊത്തം പങ്കെടുത്തവരുടെ എണ്ണം കാണിക്കില്ല'
             );
         }
-
-        // ================================================================
-        // STATUS BAR TIME (removed - kept only for reference)
-        // ================================================================
 
         // ================================================================
         // INIT
@@ -2548,11 +2643,12 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Daily Meelad Quiz - Full Screen (No Status Bar, No Bottom Nav)');
+        console.log('🚀 Daily Meelad Quiz - Full Screen');
         console.log('✅ Admin: ADMIN123');
-        console.log('✅ Clean full-screen layout');
-        console.log('✅ All features intact: Overall ranking, no top 5');
-        console.log('✅ Help button available');
+        console.log('✅ Parent: PARENT ID');
+        console.log('✅ Today + Overall ranks shown until 1 hour before next quiz.');
+        console.log('✅ "Thank you" message hidden when rank is shown.');
+        console.log('✅ Auto-refresh every minute.');
     </script>
 
 </body>
