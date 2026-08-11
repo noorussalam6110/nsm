@@ -1580,6 +1580,10 @@
                         <div id="rankingCutoffMsg" class="hidden text-center text-muted mt-3" style="font-size:clamp(0.8rem,2vw,0.9rem);">
                             ⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.
                         </div>
+                        <!-- NEW: Performance History Button -->
+                        <button class="btn btn-gold btn-block mt-3" id="showPerformanceBtn">
+                            📊 എല്ലാ ദിവസത്തെയും പ്രകടനം
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1738,6 +1742,19 @@
         </div>
     </div>
 
+    <!-- ===== NEW: PERFORMANCE MODAL ===== -->
+    <div id="performanceModal" class="modal-overlay hidden">
+        <div class="modal-glass">
+            <div class="flex-between" style="margin-bottom:12px;">
+                <h3><i class="fas fa-chart-line" style="color:#60a5fa;"></i> എല്ലാ ദിവസത്തെയും പ്രകടനം</h3>
+                <button class="btn btn-outline btn-sm" id="closePerformanceModalBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="performanceContent" style="margin-top:12px;">
+                <div class="text-center text-muted">Loading...</div>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ============================================================ -->
@@ -1773,7 +1790,7 @@
         window.currentView = 'home';
         window.adminRankDay = 1;
         window.rankingRefreshInterval = null;
-        window.sessionCheckInterval = null; // for auto-refresh
+        window.sessionCheckInterval = null;
 
         // ================================================================
         // HELPERS
@@ -2000,10 +2017,9 @@
             if (window.sessionCheckInterval) clearInterval(window.sessionCheckInterval);
             window.sessionCheckInterval = setInterval(() => {
                 if (window.currentUser && !window.isAdmin) {
-                    // Re-fetch sessions to see if active session changed
                     refreshSessionAndRender();
                 }
-            }, 30000); // every 30 seconds
+            }, 30000);
         }
 
         async function refreshSessionAndRender() {
@@ -2023,15 +2039,11 @@
                 let next = sessions.find(s => s.day === currentDay + 1);
                 window.nextSession = next || null;
 
-                // If active session changed, update UI
                 if (!window.currentSession || window.currentSession.day !== active.day) {
                     window.currentSession = active;
                     document.getElementById('quizDayDisplay').textContent = 'Day ' + active.day;
                     renderParentDashboard();
                 } else {
-                    // Still same session, but we might need to update ranking visibility
-                    // because time might have crossed publication or next start cutoff
-                    // Just call renderParentDashboard again
                     renderParentDashboard();
                 }
             } catch (err) {
@@ -2187,7 +2199,6 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
-            // Calculate next session start (if any)
             let nextStart = null;
             if (window.nextSession) {
                 nextStart = new Date(window.nextSession.startTime);
@@ -2336,18 +2347,15 @@
 
             let showRanking = false;
             if (now >= pubTime) {
-                // If there is a next session, check if we are within 1 hour before it starts
                 if (nextStart) {
                     const oneHourBefore = new Date(nextStart.getTime() - 60 * 60 * 1000);
                     if (now < oneHourBefore) {
                         showRanking = true;
                     } else {
-                        // Within 1 hour of next start, show cutoff message
                         cutoffMsg.classList.remove('hidden');
                         cutoffMsg.textContent = '⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.';
                     }
                 } else {
-                    // No next session, show ranking indefinitely
                     showRanking = true;
                 }
             }
@@ -2358,7 +2366,6 @@
                 await loadParentRankingData();
                 await loadOverallRank();
             } else if (!cutoffMsg.classList.contains('hidden')) {
-                // cutoff message already shown
                 rankingArea.classList.remove('hidden');
                 submittedArea.classList.add('hidden');
             } else {
@@ -2367,7 +2374,6 @@
                 }
             }
 
-            // Keep ranking refresh interval for updated ranks (e.g., new submissions)
             if (window.rankingRefreshInterval) clearInterval(window.rankingRefreshInterval);
             window.rankingRefreshInterval = setInterval(async () => {
                 const now2 = new Date();
@@ -2515,6 +2521,164 @@
             } catch (err) {
                 overallContainer.innerHTML = '<div class="text-danger text-center">Error loading overall rank.</div>';
                 showToast(err.message, 'error');
+            }
+        }
+
+        // ================================================================
+        // PERFORMANCE HISTORY (All Days Score & Rank)
+        // ================================================================
+        document.getElementById('showPerformanceBtn').addEventListener('click', function() {
+            document.getElementById('performanceModal').classList.remove('hidden');
+            loadPerformanceData();
+        });
+
+        document.getElementById('closePerformanceModalBtn').addEventListener('click', function() {
+            document.getElementById('performanceModal').classList.add('hidden');
+        });
+        document.getElementById('performanceModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.add('hidden');
+        });
+
+        async function loadPerformanceData() {
+            const container = document.getElementById('performanceContent');
+            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+
+            if (!window.currentUser) {
+                container.innerHTML = '<div class="text-center text-muted">ഉപയോക്താവിനെ കണ്ടെത്താനായില്ല.</div>';
+                return;
+            }
+
+            try {
+                // Get all attempts for this user (COMPLETED or TIMED_OUT)
+                const { data: myAttempts, error: myErr } = await _supabase
+                    .from('Attempt')
+                    .select('*')
+                    .eq('studentId', window.currentUser.id)
+                    .in('status', ['COMPLETED', 'TIMED_OUT'])
+                    .order('sessionDay', { ascending: true });
+
+                if (myErr) throw myErr;
+
+                if (!myAttempts || myAttempts.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted">📭 നിങ്ങൾ ഇതുവരെ ഒരു ദിവസത്തെയും പൂർത്തിയാക്കിയിട്ടില്ല.</div>';
+                    return;
+                }
+
+                // Fetch all sessions to get pubTime for each day
+                const { data: sessions, error: sessErr } = await _supabase
+                    .from('QuizSession')
+                    .select('*')
+                    .order('day', { ascending: true });
+                if (sessErr) throw sessErr;
+                const sessionMap = {};
+                sessions.forEach(s => { sessionMap[s.day] = s; });
+
+                // For each day, compute rank and check publication
+                const now = new Date();
+                let rows = [];
+
+                for (const att of myAttempts) {
+                    const day = att.sessionDay;
+                    const session = sessionMap[day];
+                    if (!session) continue;
+
+                    const pubTime = new Date(new Date(session.endTime).getTime() + 5 * 60000);
+                    const isPublished = now >= pubTime;
+
+                    let score = att.score !== null && att.score !== undefined ? att.score : '—';
+                    let rank = '—';
+                    let timeTaken = '—';
+
+                    if (isPublished) {
+                        // Compute rank for this day
+                        const { data: dayAttempts, error: dayErr } = await _supabase
+                            .from('Attempt')
+                            .select('id, studentId, score, startTime, endTime')
+                            .eq('sessionDay', day)
+                            .in('status', ['COMPLETED', 'TIMED_OUT']);
+
+                        if (dayErr) throw dayErr;
+
+                        if (dayAttempts && dayAttempts.length > 0) {
+                            const ranked = dayAttempts.map(a => ({
+                                ...a,
+                                timeTaken: a.endTime ? Math.floor((new Date(a.endTime) - new Date(a.startTime)) /
+                                    1000) : 9999
+                            }));
+                            ranked.sort((a, b) => {
+                                if ((a.score || 0) !== (b.score || 0)) return (b.score || 0) - (a.score || 0);
+                                return (a.timeTaken || 9999) - (b.timeTaken || 9999);
+                            });
+                            const pos = ranked.findIndex(a => a.id === att.id) + 1;
+                            rank = pos > 0 ? pos : '—';
+                        }
+
+                        // Time taken
+                        if (att.startTime && att.endTime) {
+                            const secs = Math.floor((new Date(att.endTime) - new Date(att.startTime)) / 1000);
+                            timeTaken = secs + 's';
+                        }
+
+                        // Score display
+                        if (att.score !== null && att.score !== undefined) {
+                            score = att.score;
+                        }
+                    } else {
+                        // Not published yet
+                        score = '🔒';
+                        rank = '🔒';
+                        timeTaken = '🔒';
+                    }
+
+                    rows.push({ day, score, rank, timeTaken, isPublished });
+                }
+
+                if (rows.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted">പ്രദർശിപ്പിക്കാൻ ഡാറ്റയില്ല.</div>';
+                    return;
+                }
+
+                // Build table
+                let html = `
+                    <div class="admin-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ദിവസം</th>
+                                    <th>സ്കോർ</th>
+                                    <th>റാങ്ക്</th>
+                                    <th>സമയം</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                rows.forEach(r => {
+                    const medal = (r.rank !== '—' && r.rank !== '🔒') ? getMedal(parseInt(r.rank)) : '';
+                    const rankDisplay = r.rank !== '—' && r.rank !== '🔒' ? medal + ' ' + r.rank : r.rank;
+                    html += `
+                        <tr>
+                            <td><strong>Day ${r.day}</strong></td>
+                            <td style="color:${r.score !== '🔒' ? '#fbbf24' : '#94a3b8'}; font-weight:700;">${r.score}</td>
+                            <td style="color:${r.rank !== '—' && r.rank !== '🔒' ? '#60a5fa' : '#94a3b8'}; font-weight:600;">${rankDisplay}</td>
+                            <td style="color:#94a3b8;">${r.timeTaken}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-muted mt-2" style="font-size:clamp(0.6rem,1.8vw,0.75rem);">🔒 = ഫലം പ്രസിദ്ധീകരിച്ചിട്ടില്ല</p>
+                `;
+
+                container.innerHTML = html;
+
+            } catch (err) {
+                container.innerHTML = '<div class="text-danger text-center">Error loading data: ' + err.message + '</div>';
+                showToast(err.message, 'error');
+                console.error(err);
             }
         }
 
@@ -3157,7 +3321,8 @@
                 '4. ഒരിക്കൽ ആരംഭിച്ചാൽ ഇന്ന് വീണ്ടും പ്രവേശിക്കാനാവില്ല\n' +
                 '5. സമയപരിധി കഴിഞ്ഞാൽ സ്വയം സമർപ്പിക്കും\n' +
                 '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ\n' +
-                '7. റാങ്കിംഗ് അടുത്ത ക്വിസ് തുടങ്ങുന്നതിന് 1 മണിക്കൂർ മുമ്പ് വരെ കാണാം.'
+                '7. റാങ്കിംഗ് അടുത്ത ക്വിസ് തുടങ്ങുന്നതിന് 1 മണിക്കൂർ മുമ്പ് വരെ കാണാം.\n' +
+                '8. "എല്ലാ ദിവസത്തെയും പ്രകടനം" ബട്ടൺ ക്ലിക്ക് ചെയ്ത് എല്ലാ ദിവസത്തെയും സ്കോറും റാങ്കും കാണുക.'
             );
         }
 
@@ -3175,7 +3340,7 @@
         console.log('✅ Admin: ADMIN123');
         console.log('✅ 1-hour cutoff before next quiz.');
         console.log('✅ Auto-refresh every 30 seconds.');
-        console.log('✅ Ranking visible until 1 hour before next session.');
+        console.log('✅ Performance history button added.');
     </script>
 
 </body>
