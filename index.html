@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ml">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -533,6 +533,7 @@
             border-radius: 4px;
         }
 
+        /* ---- New Register button below login ---- */
         .btn-register-ghost {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -552,6 +553,9 @@
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
             flex-shrink: 0;
+            width: 100%;
+            justify-content: center;
+            animation: blink 1.5s infinite ease-in-out;
         }
         .btn-register-ghost:active {
             transform: scale(0.95);
@@ -562,6 +566,11 @@
         .btn-register-ghost i {
             color: var(--gold);
             font-size: 0.9em;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
 
         .btn-login-primary {
@@ -1496,18 +1505,22 @@
                             <input type="text" id="loginIdInput" placeholder="Parent ID നൽകുക" autofocus oninput="this.value = this.value.toUpperCase();" />
                         </div>
 
+                        <!-- Login options: remember me + (no register button here now) -->
                         <div class="login-options">
                             <label>
                                 <input type="checkbox" id="rememberMe" checked />
                                 ഓർക്കുക
                             </label>
-                            <button type="button" class="btn-register-ghost" id="showRegisterBtn">
-                                <i class="fas fa-user-plus"></i> പുതിയ രക്ഷിതാവ്
-                            </button>
+                            <!-- empty space, but we keep the label only -->
                         </div>
 
                         <button type="submit" class="btn-login-primary" id="loginSubmitBtn">
                             <i class="fas fa-key"></i> പ്രവേശിക്കുക
+                        </button>
+
+                        <!-- Register button moved here, below login -->
+                        <button type="button" class="btn-register-ghost" id="showRegisterBtn">
+                            <i class="fas fa-user-plus"></i> പുതിയ രക്ഷിതാവ്
                         </button>
 
                         <button type="button" class="btn-login-secondary" onclick="openFindId()">
@@ -2233,7 +2246,7 @@
         }
 
         // ================================================================
-        // PARENT DASHBOARD (Malayalam)
+        // PARENT DASHBOARD (Malayalam) — FIXED: check questions before showing "already started"
         // ================================================================
         async function renderParentDashboard() {
             if (!window.currentUser || !window.currentSession) return;
@@ -2299,7 +2312,38 @@
                 .eq('sessionDay', window.currentSession.day)
                 .maybeSingle();
 
+            // ---- Helper to load questions and start quiz ----
+            async function loadAndStart(resume) {
+                // First, load questions for the day
+                let qs = window.questions;
+                if (qs.length === 0) {
+                    const { data, error } = await _supabase
+                        .from('Question')
+                        .select('*')
+                        .eq('sessionDay', window.currentSession.day)
+                        .order('id', { ascending: true });
+                    if (!error && data && data.length > 0) {
+                        qs = data;
+                        window.questions = qs;
+                        document.getElementById('questionCountDisplay').textContent = qs.length;
+                    } else {
+                        // No questions available
+                        document.getElementById('quizStatusMessage').textContent =
+                            '❌ ഇന്നത്തെ ദിവസത്തേക്ക് ചോദ്യങ്ങളൊന്നുമില്ല. ദയവായി അഡ്മിനെ ബന്ധപ്പെടുക.';
+                        document.getElementById('viewQuestionsBtn').disabled = true;
+                        document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                        // Hide questions area
+                        document.getElementById('questionsArea').classList.add('hidden');
+                        return false;
+                    }
+                }
+                // Questions exist, proceed to start
+                await startParentQuiz(resume);
+                return true;
+            }
+
             if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
+                // Already submitted
                 document.getElementById('submittedArea').classList.remove('hidden');
                 if (now < pubTime) {
                     document.getElementById('scoreDisplay').textContent = '🔒';
@@ -2313,6 +2357,7 @@
             }
 
             if (attempt && attempt.status === 'STARTED') {
+                // Already started – try to resume
                 window.currentAttemptId = attempt.id;
                 window.hasViewedQuestions = true;
                 window.quizStarted = true;
@@ -2320,12 +2365,20 @@
                 document.getElementById('viewQuestionsBtn').textContent = '🔒 ആരംഭിച്ചു';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
                 document.getElementById('viewQuestionsBtn').disabled = true;
-                document.getElementById('quizStatusMessage').textContent =
-                    '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
-                await loadQuestionsAndStart(true);
+                // Check if questions exist before setting the message
+                const success = await loadAndStart(true);
+                if (!success) {
+                    // Questions missing – show a clear message
+                    document.getElementById('quizStatusMessage').textContent =
+                        '⚠️ ചോദ്യങ്ങൾ ലഭ്യമല്ല. അഡ്മിനെ അറിയിക്കുക.';
+                } else {
+                    document.getElementById('quizStatusMessage').textContent =
+                        '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                }
                 return;
             }
 
+            // Check if any attempt exists (e.g., status not STARTED/COMPLETED)
             const { data: anyAttempt } = await _supabase
                 .from('Attempt')
                 .select('id')
@@ -2334,18 +2387,25 @@
                 .maybeSingle();
 
             if (anyAttempt) {
+                // Some other attempt (should not happen, but handle)
                 window.hasViewedQuestions = true;
                 window.currentAttemptId = anyAttempt.id;
                 document.getElementById('viewQuestionsArea').classList.remove('hidden');
                 document.getElementById('viewQuestionsBtn').textContent = '🔒 കാണിച്ചു';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
                 document.getElementById('viewQuestionsBtn').disabled = true;
-                document.getElementById('quizStatusMessage').textContent =
-                    '⚠️ നിങ്ങൾ ഇതിനകം ചോദ്യങ്ങൾ കണ്ടു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
-                await loadQuestionsAndStart(true);
+                const success = await loadAndStart(true);
+                if (!success) {
+                    document.getElementById('quizStatusMessage').textContent =
+                        '⚠️ ചോദ്യങ്ങൾ ലഭ്യമല്ല. അഡ്മിനെ അറിയിക്കുക.';
+                } else {
+                    document.getElementById('quizStatusMessage').textContent =
+                        '⚠️ നിങ്ങൾ ഇതിനകം ചോദ്യങ്ങൾ കണ്ടു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                }
                 return;
             }
 
+            // No attempt yet – show "View Questions" button
             document.getElementById('viewQuestionsArea').classList.remove('hidden');
             document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
             document.getElementById('viewQuestionsBtn').className = 'btn btn-gold';
@@ -2353,6 +2413,7 @@
             document.getElementById('quizStatusMessage').textContent =
                 '⏳ ക്വിസ് ആരംഭിക്കാൻ "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക.';
 
+            // Pre‑load questions count
             const { data: qs } = await _supabase
                 .from('Question')
                 .select('*')
@@ -2363,7 +2424,11 @@
                 window.questions = qs;
                 document.getElementById('questionCountDisplay').textContent = qs.length;
             } else {
-                showToast('ഇന്നത്തെ ദിവസത്തേക്ക് ചോദ്യങ്ങളില്ല', 'error');
+                // No questions – show message but still allow? Better to disable
+                document.getElementById('viewQuestionsBtn').disabled = true;
+                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                document.getElementById('quizStatusMessage').textContent =
+                    '❌ ഇന്നത്തെ ദിവസത്തേക്ക് ചോദ്യങ്ങളൊന്നുമില്ല. ദയവായി അഡ്മിനെ ബന്ധപ്പെടുക.';
             }
 
             document.getElementById('viewQuestionsBtn').onclick = function() {
@@ -2744,12 +2809,14 @@
                     document.getElementById('questionCountDisplay').textContent = qs.length;
                 } else {
                     showToast('ഇന്നത്തെ ദിവസത്തേക്ക് ചോദ്യങ്ങളില്ല', 'error');
-                    return;
+                    return false;
                 }
             }
             if (!window.quizStarted && window.questions.length > 0) {
                 await startParentQuiz(resume);
+                return true;
             }
+            return true;
         }
 
         async function startParentQuiz(resume = false) {
@@ -2775,8 +2842,13 @@
                 document.getElementById('viewQuestionsBtn').textContent = '🔒 ആരംഭിച്ചു';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
                 document.getElementById('viewQuestionsBtn').disabled = true;
-                document.getElementById('quizStatusMessage').textContent =
-                    '⚠️ നിങ്ങൾ ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                // Only set the "already started" message if this is a resume (not first start)
+                if (resume) {
+                    document.getElementById('quizStatusMessage').textContent =
+                        '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                } else {
+                    document.getElementById('quizStatusMessage').textContent = '⏳ ക്വിസ് ആരംഭിച്ചു. ഭാഗ്യം!';
+                }
 
                 document.getElementById('questionsArea').classList.remove('hidden');
                 document.getElementById('timerArea').classList.remove('hidden');
