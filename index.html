@@ -267,6 +267,14 @@
             color: #ef4444;
             background: rgba(239, 68, 68, 0.1);
         }
+        /* Logout button hidden by default, shown only when logged in */
+        #logoutTopBtn {
+            display: none !important;
+        }
+        #logoutTopBtn.visible {
+            display: flex !important;
+        }
+
         .back-btn {
             background: rgba(255, 255, 255, 0.04);
             border: none;
@@ -324,7 +332,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 12px;
+            padding: 8px;
         }
 
         .login-panel {
@@ -334,7 +342,7 @@
             backdrop-filter: blur(32px);
             -webkit-backdrop-filter: blur(32px);
             border-radius: 2.4rem;
-            padding: 2.2rem 1.6rem 2rem;
+            padding: 1.8rem 1.4rem 1.6rem;
             border: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04);
             width: 100%;
@@ -358,18 +366,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .login-logo-ring {
-            width: 80px;
-            height: 80px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(59, 130, 246, 0.08));
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             animation: logo-float 4s ease-in-out infinite;
         }
         .login-logo-ring::before {
@@ -396,14 +404,14 @@
             }
         }
         .login-logo-ring .logo-icon {
-            width: 56px;
-            height: 56px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.6rem;
             color: #fff;
             box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
             position: relative;
@@ -414,7 +422,7 @@
         }
 
         .login-title {
-            font-size: clamp(1.4rem, 5.5vw, 1.8rem);
+            font-size: clamp(1.3rem, 5vw, 1.6rem);
             font-weight: 800;
             text-align: center;
             background: linear-gradient(135deg, #fff 30%, #93c5fd);
@@ -433,9 +441,9 @@
         .login-sub {
             text-align: center;
             color: var(--text-secondary);
-            font-size: clamp(0.75rem, 2.4vw, 0.9rem);
+            font-size: clamp(0.7rem, 2.2vw, 0.85rem);
             margin-top: 2px;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
             letter-spacing: 0.3px;
         }
         .login-sub i {
@@ -456,7 +464,7 @@
             background: rgba(255, 255, 255, 0.04);
             border: 1.5px solid rgba(255, 255, 255, 0.06);
             border-radius: 60px;
-            padding: 0 18px;
+            padding: 0 16px;
             transition: all 0.3s ease;
             position: relative;
         }
@@ -468,7 +476,7 @@
         .input-group-premium .icon-wrap {
             color: #3b82f6;
             font-size: 15px;
-            width: 24px;
+            width: 22px;
             text-align: center;
             transition: 0.3s;
             flex-shrink: 0;
@@ -479,11 +487,11 @@
         .input-group-premium input {
             background: transparent;
             border: none;
-            padding: 14px 10px;
+            padding: 13px 8px;
             color: #fff;
             width: 100%;
             outline: none;
-            font-size: clamp(0.9rem, 2.6vw, 1rem);
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
             font-weight: 500;
             letter-spacing: 0.5px;
         }
@@ -527,12 +535,12 @@
             border-radius: 4px;
         }
 
-        /* ===== NEW REGISTER BUTTON (Mobile Friendly) ===== */
+        /* ===== REGISTER BUTTON (Mobile Friendly) ===== */
         .btn-register-ghost {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: #e2e8f0;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 60px;
             font-weight: 600;
             font-size: clamp(0.7rem, 2vw, 0.85rem);
@@ -540,7 +548,7 @@
             transition: 0.2s;
             font-family: inherit;
             white-space: nowrap;
-            min-height: 38px;
+            min-height: 36px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -1357,6 +1365,57 @@
             }
         }
 
+        /* ===== EXTRA MOBILE FRIENDLY TWEAKS ===== */
+        @media (max-width: 360px) {
+            .login-panel {
+                padding: 1.2rem 1rem 1.2rem;
+                border-radius: 1.8rem;
+            }
+            .login-logo-ring {
+                width: 60px;
+                height: 60px;
+            }
+            .login-logo-ring .logo-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.4rem;
+            }
+            .login-options {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            .login-options label {
+                justify-content: center;
+                padding: 4px 0;
+            }
+            .btn-register-ghost {
+                justify-content: center;
+                width: 100%;
+                white-space: normal;
+            }
+            .btn-login-primary {
+                min-height: 44px;
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            .btn-login-secondary {
+                min-height: 38px;
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+            .input-group-premium input {
+                padding: 10px 6px;
+                font-size: 0.85rem;
+            }
+            .input-group-premium {
+                padding: 0 12px;
+            }
+            #contentArea {
+                padding: 8px 8px 12px;
+            }
+        }
+
         @media (max-width:380px) {
             #appBar {
                 padding: 2px 8px;
@@ -1371,19 +1430,6 @@
                 width: 28px;
                 height: 28px;
                 font-size: 12px;
-            }
-            .login-panel {
-                padding: 1.4rem 1rem 1.2rem;
-                border-radius: 1.8rem;
-            }
-            .login-logo-ring {
-                width: 64px;
-                height: 64px;
-            }
-            .login-logo-ring .logo-icon {
-                width: 44px;
-                height: 44px;
-                font-size: 1.5rem;
             }
             .stats-grid {
                 gap: 4px;
@@ -1415,34 +1461,6 @@
                 padding: 2px 8px;
                 font-size: 0.65rem;
             }
-            #contentArea {
-                padding: 8px 8px 12px;
-            }
-            .btn-login-primary {
-                min-height: 44px;
-                padding: 10px 14px;
-                font-size: 0.85rem;
-            }
-            .btn-login-secondary {
-                min-height: 38px;
-                padding: 8px 14px;
-                font-size: 0.75rem;
-            }
-            .input-group-premium input {
-                padding: 10px 8px;
-                font-size: 0.85rem;
-            }
-            .input-group-premium {
-                padding: 0 12px;
-            }
-            .btn-register-ghost {
-                padding: 6px 12px;
-                min-height: 32px;
-                font-size: 0.7rem;
-            }
-            .login-options {
-                gap: 6px;
-            }
         }
     </style>
 </head>
@@ -1455,12 +1473,14 @@
         <div id="appBar">
             <div style="display:flex;align-items:center;gap:4px;">
                 <button class="back-btn" id="backBtn" onclick="goBack()"><i class="fas fa-chevron-left"></i></button>
+                <!-- Title is now always "Noorussalam Madrasa" -->
                 <div class="app-title" id="appTitle">
                     <i class="fas fa-star"></i> Noorussalam Madrasa
                 </div>
             </div>
             <div class="app-actions">
                 <button class="btn-icon" id="helpBtn" onclick="openHelp()"><i class="fas fa-circle-question"></i></button>
+                <!-- Logout button hidden by default, shown only when logged in -->
                 <button class="btn-icon danger" id="logoutTopBtn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
@@ -1918,8 +1938,9 @@
                     document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('adminDashboard').classList.remove('hidden');
                     document.getElementById('parentDashboard').classList.add('hidden');
-                    document.getElementById('appTitle').innerHTML = '<i class="fas fa-user-shield"></i> Admin';
                     document.getElementById('backBtn').classList.remove('visible');
+                    // Show logout button
+                    document.getElementById('logoutTopBtn').classList.add('visible');
                     loadAdminData();
                     showToast('Admin Panel തുറന്നു', 'success');
                     submitBtn.disabled = false;
@@ -1951,8 +1972,9 @@
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('parentDashboard').classList.remove('hidden');
                 document.getElementById('adminDashboard').classList.add('hidden');
-                document.getElementById('appTitle').innerHTML = '<i class="fas fa-star"></i> Noorussalam Madrasa';
                 document.getElementById('backBtn').classList.remove('visible');
+                // Show logout button
+                document.getElementById('logoutTopBtn').classList.add('visible');
 
                 document.getElementById('quizDayDisplay').textContent = 'Day ' + active.day;
                 renderParentDashboard();
@@ -1982,8 +2004,9 @@
             document.getElementById('parentDashboard').classList.add('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
             document.getElementById('loginIdInput').value = '';
-            document.getElementById('appTitle').innerHTML = '<i class="fas fa-star"></i> Meelad Quiz';
             document.getElementById('backBtn').classList.remove('visible');
+            // Hide logout button
+            document.getElementById('logoutTopBtn').classList.remove('visible');
             showToast('പുറത്തുകടന്നു', 'info');
         }
         document.getElementById('logoutTopBtn').addEventListener('click', logout);
