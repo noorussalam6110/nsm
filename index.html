@@ -354,7 +354,6 @@
             }
         }
 
-        /* Logo area — premium */
         .login-logo-wrap {
             display: flex;
             flex-direction: column;
@@ -498,12 +497,13 @@
             -webkit-text-fill-color: #fff;
         }
 
+        /* ===== UPDATED LOGIN OPTIONS (Mobile Friendly) ===== */
         .login-options {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             margin-top: 2px;
         }
         .login-options label {
@@ -514,6 +514,7 @@
             gap: 6px;
             cursor: pointer;
             transition: 0.2s;
+            flex-shrink: 0;
         }
         .login-options label:hover {
             color: rgba(255, 255, 255, 0.6);
@@ -525,21 +526,37 @@
             cursor: pointer;
             border-radius: 4px;
         }
-        .login-options .link-btn {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.2);
-            font-size: clamp(0.7rem, 2vw, 0.8rem);
+
+        /* ===== NEW REGISTER BUTTON (Mobile Friendly) ===== */
+        .btn-register-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
             cursor: pointer;
             transition: 0.2s;
             font-family: inherit;
-            padding: 4px 0;
-            text-decoration: underline 1px dashed rgba(255, 255, 255, 0.1);
-            text-underline-offset: 3px;
+            white-space: nowrap;
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
         }
-        .login-options .link-btn:hover {
+        .btn-register-ghost:active {
+            transform: scale(0.95);
+            background: rgba(251, 191, 36, 0.12);
+            border-color: var(--gold);
             color: var(--gold);
-            text-decoration-color: var(--gold);
+        }
+        .btn-register-ghost i {
+            color: var(--gold);
+            font-size: 0.9em;
         }
 
         /* Buttons — premium */
@@ -1418,6 +1435,14 @@
             .input-group-premium {
                 padding: 0 12px;
             }
+            .btn-register-ghost {
+                padding: 6px 12px;
+                min-height: 32px;
+                font-size: 0.7rem;
+            }
+            .login-options {
+                gap: 6px;
+            }
         }
     </style>
 </head>
@@ -1472,12 +1497,13 @@
                             <input type="text" id="loginIdInput" placeholder="Parent ID നൽകുക" autofocus oninput="this.value = this.value.toUpperCase();" />
                         </div>
 
+                        <!-- UPDATED: Register Button Styled & Mobile Friendly -->
                         <div class="login-options">
                             <label>
                                 <input type="checkbox" id="rememberMe" checked />
                                 ഓർക്കുക
                             </label>
-                            <button type="button" class="link-btn" id="showRegisterBtn">
+                            <button type="button" class="btn-register-ghost" id="showRegisterBtn">
                                 <i class="fas fa-user-plus"></i> പുതിയത്? രജിസ്റ്റർ
                             </button>
                         </div>
