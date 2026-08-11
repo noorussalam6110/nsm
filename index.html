@@ -19,7 +19,6 @@
         :root {
             --gold: #fbbf24;
             --gold-dark: #f59e0b;
-            --gold-glow: rgba(251, 191, 36, 0.25);
             --dark: #0a0f1e;
             --slate: #1e293b;
             --slate-light: #334155;
@@ -29,7 +28,6 @@
             --glass-border: rgba(255, 255, 255, 0.06);
             --radius: 1.5rem;
             --radius-sm: 1rem;
-            --shadow-glow: 0 30px 80px rgba(0, 0, 0, 0.6);
         }
         html,
         body {
@@ -61,149 +59,9 @@
                 height: 96vh;
                 max-height: 840px;
                 width: 96%;
-                max-width: 520px;
+                max-width: 480px;
             }
         }
-
-        /* ===== ANIMATED BG PARTICLES (Login only) ===== */
-        .login-bg-particles {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-            border-radius: inherit;
-        }
-        .login-bg-particles span {
-            position: absolute;
-            display: block;
-            width: 6px;
-            height: 6px;
-            background: rgba(251, 191, 36, 0.08);
-            border-radius: 50%;
-            animation: float-particle 20s infinite ease-in-out;
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.02);
-        }
-        .login-bg-particles span:nth-child(1) {
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-            width: 10px;
-            height: 10px;
-        }
-        .login-bg-particles span:nth-child(2) {
-            top: 25%;
-            right: 15%;
-            animation-delay: 2s;
-            width: 14px;
-            height: 14px;
-            background: rgba(59, 130, 246, 0.06);
-        }
-        .login-bg-particles span:nth-child(3) {
-            bottom: 30%;
-            left: 5%;
-            animation-delay: 4s;
-            width: 8px;
-            height: 8px;
-        }
-        .login-bg-particles span:nth-child(4) {
-            bottom: 15%;
-            right: 10%;
-            animation-delay: 6s;
-            width: 18px;
-            height: 18px;
-            background: rgba(139, 92, 246, 0.05);
-        }
-        .login-bg-particles span:nth-child(5) {
-            top: 50%;
-            left: 50%;
-            animation-delay: 8s;
-            width: 12px;
-            height: 12px;
-            background: rgba(251, 191, 36, 0.05);
-        }
-        .login-bg-particles span:nth-child(6) {
-            top: 70%;
-            left: 30%;
-            animation-delay: 10s;
-            width: 6px;
-            height: 6px;
-        }
-        .login-bg-particles span:nth-child(7) {
-            top: 15%;
-            left: 70%;
-            animation-delay: 12s;
-            width: 16px;
-            height: 16px;
-            background: rgba(59, 130, 246, 0.04);
-        }
-        .login-bg-particles span:nth-child(8) {
-            bottom: 40%;
-            right: 30%;
-            animation-delay: 14s;
-            width: 10px;
-            height: 10px;
-        }
-
-        @keyframes float-particle {
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-                opacity: 0.4;
-            }
-            25% {
-                transform: translate(30px, -40px) scale(1.2);
-                opacity: 0.8;
-            }
-            50% {
-                transform: translate(-20px, 30px) scale(0.8);
-                opacity: 0.3;
-            }
-            75% {
-                transform: translate(40px, 20px) scale(1.1);
-                opacity: 0.7;
-            }
-        }
-
-        /* ===== GLOW ORB (Login) ===== */
-        .login-glow-orb {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(251, 191, 36, 0.08), transparent 70%);
-            top: -80px;
-            right: -80px;
-            z-index: 0;
-            pointer-events: none;
-            animation: orb-pulse 8s ease-in-out infinite alternate;
-            filter: blur(40px);
-        }
-        .login-glow-orb-2 {
-            position: absolute;
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.06), transparent 70%);
-            bottom: -60px;
-            left: -60px;
-            z-index: 0;
-            pointer-events: none;
-            animation: orb-pulse 10s ease-in-out infinite alternate-reverse;
-            filter: blur(40px);
-        }
-        @keyframes orb-pulse {
-            0% {
-                transform: scale(1) translate(0, 0);
-                opacity: 0.6;
-            }
-            100% {
-                transform: scale(1.3) translate(20px, -20px);
-                opacity: 1;
-            }
-        }
-
-        /* ===== APP BAR ===== */
         #appBar {
             display: flex;
             align-items: center;
@@ -215,11 +73,9 @@
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             min-height: 50px;
-            position: relative;
-            z-index: 10;
         }
         #appBar .app-title {
-            font-size: clamp(18px, 5vw, 24px);
+            font-size: clamp(16px, 4.5vw, 20px);
             font-weight: 700;
             background: linear-gradient(135deg, #fff, #93c5fd);
             -webkit-background-clip: text;
@@ -231,7 +87,7 @@
             white-space: nowrap;
         }
         #appBar .app-title i {
-            font-size: clamp(20px, 5vw, 26px);
+            font-size: clamp(17px, 4.5vw, 22px);
             color: var(--gold);
         }
         #appBar .app-actions {
@@ -243,13 +99,13 @@
             background: rgba(255, 255, 255, 0.04);
             border: none;
             color: rgba(255, 255, 255, 0.4);
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(18px, 4.5vw, 22px);
+            font-size: clamp(16px, 4vw, 19px);
             cursor: pointer;
             transition: 0.2s;
         }
@@ -267,13 +123,6 @@
             color: #ef4444;
             background: rgba(239, 68, 68, 0.1);
         }
-        #logoutTopBtn {
-            display: none !important;
-        }
-        #logoutTopBtn.visible {
-            display: flex !important;
-        }
-
         .back-btn {
             background: rgba(255, 255, 255, 0.04);
             border: none;
@@ -298,8 +147,6 @@
             background: rgba(255, 255, 255, 0.08);
             color: #fff;
         }
-
-        /* ===== CONTENT AREA ===== */
         #contentArea {
             flex: 1;
             overflow-y: auto;
@@ -307,8 +154,6 @@
             padding: 14px 14px 18px;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            position: relative;
-            z-index: 1;
         }
         #contentArea::-webkit-scrollbar {
             width: 3px;
@@ -320,433 +165,6 @@
             background: rgba(251, 191, 36, 0.2);
             border-radius: 10px;
         }
-
-        /* ================================================================
-                   LOGIN SECTION — WIDER & SPACIOUS
-                   ================================================================ */
-        #loginSection {
-            position: relative;
-            z-index: 2;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-        }
-
-        .login-panel {
-            position: relative;
-            z-index: 2;
-            background: rgba(10, 20, 40, 0.55);
-            backdrop-filter: blur(32px);
-            -webkit-backdrop-filter: blur(32px);
-            border-radius: 2.4rem;
-            padding: 2.8rem 2.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-            width: 100%;
-            max-width: 100%; /* Full width inside shell */
-            margin: 0 auto;
-            animation: login-slide-up 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            transform-origin: center bottom;
-        }
-        @keyframes login-slide-up {
-            0% {
-                opacity: 0;
-                transform: translateY(40px) scale(0.96);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .login-logo-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        .login-logo-ring {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(59, 130, 246, 0.08));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-bottom: 14px;
-            animation: logo-float 4s ease-in-out infinite;
-        }
-        .login-logo-ring::before {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, transparent, var(--gold), transparent, var(--gold), transparent);
-            opacity: 0.15;
-            animation: spin-slow 10s linear infinite;
-        }
-        @keyframes spin-slow {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-        @keyframes logo-float {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-6px);
-            }
-        }
-        .login-logo-ring .logo-icon {
-            width: 76px;
-            height: 76px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.6rem;
-            color: #fff;
-            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
-            position: relative;
-            z-index: 1;
-        }
-        .login-logo-ring .logo-icon i {
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
-        }
-
-        .login-title {
-            font-size: clamp(2.0rem, 7.5vw, 2.6rem);
-            font-weight: 800;
-            text-align: center;
-            background: linear-gradient(135deg, #fff 30%, #93c5fd);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.5px;
-            line-height: 1.2;
-        }
-        .login-title .highlight {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .login-sub {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: clamp(1.0rem, 3vw, 1.15rem);
-            margin-top: 4px;
-            margin-bottom: 26px;
-            letter-spacing: 0.3px;
-        }
-        .login-sub i {
-            color: var(--gold);
-            margin: 0 2px;
-        }
-
-        /* Form */
-        #loginForm {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .input-group-premium {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1.5px solid rgba(255, 255, 255, 0.06);
-            border-radius: 60px;
-            padding: 0 24px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .input-group-premium:focus-within {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.06), 0 0 30px rgba(251, 191, 36, 0.02);
-            background: rgba(255, 255, 255, 0.06);
-        }
-        .input-group-premium .icon-wrap {
-            color: #3b82f6;
-            font-size: 22px;
-            width: 36px;
-            text-align: center;
-            transition: 0.3s;
-            flex-shrink: 0;
-        }
-        .input-group-premium:focus-within .icon-wrap {
-            color: var(--gold);
-        }
-        .input-group-premium input {
-            background: transparent;
-            border: none;
-            padding: 20px 14px;
-            color: #fff;
-            width: 100%;
-            outline: none;
-            font-size: clamp(1.15rem, 3.8vw, 1.35rem);
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-        .input-group-premium input::placeholder {
-            color: rgba(255, 255, 255, 0.2);
-            font-weight: 400;
-            letter-spacing: 0;
-        }
-        .input-group-premium input:-webkit-autofill {
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: #fff;
-        }
-
-        .login-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 2px;
-        }
-        .login-options label {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: clamp(0.95rem, 2.8vw, 1.05rem);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-            flex-shrink: 0;
-        }
-        .login-options label:hover {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        .login-options label input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            accent-color: var(--gold);
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .btn-register-ghost {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #e2e8f0;
-            padding: 14px 22px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: inherit;
-            white-space: nowrap;
-            min-height: 54px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            flex-shrink: 0;
-            width: 100%;
-            justify-content: center;
-            animation: blink 1.5s infinite ease-in-out;
-        }
-        .btn-register-ghost:active {
-            transform: scale(0.95);
-            background: rgba(251, 191, 36, 0.12);
-            border-color: var(--gold);
-            color: var(--gold);
-        }
-        .btn-register-ghost i {
-            color: var(--gold);
-            font-size: 1em;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .btn-login-primary {
-            border: none;
-            cursor: pointer;
-            font-weight: 700;
-            font-family: inherit;
-            padding: 20px 28px;
-            border-radius: 60px;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: clamp(1.15rem, 4vw, 1.35rem);
-            min-height: 70px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: #fff;
-            box-shadow: 0 8px 30px -6px rgba(59, 130, 246, 0.25);
-            width: 100%;
-            justify-content: center;
-            letter-spacing: 0.3px;
-        }
-        .btn-login-primary:active {
-            transform: scale(0.97);
-        }
-        .btn-login-primary:hover {
-            box-shadow: 0 12px 40px -8px rgba(59, 130, 246, 0.35);
-            transform: translateY(-1px);
-        }
-
-        .btn-login-secondary {
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: inherit;
-            padding: 18px 24px;
-            border-radius: 60px;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: clamp(1.0rem, 3.2vw, 1.15rem);
-            min-height: 56px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            background: transparent;
-            border: 1.5px solid rgba(255, 255, 255, 0.06);
-            color: var(--text-secondary);
-            width: 100%;
-            justify-content: center;
-        }
-        .btn-login-secondary:active {
-            transform: scale(0.97);
-        }
-        .btn-login-secondary:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.12);
-            color: #fff;
-        }
-        .btn-login-secondary i {
-            color: var(--gold);
-        }
-
-        #loginMessage {
-            text-align: center;
-            font-size: clamp(0.95rem, 2.8vw, 1.05rem);
-            min-height: 32px;
-            margin-top: 4px;
-        }
-        #loginMessage .error {
-            color: #f87171;
-        }
-        #loginMessage .success {
-            color: #6ee7b7;
-        }
-
-        /* ===== MOBILE ADJUSTMENTS (maintain spacious feel) ===== */
-        @media (max-width: 520px) {
-            #loginSection {
-                padding: 4px;
-                align-items: center;
-            }
-            .login-panel {
-                padding: 1.8rem 1.2rem;
-                border-radius: 2rem;
-            }
-            .login-logo-ring {
-                width: 84px;
-                height: 84px;
-            }
-            .login-logo-ring .logo-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 2.0rem;
-            }
-            .login-title {
-                font-size: clamp(1.5rem, 6.5vw, 1.9rem);
-            }
-            .login-sub {
-                font-size: 0.85rem;
-                margin-bottom: 16px;
-            }
-            .input-group-premium {
-                padding: 0 16px;
-            }
-            .input-group-premium input {
-                padding: 16px 10px;
-                font-size: 1.05rem;
-            }
-            .btn-login-primary {
-                min-height: 58px;
-                padding: 16px 20px;
-                font-size: 1.05rem;
-            }
-            .btn-login-secondary {
-                min-height: 48px;
-                padding: 14px 18px;
-                font-size: 0.95rem;
-            }
-            .btn-register-ghost {
-                min-height: 46px;
-                padding: 12px 18px;
-                font-size: 0.95rem;
-            }
-            .login-options label {
-                font-size: 0.85rem;
-            }
-            .login-options label input[type="checkbox"] {
-                width: 20px;
-                height: 20px;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .login-panel {
-                padding: 1.2rem 0.8rem;
-                border-radius: 1.6rem;
-            }
-            .login-logo-ring {
-                width: 70px;
-                height: 70px;
-            }
-            .login-logo-ring .logo-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 1.6rem;
-            }
-            .login-title {
-                font-size: 1.2rem;
-            }
-            .login-sub {
-                font-size: 0.7rem;
-            }
-            .input-group-premium input {
-                font-size: 0.95rem;
-                padding: 14px 8px;
-            }
-            .btn-login-primary {
-                min-height: 50px;
-                padding: 14px 16px;
-                font-size: 0.95rem;
-            }
-            .btn-login-secondary {
-                min-height: 42px;
-                padding: 12px 14px;
-                font-size: 0.85rem;
-            }
-            .btn-register-ghost {
-                min-height: 38px;
-                font-size: 0.85rem;
-            }
-        }
-
-        /* ===== GLASS CARD (other sections) — unchanged ===== */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
@@ -760,293 +178,90 @@
         .glass-card:last-child {
             margin-bottom: 0;
         }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 14px;
+        .login-panel {
+            background: rgba(10, 20, 40, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 2rem;
+            padding: 1.8rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            margin: 6px 0;
         }
-        .stat-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 1.2rem;
-            padding: 12px 6px;
-            text-align: center;
-        }
-        .stat-value {
-            font-size: clamp(1.3rem, 5vw, 1.8rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            line-height: 1.2;
-        }
-        .stat-value.gold {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .stat-label {
-            font-size: clamp(0.5rem, 1.8vw, 0.65rem);
-            color: var(--text-secondary);
-            margin-top: 2px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .timer-wrapper {
+        .logo-circle {
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            border-radius: 22px;
             display: flex;
+            align-items: center;
             justify-content: center;
-            margin: 6px 0 12px;
+            margin: 0 auto 12px;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
         }
-        .timer-ring-container {
-            position: relative;
-            width: clamp(90px, 25vw, 120px);
-            height: clamp(90px, 25vw, 120px);
-        }
-        .timer-ring-container svg {
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
-        }
-        .timer-ring-container .bg-circle {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.04);
-            stroke-width: 6;
-        }
-        .timer-ring-container .progress-circle {
-            fill: none;
-            stroke-width: 6;
-            stroke-linecap: round;
-            stroke: var(--gold);
-            transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
-            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.08));
-        }
-        .timer-ring-container .timer-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: clamp(20px, 6vw, 30px);
-            font-weight: 800;
-            font-family: 'Courier New', monospace;
+        .logo-circle i {
+            font-size: 2.2rem;
             color: #fff;
-            letter-spacing: 0.5px;
         }
-        .timer-ring-container .timer-label {
-            position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: clamp(7px, 2vw, 9px);
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            white-space: nowrap;
-        }
-        .timer-ring-container.warning .progress-circle {
-            stroke: #f87171;
-            filter: drop-shadow(0 0 20px rgba(248, 113, 113, 0.15));
-            animation: pulse-glow 1s ease-in-out infinite;
-        }
-        .timer-ring-container.warning .timer-text {
-            color: #f87171;
-        }
-        @keyframes pulse-glow {
-            0%,
-            100% {
-                filter: drop-shadow(0 0 8px rgba(248, 113, 113, 0.1));
-            }
-            50% {
-                filter: drop-shadow(0 0 24px rgba(248, 113, 113, 0.25));
-            }
-        }
-
-        /* ===== OTHER COMPONENTS ===== */
-        .question-card {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 1.2rem;
-            padding: 14px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--gold);
-        }
-        .question-title {
-            font-weight: 600;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
-        @media (max-width:380px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .opt-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 10px 12px;
-            border-radius: 12px;
-            color: #e2e8f0;
-            cursor: pointer;
-            text-align: left;
-            font-size: clamp(0.8rem, 2.2vw, 0.9rem);
-            transition: 0.15s;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            font-family: inherit;
-        }
-        .opt-btn:active {
-            transform: scale(0.97);
-        }
-        .opt-btn.selected {
-            background: var(--gold);
-            color: #0a0f1e;
-            font-weight: 700;
-            border-color: var(--gold);
-            box-shadow: 0 4px 16px rgba(251, 191, 36, 0.1);
-        }
-        .opt-btn:disabled {
-            opacity: 0.3;
-            cursor: default;
-            transform: none !important;
-        }
-
-        .rank-hero {
-            text-align: center;
-            padding: 18px 12px 16px;
-            background: rgba(251, 191, 36, 0.04);
-            border-radius: 1.5rem;
-            border: 1px solid rgba(251, 191, 36, 0.06);
-            margin-bottom: 14px;
-            position: relative;
-            overflow: hidden;
-        }
-        .rank-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 30%, rgba(251, 191, 36, 0.06), transparent 70%);
-            pointer-events: none;
-        }
-        .rank-hero .rank-big {
-            font-size: clamp(2.8rem, 12vw, 4rem);
-            font-weight: 900;
-            color: var(--gold);
-            text-shadow: 0 0 40px rgba(251, 191, 36, 0.1);
-            line-height: 1;
-            position: relative;
-            z-index: 1;
-        }
-        .rank-hero .rank-big .medal {
-            font-size: clamp(2.2rem, 8vw, 3rem);
-            display: block;
-            margin-bottom: 2px;
-        }
-        .rank-hero .rank-label {
-            font-size: clamp(0.8rem, 2.5vw, 1rem);
-            color: var(--text-secondary);
-            margin-top: 4px;
-            font-weight: 500;
-            position: relative;
-            z-index: 1;
-        }
-        .rank-hero .rank-sub {
-            font-size: clamp(0.65rem, 2vw, 0.8rem);
-            color: rgba(255, 255, 255, 0.2);
-            margin-top: 2px;
-            position: relative;
-            z-index: 1;
-        }
-        .rank-hero .rank-score-visible {
-            display: inline-block;
-            background: rgba(251, 191, 36, 0.08);
-            padding: 2px 14px;
-            border-radius: 30px;
-            font-size: clamp(0.8rem, 2.2vw, 0.9rem);
-            color: var(--gold);
-            font-weight: 700;
-            margin-top: 6px;
-            position: relative;
-            z-index: 1;
-        }
-        .rank-overall {
-            text-align: center;
-            padding: 16px 12px;
-            background: rgba(59, 130, 246, 0.04);
-            border-radius: 1.5rem;
-            border: 1px solid rgba(59, 130, 246, 0.06);
-            margin-bottom: 14px;
-        }
-        .rank-overall .rank-number {
-            font-size: clamp(2.2rem, 10vw, 3rem);
+        .login-title {
+            font-size: clamp(1.3rem, 5vw, 1.6rem);
             font-weight: 800;
-            color: #60a5fa;
-            line-height: 1;
-        }
-        .rank-overall .rank-label {
-            font-size: clamp(0.7rem, 2vw, 0.85rem);
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-        .rank-overall .rank-score {
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            color: #93c5fd;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-        .rank-animate {
-            animation: rank-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        @keyframes rank-pop {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .status-box {
             text-align: center;
-            padding: 30px 16px;
+            background: linear-gradient(135deg, #fff, #93c5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        .status-box .icon {
-            font-size: clamp(2.5rem, 10vw, 48px);
-            margin-bottom: 8px;
-            display: inline-block;
-            animation: float 3s ease-in-out infinite;
+        .login-sub {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+            margin-bottom: 16px;
         }
-        @keyframes float {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-6px);
-            }
+        .form-control-glass {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 60px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+            width: 100%;
+            outline: none;
+            transition: 0.2s;
         }
-        .status-box h2 {
-            font-size: clamp(1.1rem, 4vw, 1.3rem);
-            font-weight: 700;
-            margin-bottom: 4px;
+        .form-control-glass:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.06);
+            background: rgba(255, 255, 255, 0.06);
         }
-        .status-box p {
-            color: #94a3b8;
-            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        .input-group-glass {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 60px;
+            padding: 0 14px;
+            transition: 0.2s;
         }
-
+        .input-group-glass:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.06);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .input-group-glass i {
+            color: #3b82f6;
+            margin-right: 8px;
+            font-size: 15px;
+        }
+        .input-group-glass input {
+            background: transparent;
+            border: none;
+            padding: 12px 0;
+            color: #fff;
+            width: 100%;
+            outline: none;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+        }
         .btn {
             border: none;
             cursor: pointer;
@@ -1132,24 +347,280 @@
             transform: none;
             box-shadow: none;
         }
-
-        .form-control-glass {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 60px;
-            padding: 12px 16px;
-            color: #fff;
-            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 1.2rem;
+            padding: 12px 6px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+        .stat-value.gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .stat-label {
+            font-size: clamp(0.5rem, 1.8vw, 0.65rem);
+            color: var(--text-secondary);
+            margin-top: 2px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .timer-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 6px 0 12px;
+        }
+        .timer-ring-container {
+            position: relative;
+            width: clamp(90px, 25vw, 120px);
+            height: clamp(90px, 25vw, 120px);
+        }
+        .timer-ring-container svg {
+            transform: rotate(-90deg);
             width: 100%;
-            outline: none;
-            transition: 0.2s;
+            height: 100%;
         }
-        .form-control-glass:focus {
+        .timer-ring-container .bg-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.04);
+            stroke-width: 6;
+        }
+        .timer-ring-container .progress-circle {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke: var(--gold);
+            transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
+            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.08));
+        }
+        .timer-ring-container .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(20px, 6vw, 30px);
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+        .timer-ring-container .timer-label {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(7px, 2vw, 9px);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .timer-ring-container.warning .progress-circle {
+            stroke: #f87171;
+            filter: drop-shadow(0 0 20px rgba(248, 113, 113, 0.15));
+            animation: pulse-glow 1s ease-in-out infinite;
+        }
+        .timer-ring-container.warning .timer-text {
+            color: #f87171;
+        }
+        @keyframes pulse-glow {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 8px rgba(248, 113, 113, 0.1));
+            }
+            50% {
+                filter: drop-shadow(0 0 24px rgba(248, 113, 113, 0.25));
+            }
+        }
+        .question-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 1.2rem;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--gold);
+        }
+        .question-title {
+            font-weight: 600;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        @media (max-width:380px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .opt-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: #e2e8f0;
+            cursor: pointer;
+            text-align: left;
+            font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+            transition: 0.15s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            font-family: inherit;
+        }
+        .opt-btn:active {
+            transform: scale(0.97);
+        }
+        .opt-btn.selected {
+            background: var(--gold);
+            color: #0a0f1e;
+            font-weight: 700;
             border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.06);
-            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 16px rgba(251, 191, 36, 0.1);
         }
-
+        .opt-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+            transform: none !important;
+        }
+        .rank-hero {
+            text-align: center;
+            padding: 18px 12px 16px;
+            background: rgba(251, 191, 36, 0.04);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(251, 191, 36, 0.06);
+            margin-bottom: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        .rank-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(251, 191, 36, 0.06), transparent 70%);
+            pointer-events: none;
+        }
+        .rank-hero .rank-big {
+            font-size: clamp(2.8rem, 12vw, 4rem);
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 40px rgba(251, 191, 36, 0.1);
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+        }
+        .rank-hero .rank-big .medal {
+            font-size: clamp(2.2rem, 8vw, 3rem);
+            display: block;
+            margin-bottom: 2px;
+        }
+        .rank-hero .rank-label {
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+        .rank-hero .rank-sub {
+            font-size: clamp(0.65rem, 2vw, 0.8rem);
+            color: rgba(255, 255, 255, 0.2);
+            margin-top: 2px;
+            position: relative;
+            z-index: 1;
+        }
+        .rank-hero .rank-score-visible {
+            display: inline-block;
+            background: rgba(251, 191, 36, 0.08);
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+            color: var(--gold);
+            font-weight: 700;
+            margin-top: 6px;
+            position: relative;
+            z-index: 1;
+        }
+        .rank-animate {
+            animation: rank-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes rank-pop {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .status-box {
+            text-align: center;
+            padding: 30px 16px;
+        }
+        .status-box .icon {
+            font-size: clamp(2.5rem, 10vw, 48px);
+            margin-bottom: 8px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+        .status-box h2 {
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .status-box p {
+            color: #94a3b8;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+        .pub-box {
+            text-align: center;
+            padding: 14px;
+            background: rgba(251, 191, 36, 0.03);
+            border-radius: 1.2rem;
+            border: 1px dashed rgba(251, 191, 36, 0.08);
+            margin-bottom: 14px;
+        }
+        .pub-box .pub-timer {
+            font-size: clamp(20px, 6vw, 26px);
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: var(--gold);
+        }
+        .pub-box .pub-label {
+            font-size: clamp(0.6rem, 1.8vw, 0.75rem);
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1195,7 +666,6 @@
             line-height: 1.5;
             font-size: clamp(0.85rem, 2.5vw, 0.95rem);
         }
-
         .admin-tabs {
             display: flex;
             gap: 4px;
@@ -1250,23 +720,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.02);
             vertical-align: middle;
         }
-        .admin-table-wrap input[type="datetime-local"],
-        .admin-table-wrap input[type="number"] {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 30px;
-            padding: 4px 8px;
-            color: #fff;
-            font-size: clamp(0.6rem, 1.8vw, 0.75rem);
-            outline: none;
-            transition: 0.2s;
-            width: 100%;
-            min-width: 80px;
-        }
-        .admin-table-wrap input:focus {
-            border-color: var(--gold);
-        }
-
         .day-tabs {
             display: flex;
             gap: 4px;
@@ -1292,7 +745,6 @@
         .day-tab:active {
             transform: scale(0.95);
         }
-
         .toast-container {
             position: fixed;
             bottom: 20px;
@@ -1339,7 +791,6 @@
                 transform: translateY(0);
             }
         }
-
         .help-fab {
             position: fixed;
             bottom: 20px;
@@ -1370,7 +821,6 @@
             border-color: #3b82f6;
             color: #93c5fd;
         }
-
         .hidden {
             display: none !important;
         }
@@ -1415,7 +865,6 @@
             list-style: none;
             padding: 0;
         }
-
         .copy-btn {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -1431,11 +880,25 @@
             background: var(--gold);
             color: #0a0f1e;
         }
-
+        .admin-table-wrap input[type="datetime-local"],
+        .admin-table-wrap input[type="number"] {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 30px;
+            padding: 4px 8px;
+            color: #fff;
+            font-size: clamp(0.6rem, 1.8vw, 0.75rem);
+            outline: none;
+            transition: 0.2s;
+            width: 100%;
+            min-width: 80px;
+        }
+        .admin-table-wrap input:focus {
+            border-color: var(--gold);
+        }
         #contentArea {
             scrollbar-width: thin;
         }
-
         .spinner-border {
             width: 2rem;
             height: 2rem;
@@ -1449,8 +912,6 @@
                 transform: rotate(360deg);
             }
         }
-
-        /* Other small-screen overrides (unchanged) */
         @media (max-width:380px) {
             #appBar {
                 padding: 2px 8px;
@@ -1465,6 +926,16 @@
                 width: 28px;
                 height: 28px;
                 font-size: 12px;
+            }
+            .login-panel {
+                padding: 1rem 0.8rem;
+            }
+            .logo-circle {
+                width: 52px;
+                height: 52px;
+            }
+            .logo-circle i {
+                font-size: 1.6rem;
             }
             .stats-grid {
                 gap: 4px;
@@ -1496,6 +967,36 @@
                 padding: 2px 8px;
                 font-size: 0.65rem;
             }
+            #contentArea {
+                padding: 8px 8px 12px;
+            }
+        }
+
+        /* Ranking overall card */
+        .rank-overall {
+            text-align: center;
+            padding: 16px 12px;
+            background: rgba(59, 130, 246, 0.04);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(59, 130, 246, 0.06);
+            margin-bottom: 14px;
+        }
+        .rank-overall .rank-number {
+            font-size: clamp(2.2rem, 10vw, 3rem);
+            font-weight: 800;
+            color: #60a5fa;
+            line-height: 1;
+        }
+        .rank-overall .rank-label {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .rank-overall .rank-score {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            color: #93c5fd;
+            font-weight: 600;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -1521,85 +1022,44 @@
         <!-- ===== CONTENT AREA ===== -->
         <div id="contentArea">
 
-            <!-- LOGIN SECTION — Wider -->
+            <!-- LOGIN SECTION -->
             <div id="loginSection">
-                <div class="login-bg-particles">
-                    <span></span><span></span><span></span><span></span>
-                    <span></span><span></span><span></span><span></span>
-                </div>
-                <div class="login-glow-orb"></div>
-                <div class="login-glow-orb-2"></div>
-
                 <div class="login-panel">
-                    <div class="login-logo-wrap">
-                        <div class="login-logo-ring">
-                            <div class="logo-icon"><i class="fas fa-user-graduate"></i></div>
-                        </div>
-                        <h1 class="login-title">
-                            Daily <span class="highlight">Meelad</span> Quiz
-                        </h1>
-                        <p class="login-sub">
-                            <i class="fas fa-users"></i> രക്ഷിതാക്കൾക്കായുള്ള മത്സരം
-                        </p>
-                    </div>
-
+                    <div class="logo-circle"><i class="fas fa-user-graduate"></i></div>
+                    <h1 class="login-title">Daily Meelad Quiz</h1>
+                    <p class="login-sub">👪 രക്ഷിതാക്കൾക്കായുള്ള മത്സരം</p>
                     <form id="loginForm">
-                        <div class="input-group-premium">
-                            <span class="icon-wrap"><i class="fas fa-id-card"></i></span>
-                            <input type="text" id="loginIdInput" placeholder="Parent ID നൽകുക" autofocus oninput="this.value = this.value.toUpperCase();" />
+                        <div style="margin-bottom:12px;">
+                            <div class="input-group-glass">
+                                <i class="fas fa-id-card"></i>
+                                <input type="text" id="loginIdInput" placeholder="ID നൽകുക" autofocus oninput="this.value = this.value.toUpperCase();" />
+                            </div>
                         </div>
-
-                        <div class="login-options">
-                            <label>
-                                <input type="checkbox" id="rememberMe" checked />
-                                ഓർക്കുക
+                        <div class="flex-between" style="margin-bottom:12px;">
+                            <label style="color:#94a3b8; font-size:clamp(0.7rem,2vw,0.85rem); display:flex; align-items:center; gap:4px;">
+                                <input type="checkbox" id="rememberMe" checked style="width:auto; margin-right:4px;" /> ഓർക്കുക
                             </label>
-                            <!-- placeholder -->
+                            <button type="button" class="btn btn-outline btn-sm" id="showRegisterBtn">പുതിയത്? രജിസ്റ്റർ</button>
                         </div>
-
-                        <button type="submit" class="btn-login-primary" id="loginSubmitBtn">
-                            <i class="fas fa-key"></i> പ്രവേശിക്കുക
+                        <button type="submit" class="btn btn-primary btn-block">🔑 പ്രവേശിക്കുക</button>
+                        <button type="button" class="btn btn-outline btn-block mt-2" onclick="openFindId()">
+                            <i class="fas fa-question-circle" style="color:#f59e0b;"></i> Parent ID മറന്നോ?
                         </button>
-
-                        <button type="button" class="btn-register-ghost" id="showRegisterBtn">
-                            <i class="fas fa-user-plus"></i> പുതിയ രക്ഷിതാവ്
-                        </button>
-
-                        <button type="button" class="btn-login-secondary" onclick="openFindId()">
-                            <i class="fas fa-question-circle"></i> Parent ID മറന്നോ?
-                        </button>
-
-                        <div id="loginMessage"></div>
+                        <div id="loginMessage" class="mt-2 text-center"></div>
                     </form>
                 </div>
             </div>
 
-            <!-- PARENT DASHBOARD — Malayalam -->
+            <!-- PARENT DASHBOARD -->
             <div id="parentDashboard" class="hidden">
-                <!-- Header with parent info -->
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; background:rgba(255,255,255,0.04); border-radius:1.5rem; padding:12px 16px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.06);">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="width:50px; height:50px; background:linear-gradient(135deg,#f97316,#ef4444); border-radius:30px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; box-shadow:0 0 20px rgba(249,115,22,0.3);">
-                            <span id="avatarText">P</span>
-                        </div>
-                        <div>
-                            <h3 id="userNameDisplay" style="font-size:clamp(1.1rem,3vw,1.3rem); font-weight:700;">Parent Name</h3>
-                            <div style="font-size:clamp(0.7rem,2vw,0.85rem); color:#94a3b8;">
-                                <i class="fas fa-id-card"></i> <span id="displayParentId">ID</span> •
-                                <i class="fas fa-child"></i> <span id="childNameDisplay">Child</span> •
-                                <i class="fas fa-graduation-cap"></i> <span id="childClassDisplay">Class</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Exit</button>
-                </div>
-
+                <!-- Stats -->
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">Day 1</span><div class="stat-label">ഇന്നത്തെ ക്വിസ്</div></div></div>
                     <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="stat-label">ചോദ്യങ്ങൾ</div></div></div>
                     <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="stat-label">നിങ്ങളുടെ സ്കോർ</div></div></div>
                 </div>
 
+                <!-- Timer -->
                 <div id="timerArea" class="hidden timer-wrapper">
                     <div class="timer-ring-container" id="timerRingContainer">
                         <svg viewBox="0 0 140 140">
@@ -1611,6 +1071,7 @@
                     </div>
                 </div>
 
+                <!-- Status -->
                 <div id="statusArea">
                     <div class="status-box" id="waitingMsg">
                         <div class="icon">⏳</div>
@@ -1624,6 +1085,7 @@
                     </div>
                 </div>
 
+                <!-- View Questions -->
                 <div id="viewQuestionsArea" class="hidden text-center mt-3">
                     <button class="btn btn-gold" id="viewQuestionsBtn" style="max-width:360px; margin:0 auto; width:100%;">
                         📝 ചോദ്യങ്ങൾ കാണുക
@@ -1631,11 +1093,13 @@
                     <div id="quizStatusMessage" class="mt-2 text-muted" style="font-size:clamp(0.7rem,2vw,0.85rem);"></div>
                 </div>
 
+                <!-- Questions -->
                 <div id="questionsArea" class="hidden">
                     <div id="questionsContainer"></div>
                     <button class="btn btn-success btn-block mt-3" id="submitQuizBtn">📤 സമർപ്പിക്കുക</button>
                 </div>
 
+                <!-- Submitted (thank you message) -->
                 <div id="submittedArea" class="hidden">
                     <div class="status-box">
                         <div class="icon">✅</div>
@@ -1645,6 +1109,7 @@
                     </div>
                 </div>
 
+                <!-- Ranking Area (Today + Overall) -->
                 <div id="rankingArea" class="hidden">
                     <div class="glass-card">
                         <div id="rankHeroContainer"></div>
@@ -1652,14 +1117,11 @@
                         <div id="rankingCutoffMsg" class="hidden text-center text-muted mt-3" style="font-size:clamp(0.8rem,2vw,0.9rem);">
                             ⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.
                         </div>
-                        <button class="btn btn-gold btn-block mt-3" id="showPerformanceBtn">
-                            📊 എല്ലാ ദിവസത്തെയും പ്രകടനം
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- ADMIN DASHBOARD (unchanged) -->
+            <!-- ADMIN DASHBOARD -->
             <div id="adminDashboard" class="hidden">
                 <div class="glass-card" style="margin-bottom:14px; padding:12px 16px;">
                     <h4 style="color:var(--gold); font-size:clamp(0.8rem,2.5vw,0.95rem);">📅 ഇന്നത്തെ സെഷൻ</h4>
@@ -1734,14 +1196,6 @@
                         <h4 style="color:var(--gold); font-size:clamp(0.85rem,2.5vw,1rem);">🏆 റാങ്കിംഗ്</h4>
                         <div class="day-tabs" id="rankDayTabs"></div>
                         <div id="adminRankListContainer"><div class="text-center text-muted">ദയവായി ഒരു ദിവസം തിരഞ്ഞെടുക്കുക</div></div>
-                        <div class="mt-4" style="border-top:1px solid rgba(255,255,255,0.05); padding-top:14px;">
-                            <button class="btn btn-danger btn-block" id="resetRankingsBtn" style="max-width:320px; margin:0 auto;">
-                                <i class="fas fa-trash-alt"></i> റാങ്കിംഗ് റീസെറ്റ് ചെയ്യുക
-                            </button>
-                            <p class="text-muted text-center mt-2" style="font-size:clamp(0.55rem,1.6vw,0.7rem);">
-                                ⚠️ എല്ലാ രക്ഷിതാക്കളുടെയും സ്കോറുകളും അറ്റംപ്റ്റുകളും മായ്ക്കും. ഇത് പഴയപടിയാക്കാനാവില്ല.
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1755,7 +1209,6 @@
 
     <!-- ===== MODALS ===== -->
 
-    <!-- Register Modal -->
     <div id="registerModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <div class="flex-between" style="margin-bottom:12px;">
@@ -1778,7 +1231,6 @@
         </div>
     </div>
 
-    <!-- Find ID Modal -->
     <div id="findIdModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <div class="flex-between" style="margin-bottom:12px;">
@@ -1804,7 +1256,6 @@
         </div>
     </div>
 
-    <!-- Confirm Quiz Modal -->
     <div id="confirmModal" class="modal-overlay hidden">
         <div class="modal-glass">
             <h3>⚠️ ശ്രദ്ധിക്കുക</h3>
@@ -1824,46 +1275,10 @@
         </div>
     </div>
 
-    <!-- Performance Modal -->
-    <div id="performanceModal" class="modal-overlay hidden">
-        <div class="modal-glass">
-            <div class="flex-between" style="margin-bottom:12px;">
-                <h3><i class="fas fa-chart-line" style="color:#60a5fa;"></i> എല്ലാ ദിവസത്തെയും പ്രകടനം</h3>
-                <button class="btn btn-outline btn-sm" id="closePerformanceModalBtn"><i class="fas fa-times"></i></button>
-            </div>
-            <div id="performanceContent" style="margin-top:12px;">
-                <div class="text-center text-muted">Loading...</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reset Password Modal -->
-    <div id="resetPasswordModal" class="modal-overlay hidden">
-        <div class="modal-glass">
-            <div class="flex-between" style="margin-bottom:12px;">
-                <h3><i class="fas fa-lock" style="color:#ef4444;"></i> അഡ്മിൻ പാസ്വേഡ് സ്ഥിരീകരിക്കുക</h3>
-                <button class="btn btn-outline btn-sm" id="closeResetPasswordModalBtn"><i class="fas fa-times"></i></button>
-            </div>
-            <p class="text-muted">റാങ്കിംഗ് റീസെറ്റ് ചെയ്യുന്നതിന് അഡ്മിൻ പാസ്വേഡ് നൽകുക.</p>
-            <form id="resetPasswordForm" style="margin-top:12px;">
-                <div style="margin-bottom:12px;">
-                    <div class="input-group-premium">
-                        <span class="icon-wrap"><i class="fas fa-key"></i></span>
-                        <input type="password" id="resetAdminPassword" placeholder="പാസ്വേഡ് നൽകുക" class="form-control-glass" style="border-radius:60px; background:transparent; border:none; padding:12px 8px; color:#fff; width:100%; outline:none; font-size:clamp(0.85rem,2.5vw,0.95rem);" />
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-danger btn-block" id="resetConfirmBtn">
-                    <i class="fas fa-trash-alt"></i> സ്ഥിരീകരിച്ച് റീസെറ്റ് ചെയ്യുക
-                </button>
-                <div id="resetPasswordMessage" class="mt-2 text-center"></div>
-            </form>
-        </div>
-    </div>
-
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT — FIXED: ensure questions load before starting quiz -->
+    <!-- JAVASCRIPT -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -1873,7 +1288,6 @@
         const SUPABASE_ANON_KEY = "sb_publishable_7BNVf0qnhk8xlpGh0Vts5w_viVZ1kpc";
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const CIRCUMFERENCE = 2 * Math.PI * 60;
-        const ADMIN_PASSWORD = "ADMIN123";
 
         // ================================================================
         // STATE
@@ -1896,7 +1310,6 @@
         window.currentView = 'home';
         window.adminRankDay = 1;
         window.rankingRefreshInterval = null;
-        window.sessionCheckInterval = null;
 
         // ================================================================
         // HELPERS
@@ -2019,13 +1432,9 @@
             e.preventDefault();
             const id = document.getElementById('loginIdInput').value.trim().toUpperCase();
             const msg = document.getElementById('loginMessage');
-            const submitBtn = document.getElementById('loginSubmitBtn');
             msg.innerHTML = '';
             if (!id) { showToast('ID നൽകുക', 'error'); return; }
             saveId(id);
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> പ്രവേശിക്കുന്നു...';
 
             try {
                 const { data: user, error } = await _supabase
@@ -2041,12 +1450,10 @@
                     document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('adminDashboard').classList.remove('hidden');
                     document.getElementById('parentDashboard').classList.add('hidden');
+                    document.getElementById('appTitle').innerHTML = '<i class="fas fa-user-shield"></i> Admin';
                     document.getElementById('backBtn').classList.remove('visible');
-                    document.getElementById('logoutTopBtn').classList.add('visible');
                     loadAdminData();
                     showToast('Admin Panel തുറന്നു', 'success');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-key"></i> പ്രവേശിക്കുക';
                     return;
                 }
 
@@ -2074,28 +1481,16 @@
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('parentDashboard').classList.remove('hidden');
                 document.getElementById('adminDashboard').classList.add('hidden');
+                document.getElementById('appTitle').innerHTML = '<i class="fas fa-star"></i> Noorussalam Madrasa';
                 document.getElementById('backBtn').classList.remove('visible');
-                document.getElementById('logoutTopBtn').classList.add('visible');
 
-                // Update header
-                document.getElementById('userNameDisplay').textContent = user.name;
-                document.getElementById('avatarText').textContent = user.name.charAt(0).toUpperCase();
-                document.getElementById('childNameDisplay').textContent = user.parentName || 'N/A';
-                document.getElementById('childClassDisplay').textContent = user.className || 'N/A';
-                document.getElementById('displayParentId').textContent = user.studentId;
                 document.getElementById('quizDayDisplay').textContent = 'Day ' + active.day;
-
                 renderParentDashboard();
-                startSessionCheck();
-
                 showToast('സ്വാഗതം, ' + user.name + '!', 'success');
 
             } catch (err) {
                 showToast(err.message, 'error');
-                msg.innerHTML = `<div class="error">${err.message}</div>`;
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-key"></i> പ്രവേശിക്കുക';
+                msg.innerHTML = `<div style="color:#f87171;">${err.message}</div>`;
             }
         });
 
@@ -2106,7 +1501,6 @@
             if (window.timerInterval) clearInterval(window.timerInterval);
             if (window.pubInterval) clearInterval(window.pubInterval);
             if (window.rankingRefreshInterval) clearInterval(window.rankingRefreshInterval);
-            if (window.sessionCheckInterval) clearInterval(window.sessionCheckInterval);
             window.currentUser = null;
             window.currentSession = null;
             window.nextSession = null;
@@ -2115,53 +1509,11 @@
             document.getElementById('parentDashboard').classList.add('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
             document.getElementById('loginIdInput').value = '';
+            document.getElementById('appTitle').innerHTML = '<i class="fas fa-star"></i> Meelad Quiz';
             document.getElementById('backBtn').classList.remove('visible');
-            document.getElementById('logoutTopBtn').classList.remove('visible');
             showToast('പുറത്തുകടന്നു', 'info');
         }
         document.getElementById('logoutTopBtn').addEventListener('click', logout);
-        document.getElementById('logoutBtn').addEventListener('click', logout);
-
-        // ================================================================
-        // SESSION CHECK
-        // ================================================================
-        function startSessionCheck() {
-            if (window.sessionCheckInterval) clearInterval(window.sessionCheckInterval);
-            window.sessionCheckInterval = setInterval(() => {
-                if (window.currentUser && !window.isAdmin) {
-                    refreshSessionAndRender();
-                }
-            }, 30000);
-        }
-
-        async function refreshSessionAndRender() {
-            try {
-                const { data: sessions, error } = await _supabase
-                    .from('QuizSession')
-                    .select('*')
-                    .order('day');
-                if (error) throw error;
-                if (!sessions || sessions.length === 0) return;
-
-                const now = new Date();
-                let active = sessions.find(s => now >= new Date(s.startTime) && now <= new Date(s.endTime));
-                if (!active) active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
-
-                const currentDay = active.day;
-                let next = sessions.find(s => s.day === currentDay + 1);
-                window.nextSession = next || null;
-
-                if (!window.currentSession || window.currentSession.day !== active.day) {
-                    window.currentSession = active;
-                    document.getElementById('quizDayDisplay').textContent = 'Day ' + active.day;
-                    renderParentDashboard();
-                } else {
-                    renderParentDashboard();
-                }
-            } catch (err) {
-                console.warn('Session refresh error:', err);
-            }
-        }
 
         // ================================================================
         // REGISTRATION
@@ -2301,7 +1653,7 @@
         }
 
         // ================================================================
-        // PARENT DASHBOARD – FIXED: ensure questions loaded before starting
+        // PARENT DASHBOARD
         // ================================================================
         async function renderParentDashboard() {
             if (!window.currentUser || !window.currentSession) return;
@@ -2311,13 +1663,15 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
-            let nextStart = null;
+            let cutoffTime = null;
             if (window.nextSession) {
-                nextStart = new Date(window.nextSession.startTime);
+                const nextStart = new Date(window.nextSession.startTime);
+                cutoffTime = new Date(nextStart.getTime() - 60 * 60 * 1000);
             }
+            window._rankingCutoff = cutoffTime;
 
             ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
-                .forEach(id => document.getElementById(id).classList.add('hidden'));
+            .forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('statsGrid').classList.remove('hidden');
 
             const scoreEl = document.getElementById('scoreDisplay');
@@ -2332,7 +1686,7 @@
                 document.getElementById('waitingMsg').classList.remove('hidden');
                 document.getElementById('waitingTimeText').textContent =
                     `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
-                await updateRankingVisibility(now, pubTime, nextStart);
+                await updateRankingVisibility(now, pubTime, cutoffTime);
                 return;
             } else if (now > end) {
                 const { data: attempt } = await _supabase
@@ -2343,21 +1697,25 @@
                     .maybeSingle();
 
                 if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
+                    // Show submittedArea only if before publication
                     if (now < pubTime) {
                         document.getElementById('submittedArea').classList.remove('hidden');
                         document.getElementById('scoreDisplay').textContent = '🔒';
                         document.getElementById('scoreDisplay').style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
                     } else {
+                        // After publication, we hide submittedArea (it will be hidden by updateRankingVisibility)
                         document.getElementById('submittedArea').classList.add('hidden');
                         document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
                         document.getElementById('scoreDisplay').style.fontSize = '';
                     }
+                } else {
+                    // No attempt, maybe show ended message? But we'll let ranking decide.
                 }
-                await updateRankingVisibility(now, pubTime, nextStart);
+                await updateRankingVisibility(now, pubTime, cutoffTime);
                 return;
             }
 
-            // ---- Active session ----
+            // Session active
             const { data: attempt } = await _supabase
                 .from('Attempt')
                 .select('id, status, score')
@@ -2365,58 +1723,53 @@
                 .eq('sessionDay', window.currentSession.day)
                 .maybeSingle();
 
-            // Helper to ensure questions are loaded
-            async function ensureQuestionsLoaded() {
-                if (window.questions && window.questions.length > 0) return true;
-                const { data, error } = await _supabase
-                    .from('Question')
-                    .select('*')
-                    .eq('sessionDay', window.currentSession.day)
-                    .order('id', { ascending: true });
-                if (error || !data || data.length === 0) {
-                    console.error('❌ No questions found for day', window.currentSession.day);
-                    return false;
+            if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
+                document.getElementById('submittedArea').classList.remove('hidden');
+                if (now < pubTime) {
+                    document.getElementById('scoreDisplay').textContent = '🔒';
+                    document.getElementById('scoreDisplay').style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
+                } else {
+                    document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
+                    document.getElementById('scoreDisplay').style.fontSize = '';
                 }
-                window.questions = data;
-                document.getElementById('questionCountDisplay').textContent = data.length;
-                return true;
+                await updateRankingVisibility(now, pubTime, cutoffTime);
+                return;
             }
 
-            // If attempt already started or completed
-            if (attempt) {
-                if (attempt.status === 'STARTED') {
-                    window.currentAttemptId = attempt.id;
-                    window.hasViewedQuestions = true;
-                    window.quizStarted = true;
-                    document.getElementById('viewQuestionsArea').classList.remove('hidden');
-                    document.getElementById('viewQuestionsBtn').textContent = '🔒 ആരംഭിച്ചു';
-                    document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
-                    document.getElementById('viewQuestionsBtn').disabled = true;
-                    const loaded = await ensureQuestionsLoaded();
-                    if (!loaded) {
-                        document.getElementById('quizStatusMessage').textContent =
-                            '⚠️ ചോദ്യങ്ങൾ ലഭ്യമല്ല. അഡ്മിനെ അറിയിക്കുക.';
-                        document.getElementById('questionsArea').classList.add('hidden');
-                        return;
-                    }
-                    // Resume
-                    await startParentQuiz(true);
-                    return;
-                } else if (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT') {
-                    document.getElementById('submittedArea').classList.remove('hidden');
-                    if (now < pubTime) {
-                        document.getElementById('scoreDisplay').textContent = '🔒';
-                        document.getElementById('scoreDisplay').style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
-                    } else {
-                        document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
-                        document.getElementById('scoreDisplay').style.fontSize = '';
-                    }
-                    await updateRankingVisibility(now, pubTime, nextStart);
-                    return;
-                }
+            if (attempt && attempt.status === 'STARTED') {
+                window.currentAttemptId = attempt.id;
+                window.hasViewedQuestions = true;
+                window.quizStarted = true;
+                document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                document.getElementById('viewQuestionsBtn').textContent = '🔒 ആരംഭിച്ചു';
+                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                document.getElementById('viewQuestionsBtn').disabled = true;
+                document.getElementById('quizStatusMessage').textContent =
+                    '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                await loadQuestionsAndStart(true);
+                return;
             }
 
-            // No attempt yet – show "View Questions"
+            const { data: anyAttempt } = await _supabase
+                .from('Attempt')
+                .select('id')
+                .eq('studentId', window.currentUser.id)
+                .eq('sessionDay', window.currentSession.day)
+                .maybeSingle();
+
+            if (anyAttempt) {
+                window.hasViewedQuestions = true;
+                window.currentAttemptId = anyAttempt.id;
+                document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                document.getElementById('viewQuestionsBtn').textContent = '🔒 കാണിച്ചു';
+                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                document.getElementById('viewQuestionsBtn').disabled = true;
+                document.getElementById('quizStatusMessage').textContent =
+                    '⚠️ നിങ്ങൾ ഇതിനകം ചോദ്യങ്ങൾ കണ്ടു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                await loadQuestionsAndStart(true);
+                return;
+            }
+
             document.getElementById('viewQuestionsArea').classList.remove('hidden');
             document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
             document.getElementById('viewQuestionsBtn').className = 'btn btn-gold';
@@ -2424,13 +1777,17 @@
             document.getElementById('quizStatusMessage').textContent =
                 '⏳ ക്വിസ് ആരംഭിക്കാൻ "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക.';
 
-            // Pre‑load questions count
-            const loaded = await ensureQuestionsLoaded();
-            if (!loaded) {
-                document.getElementById('viewQuestionsBtn').disabled = true;
-                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
-                document.getElementById('quizStatusMessage').textContent =
-                    '❌ ഇന്നത്തെ ദിവസത്തേക്ക് ചോദ്യങ്ങളൊന്നുമില്ല. ദയവായി അഡ്മിനെ ബന്ധപ്പെടുക.';
+            const { data: qs } = await _supabase
+                .from('Question')
+                .select('*')
+                .eq('sessionDay', window.currentSession.day)
+                .order('id', { ascending: true });
+
+            if (qs && qs.length > 0) {
+                window.questions = qs;
+                document.getElementById('questionCountDisplay').textContent = qs.length;
+            } else {
+                showToast('ഇന്നത്തെ ദിവസത്തേക്ക് ചോദ്യങ്ങളില്ല', 'error');
             }
 
             document.getElementById('viewQuestionsBtn').onclick = function() {
@@ -2442,9 +1799,9 @@
         }
 
         // ================================================================
-        // RANKING VISIBILITY & FUNCTIONS (unchanged)
+        // RANKING VISIBILITY & DATA LOAD
         // ================================================================
-        async function updateRankingVisibility(now, pubTime, nextStart) {
+        async function updateRankingVisibility(now, pubTime, cutoffTime) {
             const rankingArea = document.getElementById('rankingArea');
             const heroContainer = document.getElementById('rankHeroContainer');
             const overallContainer = document.getElementById('overallRankContainer');
@@ -2458,37 +1815,36 @@
 
             let showRanking = false;
             if (now >= pubTime) {
-                if (nextStart) {
-                    const oneHourBefore = new Date(nextStart.getTime() - 60 * 60 * 1000);
-                    if (now < oneHourBefore) {
-                        showRanking = true;
-                    } else {
-                        cutoffMsg.classList.remove('hidden');
-                        cutoffMsg.textContent = '⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.';
-                    }
-                } else {
+                if (!cutoffTime || now < cutoffTime) {
                     showRanking = true;
+                } else {
+                    cutoffMsg.classList.remove('hidden');
+                    cutoffMsg.textContent = '⏳ അടുത്ത ക്വിസ് ആരംഭിക്കാൻ 1 മണിക്കൂറിൽ താഴെ. റാങ്കിംഗ് ഇപ്പോൾ ലഭ്യമല്ല.';
                 }
             }
 
             if (showRanking) {
                 rankingArea.classList.remove('hidden');
-                submittedArea.classList.add('hidden');
+                submittedArea.classList.add('hidden'); // hide thank you message
                 await loadParentRankingData();
                 await loadOverallRank();
             } else if (!cutoffMsg.classList.contains('hidden')) {
+                // cutoff message shown
                 rankingArea.classList.remove('hidden');
                 submittedArea.classList.add('hidden');
             } else {
+                // ranking not shown and not cutoff
+                // If we are past publication but not showing ranking (should not happen), we might hide submittedArea.
                 if (now >= pubTime) {
                     submittedArea.classList.add('hidden');
                 }
             }
 
+            // Set up periodic refresh (every minute)
             if (window.rankingRefreshInterval) clearInterval(window.rankingRefreshInterval);
             window.rankingRefreshInterval = setInterval(async () => {
                 const now2 = new Date();
-                await updateRankingVisibility(now2, pubTime, nextStart);
+                await updateRankingVisibility(now2, pubTime, cutoffTime);
             }, 60000);
         }
 
@@ -2636,151 +1992,6 @@
         }
 
         // ================================================================
-        // PERFORMANCE HISTORY (unchanged)
-        // ================================================================
-        document.getElementById('showPerformanceBtn').addEventListener('click', function() {
-            document.getElementById('performanceModal').classList.remove('hidden');
-            loadPerformanceData();
-        });
-
-        document.getElementById('closePerformanceModalBtn').addEventListener('click', function() {
-            document.getElementById('performanceModal').classList.add('hidden');
-        });
-        document.getElementById('performanceModal').addEventListener('click', function(e) {
-            if (e.target === this) this.classList.add('hidden');
-        });
-
-        async function loadPerformanceData() {
-            const container = document.getElementById('performanceContent');
-            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
-
-            if (!window.currentUser) {
-                container.innerHTML = '<div class="text-center text-muted">ഉപയോക്താവിനെ കണ്ടെത്താനായില്ല.</div>';
-                return;
-            }
-
-            try {
-                const { data: myAttempts, error: myErr } = await _supabase
-                    .from('Attempt')
-                    .select('*')
-                    .eq('studentId', window.currentUser.id)
-                    .in('status', ['COMPLETED', 'TIMED_OUT'])
-                    .order('sessionDay', { ascending: true });
-
-                if (myErr) throw myErr;
-
-                if (!myAttempts || myAttempts.length === 0) {
-                    container.innerHTML = '<div class="text-center text-muted">📭 നിങ്ങൾ ഇതുവരെ ഒരു ദിവസത്തെയും പൂർത്തിയാക്കിയിട്ടില്ല.</div>';
-                    return;
-                }
-
-                const { data: sessions, error: sessErr } = await _supabase
-                    .from('QuizSession')
-                    .select('*')
-                    .order('day', { ascending: true });
-                if (sessErr) throw sessErr;
-                const sessionMap = {};
-                sessions.forEach(s => { sessionMap[s.day] = s; });
-
-                const now = new Date();
-                let rows = [];
-
-                for (const att of myAttempts) {
-                    const day = att.sessionDay;
-                    const session = sessionMap[day];
-                    if (!session) continue;
-
-                    const pubTime = new Date(new Date(session.endTime).getTime() + 5 * 60000);
-                    const isPublished = now >= pubTime;
-
-                    let score = att.score !== null && att.score !== undefined ? att.score : '—';
-                    let rank = '—';
-                    let timeTaken = '—';
-
-                    if (isPublished) {
-                        const { data: dayAttempts, error: dayErr } = await _supabase
-                            .from('Attempt')
-                            .select('id, studentId, score, startTime, endTime')
-                            .eq('sessionDay', day)
-                            .in('status', ['COMPLETED', 'TIMED_OUT']);
-
-                        if (dayErr) throw dayErr;
-
-                        if (dayAttempts && dayAttempts.length > 0) {
-                            const ranked = dayAttempts.map(a => ({
-                                ...a,
-                                timeTaken: a.endTime ? Math.floor((new Date(a.endTime) - new Date(a.startTime)) /
-                                    1000) : 9999
-                            }));
-                            ranked.sort((a, b) => {
-                                if ((a.score || 0) !== (b.score || 0)) return (b.score || 0) - (a.score || 0);
-                                return (a.timeTaken || 9999) - (b.timeTaken || 9999);
-                            });
-                            const pos = ranked.findIndex(a => a.id === att.id) + 1;
-                            rank = pos > 0 ? pos : '—';
-                        }
-
-                        if (att.startTime && att.endTime) {
-                            const secs = Math.floor((new Date(att.endTime) - new Date(att.startTime)) / 1000);
-                            timeTaken = secs + 's';
-                        }
-
-                        if (att.score !== null && att.score !== undefined) {
-                            score = att.score;
-                        }
-                    } else {
-                        score = '🔒';
-                        rank = '🔒';
-                        timeTaken = '🔒';
-                    }
-
-                    rows.push({ day, score, rank, timeTaken, isPublished });
-                }
-
-                if (rows.length === 0) {
-                    container.innerHTML = '<div class="text-center text-muted">പ്രദർശിപ്പിക്കാൻ ഡാറ്റയില്ല.</div>';
-                    return;
-                }
-
-                let html = `
-                    <div class="admin-table-wrap">
-                        <table>
-                            <thead>
-                                <tr><th>ദിവസം</th><th>സ്കോർ</th><th>റാങ്ക്</th><th>സമയം</th></tr>
-                            </thead>
-                            <tbody>
-                `;
-
-                rows.forEach(r => {
-                    const medal = (r.rank !== '—' && r.rank !== '🔒') ? getMedal(parseInt(r.rank)) : '';
-                    const rankDisplay = r.rank !== '—' && r.rank !== '🔒' ? medal + ' ' + r.rank : r.rank;
-                    html += `
-                        <tr>
-                            <td><strong>Day ${r.day}</strong></td>
-                            <td style="color:${r.score !== '🔒' ? '#fbbf24' : '#94a3b8'}; font-weight:700;">${r.score}</td>
-                            <td style="color:${r.rank !== '—' && r.rank !== '🔒' ? '#60a5fa' : '#94a3b8'}; font-weight:600;">${rankDisplay}</td>
-                            <td style="color:#94a3b8;">${r.timeTaken}</td>
-                        </tr>
-                    `;
-                });
-
-                html += `
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="text-muted mt-2" style="font-size:clamp(0.6rem,1.8vw,0.75rem);">🔒 = ഫലം പ്രസിദ്ധീകരിച്ചിട്ടില്ല</p>
-                `;
-
-                container.innerHTML = html;
-
-            } catch (err) {
-                container.innerHTML = '<div class="text-danger text-center">Error loading data: ' + err.message + '</div>';
-                showToast(err.message, 'error');
-                console.error(err);
-            }
-        }
-
-        // ================================================================
         // CONFIRM MODAL
         // ================================================================
         document.getElementById('cancelConfirmBtn').addEventListener('click', function() {
@@ -2788,26 +1999,32 @@
         });
         document.getElementById('proceedConfirmBtn').addEventListener('click', async function() {
             document.getElementById('confirmModal').classList.add('hidden');
-            // Ensure questions are loaded before starting
-            if (window.questions.length === 0) {
-                const { data, error } = await _supabase
-                    .from('Question')
-                    .select('*')
-                    .eq('sessionDay', window.currentSession.day)
-                    .order('id', { ascending: true });
-                if (error || !data || data.length === 0) {
-                    showToast('ചോദ്യങ്ങൾ ലഭ്യമല്ല. അഡ്മിനെ ബന്ധപ്പെടുക.', 'error');
-                    return;
-                }
-                window.questions = data;
-                document.getElementById('questionCountDisplay').textContent = data.length;
-            }
             await startParentQuiz(false);
         });
 
         // ================================================================
-        // PARENT QUIZ – uses pre-loaded questions
+        // PARENT QUIZ
         // ================================================================
+        async function loadQuestionsAndStart(resume = false) {
+            if (window.questions.length === 0) {
+                const { data: qs } = await _supabase
+                    .from('Question')
+                    .select('*')
+                    .eq('sessionDay', window.currentSession.day)
+                    .order('id', { ascending: true });
+                if (qs && qs.length > 0) {
+                    window.questions = qs;
+                    document.getElementById('questionCountDisplay').textContent = qs.length;
+                } else {
+                    showToast('ഇന്നത്തെ ദിവസത്തേക്ക് ചോദ്യങ്ങളില്ല', 'error');
+                    return;
+                }
+            }
+            if (!window.quizStarted && window.questions.length > 0) {
+                await startParentQuiz(resume);
+            }
+        }
+
         async function startParentQuiz(resume = false) {
             try {
                 if (!resume && !window.currentAttemptId) {
@@ -2831,12 +2048,8 @@
                 document.getElementById('viewQuestionsBtn').textContent = '🔒 ആരംഭിച്ചു';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
                 document.getElementById('viewQuestionsBtn').disabled = true;
-                if (resume) {
-                    document.getElementById('quizStatusMessage').textContent =
-                        '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
-                } else {
-                    document.getElementById('quizStatusMessage').textContent = '⏳ ക്വിസ് ആരംഭിച്ചു. ഭാഗ്യം!';
-                }
+                document.getElementById('quizStatusMessage').textContent =
+                    '⚠️ നിങ്ങൾ ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
 
                 document.getElementById('questionsArea').classList.remove('hidden');
                 document.getElementById('timerArea').classList.remove('hidden');
@@ -2879,10 +2092,6 @@
         function renderQuestions() {
             const container = document.getElementById('questionsContainer');
             container.innerHTML = '';
-            if (!window.questions || window.questions.length === 0) {
-                container.innerHTML = '<div class="text-center text-muted">ചോദ്യങ്ങൾ ലഭ്യമല്ല.</div>';
-                return;
-            }
             window.questions.forEach((q, idx) => {
                 const div = document.createElement('div');
                 div.className = 'question-card';
@@ -2941,25 +2150,24 @@
 
                 document.getElementById('questionsArea').classList.add('hidden');
                 document.getElementById('timerArea').classList.add('hidden');
+                // Show submittedArea only if before publication
                 const now = new Date();
                 const end = new Date(window.currentSession.endTime);
                 const pubTime = new Date(end.getTime() + 5 * 60000);
-                let nextStart = null;
-                if (window.nextSession) {
-                    nextStart = new Date(window.nextSession.startTime);
-                }
                 if (now < pubTime) {
                     document.getElementById('submittedArea').classList.remove('hidden');
                     document.getElementById('scoreDisplay').textContent = '🔒';
                     document.getElementById('scoreDisplay').style.fontSize = 'clamp(1.2rem,4vw,1.4rem)';
                 } else {
+                    // After publication, we don't show submittedArea; ranking will handle it.
                     document.getElementById('submittedArea').classList.add('hidden');
                     document.getElementById('scoreDisplay').textContent = score;
                     document.getElementById('scoreDisplay').style.fontSize = '';
                 }
                 showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
 
-                await updateRankingVisibility(now, pubTime, nextStart);
+                const cutoffTime = window._rankingCutoff || null;
+                await updateRankingVisibility(now, pubTime, cutoffTime);
                 navigateTo('home');
             } catch (err) {
                 showToast('സമർപ്പിക്കുന്നതിൽ പിശക്: ' + err.message, 'error');
@@ -2969,7 +2177,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL (unchanged)
+        // ADMIN PANEL
         // ================================================================
         function switchAdminTab(tab) {
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -3010,6 +2218,7 @@
             }
         }
 
+        // ---- Sessions ----
         document.getElementById('addDayBtn').addEventListener('click', async function() {
             const day = parseInt(document.getElementById('newDay').value);
             const startLocal = document.getElementById('newStart').value;
@@ -3179,6 +2388,7 @@
             }
         }
 
+        // ---- Questions ----
         document.getElementById('showAddQuestionBtn').addEventListener('click', function() {
             document.getElementById('questionForm').classList.remove('hidden');
             document.getElementById('formTitle').textContent = 'ചോദ്യം ചേർക്കുക';
@@ -3301,6 +2511,7 @@
             }
         }
 
+        // ---- Admin Rankings ----
         async function loadAdminRankings(day) {
             window.adminRankDay = day;
             const container = document.getElementById('adminRankListContainer');
@@ -3407,78 +2618,7 @@
         }
 
         // ================================================================
-        // RESET RANKINGS (unchanged)
-        // ================================================================
-        document.getElementById('resetRankingsBtn').addEventListener('click', function() {
-            document.getElementById('resetPasswordModal').classList.remove('hidden');
-            document.getElementById('resetAdminPassword').value = '';
-            document.getElementById('resetPasswordMessage').innerHTML = '';
-        });
-
-        document.getElementById('closeResetPasswordModalBtn').addEventListener('click', function() {
-            document.getElementById('resetPasswordModal').classList.add('hidden');
-        });
-        document.getElementById('resetPasswordModal').addEventListener('click', function(e) {
-            if (e.target === this) this.classList.add('hidden');
-        });
-
-        document.getElementById('resetPasswordForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const password = document.getElementById('resetAdminPassword').value.trim();
-            const msg = document.getElementById('resetPasswordMessage');
-            const btn = document.getElementById('resetConfirmBtn');
-            msg.innerHTML = '';
-
-            if (!password) {
-                msg.innerHTML = '<div style="color:#f87171;">പാസ്വേഡ് നൽകുക.</div>';
-                return;
-            }
-
-            if (password !== ADMIN_PASSWORD) {
-                msg.innerHTML = '<div style="color:#f87171;">❌ തെറ്റായ പാസ്വേഡ്. വീണ്ടും ശ്രമിക്കുക.</div>';
-                document.getElementById('resetAdminPassword').value = '';
-                document.getElementById('resetAdminPassword').focus();
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> റീസെറ്റ് ചെയ്യുന്നു...';
-
-            try {
-                const { error: delAttempts } = await _supabase
-                    .from('Attempt')
-                    .delete()
-                    .neq('id', '00000000-0000-0000-0000-000000000000');
-
-                if (delAttempts) throw new Error(delAttempts.message);
-
-                const { error: delTracks } = await _supabase
-                    .from('LoginTrack')
-                    .delete()
-                    .neq('id', '00000000-0000-0000-0000-000000000000');
-
-                if (delTracks) throw new Error(delTracks.message);
-
-                showToast('✅ എല്ലാ റാങ്കിംഗുകളും വിജയകരമായി റീസെറ്റ് ചെയ്തു!', 'success');
-                msg.innerHTML = '<div style="color:#6ee7b7;">✅ റാങ്കിംഗ് റീസെറ്റ് ചെയ്തു! എല്ലാ അറ്റംപ്റ്റുകളും മായ്ച്ചു.</div>';
-
-                setTimeout(() => {
-                    document.getElementById('resetPasswordModal').classList.add('hidden');
-                    loadAdminRankings(window.adminRankDay || 1);
-                }, 1500);
-
-            } catch (err) {
-                showToast('Error: ' + err.message, 'error');
-                msg.innerHTML = '<div style="color:#f87171;">Error: ' + err.message + '</div>';
-                console.error(err);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-trash-alt"></i> സ്ഥിരീകരിച്ച് റീസെറ്റ് ചെയ്യുക';
-            }
-        });
-
-        // ================================================================
-        // HELP
+        // HELP - Malayalam, no admin hints
         // ================================================================
         function openHelp() {
             alert(
@@ -3488,10 +2628,7 @@
                 '3. "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്ത് ക്വിസ് ആരംഭിക്കുക\n' +
                 '4. ഒരിക്കൽ ആരംഭിച്ചാൽ ഇന്ന് വീണ്ടും പ്രവേശിക്കാനാവില്ല\n' +
                 '5. സമയപരിധി കഴിഞ്ഞാൽ സ്വയം സമർപ്പിക്കും\n' +
-                '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ\n' +
-                '7. റാങ്കിംഗ് അടുത്ത ക്വിസ് തുടങ്ങുന്നതിന് 1 മണിക്കൂർ മുമ്പ് വരെ കാണാം.\n' +
-                '8. "എല്ലാ ദിവസത്തെയും പ്രകടനം" ബട്ടൺ ക്ലിക്ക് ചെയ്ത് എല്ലാ ദിവസത്തെയും സ്കോറും റാങ്കും കാണുക.\n' +
-                '9. അഡ്മിൻ പാനലിൽ "റാങ്കിംഗ് റീസെറ്റ് ചെയ്യുക" ബട്ടൺ ഉപയോഗിച്ച് എല്ലാ ഡാറ്റയും മായ്ക്കാം (പാസ്വേഡ്: ADMIN123).'
+                '6. ഫലപ്രഖ്യാപനം കഴിഞ്ഞ് മാത്രമേ സ്കോറും റാങ്കും ലഭ്യമാകൂ'
             );
         }
 
@@ -3505,10 +2642,12 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Daily Meelad Quiz - Fixed');
+        console.log('🚀 Daily Meelad Quiz - Full Screen');
         console.log('✅ Admin: ADMIN123');
-        console.log('✅ Login page widened, questions load reliably.');
-        console.log('✅ Parent header shows name, child, class.');
+        console.log('✅ Parent: PARENT ID');
+        console.log('✅ Today + Overall ranks shown until 1 hour before next quiz.');
+        console.log('✅ "Thank you" message hidden when rank is shown.');
+        console.log('✅ Auto-refresh every minute.');
     </script>
 
 </body>
