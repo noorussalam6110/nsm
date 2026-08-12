@@ -34,15 +34,17 @@
             background: radial-gradient(circle at 30% 10%, #111c2e, #050a14);
             min-height: 100vh;
             color: #fff;
-            padding: 16px;
+            padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            padding-top: 10px;
         }
         .container {
             max-width: 1400px;
             width: 100%;
             margin: 0 auto;
+            padding: 0 12px 20px;
         }
 
         /* ===== GLASS CARD ===== */
@@ -262,7 +264,7 @@
             color: rgba(255, 255, 255, 0.25);
         }
 
-        /* ===== LOGIN PANEL (IMPROVED) ===== */
+        /* ===== LOGIN PANEL - ATTRACTIVE HEADER ===== */
         .login-panel {
             max-width: 440px;
             margin: 0 auto;
@@ -285,48 +287,67 @@
             background: radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.04), transparent 60%);
             pointer-events: none;
         }
-        .logo-circle {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #3b82f6, #a855f7);
-            border-radius: 28px;
+
+        /* ---- ATTRACTIVE HEADER ---- */
+        .login-header {
+            text-align: center;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+        .login-header .logo-wrap {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
-            position: relative;
-            z-index: 1;
+            gap: 14px;
+            margin-bottom: 6px;
         }
-        .logo-circle i {
-            font-size: 2.6rem;
-            color: #fff;
+        .login-header .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(251, 191, 36, 0.2);
+            flex-shrink: 0;
         }
-        .login-title {
-            font-size: 1.8rem;
+        .login-header .logo-icon i {
+            font-size: 28px;
+            color: #0a0f1e;
+        }
+        .login-header .title-main {
+            font-size: 2rem;
             font-weight: 800;
-            text-align: center;
-            background: linear-gradient(135deg, #fff, #93c5fd);
+            background: linear-gradient(135deg, #fff 30%, #fbbf24 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            position: relative;
-            z-index: 1;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
         }
-        .login-sub {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.9rem;
-            margin-bottom: 28px;
-            letter-spacing: 0.5px;
-            position: relative;
-            z-index: 1;
+        .login-header .title-sub {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            font-weight: 400;
         }
-        .login-sub i {
+        .login-header .title-sub i {
             color: var(--gold);
+            margin: 0 4px;
+        }
+        .login-header .deco-line {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+            margin: 10px auto 0;
+            border-radius: 4px;
         }
 
-        /* Login form elements */
+        /* ---- login form ---- */
         .login-input-wrap {
             background: rgba(255, 255, 255, 0.04);
             border-radius: 1.2rem;
@@ -376,29 +397,6 @@
             accent-color: var(--gold);
             cursor: pointer;
             border-radius: 4px;
-        }
-
-        .login-divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 18px 0 14px;
-            position: relative;
-            z-index: 1;
-        }
-        .login-divider::before,
-        .login-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.06);
-        }
-        .login-divider span {
-            color: rgba(255, 255, 255, 0.15);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            white-space: nowrap;
         }
 
         .login-actions {
@@ -929,25 +927,38 @@
             padding-top: 16px;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== RESPONSIVE - MOBILE FRIENDLY ===== */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 8px 16px;
+            }
             .dashboard-header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 12px;
+                padding: 14px 16px;
+                border-radius: 1.5rem;
             }
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 12px;
+                gap: 10px;
             }
             .stat-value {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             .login-panel {
                 padding: 1.8rem 1.2rem;
+                border-radius: 2rem;
             }
-            .login-title {
-                font-size: 1.5rem;
+            .login-header .title-main {
+                font-size: 1.6rem;
+            }
+            .login-header .logo-icon {
+                width: 48px;
+                height: 48px;
+            }
+            .login-header .logo-icon i {
+                font-size: 22px;
             }
             .admin-tab {
                 font-size: 0.7rem;
@@ -968,8 +979,28 @@
                 font-size: 0.9rem;
                 padding: 10px 18px;
             }
+            .help-btn {
+                bottom: 14px;
+                right: 14px;
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+            .help-btn span {
+                display: none;
+            }
+            .glass-card {
+                padding: 16px;
+                border-radius: 1.5rem;
+            }
         }
+
         @media (max-width: 480px) {
+            body {
+                padding-top: 6px;
+            }
+            .container {
+                padding: 0 6px 12px;
+            }
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
                 gap: 8px;
@@ -978,62 +1009,34 @@
                 padding: 12px;
             }
             .stat-value {
-                font-size: 1.6rem;
-            }
-            .container {
-                padding: 10px;
-            }
-            .glass-card {
-                padding: 16px;
-            }
-            .avatar-neon {
-                width: 44px;
-                height: 44px;
-                font-size: 18px;
-            }
-            .timer-ring-container {
-                width: 120px;
-                height: 120px;
-            }
-            .timer-ring-container svg {
-                width: 120px;
-                height: 120px;
-            }
-            .timer-ring-container .timer-text {
-                font-size: 28px;
-            }
-            .btn {
-                font-size: 0.85rem;
-                padding: 8px 16px;
-                min-height: 40px;
-            }
-            .help-btn {
-                padding: 6px 12px;
-                font-size: 0.75rem;
-                bottom: 12px;
-                right: 14px;
-            }
-            .help-btn span {
-                display: none;
+                font-size: 1.5rem;
             }
             .login-panel {
                 padding: 1.2rem 1rem;
-                border-radius: 1.8rem;
+                border-radius: 1.6rem;
             }
-            .logo-circle {
-                width: 64px;
-                height: 64px;
-                border-radius: 20px;
-            }
-            .logo-circle i {
-                font-size: 2rem;
-            }
-            .login-title {
+            .login-header .title-main {
                 font-size: 1.3rem;
             }
-            .login-sub {
-                font-size: 0.8rem;
-                margin-bottom: 20px;
+            .login-header .logo-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 14px;
+            }
+            .login-header .logo-icon i {
+                font-size: 18px;
+            }
+            .login-header .title-sub {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+            }
+            .login-header .deco-line {
+                width: 40px;
+                height: 2px;
+            }
+            .login-input-wrap input {
+                font-size: 0.9rem;
+                padding: 12px 0;
             }
             .login-actions .btn {
                 min-height: 42px;
@@ -1043,10 +1046,89 @@
                 font-size: 0.85rem;
                 padding: 8px 14px;
             }
+            .dashboard-header {
+                padding: 12px 14px;
+                border-radius: 1.2rem;
+            }
+            .avatar-neon {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+                border-radius: 14px;
+            }
+            .timer-ring-container {
+                width: 110px;
+                height: 110px;
+            }
+            .timer-ring-container svg {
+                width: 110px;
+                height: 110px;
+            }
+            .timer-ring-container .timer-text {
+                font-size: 26px;
+            }
+            .btn {
+                font-size: 0.8rem;
+                padding: 8px 14px;
+                min-height: 38px;
+            }
+            .help-btn {
+                padding: 6px 10px;
+                font-size: 0.7rem;
+                bottom: 10px;
+                right: 10px;
+            }
             .overall-rank-btn-wrap .btn {
-                min-width: 160px;
+                min-width: 140px;
+                font-size: 0.8rem;
+                padding: 8px 16px;
+            }
+            .modal-glass {
+                padding: 20px;
+                border-radius: 1.4rem;
+            }
+            .modal-glass h3 {
+                font-size: 1.1rem;
+            }
+            .glass-card {
+                padding: 12px;
+                border-radius: 1.2rem;
+            }
+            .question-card {
+                padding: 14px;
+            }
+            .question-title {
+                font-size: 0.95rem;
+            }
+            .opt-btn {
+                padding: 10px 12px;
                 font-size: 0.85rem;
-                padding: 10px 20px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 8px;
+            }
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            .login-panel {
+                padding: 0.8rem 0.6rem;
+            }
+            .login-header .title-main {
+                font-size: 1.1rem;
+            }
+            .login-header .logo-icon {
+                width: 32px;
+                height: 32px;
+            }
+            .login-header .logo-icon i {
+                font-size: 14px;
             }
         }
 
@@ -1154,6 +1236,19 @@
             padding: 8px 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
+
+        /* ===== LANGUAGE SPECIFIC ===== */
+        .lang-en {
+            font-family: 'Inter', 'Anek Malayalam', sans-serif;
+        }
+        .lang-ml {
+            font-family: 'Anek Malayalam', 'Inter', sans-serif;
+        }
+
+        /* Admin panel English text override */
+        .admin-panel-en .admin-label {
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -1168,40 +1263,46 @@
             <p style="color:#fff; font-weight:600;">Loading...</p>
         </div>
 
-        <!-- HELP BUTTON -->
+        <!-- HELP BUTTON (Malayalam) -->
         <button class="help-btn" onclick="openHelp()"><i class="fas fa-circle-question"></i> <span>സഹായം</span></button>
 
         <!-- ============================================================ -->
-        <!-- LOGIN SECTION (IMPROVED) -->
+        <!-- LOGIN SECTION (Malayalam) -->
         <!-- ============================================================ -->
         <div id="loginSection">
             <div class="login-panel">
-                <div class="logo-circle"><i class="fas fa-user-graduate"></i></div>
-                <h1 class="login-title">Daily Meelad Quiz</h1>
-                <p class="login-sub"><i class="fas fa-users"></i> രക്ഷിതാക്കൾക്കായുള്ള മത്സരം</p>
+                <!-- ATTRACTIVE HEADER at the very top -->
+                <div class="login-header">
+                    <div class="logo-wrap">
+                        <div class="logo-icon"><i class="fas fa-star"></i></div>
+                        <span class="title-main">Daily Meelad Quiz</span>
+                    </div>
+                    <div class="title-sub"><i class="fas fa-users"></i> രക്ഷിതാക്കൾക്കായുള്ള മത്സരം</div>
+                    <div class="deco-line"></div>
+                </div>
 
                 <form id="loginForm">
                     <div class="login-input-wrap">
                         <i class="fas fa-id-card"></i>
-                        <input type="text" id="loginIdInput" placeholder="Enter ID (ADMIN123 or PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" />
+                        <input type="text" id="loginIdInput" placeholder="ID നൽകുക (ADMIN123 അല്ലെങ്കിൽ PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" />
                     </div>
 
                     <div class="login-remember">
                         <input type="checkbox" id="rememberMe" checked />
-                        <label for="rememberMe">Remember me</label>
+                        <label for="rememberMe">എന്നെ ഓർക്കുക</label>
                     </div>
 
                     <div class="login-actions">
-                        <button type="submit" class="btn btn-primary btn-block">🔑 Access</button>
+                        <button type="submit" class="btn btn-primary btn-block">🔑 പ്രവേശിക്കുക</button>
 
                         <!-- "New? Registration" button with YELLOW BLINK effect, below Access button -->
                         <button type="button" class="btn btn-block btn-register-blink" id="showRegisterBtn">
-                            <i class="fas fa-user-plus"></i> New? Registration
+                            <i class="fas fa-user-plus"></i> പുതിയത്? രജിസ്റ്റർ ചെയ്യുക
                         </button>
                     </div>
 
                     <div class="login-forgot">
-                        <a onclick="openFindId()"><i class="fas fa-question-circle" style="color:#f59e0b;"></i> Forgot Parent ID?</a>
+                        <a onclick="openFindId()"><i class="fas fa-question-circle" style="color:#f59e0b;"></i> പാരന്റ് ID മറന്നോ?</a>
                     </div>
 
                     <div id="loginMessage"></div>
@@ -1210,69 +1311,69 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- REGISTER MODAL -->
+        <!-- REGISTER MODAL (Malayalam) -->
         <!-- ============================================================ -->
         <div id="registerModal" class="modal-overlay hidden">
             <div class="modal-glass">
                 <div class="flex-between" style="margin-bottom:16px;">
-                    <h3><i class="fas fa-user-plus text-success"></i> Parent Registration</h3>
+                    <h3><i class="fas fa-user-plus text-success"></i> രക്ഷിതാവ് രജിസ്ട്രേഷൻ</h3>
                     <button class="btn btn-outline btn-sm" id="closeRegisterModalBtn"><i class="fas fa-times"></i></button>
                 </div>
                 <p class="text-muted">വിവരങ്ങൾ നൽകുക. പുതിയ Parent ID ലഭിക്കും.</p>
                 <form id="registerForm" style="margin-top:16px;">
-                    <div style="margin-bottom:12px;"><label class="text-muted" style="font-size:0.85rem;">Parent Name *</label><input type="text" id="regParentName" placeholder="Full name" required /></div>
-                    <div style="margin-bottom:12px;"><label class="text-muted" style="font-size:0.85rem;">Child's Name *</label><input type="text" id="regChildName" placeholder="Child's full name" required /></div>
-                    <div style="margin-bottom:16px;"><label class="text-muted" style="font-size:0.85rem;">Child's Class *</label><input type="text" id="regChildClass" placeholder="e.g., 5A" required /></div>
-                    <button type="submit" class="btn btn-success btn-block" id="registerBtn">✅ Register</button>
+                    <div style="margin-bottom:12px;"><label class="text-muted" style="font-size:0.85rem;">രക്ഷിതാവിന്റെ പേര് *</label><input type="text" id="regParentName" placeholder="മുഴുവൻ പേര്" required /></div>
+                    <div style="margin-bottom:12px;"><label class="text-muted" style="font-size:0.85rem;">കുട്ടിയുടെ പേര് *</label><input type="text" id="regChildName" placeholder="കുട്ടിയുടെ മുഴുവൻ പേര്" required /></div>
+                    <div style="margin-bottom:16px;"><label class="text-muted" style="font-size:0.85rem;">കുട്ടിയുടെ ക്ലാസ് *</label><input type="text" id="regChildClass" placeholder="ഉദാ: 5A" required /></div>
+                    <button type="submit" class="btn btn-success btn-block" id="registerBtn">✅ രജിസ്റ്റർ ചെയ്യുക</button>
                     <div id="registerMessage" class="mt-2"></div>
                     <div id="newIdDisplay" class="hidden mt-3 text-center" style="background:rgba(0,0,0,0.3); padding:16px; border-radius:12px; border:1px solid var(--gold);">
                         <p class="text-muted">✅ നിങ്ങളുടെ പുതിയ Parent ID</p>
                         <p style="font-size:28px; font-weight:800; color:var(--gold); font-family:monospace;" id="generatedIdText"></p>
-                        <button type="button" class="copy-btn" id="copyIdBtn">📋 Copy ID</button>
+                        <button type="button" class="copy-btn" id="copyIdBtn">📋 ID പകർത്തുക</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- ============================================================ -->
-        <!-- FIND ID MODAL -->
+        <!-- FIND ID MODAL (Malayalam) -->
         <!-- ============================================================ -->
         <div id="findIdModal" class="modal-overlay hidden">
             <div class="modal-glass">
                 <div class="flex-between" style="margin-bottom:16px;">
-                    <h3><i class="fas fa-search text-info"></i> Find Parent ID</h3>
+                    <h3><i class="fas fa-search text-info"></i> Parent ID കണ്ടെത്തുക</h3>
                     <button class="btn btn-outline btn-sm" id="closeFindIdBtn"><i class="fas fa-times"></i></button>
                 </div>
                 <form id="findIdForm">
-                    <div style="margin-bottom:12px;"><label class="text-muted">Child's Class</label><select id="findClass" required><option value="">Select</option><option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option></select></div>
-                    <div style="margin-bottom:16px;"><label class="text-muted">Parent Name (first 3 letters)</label><input type="text" id="findName" placeholder="e.g., ABD" maxlength="3" oninput="this.value = this.value.toUpperCase();" required /></div>
-                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-search"></i> Find</button>
+                    <div style="margin-bottom:12px;"><label class="text-muted">കുട്ടിയുടെ ക്ലാസ്</label><select id="findClass" required><option value="">തിരഞ്ഞെടുക്കുക</option><option value="1">ക്ലാസ് 1</option><option value="2">ക്ലാസ് 2</option><option value="3">ക്ലാസ് 3</option><option value="4">ക്ലാസ് 4</option><option value="5">ക്ലാസ് 5</option><option value="6">ക്ലാസ് 6</option><option value="7">ക്ലാസ് 7</option><option value="8">ക്ലാസ് 8</option><option value="9">ക്ലാസ് 9</option><option value="10">ക്ലാസ് 10</option></select></div>
+                    <div style="margin-bottom:16px;"><label class="text-muted">രക്ഷിതാവിന്റെ പേര് (ആദ്യ 3 അക്ഷരങ്ങൾ)</label><input type="text" id="findName" placeholder="ഉദാ: ABD" maxlength="3" oninput="this.value = this.value.toUpperCase();" required /></div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-search"></i> തിരയുക</button>
                 </form>
                 <div id="findResult" class="mt-3"></div>
             </div>
         </div>
 
         <!-- ============================================================ -->
-        <!-- PARENT DASHBOARD -->
+        <!-- PARENT DASHBOARD (Malayalam) -->
         <!-- ============================================================ -->
         <div id="parentDashboard" class="hidden">
             <div class="dashboard-header">
                 <div class="flex" style="gap:14px;">
                     <div class="avatar-neon"><span id="avatarText">P</span></div>
                     <div>
-                        <h2 class="fw-bold" style="font-size:1.2rem; margin:0;" id="userNameDisplay">Parent Name</h2>
-                        <div class="text-muted" style="font-size:0.85rem;"><i class="fas fa-id-card"></i> <span id="displayParentId">ID</span> • <i class="fas fa-child"></i> <span id="childNameDisplay">Child</span> • <i class="fas fa-graduation-cap"></i> <span id="childClassDisplay">Class</span></div>
+                        <h2 class="fw-bold" style="font-size:1.2rem; margin:0;" id="userNameDisplay">രക്ഷിതാവിന്റെ പേര്</h2>
+                        <div class="text-muted" style="font-size:0.85rem;"><i class="fas fa-id-card"></i> <span id="displayParentId">ID</span> • <i class="fas fa-child"></i> <span id="childNameDisplay">കുട്ടി</span> • <i class="fas fa-graduation-cap"></i> <span id="childClassDisplay">ക്ലാസ്</span></div>
                     </div>
                 </div>
                 <div class="flex" style="gap:8px;">
-                    <button class="btn btn-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Exit</button>
+                    <button class="btn btn-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> പുറത്തുകടക്കുക</button>
                 </div>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">Day 1</span><div class="text-muted" style="font-size:0.8rem;">Today's Quiz</div></div></div>
-                <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="text-muted" style="font-size:0.8rem;">Questions</div></div></div>
-                <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="text-muted" style="font-size:0.8rem;">Your Score</div></div></div>
+                <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">ദിവസം 1</span><div class="text-muted" style="font-size:0.8rem;">ഇന്നത്തെ ക്വിസ്</div></div></div>
+                <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="text-muted" style="font-size:0.8rem;">ചോദ്യങ്ങൾ</div></div></div>
+                <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="text-muted" style="font-size:0.8rem;">നിങ്ങളുടെ സ്കോർ</div></div></div>
             </div>
 
             <!-- Timer -->
@@ -1344,7 +1445,7 @@
                         <p class="text-muted">⏳ ഫലം ലഭ്യമാകുന്ന സമയപരിധി</p>
                         <div class="pub-timer" id="resultsExpiryTimer">--:--</div>
                     </div>
-                    <div id="rankListContainer"><div class="text-center text-muted">Loading...</div></div>
+                    <div id="rankListContainer"><div class="text-center text-muted">ലോഡ് ചെയ്യുന്നു...</div></div>
                     <div class="parent-rank-hint"></div>
                 </div>
             </div>
@@ -1358,7 +1459,7 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- HISTORY MODAL -->
+        <!-- HISTORY MODAL (Malayalam) -->
         <!-- ============================================================ -->
         <div id="historyModal" class="modal-overlay hidden">
             <div class="modal-glass" style="max-width:640px;">
@@ -1368,13 +1469,13 @@
                 </div>
                 <p class="text-muted">ഓരോ ദിവസത്തിലെയും നിങ്ങളുടെ പോയിന്റ്, റാങ്ക്, സമയം എന്നിവ.</p>
                 <div class="history-table-wrap" id="historyContainer">
-                    <div class="text-center text-muted">Loading...</div>
+                    <div class="text-center text-muted">ലോഡ് ചെയ്യുന്നു...</div>
                 </div>
             </div>
         </div>
 
         <!-- ============================================================ -->
-        <!-- CONFIRMATION MODAL -->
+        <!-- CONFIRMATION MODAL (Malayalam) -->
         <!-- ============================================================ -->
         <div id="confirmModal" class="modal-overlay hidden">
             <div class="modal-glass">
@@ -1396,7 +1497,7 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- ADMIN DASHBOARD -->
+        <!-- ADMIN DASHBOARD (English) -->
         <!-- ============================================================ -->
         <div id="adminDashboard" class="hidden">
             <div class="dashboard-header">
@@ -1481,14 +1582,13 @@
                     <h4 style="color:var(--gold);">🏆 Rankings</h4>
                     <div class="day-tabs" id="rankDayTabs"></div>
 
-                    <!-- OVERALL RANK BUTTON (new) -->
+                    <!-- OVERALL RANK BUTTON -->
                     <div class="overall-rank-btn-wrap">
                         <button class="btn" id="overallRankBtn"><i class="fas fa-trophy"></i> Overall Rank</button>
                     </div>
 
                     <div id="adminRankListContainer"><div class="text-center text-muted">Select day</div></div>
 
-                    <!-- Overall rank container (hidden initially) -->
                     <div id="overallRankContainer" class="overall-rank-container hidden">
                         <h5 style="color:var(--gold); text-align:center; margin-bottom:12px;">📊 Overall Rankings (All Days)</h5>
                         <div id="overallRankList"><div class="text-center text-muted">Loading...</div></div>
@@ -1499,7 +1599,7 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- OVERALL RANK MODAL (separate modal for better display) -->
+    <!-- OVERALL RANK MODAL -->
     <!-- ============================================================ -->
     <div id="overallRankModal" class="modal-overlay hidden overall-rank-modal">
         <div class="modal-glass">
@@ -1513,6 +1613,11 @@
             </div>
         </div>
     </div>
+
+    <!-- ============================================================ -->
+    <!-- TOAST CONTAINER -->
+    <!-- ============================================================ -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <!-- ============================================================ -->
     <!-- JAVASCRIPT -->
@@ -1570,6 +1675,10 @@
         // ================================================================
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toastContainer');
+            if (!container) {
+                console.warn('Toast container not found. Message:', msg);
+                return;
+            }
             const toast = document.createElement('div');
             toast.className = `toast-item ${type}`;
             toast.innerHTML = `${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'} ${msg}`;
@@ -1604,7 +1713,7 @@
             const id = document.getElementById('loginIdInput').value.trim().toUpperCase();
             const msg = document.getElementById('loginMessage');
             msg.innerHTML = '';
-            if (!id) { showToast('Enter ID', 'error'); return; }
+            if (!id) { showToast('ID നൽകുക', 'error'); return; }
             saveId(id);
 
             try {
@@ -1614,7 +1723,7 @@
                     .eq('studentId', id)
                     .single();
 
-                if (error || !user) throw new Error('Invalid ID');
+                if (error || !user) throw new Error('അസാധുവായ ID');
 
                 if (user.role === 'admin') {
                     document.getElementById('loginSection').style.display = 'none';
@@ -1630,7 +1739,7 @@
                     .select('*')
                     .order('day');
 
-                if (!sessions || sessions.length === 0) throw new Error('No sessions.');
+                if (!sessions || sessions.length === 0) throw new Error('സെഷനുകൾ ലഭ്യമല്ല.');
 
                 const now = new Date();
                 let active = sessions.find(s => now >= new Date(s.startTime) && now <= new Date(s.endTime));
@@ -1651,10 +1760,10 @@
                 document.getElementById('childNameDisplay').textContent = user.parentName || 'N/A';
                 document.getElementById('childClassDisplay').textContent = user.className || 'N/A';
                 document.getElementById('displayParentId').textContent = user.studentId;
-                document.getElementById('quizDayDisplay').textContent = 'Day ' + active.day;
+                document.getElementById('quizDayDisplay').textContent = 'ദിവസം ' + active.day;
 
                 renderParentDashboard();
-                showToast('Welcome, ' + user.name + '!', 'success');
+                showToast('സ്വാഗതം, ' + user.name + '!', 'success');
 
             } catch (err) {
                 showToast(err.message, 'error');
@@ -1676,7 +1785,7 @@
             document.getElementById('parentDashboard').classList.add('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
             document.getElementById('loginIdInput').value = '';
-            showToast('Logged out', 'info');
+            showToast('പുറത്തുകടന്നു', 'info');
         }
         document.getElementById('logoutBtn').addEventListener('click', logout);
         document.getElementById('adminLogoutBtn').addEventListener('click', logout);
@@ -1735,22 +1844,22 @@
                 msg.innerHTML = '<div style="color:#6ee7b7;">✅ രജിസ്ട്രേഷൻ വിജയകരം!</div>';
                 document.getElementById('loginIdInput').value = parentId;
                 saveId(parentId);
-                showToast('Registered! ID: ' + parentId, 'success');
+                showToast('രജിസ്റ്റർ ചെയ്തു! ID: ' + parentId, 'success');
                 document.getElementById('registerModal').classList.add('hidden');
             } catch (err) {
-                msg.innerHTML = '<div style="color:#f87171;">Error: ' + err.message + '</div>';
+                msg.innerHTML = '<div style="color:#f87171;">പിശക്: ' + err.message + '</div>';
                 showToast(err.message, 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '✅ Register';
+                btn.innerHTML = '✅ രജിസ്റ്റർ ചെയ്യുക';
             }
         });
 
         document.getElementById('copyIdBtn').addEventListener('click', function() {
             const text = document.getElementById('generatedIdText').textContent;
             navigator.clipboard.writeText(text).then(() => {
-                this.textContent = '✅ Copied!';
-                setTimeout(() => this.textContent = '📋 Copy ID', 2000);
+                this.textContent = '✅ പകർത്തി!';
+                setTimeout(() => this.textContent = '📋 ID പകർത്തുക', 2000);
             }).catch(() => alert('Copy: ' + text));
         });
 
@@ -1772,9 +1881,9 @@
             const cls = document.getElementById('findClass').value;
             const name = document.getElementById('findName').value.trim();
             const result = document.getElementById('findResult');
-            result.innerHTML = '<div class="text-muted"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
+            result.innerHTML = '<div class="text-muted"><i class="fas fa-spinner fa-pulse"></i> തിരയുന്നു...</div>';
             if (!cls || !name) {
-                result.innerHTML = '<div style="color:#f87171;">Select class and enter name</div>';
+                result.innerHTML = '<div style="color:#f87171;">ക്ലാസും പേരും നൽകുക</div>';
                 return;
             }
 
@@ -1789,18 +1898,18 @@
                 if (error) throw error;
 
                 if (data && data.length > 0) {
-                    let html = `<div style="color:#6ee7b7;">Found ${data.length} parent(s):</div><ul class="list-unstyled mt-2" style="list-style:none;padding:0;">`;
+                    let html = `<div style="color:#6ee7b7;">കണ്ടെത്തിയത് ${data.length} രക്ഷിതാവ്(ക്കൾ):</div><ul class="list-unstyled mt-2" style="list-style:none;padding:0;">`;
                     data.forEach(s => {
                         html +=
                             `<li class="flex-between" style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);"><span>${s.name}</span><span class="badge" style="background:#2563eb; padding:4px 12px; border-radius:30px; cursor:pointer;" onclick="copyToClipboard('${s.studentId}')">${s.studentId} <i class="fas fa-copy"></i></span></li>`;
                     });
-                    html += `</ul><p class="text-muted small">Click on ID to copy.</p>`;
+                    html += `</ul><p class="text-muted small">ID യിൽ ക്ലിക്ക് ചെയ്ത് പകർത്തുക.</p>`;
                     result.innerHTML = html;
                 } else {
-                    result.innerHTML = '<div style="color:#f87171;">No matching parents found.</div>';
+                    result.innerHTML = '<div style="color:#f87171;">ഒത്തുപോകുന്ന രക്ഷിതാക്കളെ കണ്ടെത്തിയില്ല.</div>';
                 }
             } catch (err) {
-                result.innerHTML = '<div style="color:#f87171;">Error: ' + err.message + '</div>';
+                result.innerHTML = '<div style="color:#f87171;">പിശക്: ' + err.message + '</div>';
             }
         });
 
@@ -1892,11 +2001,6 @@
             if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
                 document.getElementById('submittedArea').classList.remove('hidden');
                 document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
-                if (now > end) {
-                    // handled above
-                } else {
-                    // fallback
-                }
                 return;
             }
 
@@ -1905,7 +2009,7 @@
                 window.hasViewedQuestions = true;
                 window.quizStarted = true;
                 document.getElementById('viewQuestionsArea').classList.remove('hidden');
-                document.getElementById('viewQuestionsBtn').textContent = '🔒 Expired (Already Started)';
+                document.getElementById('viewQuestionsBtn').textContent = '🔒 കാലഹരണപ്പെട്ടു (ആരംഭിച്ചു)';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
                 document.getElementById('viewQuestionsBtn').disabled = true;
                 document.getElementById('quizStatusMessage').textContent =
@@ -1925,7 +2029,7 @@
                 window.hasViewedQuestions = true;
                 window.currentAttemptId = anyAttempt.id;
                 document.getElementById('viewQuestionsArea').classList.remove('hidden');
-                document.getElementById('viewQuestionsBtn').textContent = '🔒 Expired';
+                document.getElementById('viewQuestionsBtn').textContent = '🔒 കാലഹരണപ്പെട്ടു';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
                 document.getElementById('viewQuestionsBtn').disabled = true;
                 document.getElementById('quizStatusMessage').textContent =
@@ -1951,7 +2055,7 @@
                 window.questions = qs;
                 document.getElementById('questionCountDisplay').textContent = qs.length;
             } else {
-                showToast('No questions for this day', 'error');
+                showToast('ഈ ദിവസത്തേക്ക് ചോദ്യങ്ങളില്ല', 'error');
             }
 
             document.getElementById('viewQuestionsBtn').onclick = function() {
@@ -2020,7 +2124,7 @@
 
         async function loadParentRankingData() {
             const container = document.getElementById('rankListContainer');
-            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> ലോഡ് ചെയ്യുന്നു...</div>';
 
             try {
                 const { data: attempts } = await _supabase
@@ -2067,7 +2171,7 @@
                 if (badge) badge.style.display = 'none';
 
             } catch (err) {
-                container.innerHTML = '<div class="text-danger text-center">Error loading ranking.</div>';
+                container.innerHTML = '<div class="text-danger text-center">റാങ്കിംഗ് ലോഡ് ചെയ്യുന്നതിൽ പിശക്.</div>';
                 showToast(err.message, 'error');
             }
         }
@@ -2088,7 +2192,7 @@
 
         async function loadParentHistory() {
             const container = document.getElementById('historyContainer');
-            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> ലോഡ് ചെയ്യുന്നു...</div>';
 
             try {
                 const { data: attempts } = await _supabase
@@ -2112,7 +2216,7 @@
                 if (sessions) sessions.forEach(s => sessionMap[s.day] = s);
 
                 let html =
-                    `<table><thead><tr><th>Day</th><th>Date</th><th>Score</th><th>Rank</th><th>Time Taken</th></tr></thead><tbody>`;
+                    `<table><thead><tr><th>ദിവസം</th><th>തീയതി</th><th>സ്കോർ</th><th>റാങ്ക്</th><th>എടുത്ത സമയം</th></tr></thead><tbody>`;
 
                 for (const att of attempts) {
                     const { data: allDay } = await _supabase
@@ -2140,7 +2244,7 @@
                     const timeTaken = Math.floor((new Date(att.endTime) - new Date(att.startTime)) / 1000);
 
                     html += `<tr>
-                        <td><strong>Day ${att.sessionDay}</strong></td>
+                        <td><strong>ദിവസം ${att.sessionDay}</strong></td>
                         <td>${dateStr}</td>
                         <td style="color:var(--gold);font-weight:700;">${att.score ?? 0}</td>
                         <td>#${rank}</td>
@@ -2152,7 +2256,7 @@
                 container.innerHTML = html;
 
             } catch (err) {
-                container.innerHTML = '<div class="text-danger text-center">Error loading history.</div>';
+                container.innerHTML = '<div class="text-danger text-center">ചരിത്രം ലോഡ് ചെയ്യുന്നതിൽ പിശക്.</div>';
                 showToast(err.message, 'error');
             }
         }
@@ -2183,7 +2287,7 @@
                     window.questions = qs;
                     document.getElementById('questionCountDisplay').textContent = qs.length;
                 } else {
-                    showToast('No questions for this day', 'error');
+                    showToast('ഈ ദിവസത്തേക്ക് ചോദ്യങ്ങളില്ല', 'error');
                     return;
                 }
             }
@@ -2205,14 +2309,14 @@
                         .select()
                         .single();
 
-                    if (aErr) throw new Error('Failed to start quiz.');
+                    if (aErr) throw new Error('ക്വിസ് ആരംഭിക്കുന്നതിൽ പരാജയം.');
                     window.currentAttemptId = att.id;
                     window.hasViewedQuestions = true;
                     window.quizStarted = true;
                 }
 
                 document.getElementById('viewQuestionsArea').classList.remove('hidden');
-                document.getElementById('viewQuestionsBtn').textContent = '🔒 Expired';
+                document.getElementById('viewQuestionsBtn').textContent = '🔒 കാലഹരണപ്പെട്ടു';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
                 document.getElementById('viewQuestionsBtn').disabled = true;
                 document.getElementById('quizStatusMessage').textContent =
@@ -2232,7 +2336,7 @@
                     updateTimerDisplay();
                     if (window.timeLeft <= 0) {
                         clearInterval(window.timerInterval);
-                        showToast('⏰ Time is up! Auto-submitting...', 'error');
+                        showToast('⏰ സമയം കഴിഞ്ഞു! ഓട്ടോ-സബ്മിറ്റ് ചെയ്യുന്നു...', 'error');
                         submitParentQuiz(true);
                     }
                 }, 1000);
@@ -2280,8 +2384,9 @@
             });
 
             document.getElementById('submitQuizBtn').onclick = () => {
-                if (Object.keys(window.answers).length === 0) { showToast('Select at least one answer', 'error'); return; }
-                if (confirm('Are you sure you want to submit? This cannot be undone.')) {
+                if (Object.keys(window.answers).length === 0) { showToast('കുറഞ്ഞത് ഒരു ഉത്തരം തിരഞ്ഞെടുക്കുക',
+                        'error'); return; }
+                if (confirm('തീർച്ചയായും സമർപ്പിക്കണോ? ഇത് പഴയപടിയാക്കാനാവില്ല.')) {
                     submitParentQuiz(false);
                 }
             };
@@ -2317,18 +2422,18 @@
                 document.getElementById('timerArea').classList.add('hidden');
                 document.getElementById('submittedArea').classList.remove('hidden');
                 document.getElementById('scoreDisplay').textContent = score;
-                showToast('✅ Submitted successfully!', 'success');
+                showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
 
                 setTimeout(() => renderParentDashboard(), 1000);
             } catch (err) {
-                showToast('Submit error: ' + err.message, 'error');
+                showToast('സമർപ്പിക്കുന്നതിൽ പിശക്: ' + err.message, 'error');
                 window.isSubmitted = false;
                 document.getElementById('submitQuizBtn').disabled = false;
             }
         }
 
         // ================================================================
-        // ADMIN PANEL
+        // ADMIN PANEL (English)
         // ================================================================
         window.adminCurrentDay = 1;
         window.questionsCache = [];
@@ -2662,11 +2767,10 @@
             }
         }
 
-        // ---- ADMIN RANKINGS (with Overall Rank) ----
+        // ---- ADMIN RANKINGS ----
         async function loadAdminRankings(day) {
             const container = document.getElementById('adminRankListContainer');
             container.innerHTML = '<div class="text-center text-muted">Loading...</div>';
-            // Hide overall container
             document.getElementById('overallRankContainer').classList.add('hidden');
 
             try {
@@ -2701,7 +2805,7 @@
                         <td><strong>${medal}${rank}</strong></td>
                         <td>${r.Student?.name || 'Unknown'}</td>
                         <td style="color:#fbbf24;font-weight:700;">${r.score ?? 0}</td>
-                        <td>${r.timeTaken || 0} സെ</td>
+                        <td>${r.timeTaken || 0} sec</td>
                         <td style="font-size:0.7rem;color:#94a3b8;">${formatDate(r.endTime)}</td>
                     </tr>`;
                 });
@@ -2736,7 +2840,6 @@
             container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
 
             try {
-                // Fetch all completed attempts across all days
                 const { data: attempts } = await _supabase
                     .from('Attempt')
                     .select('*, Student(name)')
@@ -2747,7 +2850,6 @@
                     return;
                 }
 
-                // Group by studentId and sum scores
                 const studentMap = {};
                 attempts.forEach(a => {
                     const id = a.studentId;
@@ -2787,7 +2889,7 @@
                         <td><strong>${medal}${rank}</strong></td>
                         <td>${r.name}</td>
                         <td style="color:#fbbf24;font-weight:700;">${r.totalScore}</td>
-                        <td>${r.avgTime} സെ</td>
+                        <td>${r.avgTime} sec</td>
                         <td>${r.count}</td>
                     </tr>`;
                 });
@@ -2801,22 +2903,22 @@
         }
 
         // ================================================================
-        // HELP
+        // HELP - Malayalam
         // ================================================================
         function openHelp() {
             alert(
                 '📘 സഹായം / HELP\n\n' +
-                '1. Admin: Login with "ADMIN123"\n' +
-                '2. Sessions: Add/Delete days, edit times\n' +
-                '3. Questions: Add/Edit/Delete\n' +
-                '4. Parents: Register to get ID\n' +
-                '5. Click "View Questions" to start quiz\n' +
-                '6. Once started, cannot re-enter today\n' +
-                '7. Rankings appear after session ends (+5 min)\n' +
-                '8. Results visible until 30 min before next quiz\n' +
-                '9. Parents cannot see participant count\n' +
-                '10. "My History" shows points, rank, time for past days\n' +
-                '11. Admin: "Overall Rank" shows combined rankings across all days'
+                '1. അഡ്മിൻ: "ADMIN123" ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക\n' +
+                '2. സെഷനുകൾ: ദിവസങ്ങൾ ചേർക്കുക/ഇല്ലാതാക്കുക, സമയം എഡിറ്റ് ചെയ്യുക\n' +
+                '3. ചോദ്യങ്ങൾ: ചേർക്കുക/എഡിറ്റ് ചെയ്യുക/ഇല്ലാതാക്കുക\n' +
+                '4. രക്ഷിതാക്കൾ: ID ലഭിക്കാൻ രജിസ്റ്റർ ചെയ്യുക\n' +
+                '5. ക്വിസ് ആരംഭിക്കാൻ "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക\n' +
+                '6. ആരംഭിച്ചാൽ ഇന്ന് വീണ്ടും പ്രവേശിക്കാനാവില്ല\n' +
+                '7. സെഷൻ അവസാനിച്ച് 5 മിനിറ്റ് കഴിഞ്ഞ് റാങ്കിംഗ് ദൃശ്യമാകും\n' +
+                '8. അടുത്ത ക്വിസിന് 30 മിനിറ്റ് മുമ്പ് വരെ ഫലങ്ങൾ ദൃശ്യമാകും\n' +
+                '9. രക്ഷിതാക്കൾക്ക് പങ്കാളികളുടെ എണ്ണം കാണാനാവില്ല\n' +
+                '10. "എന്റെ മത്സര ചരിത്രം" മുൻ ദിവസങ്ങളിലെ പോയിന്റ്, റാങ്ക്, സമയം എന്നിവ കാണിക്കുന്നു\n' +
+                '11. അഡ്മിൻ: "Overall Rank" എല്ലാ ദിവസങ്ങളിലെയും സംയോജിത റാങ്കിംഗ് കാണിക്കുന്നു'
             );
         }
 
@@ -2830,13 +2932,11 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Quiz System Ready with all requested features');
+        console.log('🚀 Quiz System Ready');
         console.log('🔑 Admin: ADMIN123');
-        console.log('✅ New: "New? Registration" button below Access with yellow blink');
-        console.log('✅ New: "Overall Rank" button in admin ranking section');
+        console.log('✅ Mobile-friendly with attractive login header');
+        console.log('✅ Admin: English | Parents & Login: Malayalam');
         console.log('✅ Help/സഹായം in Malayalam');
-        console.log('✅ Mobile-friendly login alignment');
-        console.log('✅ All previous functionality preserved');
         console.log('✅ Supabase backend active');
     </script>
 
