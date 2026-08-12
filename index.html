@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Daily Meelad Quiz – NSM</title>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        /* ===== GLOBAL RESET & VARIABLES ===== */
+        /* ===== RESET & VARIABLES ===== */
         :root {
             --gold: #fbbf24;
             --gold-dark: #f59e0b;
@@ -22,21 +23,22 @@
             --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
             --radius: 2rem;
             --radius-sm: 1rem;
+            --font: 'Anek Malayalam', 'Inter', sans-serif;
         }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Anek Malayalam', 'Inter', sans-serif;
+            font-family: var(--font);
         }
         body {
             background: radial-gradient(circle at 30% 10%, #111c2e, #050a14);
             min-height: 100vh;
             color: #fff;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
         }
         .container {
             max-width: 1400px;
@@ -51,37 +53,72 @@
             -webkit-backdrop-filter: blur(18px);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            padding: 24px;
+            padding: 20px;
             box-shadow: var(--shadow);
             transition: all 0.25s ease;
         }
         .glass-card:hover {
-            border-color: rgba(251, 191, 36, 0.15);
-            transform: translateY(-2px);
+            border-color: rgba(251, 191, 36, 0.12);
         }
 
         /* ===== UTILITY ===== */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .text-muted { color: var(--text-secondary); }
-        .flex { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .gap-2 { gap: 8px; }
-        .gap-3 { gap: 16px; }
-        .mt-2 { margin-top: 8px; }
-        .mt-3 { margin-top: 16px; }
-        .mt-4 { margin-top: 24px; }
-        .mb-3 { margin-bottom: 16px; }
-        .w-100 { width: 100%; }
-        .fw-bold { font-weight: 700; }
+        .hidden {
+            display: none !important;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-muted {
+            color: var(--text-secondary);
+        }
+        .flex {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .gap-2 {
+            gap: 6px;
+        }
+        .gap-3 {
+            gap: 14px;
+        }
+        .mt-2 {
+            margin-top: 8px;
+        }
+        .mt-3 {
+            margin-top: 14px;
+        }
+        .mt-4 {
+            margin-top: 22px;
+        }
+        .mb-3 {
+            margin-bottom: 14px;
+        }
+        .w-100 {
+            width: 100%;
+        }
+        .fw-bold {
+            font-weight: 700;
+        }
+        .relative {
+            position: relative;
+        }
 
         /* ===== BUTTONS ===== */
         .btn {
             border: none;
             cursor: pointer;
             font-weight: 700;
-            font-family: inherit;
-            padding: 10px 22px;
+            font-family: var(--font);
+            padding: 10px 20px;
             border-radius: 60px;
             transition: all 0.2s ease;
             display: inline-flex;
@@ -90,50 +127,85 @@
             gap: 8px;
             font-size: 0.95rem;
             min-height: 48px;
+            touch-action: manipulation;
+            user-select: none;
         }
         .btn-primary {
             background: linear-gradient(95deg, #3b82f6, #8b5cf6);
             color: #fff;
             box-shadow: 0 8px 20px -8px rgba(59, 130, 246, 0.3);
         }
-        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 8px 28px -6px #3b82f6; }
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 28px -6px #3b82f6;
+        }
         .btn-success {
             background: #10b981;
             color: #fff;
             box-shadow: 0 8px 20px -8px rgba(16, 185, 129, 0.3);
         }
-        .btn-success:hover { background: #059669; transform: scale(1.03); }
+        .btn-success:hover {
+            background: #059669;
+            transform: scale(1.02);
+        }
         .btn-danger {
             background: #ef4444;
             color: #fff;
             box-shadow: 0 8px 20px -8px rgba(239, 68, 68, 0.3);
         }
-        .btn-danger:hover { background: #dc2626; transform: scale(1.03); }
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: scale(1.02);
+        }
         .btn-outline {
             background: transparent;
             border: 1.5px solid rgba(255, 255, 255, 0.15);
             color: var(--text-secondary);
         }
-        .btn-outline:hover { background: rgba(255, 255, 255, 0.06); border-color: var(--gold); color: #fff; }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--gold);
+            color: #fff;
+        }
         .btn-gold {
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: #0a0f1e;
             box-shadow: 0 8px 24px -6px rgba(251, 191, 36, 0.3);
         }
-        .btn-gold:hover { transform: scale(1.03); box-shadow: 0 8px 32px -4px rgba(251, 191, 36, 0.5); }
-        .btn-sm { padding: 6px 14px; font-size: 0.8rem; min-height: 36px; }
-        .btn-block { width: 100%; justify-content: center; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-gold:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 32px -4px rgba(251, 191, 36, 0.5);
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            min-height: 34px;
+        }
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
         .btn-expired {
             background: #334155;
             color: #94a3b8;
             cursor: not-allowed;
             opacity: 0.6;
         }
-        .btn-expired:hover { transform: none; box-shadow: none; }
+        .btn-expired:hover {
+            transform: none;
+            box-shadow: none;
+        }
 
         /* ===== INPUTS ===== */
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 60px;
@@ -143,46 +215,107 @@
             width: 100%;
             outline: none;
             transition: 0.2s;
+            font-family: var(--font);
         }
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             border-color: var(--gold);
             box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.08);
             background: rgba(255, 255, 255, 0.06);
         }
-        textarea { border-radius: 16px; resize: vertical; min-height: 60px; }
-        input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.25); }
+        textarea {
+            border-radius: 16px;
+            resize: vertical;
+            min-height: 60px;
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+        input[type="checkbox"] {
+            width: auto;
+            min-height: auto;
+            padding: 0;
+            margin: 0 6px 0 0;
+            accent-color: var(--gold);
+        }
 
         /* ===== LOGIN PANEL ===== */
         .login-panel {
-            max-width: 440px;
-            margin: 0 auto;
-            background: rgba(10, 20, 40, 0.8);
+            max-width: 420px;
+            margin: 10px auto 0;
+            background: rgba(10, 20, 40, 0.85);
             backdrop-filter: blur(24px);
             border-radius: 2.5rem;
-            padding: 2.5rem;
+            padding: 2rem 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
         .logo-circle {
-            width: 80px;
-            height: 80px;
+            width: 72px;
+            height: 72px;
             background: linear-gradient(135deg, #3b82f6, #a855f7);
-            border-radius: 28px;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            margin: 0 auto 16px;
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
         }
-        .logo-circle i { font-size: 2.6rem; color: #fff; }
+        .logo-circle i {
+            font-size: 2.2rem;
+            color: #fff;
+        }
         .login-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             text-align: center;
             background: linear-gradient(135deg, #fff, #93c5fd);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            line-height: 1.2;
+        }
+        .login-sub {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        /* ===== BLINKING REGISTER LINK ===== */
+        .register-blink {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--gold);
+            cursor: pointer;
+            background: rgba(251, 191, 36, 0.08);
+            padding: 10px 16px;
+            border-radius: 60px;
+            border: 1px solid rgba(251, 191, 36, 0.15);
+            transition: 0.2s;
+            animation: blinkGold 1.2s ease-in-out infinite;
+            text-decoration: none;
+            touch-action: manipulation;
+        }
+        .register-blink:hover {
+            background: rgba(251, 191, 36, 0.18);
+            transform: scale(1.02);
+        }
+        @keyframes blinkGold {
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
+            }
+            50% {
+                opacity: 0.5;
+                box-shadow: 0 0 24px rgba(251, 191, 36, 0.5);
+            }
         }
 
         /* ===== HEADER / DASHBOARD ===== */
@@ -190,47 +323,70 @@
             background: rgba(10, 20, 40, 0.6);
             backdrop-filter: blur(20px);
             border-radius: 2rem;
-            padding: 16px 24px;
-            margin-bottom: 28px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         .avatar-neon {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             background: linear-gradient(135deg, #f97316, #ef4444);
-            border-radius: 20px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 800;
             box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
             flex-shrink: 0;
+        }
+        .user-info {
+            flex: 1;
+            min-width: 120px;
+        }
+        .user-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .user-info .sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 10px;
+        }
+        .user-info .sub i {
+            width: 14px;
         }
 
         /* ===== STATS GRID ===== */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
         }
         .stat-card {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 1.5rem;
-            padding: 18px 16px;
+            border-radius: 1.2rem;
+            padding: 14px 12px;
             transition: 0.2s;
         }
-        .stat-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(251, 191, 36, 0.1); }
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(251, 191, 36, 0.08);
+        }
         .stat-value {
-            font-size: 2.4rem;
+            font-size: 2rem;
             font-weight: 800;
             background: linear-gradient(135deg, #fff, #94a3b8);
             -webkit-background-clip: text;
@@ -244,23 +400,29 @@
             background-clip: text;
             color: transparent;
         }
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
-        /* ===== TIMER ===== */
+        /* ===== TIMER RING ===== */
         .timer-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 20px 0;
+            margin: 14px 0 18px;
         }
         .timer-ring-container {
             position: relative;
-            width: 140px;
-            height: 140px;
+            width: 120px;
+            height: 120px;
         }
         .timer-ring-container svg {
             transform: rotate(-90deg);
-            width: 140px;
-            height: 140px;
+            width: 120px;
+            height: 120px;
         }
         .timer-ring-container .bg-circle {
             fill: none;
@@ -280,7 +442,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 36px;
+            font-size: 30px;
             font-weight: 800;
             font-family: 'Courier New', monospace;
             color: #fff;
@@ -288,56 +450,109 @@
         }
         .timer-ring-container .timer-label {
             position: absolute;
-            bottom: 12px;
+            bottom: 6px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             color: rgba(255, 255, 255, 0.3);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             white-space: nowrap;
         }
         .timer-ring-container.warning .progress-circle {
             stroke: #f87171;
             filter: drop-shadow(0 0 20px rgba(248, 113, 113, 0.3));
-            animation: glow-pulse 1s infinite;
+            animation: pulseGlow 1s infinite;
         }
-        .timer-ring-container.warning .timer-text { color: #f87171; }
-        @keyframes glow-pulse {
-            0%,100% { filter: drop-shadow(0 0 8px rgba(251,191,36,0.1)); }
-            50% { filter: drop-shadow(0 0 20px rgba(251,191,36,0.3)); }
+        .timer-ring-container.warning .timer-text {
+            color: #f87171;
+        }
+        @keyframes pulseGlow {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.1));
+            }
+            50% {
+                filter: drop-shadow(0 0 24px rgba(251, 191, 36, 0.35));
+            }
+        }
+
+        /* ===== STATUS BOX ===== */
+        .status-box {
+            text-align: center;
+            padding: 30px 16px;
+        }
+        .status-box .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+        .status-box h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .status-box p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
         }
 
         /* ===== QUESTIONS ===== */
         .question-card {
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 1.2rem;
-            padding: 20px;
-            margin-bottom: 16px;
+            border-radius: 1rem;
+            padding: 16px;
+            margin-bottom: 14px;
             border-left: 4px solid var(--gold);
             transition: 0.2s;
         }
-        .question-card:hover { background: rgba(255, 255, 255, 0.04); }
-        .question-title { font-weight: 600; font-size: 1.05rem; margin-bottom: 14px; }
+        .question-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .question-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
         }
-        @media (max-width:550px) { .options-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 500px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         .opt-btn {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 12px 16px;
-            border-radius: 14px;
+            padding: 10px 14px;
+            border-radius: 12px;
             color: #e2e8f0;
             cursor: pointer;
             text-align: left;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: 0.15s;
+            touch-action: manipulation;
+            font-family: var(--font);
         }
-        .opt-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.12); }
+        .opt-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
         .opt-btn.selected {
             background: var(--gold);
             color: #0a0f1e;
@@ -345,110 +560,176 @@
             border-color: var(--gold);
             box-shadow: 0 4px 16px rgba(251, 191, 36, 0.15);
         }
-        .opt-btn:disabled { opacity: 0.3; cursor: default; }
+        .opt-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
 
-        /* ===== RANKING ===== */
+        /* ===== RANK ITEM ===== */
         .rank-item {
             display: flex;
             align-items: center;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 14px;
-            margin-bottom: 8px;
+            border-radius: 12px;
+            margin-bottom: 6px;
             border: 1px solid rgba(255, 255, 255, 0.04);
-            gap: 14px;
+            gap: 12px;
         }
         .rank-item .rank-num {
             font-weight: 800;
-            font-size: 18px;
-            min-width: 36px;
+            font-size: 16px;
+            min-width: 32px;
             text-align: center;
             color: #94a3b8;
         }
-        .rank-item .rank-num.gold { color: var(--gold); }
-        .rank-item .rank-num.silver { color: #94a3b8; }
-        .rank-item .rank-num.bronze { color: #d97706; }
-        .rank-item .rank-name { flex: 1; font-weight: 600; }
-        .rank-item .rank-score { font-weight: 700; color: var(--gold); margin-right: 8px; }
+        .rank-item .rank-num.gold {
+            color: var(--gold);
+        }
+        .rank-item .rank-num.silver {
+            color: #94a3b8;
+        }
+        .rank-item .rank-num.bronze {
+            color: #d97706;
+        }
+        .rank-item .rank-name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .rank-item .rank-score {
+            font-weight: 700;
+            color: var(--gold);
+            margin-right: 6px;
+            font-size: 0.9rem;
+        }
         .rank-item .rank-time {
-            font-size: 13px;
+            font-size: 12px;
             color: #94a3b8;
             background: rgba(0, 0, 0, 0.2);
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 30px;
+            white-space: nowrap;
+        }
+
+        /* ===== PUBLICATION COUNTDOWN ===== */
+        .publication-box {
+            text-align: center;
+            padding: 14px;
+            background: rgba(251, 191, 36, 0.04);
+            border-radius: 14px;
+            border: 1px dashed rgba(251, 191, 36, 0.12);
+            margin-bottom: 14px;
+        }
+        .publication-box .pub-timer {
+            font-size: 26px;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: var(--gold);
         }
 
         /* ===== ADMIN TABLES ===== */
         .admin-tabs {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         .admin-tab {
-            padding: 8px 20px;
+            padding: 8px 16px;
             border: none;
             border-radius: 40px;
             background: rgba(255, 255, 255, 0.04);
             color: #94a3b8;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: 0.2s;
+            font-family: var(--font);
+            touch-action: manipulation;
         }
-        .admin-tab.active { background: #2563eb; color: #fff; }
-        .admin-tab:hover { background: rgba(37, 99, 235, 0.15); color: #fff; }
+        .admin-tab.active {
+            background: #2563eb;
+            color: #fff;
+        }
+        .admin-tab:hover {
+            background: rgba(37, 99, 235, 0.15);
+            color: #fff;
+        }
 
         .admin-table-wrap {
             overflow-x: auto;
-            margin: 12px 0;
-            border-radius: 16px;
+            margin: 10px 0;
+            border-radius: 14px;
             border: 1px solid rgba(255, 255, 255, 0.04);
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.12);
+            -webkit-overflow-scrolling: touch;
         }
         .admin-table-wrap table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
-            min-width: 320px;
+            font-size: 0.8rem;
+            min-width: 300px;
         }
         .admin-table-wrap th {
             text-align: left;
-            padding: 12px 14px;
+            padding: 10px 12px;
             color: #94a3b8;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
             background: rgba(0, 0, 0, 0.15);
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
         .admin-table-wrap td {
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             vertical-align: middle;
+            font-size: 0.8rem;
         }
-        .admin-table-wrap tr:hover td { background: rgba(255, 255, 255, 0.02); }
+        .admin-table-wrap tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .admin-table-wrap input[type="datetime-local"] {
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            border-radius: 30px;
+            min-width: 120px;
+        }
+        .admin-table-wrap input[type="number"] {
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            border-radius: 30px;
+            width: 60px;
+        }
 
         .day-tabs {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             flex-wrap: wrap;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .day-tab {
-            padding: 6px 16px;
+            padding: 5px 14px;
             border-radius: 30px;
             background: #1e293b;
             color: #94a3b8;
             cursor: pointer;
             border: none;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             transition: 0.2s;
+            font-family: var(--font);
+            touch-action: manipulation;
         }
-        .day-tab.active { background: var(--gold); color: #0a0f1e; }
-        .day-tab:hover { background: #334155; }
+        .day-tab.active {
+            background: var(--gold);
+            color: #0a0f1e;
+        }
+        .day-tab:hover {
+            background: #334155;
+        }
 
         /* ===== MODALS ===== */
         .modal-overlay {
@@ -460,109 +741,263 @@
             align-items: center;
             justify-content: center;
             z-index: 999;
-            padding: 20px;
+            padding: 16px;
         }
         .modal-glass {
             background: #111c2e;
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 2rem;
-            padding: 32px;
+            padding: 28px 24px;
             max-width: 520px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
-        .modal-glass h3 { color: var(--gold); font-weight: 700; font-size: 1.4rem; }
-        .modal-glass p { color: #94a3b8; margin-top: 8px; line-height: 1.6; }
-
-        .publication-box {
-            text-align: center;
-            padding: 16px;
-            background: rgba(251, 191, 36, 0.04);
-            border-radius: 16px;
-            border: 1px dashed rgba(251, 191, 36, 0.12);
-            margin-bottom: 16px;
-        }
-        .publication-box .pub-timer {
-            font-size: 28px;
-            font-weight: 800;
-            font-family: 'Courier New', monospace;
+        .modal-glass h3 {
             color: var(--gold);
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        .modal-glass p {
+            color: #94a3b8;
+            margin-top: 6px;
+            line-height: 1.6;
+            font-size: 0.95rem;
         }
 
-        .copy-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 92%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            pointer-events: none;
+        }
+        .toast-item {
+            background: rgba(10, 20, 40, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 12px 20px;
             color: #fff;
-            padding: 4px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.2s;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.3s ease;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .copy-btn:hover { background: var(--gold); color: #0a0f1e; }
+        .toast-item.success {
+            border-left: 4px solid #10b981;
+        }
+        .toast-item.error {
+            border-left: 4px solid #ef4444;
+        }
+        .toast-item.info {
+            border-left: 4px solid #3b82f6;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
+        /* ===== HELP BUTTON ===== */
         .help-btn {
             position: fixed;
-            bottom: 20px;
-            right: 24px;
+            bottom: 14px;
+            right: 16px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 40px;
-            padding: 10px 18px;
+            padding: 8px 14px;
             color: rgba(255, 255, 255, 0.4);
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             backdrop-filter: blur(4px);
             z-index: 100;
+            touch-action: manipulation;
+            font-family: var(--font);
         }
-        .help-btn:hover { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #93c5fd; }
+        .help-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
 
-        .status-box {
-            text-align: center;
-            padding: 40px 20px;
+        /* ===== ADMIN HINTS (hidden from parents) ===== */
+        .admin-hint {
+            background: rgba(251, 191, 36, 0.04);
+            border-left: 3px solid var(--gold);
+            padding: 10px 16px;
+            border-radius: 10px;
+            margin: 10px 0;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
         }
-        .status-box .icon { font-size: 56px; margin-bottom: 14px; display: inline-block; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
-        .status-box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
-        .status-box p { color: #94a3b8; }
+        .admin-hint strong {
+            color: var(--gold);
+        }
+
+        /* ===== HISTORY BUTTON ===== */
+        .history-btn-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 16px;
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .dashboard-header { flex-direction: column; align-items: stretch; gap: 12px; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .stat-value { font-size: 2rem; }
-            .login-panel { padding: 1.5rem; }
-            .login-title { font-size: 1.5rem; }
-            .admin-tab { font-size: 0.7rem; padding: 6px 14px; }
-            .admin-table-wrap table { font-size: 0.75rem; min-width: 280px; }
-            .admin-table-wrap td input[type="datetime-local"] { width: 120px; }
+            .dashboard-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .stat-value {
+                font-size: 1.7rem;
+            }
+            .login-panel {
+                padding: 1.5rem 1.2rem;
+            }
+            .login-title {
+                font-size: 1.3rem;
+            }
+            .admin-tab {
+                font-size: 0.65rem;
+                padding: 6px 12px;
+            }
+            .admin-table-wrap table {
+                font-size: 0.7rem;
+                min-width: 260px;
+            }
+            .admin-table-wrap td,
+            .admin-table-wrap th {
+                padding: 6px 8px;
+            }
+            .modal-glass {
+                padding: 20px 16px;
+            }
+            .timer-ring-container {
+                width: 100px;
+                height: 100px;
+            }
+            .timer-ring-container svg {
+                width: 100px;
+                height: 100px;
+            }
+            .timer-ring-container .timer-text {
+                font-size: 24px;
+            }
+            .btn {
+                font-size: 0.85rem;
+                padding: 8px 16px;
+                min-height: 42px;
+            }
+            .help-btn {
+                padding: 6px 10px;
+                font-size: 0.65rem;
+                bottom: 10px;
+                right: 10px;
+            }
+            .help-btn span {
+                display: none;
+            }
+            .user-info h2 {
+                font-size: 1rem;
+            }
+            .user-info .sub {
+                font-size: 0.7rem;
+            }
+            .rank-item {
+                padding: 8px 10px;
+                gap: 8px;
+            }
+            .rank-item .rank-name {
+                font-size: 0.85rem;
+            }
+            .rank-item .rank-score {
+                font-size: 0.8rem;
+            }
+            .publication-box .pub-timer {
+                font-size: 22px;
+            }
+            .register-blink {
+                font-size: 0.9rem;
+                padding: 8px 14px;
+            }
         }
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .stat-card { padding: 12px; }
-            .stat-value { font-size: 1.6rem; }
-            .container { padding: 10px; }
-            .glass-card { padding: 16px; }
-            .avatar-neon { width: 44px; height: 44px; font-size: 18px; }
-            .timer-ring-container { width: 120px; height: 120px; }
-            .timer-ring-container svg { width: 120px; height: 120px; }
-            .timer-ring-container .timer-text { font-size: 28px; }
-            .btn { font-size: 0.85rem; padding: 8px 16px; min-height: 40px; }
-            .help-btn { padding: 6px 12px; font-size: 0.75rem; bottom: 12px; right: 14px; }
-            .help-btn span { display: none; }
+        @media (max-width: 420px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card {
+                padding: 10px;
+            }
+            .stat-value {
+                font-size: 1.4rem;
+            }
+            .container {
+                padding: 6px;
+            }
+            .glass-card {
+                padding: 14px;
+            }
+            .avatar-neon {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            .options-grid {
+                gap: 6px;
+            }
+            .opt-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            .question-title {
+                font-size: 0.9rem;
+            }
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #fbbf2440; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #fbbf2460; }
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fbbf2440;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #fbbf2460;
+        }
     </style>
 </head>
 <body>
@@ -572,10 +1007,17 @@
         <!-- ============================================================ -->
         <!-- LOADING OVERLAY -->
         <!-- ============================================================ -->
-        <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:9999; display:none; justify-content:center; align-items:center; flex-direction:column; gap:1rem;">
-            <div class="spinner-border text-primary" style="width:3rem; height:3rem; border:3px solid rgba(255,255,255,0.1); border-top-color:#fbbf24; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
-            <p style="color:#fff; font-weight:600;">Loading...</p>
+        <div id="loadingOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:9999;display:none;justify-content:center;align-items:center;flex-direction:column;gap:12px;">
+            <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.1);border-top-color:#fbbf24;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+            <p style="color:#fff;font-weight:600;">Loading...</p>
         </div>
+        <style>
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
 
         <!-- HELP BUTTON -->
         <button class="help-btn" onclick="openHelp()"><i class="fas fa-circle-question"></i> <span>സഹായം</span></button>
@@ -587,25 +1029,25 @@
             <div class="login-panel">
                 <div class="logo-circle"><i class="fas fa-user-graduate"></i></div>
                 <h1 class="login-title">Daily Meelad Quiz</h1>
-                <p class="text-muted text-center" style="margin-bottom:24px;">👪 രക്ഷിതാക്കൾക്കായുള്ള മത്സരം</p>
+                <p class="login-sub">👪 രക്ഷിതാക്കൾക്കായുള്ള മത്സരം</p>
                 <form id="loginForm">
-                    <div style="margin-bottom:16px;">
-                        <div style="background:rgba(255,255,255,0.04); border-radius:1.2rem; border:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; padding:0 16px;">
-                            <i class="fas fa-id-card text-primary" style="color:#3b82f6; margin-right:12px;"></i>
-                            <input type="text" id="loginIdInput" class="form-control-glass" placeholder="Enter ID (ADMIN123 or PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" style="background:transparent; border:none; padding:14px 0; color:#fff; width:100%; outline:none; font-size:1rem;">
+                    <div style="margin-bottom:14px;">
+                        <div style="background:rgba(255,255,255,0.04);border-radius:1.2rem;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;padding:0 16px;">
+                            <i class="fas fa-id-card" style="color:#3b82f6;margin-right:12px;"></i>
+                            <input type="text" id="loginIdInput" placeholder="Enter ID (ADMIN123 or PAR...)" autofocus oninput="this.value=this.value.toUpperCase();" style="background:transparent;border:none;padding:14px 0;color:#fff;width:100%;outline:none;font-size:1rem;font-family:var(--font);">
                         </div>
                     </div>
-                    <div class="flex-between" style="margin-bottom:16px;">
-                        <label style="color:#94a3b8; font-size:0.9rem; display:flex; align-items:center; gap:6px;">
-                            <input type="checkbox" id="rememberMe" checked style="width:auto; margin-right:4px;" /> Remember me
+                    <div class="flex-between" style="margin-bottom:14px;">
+                        <label style="color:#94a3b8;font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+                            <input type="checkbox" id="rememberMe" checked /> Remember me
                         </label>
-                        <button type="button" class="btn btn-outline btn-sm" id="showRegisterBtn">New? Register</button>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">🔑 Access</button>
-                    <button type="button" class="btn btn-outline btn-block mt-2" onclick="openFindId()">
+                    <button type="submit" class="btn btn-primary btn-block" style="font-size:1.05rem;">🔑 ACCESS</button>
+                    <button type="button" class="register-blink" id="showRegisterBtn">✨ NEW? REGISTER</button>
+                    <button type="button" class="btn btn-outline btn-block mt-2" onclick="openFindId()" style="font-size:0.85rem;">
                         <i class="fas fa-question-circle" style="color:#f59e0b;"></i> Forgot Parent ID?
                     </button>
-                    <div id="loginMessage" class="mt-3"></div>
+                    <div id="loginMessage" class="mt-2"></div>
                 </form>
             </div>
         </div>
@@ -615,21 +1057,21 @@
         <!-- ============================================================ -->
         <div id="registerModal" class="modal-overlay hidden">
             <div class="modal-glass">
-                <div class="flex-between" style="margin-bottom:16px;">
-                    <h3><i class="fas fa-user-plus text-success"></i> Parent Registration</h3>
+                <div class="flex-between" style="margin-bottom:14px;">
+                    <h3><i class="fas fa-user-plus" style="color:#10b981;"></i> Parent Registration</h3>
                     <button class="btn btn-outline btn-sm" id="closeRegisterModalBtn"><i class="fas fa-times"></i></button>
                 </div>
                 <p class="text-muted">വിവരങ്ങൾ നൽകുക. പുതിയ Parent ID ലഭിക്കും.</p>
-                <form id="registerForm" style="margin-top:16px;">
-                    <div style="margin-bottom:12px;"><label class="text-muted" style="font-size:0.85rem;">Parent Name *</label><input type="text" id="regParentName" placeholder="Full name" required /></div>
-                    <div style="margin-bottom:12px;"><label class="text-muted" style="font-size:0.85rem;">Child's Name *</label><input type="text" id="regChildName" placeholder="Child's full name" required /></div>
-                    <div style="margin-bottom:16px;"><label class="text-muted" style="font-size:0.85rem;">Child's Class *</label><input type="text" id="regChildClass" placeholder="e.g., 5A" required /></div>
+                <form id="registerForm" style="margin-top:14px;">
+                    <div style="margin-bottom:10px;"><label class="text-muted" style="font-size:0.8rem;">Parent Name *</label><input type="text" id="regParentName" placeholder="Full name" required /></div>
+                    <div style="margin-bottom:10px;"><label class="text-muted" style="font-size:0.8rem;">Child's Name *</label><input type="text" id="regChildName" placeholder="Child's full name" required /></div>
+                    <div style="margin-bottom:14px;"><label class="text-muted" style="font-size:0.8rem;">Child's Class *</label><input type="text" id="regChildClass" placeholder="e.g., 5A" required /></div>
                     <button type="submit" class="btn btn-success btn-block" id="registerBtn">✅ Register</button>
                     <div id="registerMessage" class="mt-2"></div>
-                    <div id="newIdDisplay" class="hidden mt-3 text-center" style="background:rgba(0,0,0,0.3); padding:16px; border-radius:12px; border:1px solid var(--gold);">
+                    <div id="newIdDisplay" class="hidden mt-3 text-center" style="background:rgba(0,0,0,0.3);padding:14px;border-radius:12px;border:1px solid var(--gold);">
                         <p class="text-muted">✅ നിങ്ങളുടെ പുതിയ Parent ID</p>
-                        <p style="font-size:28px; font-weight:800; color:var(--gold); font-family:monospace;" id="generatedIdText"></p>
-                        <button type="button" class="copy-btn" id="copyIdBtn">📋 Copy ID</button>
+                        <p style="font-size:26px;font-weight:800;color:var(--gold);font-family:monospace;" id="generatedIdText"></p>
+                        <button type="button" class="copy-btn" id="copyIdBtn" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:13px;transition:0.2s;">📋 Copy ID</button>
                     </div>
                 </form>
             </div>
@@ -640,13 +1082,13 @@
         <!-- ============================================================ -->
         <div id="findIdModal" class="modal-overlay hidden">
             <div class="modal-glass">
-                <div class="flex-between" style="margin-bottom:16px;">
-                    <h3><i class="fas fa-search text-info"></i> Find Parent ID</h3>
+                <div class="flex-between" style="margin-bottom:14px;">
+                    <h3><i class="fas fa-search" style="color:#3b82f6;"></i> Find Parent ID</h3>
                     <button class="btn btn-outline btn-sm" id="closeFindIdBtn"><i class="fas fa-times"></i></button>
                 </div>
                 <form id="findIdForm">
-                    <div style="margin-bottom:12px;"><label class="text-muted">Child's Class</label><select id="findClass" required><option value="">Select</option><option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option></select></div>
-                    <div style="margin-bottom:16px;"><label class="text-muted">Parent Name (first 3 letters)</label><input type="text" id="findName" placeholder="e.g., ABD" maxlength="3" oninput="this.value = this.value.toUpperCase();" required /></div>
+                    <div style="margin-bottom:10px;"><label class="text-muted">Child's Class</label><select id="findClass" required><option value="">Select</option><option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option></select></div>
+                    <div style="margin-bottom:14px;"><label class="text-muted">Parent Name (first 3 letters)</label><input type="text" id="findName" placeholder="e.g., ABD" maxlength="3" oninput="this.value=this.value.toUpperCase();" required /></div>
                     <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-search"></i> Find</button>
                 </form>
                 <div id="findResult" class="mt-3"></div>
@@ -658,22 +1100,24 @@
         <!-- ============================================================ -->
         <div id="parentDashboard" class="hidden">
             <div class="dashboard-header">
-                <div class="flex" style="gap:14px;">
+                <div class="flex" style="gap:12px;flex:1;">
                     <div class="avatar-neon"><span id="avatarText">P</span></div>
-                    <div>
-                        <h2 class="fw-bold" style="font-size:1.2rem; margin:0;" id="userNameDisplay">Parent Name</h2>
-                        <div class="text-muted" style="font-size:0.85rem;"><i class="fas fa-id-card"></i> <span id="displayParentId">ID</span> • <i class="fas fa-child"></i> <span id="childNameDisplay">Child</span> • <i class="fas fa-graduation-cap"></i> <span id="childClassDisplay">Class</span></div>
+                    <div class="user-info">
+                        <h2 id="userNameDisplay">Parent Name</h2>
+                        <div class="sub">
+                            <span><i class="fas fa-id-card"></i> <span id="displayParentId">ID</span></span>
+                            <span><i class="fas fa-child"></i> <span id="childNameDisplay">Child</span></span>
+                            <span><i class="fas fa-graduation-cap"></i> <span id="childClassDisplay">Class</span></span>
+                        </div>
                     </div>
                 </div>
-                <div class="flex" style="gap:8px;">
-                    <button class="btn btn-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Exit</button>
-                </div>
+                <button class="btn btn-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Exit</button>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">Day 1</span><div class="text-muted" style="font-size:0.8rem;">Today's Quiz</div></div></div>
-                <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="text-muted" style="font-size:0.8rem;">Questions</div></div></div>
-                <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="text-muted" style="font-size:0.8rem;">Your Score</div></div></div>
+                <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">Day 1</span><div class="stat-label">Today's Quiz</div></div></div>
+                <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="stat-label">Questions</div></div></div>
+                <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="stat-label">Your Score</div></div></div>
             </div>
 
             <!-- Timer -->
@@ -700,14 +1144,19 @@
                     <h2>ഇന്നത്തെ മത്സരം അവസാനിച്ചു</h2>
                     <p>നാളെ വീണ്ടും വരൂ!</p>
                 </div>
+                <div class="status-box hidden" id="resultsExpiredMsg">
+                    <div class="icon">⏰</div>
+                    <h2>ഫലം ഇനി ലഭ്യമല്ല</h2>
+                    <p>അടുത്ത മത്സരത്തിന് 30 മിനിറ്റ് മുമ്പ് മുതൽ ഫലം കാണാൻ സാധിക്കില്ല.</p>
+                </div>
             </div>
 
             <!-- View Questions -->
             <div id="viewQuestionsArea" class="hidden text-center mt-3">
-                <button class="btn btn-gold" id="viewQuestionsBtn" style="max-width:360px; margin:0 auto; width:100%;">
+                <button class="btn btn-gold" id="viewQuestionsBtn" style="max-width:360px;margin:0 auto;width:100%;">
                     📝 ചോദ്യങ്ങൾ കാണുക
                 </button>
-                <div id="quizStatusMessage" class="mt-2 text-muted" style="font-size:0.9rem;"></div>
+                <div id="quizStatusMessage" class="mt-2 text-muted" style="font-size:0.85rem;"></div>
             </div>
 
             <!-- Questions -->
@@ -728,9 +1177,33 @@
             <!-- Ranking -->
             <div id="rankingArea" class="hidden">
                 <div class="glass-card">
-                    <div class="flex-between"><h3 style="color:var(--gold); font-size:1.2rem;">🏆 നിങ്ങളുടെ സ്കോർ</h3><span class="badge" style="background:#1e293b; padding:4px 12px; border-radius:30px; font-size:0.8rem; color:#94a3b8;" id="rankCountBadge">0 പേർ</span></div>
+                    <div class="flex-between"><h3 style="color:var(--gold);font-size:1.1rem;">🏆 നിങ്ങളുടെ സ്കോർ</h3><span class="badge" style="background:#1e293b;padding:4px 12px;border-radius:30px;font-size:0.75rem;color:#94a3b8;" id="rankCountBadge">—</span></div>
                     <div id="publicationCountdown" class="publication-box"><p class="text-muted">📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p><div class="pub-timer" id="publicationTimer">05:00</div></div>
                     <div id="rankListContainer"><div class="text-center text-muted">Loading...</div></div>
+                    <div class="admin-hint" style="display:none;" id="parentRankHint"><strong>ℹ️</strong> ഇത് നിങ്ങളുടെ വ്യക്തിഗത റാങ്കിംഗ് ആണ്. മൊത്തം പങ്കെടുത്തവരുടെ എണ്ണം കാണിക്കുന്നില്ല.</div>
+                </div>
+            </div>
+
+            <!-- History Button & Modal -->
+            <div class="history-btn-wrap">
+                <button class="btn btn-outline" id="showHistoryBtn" style="border-color:rgba(251,191,36,0.2);color:var(--gold);">
+                    <i class="fas fa-clock-rotate-left"></i> എന്റെ മത്സര ചരിത്രം
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- HISTORY MODAL -->
+        <!-- ============================================================ -->
+        <div id="historyModal" class="modal-overlay hidden">
+            <div class="modal-glass" style="max-width:640px;">
+                <div class="flex-between" style="margin-bottom:14px;">
+                    <h3><i class="fas fa-clock-rotate-left" style="color:var(--gold);"></i> എന്റെ മത്സര ചരിത്രം</h3>
+                    <button class="btn btn-outline btn-sm" id="closeHistoryBtn"><i class="fas fa-times"></i></button>
+                </div>
+                <p class="text-muted">ഓരോ ദിവസത്തിലെയും നിങ്ങളുടെ പോയിന്റ്, റാങ്ക്, സമയം എന്നിവ.</p>
+                <div id="historyContainer" style="margin-top:12px;max-height:60vh;overflow-y:auto;">
+                    <div class="text-center text-muted">Loading...</div>
                 </div>
             </div>
         </div>
@@ -750,9 +1223,9 @@
                     <br><br>
                     <span style="color:var(--gold);">"തുടങ്ങുക" ക്ലിക്ക് ചെയ്താൽ ക്വിസ് ആരംഭിക്കും.</span>
                 </p>
-                <div style="display:flex; gap:12px; margin-top:24px; justify-content:center; flex-wrap:wrap;">
-                    <button class="btn btn-outline btn-sm" id="cancelConfirmBtn" style="min-width:120px;">❌ ഇല്ല</button>
-                    <button class="btn btn-success btn-sm" id="proceedConfirmBtn" style="min-width:120px;">✅ അതെ, തുടങ്ങുക</button>
+                <div style="display:flex;gap:12px;margin-top:20px;justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-outline btn-sm" id="cancelConfirmBtn" style="min-width:100px;">❌ ഇല്ല</button>
+                    <button class="btn btn-success btn-sm" id="proceedConfirmBtn" style="min-width:100px;">✅ അതെ, തുടങ്ങുക</button>
                 </div>
             </div>
         </div>
@@ -762,13 +1235,18 @@
         <!-- ============================================================ -->
         <div id="adminDashboard" class="hidden">
             <div class="dashboard-header">
-                <h2 class="fw-bold" style="color:var(--gold); font-size:1.4rem;"><i class="fas fa-user-shield"></i> Admin Panel</h2>
+                <h2 class="fw-bold" style="color:var(--gold);font-size:1.2rem;"><i class="fas fa-user-shield"></i> Admin Panel</h2>
                 <button class="btn btn-danger btn-sm" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i> Exit</button>
             </div>
 
-            <div class="glass-card" style="margin-bottom:20px; padding:16px 20px;">
-                <h4 style="color:var(--gold); font-size:1rem;">📅 Today's Session</h4>
+            <div class="glass-card" style="margin-bottom:16px;padding:14px 18px;">
+                <h4 style="color:var(--gold);font-size:0.95rem;">📅 Today's Session</h4>
                 <div id="todaySessionInfo" class="text-muted">Loading...</div>
+            </div>
+
+            <!-- Admin hints (hidden from parents) -->
+            <div class="admin-hint" id="adminHintBox">
+                <strong>🔐 അഡ്മിൻ സൂചന:</strong> മത്സര ദിവസങ്ങൾ ക്രമീകരിക്കാൻ "Sessions" ടാബ് ഉപയോഗിക്കുക. ചോദ്യങ്ങൾ ചേർക്കാൻ "Questions" ടാബ്. എല്ലാ ദിവസത്തെയും റാങ്കിംഗ് "Rankings" ടാബിൽ കാണാം.
             </div>
 
             <div class="admin-tabs">
@@ -781,23 +1259,23 @@
             <div id="tab-sessions" class="tab-content">
                 <div class="glass-card">
                     <h4 style="color:var(--gold);">⏰ Manage Days</h4>
-                    <div style="background:rgba(59,130,246,0.04); border:1px solid rgba(59,130,246,0.08); border-radius:16px; padding:16px; margin-bottom:16px;">
-                        <h5 style="color:#3b82f6;">➕ Add New Day</h5>
-                        <div class="flex" style="gap:8px;">
-                            <input type="number" id="newDay" placeholder="Day #" style="width:80px;" />
-                            <input type="datetime-local" id="newStart" style="min-width:160px; flex:1;" />
-                            <input type="datetime-local" id="newEnd" style="min-width:160px; flex:1;" />
-                            <input type="number" id="newDuration" placeholder="min" style="width:80px;" value="15" />
+                    <div style="background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.08);border-radius:14px;padding:14px;margin-bottom:14px;">
+                        <h5 style="color:#3b82f6;font-size:0.9rem;">➕ Add New Day</h5>
+                        <div class="flex" style="gap:6px;">
+                            <input type="number" id="newDay" placeholder="Day #" style="width:70px;" />
+                            <input type="datetime-local" id="newStart" style="min-width:140px;flex:1;" />
+                            <input type="datetime-local" id="newEnd" style="min-width:140px;flex:1;" />
+                            <input type="number" id="newDuration" placeholder="min" style="width:70px;" value="15" />
                             <button class="btn btn-success btn-sm" id="addDayBtn">➕ Add</button>
                         </div>
                     </div>
-                    <div style="background:rgba(251,191,36,0.03); border:1px solid rgba(251,191,36,0.06); border-radius:16px; padding:16px; margin-bottom:16px;">
-                        <h5 style="color:var(--gold);">⚡ Quick Set</h5>
-                        <div class="flex" style="gap:8px;">
-                            <select id="quickDay" style="min-width:100px;"><option value="">Select</option></select>
-                            <input type="datetime-local" id="quickStart" style="min-width:160px; flex:1;" />
-                            <input type="datetime-local" id="quickEnd" style="min-width:160px; flex:1;" />
-                            <input type="number" id="quickDuration" style="width:80px;" value="15" />
+                    <div style="background:rgba(251,191,36,0.03);border:1px solid rgba(251,191,36,0.06);border-radius:14px;padding:14px;margin-bottom:14px;">
+                        <h5 style="color:var(--gold);font-size:0.9rem;">⚡ Quick Set</h5>
+                        <div class="flex" style="gap:6px;">
+                            <select id="quickDay" style="min-width:80px;"></select>
+                            <input type="datetime-local" id="quickStart" style="min-width:140px;flex:1;" />
+                            <input type="datetime-local" id="quickEnd" style="min-width:140px;flex:1;" />
+                            <input type="number" id="quickDuration" style="width:70px;" value="15" />
                             <button class="btn-gold btn-sm" id="quickSetBtn">✅ Set</button>
                         </div>
                     </div>
@@ -808,30 +1286,29 @@
             <!-- Questions -->
             <div id="tab-questions" class="tab-content hidden">
                 <div class="glass-card">
-                    <div class="flex-between" style="margin-bottom:16px;">
+                    <div class="flex-between" style="margin-bottom:14px;">
                         <h4 style="color:var(--gold);">📋 Questions</h4>
                         <button class="btn btn-success btn-sm" id="showAddQuestionBtn">+ Add</button>
                     </div>
-                    <div id="questionForm" class="hidden" style="background:rgba(0,0,0,0.2); padding:16px; border-radius:16px; margin-bottom:16px;">
-                        <h5 id="formTitle" style="color:var(--gold);">Add Question</h5>
-                        <div class="flex" style="gap:8px; margin-bottom:8px;">
-                            <input type="number" id="qDay" placeholder="Day" style="width:80px;" />
-                            <textarea id="qText" placeholder="Question" style="flex:1;"></textarea>
+                    <div id="questionForm" class="hidden" style="background:rgba(0,0,0,0.2);padding:14px;border-radius:14px;margin-bottom:14px;">
+                        <h5 id="formTitle" style="color:var(--gold);font-size:0.95rem;">Add Question</h5>
+                        <div class="flex" style="gap:6px;margin-bottom:6px;">
+                            <input type="number" id="qDay" placeholder="Day" style="width:70px;" />
+                            <textarea id="qText" placeholder="Question" style="flex:1;min-height:50px;"></textarea>
                         </div>
-                        <div class="flex" style="gap:8px;">
+                        <div class="flex" style="gap:6px;">
                             <input type="text" id="qOpt0" placeholder="Opt1" style="flex:1;" />
                             <input type="text" id="qOpt1" placeholder="Opt2" style="flex:1;" />
                             <input type="text" id="qOpt2" placeholder="Opt3" style="flex:1;" />
                             <input type="text" id="qOpt3" placeholder="Opt4" style="flex:1;" />
-                            <select id="qCorrect" style="min-width:100px;"><option value="0">Opt1</option><option value="1">Opt2</option><option value="2">Opt3</option><option value="3">Opt4</option></select>
+                            <select id="qCorrect" style="min-width:80px;"><option value="0">Opt1</option><option value="1">Opt2</option><option value="2">Opt3</option><option value="3">Opt4</option></select>
                         </div>
-                        <div class="flex" style="margin-top:12px;">
+                        <div class="flex" style="margin-top:10px;">
                             <button class="btn btn-primary btn-sm" id="saveQuestionBtn">💾 Save</button>
                             <button class="btn btn-outline btn-sm" id="cancelQuestionBtn">Cancel</button>
                             <input type="hidden" id="editQuestionId" />
                         </div>
                     </div>
-                    <div class="day-tabs" id="questionDayTabs"></div>
                     <div class="day-tabs" id="adminDayTabsContainer"></div>
                     <div id="adminQuestionsTable"><div class="text-center text-muted">Select day</div></div>
                 </div>
@@ -840,7 +1317,8 @@
             <!-- Rankings -->
             <div id="tab-rankings" class="tab-content hidden">
                 <div class="glass-card">
-                    <h4 style="color:var(--gold);">🏆 Rankings</h4>
+                    <h4 style="color:var(--gold);">🏆 Overall Rankings</h4>
+                    <p class="text-muted" style="font-size:0.8rem;">എല്ലാ ദിവസത്തെയും മത്സരഫലങ്ങൾ ഇവിടെ കാണാം.</p>
                     <div class="day-tabs" id="rankDayTabs"></div>
                     <div id="adminRankListContainer"><div class="text-center text-muted">Select day</div></div>
                 </div>
@@ -849,10 +1327,10 @@
     </div>
 
     <!-- TOAST CONTAINER -->
-    <div class="toast-container" id="toastContainer" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; width:90%; max-width:440px; display:flex; flex-direction:column; gap:8px; pointer-events:none;"></div>
+    <div id="toastContainer" class="toast-container"></div>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT (Unchanged Logic - Kept exactly as previous) -->
+    <!-- JAVASCRIPT -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -860,36 +1338,8 @@
         // ================================================================
         const SUPABASE_URL = "https://iaaazjetelndkroignrd.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_7BNVf0qnhk8xlpGh0Vts5w_viVZ1kpc";
-        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const CIRCUMFERENCE = 2 * Math.PI * 60; // 376.99
-
-        // ================================================================
-        // TIMEZONE HELPERS
-        // ================================================================
-        function localToUTC(localDateTime) {
-            if (!localDateTime) return '';
-            const d = new Date(localDateTime);
-            if (isNaN(d)) return '';
-            return d.toISOString();
-        }
-
-        function utcToLocal(utcISO) {
-            if (!utcISO) return '';
-            const d = new Date(utcISO);
-            if (isNaN(d)) return '';
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
-            return `${year}-${month}-${day}T${hours}:${minutes}`;
-        }
-
-        function formatDate(d) {
-            if (!d) return '';
-            return new Date(d).toLocaleString('ml-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
-                hour: '2-digit', minute: '2-digit' });
-        }
 
         // ================================================================
         // HELPERS
@@ -904,13 +1354,73 @@
         }
 
         function saveId(id) {
-            const remember = document.getElementById('rememberMe');
-            if (remember && remember.checked) localStorage.setItem('lastId', id);
+            if (document.getElementById('rememberMe').checked) localStorage.setItem('lastId', id);
             else localStorage.removeItem('lastId');
         }
 
+        function formatDate(d) {
+            if (!d) return '';
+            return new Date(d).toLocaleString('ml-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
+                hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatDateShort(d) {
+            if (!d) return '';
+            return new Date(d).toLocaleString('ml-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short' });
+        }
+
+        function localToUTC(local) {
+            if (!local) return '';
+            const d = new Date(local);
+            if (isNaN(d)) return '';
+            return d.toISOString();
+        }
+
+        function utcToLocal(utc) {
+            if (!utc) return '';
+            const d = new Date(utc);
+            if (isNaN(d)) return '';
+            const y = d.getFullYear(),
+                m = String(d.getMonth() + 1).padStart(2, '0'),
+                day = String(d.getDate()).padStart(2, '0');
+            const h = String(d.getHours()).padStart(2, '0'),
+                min = String(d.getMinutes()).padStart(2, '0');
+            return `${y}-${m}-${day}T${h}:${min}`;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => showToast('Copied: ' + text, 'success'))
+                .catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showToast('Copied: ' + text, 'success');
+                });
+        }
+
         // ================================================================
-        // LOGIN (NO DAILY RESTRICTION)
+        // STATE
+        // ================================================================
+        window.currentUser = null;
+        window.currentSession = null;
+        window.questions = [];
+        window.answers = {};
+        window.isSubmitted = false;
+        window.currentAttemptId = null;
+        window.hasViewedQuestions = false;
+        window.quizStarted = false;
+        window.timeLeft = 0;
+        window.timerInterval = null;
+        window.pubInterval = null;
+        window.adminCurrentDay = 1;
+        window.questionsCache = [];
+        window.allSessions = [];
+
+        // ================================================================
+        // LOGIN
         // ================================================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -921,12 +1431,11 @@
             saveId(id);
 
             try {
-                const { data: user, error } = await _supabase
+                const { data: user, error } = await supabase
                     .from('Student')
                     .select('*')
                     .eq('studentId', id)
                     .single();
-
                 if (error || !user) throw new Error('Invalid ID');
 
                 if (user.role === 'admin') {
@@ -938,19 +1447,19 @@
                     return;
                 }
 
-                // Parent login – no daily restriction
-                const { data: sessions } = await _supabase
+                // Parent
+                const { data: sessions } = await supabase
                     .from('QuizSession')
                     .select('*')
-                    .order('day');
-
-                if (!sessions || sessions.length === 0) throw new Error('No sessions.');
+                    .order('day', { ascending: true });
+                if (!sessions || sessions.length === 0) throw new Error('No sessions configured.');
+                window.allSessions = sessions;
 
                 const now = new Date();
                 let active = sessions.find(s => now >= new Date(s.startTime) && now <= new Date(s.endTime));
                 if (!active) active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
 
-                await _supabase.from('LoginTrack').insert({ studentId: user.id, day: active.day });
+                await supabase.from('LoginTrack').insert({ studentId: user.id, day: active.day });
 
                 window.currentUser = user;
                 window.currentSession = active;
@@ -983,6 +1492,12 @@
             if (window.pubInterval) clearInterval(window.pubInterval);
             window.currentUser = null;
             window.currentSession = null;
+            window.questions = [];
+            window.answers = {};
+            window.isSubmitted = false;
+            window.currentAttemptId = null;
+            window.hasViewedQuestions = false;
+            window.quizStarted = false;
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('parentDashboard').classList.add('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
@@ -1014,33 +1529,22 @@
             const newIdDiv = document.getElementById('newIdDisplay');
             msg.innerHTML = '';
             newIdDiv.classList.add('hidden');
-
             if (!parentName || !childName || !childClass) {
                 msg.innerHTML = '<div style="color:#f87171;">എല്ലാ വിവരങ്ങളും നൽകുക.</div>';
                 return;
             }
-
             const btn = document.getElementById('registerBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-sm"></span>';
-
+            btn.innerHTML = '⏳';
             try {
                 const prefix = 'PAR';
                 const random = Math.floor(100000 + Math.random() * 900000);
                 const parentId = prefix + random;
-
-                const { error } = await _supabase
+                const { error } = await supabase
                     .from('Student')
-                    .insert({
-                        studentId: parentId,
-                        name: parentName,
-                        parentName: childName,
-                        className: childClass,
-                        role: 'parent'
-                    });
-
+                    .insert({ studentId: parentId, name: parentName, parentName: childName, className: childClass,
+                        role: 'parent' });
                 if (error) throw error;
-
                 newIdDiv.classList.remove('hidden');
                 document.getElementById('generatedIdText').textContent = parentId;
                 msg.innerHTML = '<div style="color:#6ee7b7;">✅ രജിസ്ട്രേഷൻ വിജയകരം!</div>';
@@ -1059,18 +1563,13 @@
 
         document.getElementById('copyIdBtn').addEventListener('click', function() {
             const text = document.getElementById('generatedIdText').textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                this.textContent = '✅ Copied!';
-                setTimeout(() => this.textContent = '📋 Copy ID', 2000);
-            }).catch(() => alert('Copy: ' + text));
+            copyToClipboard(text);
         });
 
         // ================================================================
         // FIND ID
         // ================================================================
-        function openFindId() {
-            document.getElementById('findIdModal').classList.remove('hidden');
-        }
+        function openFindId() { document.getElementById('findIdModal').classList.remove('hidden'); }
         document.getElementById('closeFindIdBtn').addEventListener('click', function() {
             document.getElementById('findIdModal').classList.add('hidden');
         });
@@ -1084,26 +1583,23 @@
             const name = document.getElementById('findName').value.trim();
             const result = document.getElementById('findResult');
             result.innerHTML = '<div class="text-muted"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
-            if (!cls || !name) {
-                result.innerHTML = '<div style="color:#f87171;">Select class and enter name</div>';
-                return;
-            }
-
+            if (!cls || !name) { result.innerHTML = '<div style="color:#f87171;">Select class and enter name</div>'; return; }
             try {
-                const { data, error } = await _supabase
+                const { data, error } = await supabase
                     .from('Student')
                     .select('studentId, name')
                     .eq('className', cls)
                     .ilike('name', name + '%')
                     .eq('role', 'parent');
-
                 if (error) throw error;
-
                 if (data && data.length > 0) {
-                    let html = `<div style="color:#6ee7b7;">Found ${data.length} parent(s):</div><ul class="list-unstyled mt-2">`;
+                    let html = `<div style="color:#6ee7b7;">Found ${data.length} parent(s):</div><ul class="list-unstyled mt-2" style="list-style:none;padding:0;">`;
                     data.forEach(s => {
                         html +=
-                            `<li class="flex-between" style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);"><span>${s.name}</span><span class="badge" style="background:#2563eb; padding:4px 12px; border-radius:30px; cursor:pointer;" onclick="copyToClipboard('${s.studentId}')">${s.studentId} <i class="fas fa-copy"></i></span></li>`;
+                            `<li class="flex-between" style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                                <span>${s.name}</span>
+                                <span style="background:#2563eb;padding:2px 12px;border-radius:30px;cursor:pointer;font-size:0.8rem;" onclick="copyToClipboard('${s.studentId}')">${s.studentId} <i class="fas fa-copy"></i></span>
+                            </li>`;
                     });
                     html += `</ul><p class="text-muted small">Click on ID to copy.</p>`;
                     result.innerHTML = html;
@@ -1115,29 +1611,9 @@
             }
         });
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => showToast('Copied: ' + text, 'success'))
-                .catch(() => {
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    showToast('Copied: ' + text, 'success');
-                });
-        }
-
         // ================================================================
-        // PARENT DASHBOARD (with View Questions button)
+        // PARENT DASHBOARD
         // ================================================================
-        window.questions = [];
-        window.answers = {};
-        window.isSubmitted = false;
-        window.currentAttemptId = null;
-        window.hasViewedQuestions = false;
-        window.quizStarted = false;
-
         async function renderParentDashboard() {
             if (!window.currentUser || !window.currentSession) return;
 
@@ -1146,20 +1622,68 @@
             const end = new Date(window.currentSession.endTime);
             const pubTime = new Date(end.getTime() + 5 * 60000);
 
-            ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
-                .forEach(id => document.getElementById(id).classList.add('hidden'));
+            // Determine next session for expiry
+            let nextSession = null;
+            if (window.allSessions && window.allSessions.length > 0) {
+                const idx = window.allSessions.findIndex(s => s.day === window.currentSession.day);
+                if (idx !== -1 && idx < window.allSessions.length - 1) {
+                    nextSession = window.allSessions[idx + 1];
+                }
+            }
+            const expiryTime = nextSession ? new Date(new Date(nextSession.startTime).getTime() - 30 * 60000) : new Date(end
+            .getTime() + 12 * 3600000);
 
-            if (now < start) {
-                document.getElementById('waitingMsg').classList.remove('hidden');
-                document.getElementById('waitingTimeText').textContent =
-                    `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
-                return;
-            } else if (now > end) {
-                await loadParentRanking(pubTime);
+            // Hide all status
+            ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea',
+                'submittedArea', 'rankingArea'
+            ].forEach(id => document.getElementById(id).classList.add('hidden'));
+
+            // Check if results are expired (30 min before next quiz)
+            if (nextSession && now > expiryTime) {
+                document.getElementById('resultsExpiredMsg').classList.remove('hidden');
+                // Still show ranking if available but with expiry message
+                await loadParentRankingWithExpiry(pubTime, expiryTime);
                 return;
             }
 
-            const { data: attempt } = await _supabase
+            if (now < start) {
+                document.getElementById('waitingMsg').classList.remove('hidden');
+                // Show countdown to start if within 30 min
+                const diff = Math.floor((start - now) / 1000);
+                if (diff <= 1800) {
+                    document.getElementById('waitingTimeText').innerHTML =
+                        `⏳ മത്സരം തുടങ്ങാൻ <strong>${formatCountdown(diff)}</strong> ശേഷിക്കുന്നു.`;
+                    startCountdownTimer(start, 'waiting');
+                } else {
+                    document.getElementById('waitingTimeText').textContent = `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
+                }
+                return;
+            } else if (now > end) {
+                // Quiz ended - check if results should be shown
+                if (now < pubTime) {
+                    // Within 5 min after end - show wait for results
+                    document.getElementById('endedMsg').classList.remove('hidden');
+                    document.getElementById('endedMsg').querySelector('h2').textContent = '📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക';
+                    document.getElementById('endedMsg').querySelector('p').innerHTML =
+                        `⏳ ഫലം ലഭ്യമാകാൻ <strong>${formatCountdown(Math.floor((pubTime - now)/1000))}</strong> ശേഷിക്കുന്നു.`;
+                    startCountdownTimer(pubTime, 'publication');
+                    // Load ranking data after pub time
+                    const check = setInterval(() => {
+                        if (new Date() > pubTime) {
+                            clearInterval(check);
+                            loadParentRankingWithExpiry(pubTime, expiryTime);
+                        }
+                    }, 5000);
+                    return;
+                } else {
+                    // Results available
+                    await loadParentRankingWithExpiry(pubTime, expiryTime);
+                    return;
+                }
+            }
+
+            // Quiz is active
+            const { data: attempt } = await supabase
                 .from('Attempt')
                 .select('id, status, score')
                 .eq('studentId', window.currentUser.id)
@@ -1170,11 +1694,11 @@
                 document.getElementById('submittedArea').classList.remove('hidden');
                 document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
                 if (now > pubTime) {
-                    await loadParentRanking(pubTime);
+                    await loadParentRankingWithExpiry(pubTime, expiryTime);
                 } else {
                     const check = setInterval(() => {
                         if (new Date() > pubTime) { clearInterval(check);
-                            loadParentRanking(pubTime); }
+                            loadParentRankingWithExpiry(pubTime, expiryTime); }
                     }, 5000);
                 }
                 return;
@@ -1194,7 +1718,7 @@
                 return;
             }
 
-            const { data: anyAttempt } = await _supabase
+            const { data: anyAttempt } = await supabase
                 .from('Attempt')
                 .select('id')
                 .eq('studentId', window.currentUser.id)
@@ -1221,7 +1745,7 @@
             document.getElementById('quizStatusMessage').textContent =
                 '⏳ ക്വിസ് ആരംഭിക്കാൻ തയ്യാറാണോ? "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക.';
 
-            const { data: qs } = await _supabase
+            const { data: qs } = await supabase
                 .from('Question')
                 .select('*')
                 .eq('sessionDay', window.currentSession.day)
@@ -1240,13 +1764,43 @@
             };
         }
 
+        function formatCountdown(seconds) {
+            if (seconds < 0) return '00:00';
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+
+        function startCountdownTimer(targetTime, type) {
+            if (window.pubInterval) clearInterval(window.pubInterval);
+            window.pubInterval = setInterval(() => {
+                const diff = Math.max(0, Math.floor((targetTime - new Date()) / 1000));
+                if (type === 'waiting') {
+                    const el = document.getElementById('waitingTimeText');
+                    if (el) el.innerHTML = `⏳ മത്സരം തുടങ്ങാൻ <strong>${formatCountdown(diff)}</strong> ശേഷിക്കുന്നു.`;
+                } else if (type === 'publication') {
+                    const el = document.getElementById('endedMsg')?.querySelector('p');
+                    if (el) el.innerHTML =
+                        `⏳ ഫലം ലഭ്യമാകാൻ <strong>${formatCountdown(diff)}</strong> ശേഷിക്കുന്നു.`;
+                    const pubTimer = document.getElementById('publicationTimer');
+                    if (pubTimer) pubTimer.textContent = formatCountdown(diff);
+                }
+                if (diff <= 0) {
+                    clearInterval(window.pubInterval);
+                    if (type === 'waiting') location.reload();
+                    else if (type === 'publication') {
+                        loadParentRankingWithExpiry(new Date(targetTime), new Date(targetTime.getTime() + 12 * 3600000));
+                    }
+                }
+            }, 1000);
+        }
+
         // ================================================================
         // CONFIRMATION MODAL
         // ================================================================
         document.getElementById('cancelConfirmBtn').addEventListener('click', function() {
             document.getElementById('confirmModal').classList.add('hidden');
         });
-
         document.getElementById('proceedConfirmBtn').addEventListener('click', async function() {
             document.getElementById('confirmModal').classList.add('hidden');
             await startParentQuiz(false);
@@ -1257,7 +1811,7 @@
         // ================================================================
         async function loadQuestionsAndStart(resume = false) {
             if (window.questions.length === 0) {
-                const { data: qs } = await _supabase
+                const { data: qs } = await supabase
                     .from('Question')
                     .select('*')
                     .eq('sessionDay', window.currentSession.day)
@@ -1278,16 +1832,12 @@
         async function startParentQuiz(resume = false) {
             try {
                 if (!resume && !window.currentAttemptId) {
-                    const { data: att, error: aErr } = await _supabase
+                    const { data: att, error: aErr } = await supabase
                         .from('Attempt')
-                        .insert({
-                            studentId: window.currentUser.id,
-                            sessionDay: window.currentSession.day,
-                            status: 'STARTED'
-                        })
+                        .insert({ studentId: window.currentUser.id, sessionDay: window.currentSession.day,
+                            status: 'STARTED' })
                         .select()
                         .single();
-
                     if (aErr) throw new Error('Failed to start quiz.');
                     window.currentAttemptId = att.id;
                     window.hasViewedQuestions = true;
@@ -1386,14 +1936,11 @@
                         entries.push({ attemptId: window.currentAttemptId, questionId: q.id, selectedOpt: sel });
                     }
                 }
-                if (entries.length) await _supabase.from('Answer').insert(entries);
-                await _supabase
+                if (entries.length) await supabase.from('Answer').insert(entries);
+                await supabase
                     .from('Attempt')
-                    .update({
-                        endTime: new Date().toISOString(),
-                        score: score,
-                        status: isTimeout ? 'TIMED_OUT' : 'COMPLETED'
-                    })
+                    .update({ endTime: new Date().toISOString(), score: score, status: isTimeout ? 'TIMED_OUT' :
+                            'COMPLETED' })
                     .eq('id', window.currentAttemptId);
 
                 document.getElementById('questionsArea').classList.add('hidden');
@@ -1404,14 +1951,20 @@
 
                 const end = new Date(window.currentSession.endTime);
                 const pubTime = new Date(end.getTime() + 5 * 60000);
+                let nextSession = null;
+                if (window.allSessions && window.allSessions.length > 0) {
+                    const idx = window.allSessions.findIndex(s => s.day === window.currentSession.day);
+                    if (idx !== -1 && idx < window.allSessions.length - 1) nextSession = window.allSessions[idx + 1];
+                }
+                const expiryTime = nextSession ? new Date(new Date(nextSession.startTime).getTime() - 30 * 60000) : new Date(
+                    pubTime.getTime() + 12 * 3600000);
+
                 if (new Date() > pubTime) {
-                    await loadParentRanking(pubTime);
+                    await loadParentRankingWithExpiry(pubTime, expiryTime);
                 } else {
                     const check = setInterval(() => {
-                        if (new Date() > pubTime) {
-                            clearInterval(check);
-                            loadParentRanking(pubTime);
-                        }
+                        if (new Date() > pubTime) { clearInterval(check);
+                            loadParentRankingWithExpiry(pubTime, expiryTime); }
                     }, 5000);
                 }
             } catch (err) {
@@ -1422,16 +1975,24 @@
         }
 
         // ================================================================
-        // PARENT RANKING
+        // PARENT RANKING (WITHOUT PARTICIPANT COUNT)
         // ================================================================
-        async function loadParentRanking(pubTime) {
+        async function loadParentRankingWithExpiry(pubTime, expiryTime) {
             document.getElementById('rankingArea').classList.remove('hidden');
             const now = new Date();
 
-            const expiryTime = new Date(pubTime.getTime() + 12 * 60 * 60 * 1000);
+            // Hide the participant count badge for parents
+            document.getElementById('rankCountBadge').textContent = '—';
+            document.getElementById('rankCountBadge').style.display = 'none';
+
+            // Show hint that participant count is hidden
+            const hint = document.getElementById('parentRankHint');
+            if (hint) hint.style.display = 'block';
+
+            // Check if results are expired
             if (now > expiryTime) {
                 document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-muted">⏳ ഫലം ഇപ്പോൾ ലഭ്യമല്ല. (12 മണിക്കൂർ കഴിഞ്ഞു)</div>';
+                    '<div class="text-center text-muted">⏳ ഫലം ഇനി ലഭ്യമല്ല. അടുത്ത മത്സരത്തിന് 30 മിനിറ്റ് മുമ്പ് മുതൽ ഫലം കാണാൻ സാധിക്കില്ല.</div>';
                 document.getElementById('publicationCountdown').classList.add('hidden');
                 return;
             }
@@ -1439,14 +2000,11 @@
             if (now < pubTime) {
                 document.getElementById('publicationCountdown').classList.remove('hidden');
                 document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-muted">⏳ Waiting for results...</div>';
+                    '<div class="text-center text-muted">⏳ ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക...</div>';
                 if (window.pubInterval) clearInterval(window.pubInterval);
                 window.pubInterval = setInterval(() => {
                     const diff = Math.max(0, Math.floor((pubTime - new Date()) / 1000));
-                    const mins = Math.floor(diff / 60);
-                    const secs = diff % 60;
-                    document.getElementById('publicationTimer').textContent =
-                        `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+                    document.getElementById('publicationTimer').textContent = formatCountdown(diff);
                     if (diff <= 0) {
                         clearInterval(window.pubInterval);
                         loadParentRankingData();
@@ -1464,22 +2022,21 @@
             container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
 
             try {
-                const { data: attempts } = await _supabase
+                const { data: attempts } = await supabase
                     .from('Attempt')
                     .select('*, Student(name)')
                     .eq('sessionDay', window.currentSession.day)
                     .eq('status', 'COMPLETED');
 
                 if (!attempts || attempts.length === 0) {
-                    container.innerHTML = '<div class="text-center text-muted">📭 No submissions yet.</div>';
-                    document.getElementById('rankCountBadge').textContent = '0 പേർ';
+                    container.innerHTML = '<div class="text-center text-muted">📭 ഇതുവരെ ആരും പങ്കെടുത്തിട്ടില്ല.</div>';
                     return;
                 }
 
                 const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
                 if (!myAttempt) {
-                    container.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
-                    document.getElementById('rankCountBadge').textContent = '0 പേർ';
+                    container.innerHTML =
+                    '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
                     return;
                 }
 
@@ -1493,21 +2050,22 @@
                 });
 
                 const rank = ranked.findIndex(a => a.id === myAttempt.id) + 1;
-                const total = ranked.length;
                 const score = myAttempt.score || 0;
                 const timeTaken = ranked.find(a => a.id === myAttempt.id).timeTaken || 0;
 
-                document.getElementById('rankCountBadge').textContent = `${rank} / ${total}`;
-
+                // Do NOT show total participants count
                 container.innerHTML = `
                     <div class="rank-item" style="border-color:var(--gold);background:rgba(251,191,36,0.03);">
-                        <div class="rank-num gold">${rank}</div>
+                        <div class="rank-num gold">#${rank}</div>
                         <div class="rank-name">${window.currentUser.name}</div>
                         <div class="rank-score">${score} മാർക്ക്</div>
                         <div class="rank-time">⏱️ ${timeTaken} സെ</div>
                     </div>
-                    <p style="text-align:center;color:#94a3b8;margin-top:12px;">(${total} പേരിൽ ${rank}-ാം സ്ഥാനം)</p>
+                    <p style="text-align:center;color:#94a3b8;margin-top:10px;font-size:0.85rem;">🏅 നിങ്ങളുടെ റാങ്ക്</p>
                 `;
+
+                // Hide badge completely
+                document.getElementById('rankCountBadge').style.display = 'none';
 
             } catch (err) {
                 container.innerHTML = '<div class="text-danger text-center">Error loading ranking.</div>';
@@ -1516,11 +2074,95 @@
         }
 
         // ================================================================
+        // PARENT HISTORY
+        // ================================================================
+        document.getElementById('showHistoryBtn').addEventListener('click', async function() {
+            document.getElementById('historyModal').classList.remove('hidden');
+            await loadParentHistory();
+        });
+        document.getElementById('closeHistoryBtn').addEventListener('click', function() {
+            document.getElementById('historyModal').classList.add('hidden');
+        });
+        document.getElementById('historyModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.add('hidden');
+        });
+
+        async function loadParentHistory() {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+
+            try {
+                const { data: attempts } = await supabase
+                    .from('Attempt')
+                    .select('*, Student(name)')
+                    .eq('studentId', window.currentUser.id)
+                    .eq('status', 'COMPLETED')
+                    .order('sessionDay', { ascending: true });
+
+                if (!attempts || attempts.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted">📭 നിങ്ങൾ ഇതുവരെ ഒരു മത്സരത്തിലും പങ്കെടുത്തിട്ടില്ല.</div>';
+                    return;
+                }
+
+                // Get all sessions for day info
+                const { data: sessions } = await supabase
+                    .from('QuizSession')
+                    .select('*')
+                    .order('day', { ascending: true });
+                const sessionMap = {};
+                if (sessions) sessions.forEach(s => sessionMap[s.day] = s);
+
+                // For each attempt, calculate rank among participants for that day
+                let html =
+                    `<table style="width:100%;border-collapse:collapse;font-size:0.85rem;"><thead><tr style="border-bottom:1px solid rgba(255,255,255,0.06);"><th style="text-align:left;padding:8px 6px;color:#94a3b8;">Day</th><th style="text-align:left;padding:8px 6px;color:#94a3b8;">Date</th><th style="text-align:center;padding:8px 6px;color:#94a3b8;">Score</th><th style="text-align:center;padding:8px 6px;color:#94a3b8;">Rank</th><th style="text-align:center;padding:8px 6px;color:#94a3b8;">Time</th></tr></thead><tbody>`;
+
+                for (const att of attempts) {
+                    // Get all attempts for this day to calculate rank
+                    const { data: allDay } = await supabase
+                        .from('Attempt')
+                        .select('*, Student(name)')
+                        .eq('sessionDay', att.sessionDay)
+                        .eq('status', 'COMPLETED');
+
+                    let rank = '—';
+                    if (allDay && allDay.length > 0) {
+                        const sorted = allDay.map(a => ({
+                            ...a,
+                            timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000)
+                        }));
+                        sorted.sort((a, b) => {
+                            if (a.score !== b.score) return (b.score || 0) - (a.score || 0);
+                            return (a.timeTaken || 9999) - (b.timeTaken || 9999);
+                        });
+                        const idx = sorted.findIndex(a => a.id === att.id);
+                        if (idx !== -1) rank = idx + 1;
+                    }
+
+                    const session = sessionMap[att.sessionDay];
+                    const dateStr = session ? formatDateShort(session.startTime) : '—';
+                    const timeTaken = Math.floor((new Date(att.endTime) - new Date(att.startTime)) / 1000);
+
+                    html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+                        <td style="padding:8px 6px;font-weight:600;">Day ${att.sessionDay}</td>
+                        <td style="padding:8px 6px;color:#94a3b8;font-size:0.8rem;">${dateStr}</td>
+                        <td style="padding:8px 6px;text-align:center;color:var(--gold);font-weight:700;">${att.score ?? 0}</td>
+                        <td style="padding:8px 6px;text-align:center;font-weight:600;">#${rank}</td>
+                        <td style="padding:8px 6px;text-align:center;color:#94a3b8;font-size:0.75rem;">${timeTaken} സെ</td>
+                    </tr>`;
+                }
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+
+            } catch (err) {
+                container.innerHTML = '<div class="text-danger text-center">Error loading history.</div>';
+                showToast(err.message, 'error');
+            }
+        }
+
+        // ================================================================
         // ADMIN PANEL
         // ================================================================
-        window.adminCurrentDay = 1;
-        window.questionsCache = [];
-
         function switchAdminTab(tab) {
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`.admin-tab[data-tab="${tab}"]`).classList.add('active');
@@ -1540,7 +2182,7 @@
 
         async function loadSessionSummary() {
             try {
-                const { data: sessions } = await _supabase
+                const { data: sessions } = await supabase
                     .from('QuizSession')
                     .select('*')
                     .order('day', { ascending: true });
@@ -1553,6 +2195,7 @@
                 if (!active) active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
                 document.getElementById('todaySessionInfo').innerHTML =
                     `Day ${active.day} | ${formatDate(active.startTime)} → ${formatDate(active.endTime)} | ${active.duration} min`;
+                window.allSessions = sessions;
             } catch (err) {
                 document.getElementById('todaySessionInfo').innerHTML = 'Error loading.';
             }
@@ -1571,18 +2214,13 @@
             if (!startUTC || !endUTC) { showToast('Invalid date/time', 'error'); return; }
 
             try {
-                const { data: existing } = await _supabase
+                const { data: existing } = await supabase
                     .from('QuizSession')
                     .select('day')
                     .eq('day', day)
                     .maybeSingle();
                 if (existing) { showToast('Day ' + day + ' already exists', 'error'); return; }
-                await _supabase.from('QuizSession').insert({
-                    day,
-                    startTime: startUTC,
-                    endTime: endUTC,
-                    duration
-                });
+                await supabase.from('QuizSession').insert({ day, startTime: startUTC, endTime: endUTC, duration });
                 showToast('✅ Day ' + day + ' added', 'success');
                 document.getElementById('newDay').value = '';
                 document.getElementById('newStart').value = '';
@@ -1596,7 +2234,7 @@
         window.deleteDay = async function(day) {
             if (!confirm('Delete Day ' + day + ' and all its questions?')) return;
             try {
-                await _supabase.from('QuizSession').delete().eq('day', day);
+                await supabase.from('QuizSession').delete().eq('day', day);
                 showToast('🗑️ Day ' + day + ' deleted', 'success');
                 await loadSessions();
                 await loadSessionSummary();
@@ -1616,7 +2254,7 @@
             if (!startUTC || !endUTC) { showToast('Invalid date/time', 'error'); return; }
 
             try {
-                await _supabase
+                await supabase
                     .from('QuizSession')
                     .update({ startTime: startUTC, endTime: endUTC, duration, updatedAt: new Date() })
                     .eq('day', day);
@@ -1630,16 +2268,15 @@
             const table = document.getElementById('adminSessionsTable');
             table.innerHTML = '<div class="text-center text-muted">Loading...</div>';
             try {
-                const { data: sessions } = await _supabase
+                const { data: sessions } = await supabase
                     .from('QuizSession')
                     .select('*')
                     .order('day', { ascending: true });
                 if (!sessions || sessions.length === 0) {
                     table.innerHTML = '<div class="text-center text-muted">No days. Add one above.</div>';
                     document.getElementById('quickDay').innerHTML = '<option value="">No days</option>';
-                    document.getElementById('questionDayTabs').innerHTML = '';
-                    document.getElementById('rankDayTabs').innerHTML = '';
                     document.getElementById('adminDayTabsContainer').innerHTML = '';
+                    document.getElementById('rankDayTabs').innerHTML = '';
                     return;
                 }
 
@@ -1652,15 +2289,16 @@
                 document.getElementById('quickEnd').value = utcToLocal(first.endTime);
                 document.getElementById('quickDuration').value = first.duration || 15;
 
-                let html = `<table><thead><tr><th>Day</th><th>Start</th><th>End</th><th>Duration</th><th>Actions</th></tr></thead><tbody>`;
+                let html =
+                    `<table><thead><tr><th>Day</th><th>Start</th><th>End</th><th>Duration</th><th>Actions</th></tr></thead><tbody>`;
                 sessions.forEach(s => {
                     const localStart = utcToLocal(s.startTime);
                     const localEnd = utcToLocal(s.endTime);
                     html += `<tr>
                         <td><strong>Day ${s.day}</strong></td>
-                        <td><input type="datetime-local" class="edit-start" value="${localStart}" style="min-width:160px;" /></td>
-                        <td><input type="datetime-local" class="edit-end" value="${localEnd}" style="min-width:160px;" /></td>
-                        <td><input type="number" class="edit-duration" value="${s.duration}" style="width:80px;" /></td>
+                        <td><input type="datetime-local" class="edit-start" value="${localStart}" style="min-width:140px;" /></td>
+                        <td><input type="datetime-local" class="edit-end" value="${localEnd}" style="min-width:140px;" /></td>
+                        <td><input type="number" class="edit-duration" value="${s.duration}" style="width:60px;" /></td>
                         <td>
                             <button class="btn btn-primary btn-sm update-row-btn" data-day="${s.day}">💾 Update</button>
                             <button class="btn btn-danger btn-sm" onclick="deleteDay(${s.day})">🗑️</button>
@@ -1686,22 +2324,24 @@
                         this.disabled = true;
                         this.innerHTML = '⏳';
                         try {
-                            await _supabase
+                            await supabase
                                 .from('QuizSession')
-                                .update({ startTime: startUTC, endTime: endUTC, duration: dur, updatedAt: new Date() })
+                                .update({ startTime: startUTC, endTime: endUTC, duration: dur,
+                                    updatedAt: new Date() })
                                 .eq('day', day);
                             showToast('✅ Day ' + day + ' updated', 'success');
                             await loadSessions();
                             await loadSessionSummary();
-                        } catch (err) { showToast('Error: ' + err.message, 'error'); } finally { this.disabled = false;
+                        } catch (err) { showToast('Error: ' + err.message, 'error'); } finally { this
+                                .disabled = false;
                             this.innerHTML = '💾 Update'; }
                     });
                 });
 
                 const days = sessions.map(s => s.day);
-                const qContainer = document.getElementById('questionDayTabs');
-                if (qContainer) {
-                    qContainer.innerHTML = days.map(d =>
+                const aContainer = document.getElementById('adminDayTabsContainer');
+                if (aContainer) {
+                    aContainer.innerHTML = days.map(d =>
                         `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
                     ).join('');
                 }
@@ -1713,12 +2353,7 @@
                     ).join('');
                 }
 
-                const aContainer = document.getElementById('adminDayTabsContainer');
-                if (aContainer) {
-                    aContainer.innerHTML = days.map(d =>
-                        `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
-                    ).join('');
-                }
+                window.allSessions = sessions;
 
             } catch (err) {
                 table.innerHTML = '<div class="text-center text-muted">Error loading</div>';
@@ -1756,7 +2391,7 @@
 
             if (!day || !text || opts.some(o => !o)) { showToast('Fill all fields', 'error'); return; }
 
-            const { data: dayExists } = await _supabase
+            const { data: dayExists } = await supabase
                 .from('QuizSession')
                 .select('day')
                 .eq('day', day)
@@ -1767,12 +2402,12 @@
             this.innerHTML = '⏳';
             try {
                 if (editId) {
-                    await _supabase
+                    await supabase
                         .from('Question')
                         .update({ sessionDay: day, questionText: text, options: opts, correctAnswer: correct })
                         .eq('id', editId);
                 } else {
-                    await _supabase
+                    await supabase
                         .from('Question')
                         .insert({ sessionDay: day, questionText: text, options: opts, correctAnswer: correct });
                 }
@@ -1801,7 +2436,7 @@
         window.deleteQuestion = async function(id) {
             if (!confirm('Delete this question?')) return;
             try {
-                await _supabase.from('Question').delete().eq('id', id);
+                await supabase.from('Question').delete().eq('id', id);
                 showToast('Deleted', 'success');
                 await loadAdminQuestions(window.adminCurrentDay);
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
@@ -1812,7 +2447,7 @@
             const table = document.getElementById('adminQuestionsTable');
             table.innerHTML = '<div class="text-center text-muted">Loading...</div>';
             try {
-                const { data: qs } = await _supabase
+                const { data: qs } = await supabase
                     .from('Question')
                     .select('*')
                     .eq('sessionDay', day)
@@ -1822,7 +2457,8 @@
                     table.innerHTML = '<div class="text-center text-muted">No questions for this day.</div>';
                     return;
                 }
-                let html = `<table><thead><tr><th>#</th><th>Question</th><th>Options</th><th>Correct</th><th>Actions</th></tr></thead><tbody>`;
+                let html =
+                    `<table><thead><tr><th>#</th><th>Question</th><th>Options</th><th>Correct</th><th>Actions</th></tr></thead><tbody>`;
                 window.questionsCache.forEach((q, i) => {
                     html += `<tr>
                         <td>${i+1}</td>
@@ -1848,12 +2484,12 @@
             }
         }
 
-        // ---- ADMIN RANKINGS ----
+        // ---- Admin Rankings ----
         async function loadAdminRankings(day) {
             const container = document.getElementById('adminRankListContainer');
             container.innerHTML = '<div class="text-center text-muted">Loading...</div>';
             try {
-                const { data: attempts } = await _supabase
+                const { data: attempts } = await supabase
                     .from('Attempt')
                     .select('*, Student(name)')
                     .eq('sessionDay', day)
@@ -1873,7 +2509,8 @@
                     return (a.timeTaken || 9999) - (b.timeTaken || 9999);
                 });
 
-                let html = `<table><thead><tr><th>Rank</th><th>Parent</th><th>Score</th><th>Time Taken</th><th>Submitted</th></tr></thead><tbody>`;
+                let html =
+                    `<table><thead><tr><th>Rank</th><th>Parent</th><th>Score</th><th>Time Taken</th><th>Submitted</th></tr></thead><tbody>`;
                 ranked.forEach((r, idx) => {
                     const rank = idx + 1;
                     let medal = '';
@@ -1914,7 +2551,9 @@
                 '5. Click "View Questions" to start quiz\n' +
                 '6. Once started, cannot re-enter today\n' +
                 '7. Rankings appear after session ends (+5 min)\n' +
-                '8. Rankings show Submit Time'
+                '8. Results visible until 30 min before next quiz\n' +
+                '9. Participant count is hidden from parents\n' +
+                '10. Admin hints are only visible to admins'
             );
         }
 
@@ -1928,10 +2567,16 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Quiz System Ready (Polished UI)');
+        console.log('🚀 Daily Meelad Quiz System (Mobile Friendly)');
         console.log('🔑 Admin: ADMIN123');
-        console.log('✅ Multiple logins allowed per day');
-        console.log('✅ "View Questions" restricted to once per day');
+        console.log('✅ Features:');
+        console.log('   - Mobile-first design');
+        console.log('   - Yellow blinking "NEW? REGISTER"');
+        console.log('   - Parent history with points, rank, time');
+        console.log('   - Admin overall ranking tables');
+        console.log('   - Participant count hidden from parents');
+        console.log('   - Results expire 30 min before next quiz');
+        console.log('   - Countdown timer with wait-for-results state');
     </script>
 
 </body>
