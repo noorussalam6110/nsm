@@ -44,7 +44,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* vertically centered */
             padding: 16px;
             color: #fff;
         }
@@ -57,8 +56,8 @@
         }
 
         /* ================================================================
-               LOADING OVERLAY — Attractive with wishing message
-               ================================================================ */
+           LOADING OVERLAY — Attractive with wishing message
+           ================================================================ */
         #loadingOverlay {
             position: fixed;
             inset: 0;
@@ -244,8 +243,8 @@
         }
 
         /* ================================================================
-               GLASS CARD
-               ================================================================ */
+           GLASS CARD
+           ================================================================ */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(18px);
@@ -262,8 +261,8 @@
         }
 
         /* ================================================================
-               LOGIN PANEL — perfectly centered on mobile
-               ================================================================ */
+           LOGIN PANEL — perfectly centered on mobile
+           ================================================================ */
         #loginSection {
             width: 100%;
             max-width: 440px;
@@ -410,6 +409,23 @@
         }
 
         /* ---- FORM ---- */
+        .login-field-group {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 2px;
+        }
+
+        .login-field-label {
+            display: block;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            padding-left: 4px;
+            opacity: 0.7;
+        }
+
         .login-input-wrap {
             background: rgba(255, 255, 255, 0.04);
             border-radius: 1.2rem;
@@ -515,8 +531,8 @@
         }
 
         /* ================================================================
-               BUTTONS
-               ================================================================ */
+           BUTTONS
+           ================================================================ */
         .btn {
             border: none;
             cursor: pointer;
@@ -531,6 +547,7 @@
             gap: 8px;
             font-size: 0.95rem;
             min-height: 48px;
+            flex-shrink: 0;
         }
 
         .btn-primary {
@@ -657,8 +674,8 @@
         }
 
         /* ================================================================
-               MODALS
-               ================================================================ */
+           MODALS
+           ================================================================ */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -792,8 +809,8 @@
         }
 
         /* ================================================================
-               DASHBOARD HEADER
-               ================================================================ */
+           DASHBOARD HEADER
+           ================================================================ */
         .dashboard-header {
             background: rgba(10, 20, 40, 0.6);
             backdrop-filter: blur(20px);
@@ -823,8 +840,8 @@
         }
 
         /* ================================================================
-               STATS GRID
-               ================================================================ */
+           STATS GRID
+           ================================================================ */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -860,8 +877,8 @@
         }
 
         /* ================================================================
-               TIMER
-               ================================================================ */
+           TIMER
+           ================================================================ */
         .timer-wrapper {
             display: flex;
             flex-direction: column;
@@ -933,8 +950,8 @@
         }
 
         /* ================================================================
-               QUESTIONS
-               ================================================================ */
+           QUESTIONS
+           ================================================================ */
         .question-card {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 1.2rem;
@@ -989,8 +1006,8 @@
         }
 
         /* ================================================================
-               RANKING
-               ================================================================ */
+           RANKING
+           ================================================================ */
         .rank-item {
             display: flex;
             align-items: center;
@@ -1035,8 +1052,8 @@
         }
 
         /* ================================================================
-               ADMIN TABLES — IMPROVED ALIGNMENT
-               ================================================================ */
+           ADMIN TABLES — IMPROVED ALIGNMENT
+           ================================================================ */
         .admin-tabs {
             display: flex;
             gap: 6px;
@@ -1071,6 +1088,7 @@
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             background: rgba(0, 0, 0, 0.15);
+            -webkit-overflow-scrolling: touch;
         }
         .admin-table-wrap table {
             width: 100%;
@@ -1098,7 +1116,7 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* Admin form rows — better alignment */
+        /* Admin form rows — improved mobile alignment */
         .admin-form-row {
             display: flex;
             flex-wrap: wrap;
@@ -1187,8 +1205,8 @@
         }
 
         /* ================================================================
-               STATUS BOXES
-               ================================================================ */
+           STATUS BOXES
+           ================================================================ */
         .status-box {
             text-align: center;
             padding: 40px 20px;
@@ -1257,8 +1275,8 @@
         }
 
         /* ================================================================
-               TOAST
-               ================================================================ */
+           TOAST
+           ================================================================ */
         .toast-container {
             position: fixed;
             bottom: 20px;
@@ -1309,8 +1327,8 @@
         }
 
         /* ================================================================
-               HELP BUTTON
-               ================================================================ */
+           HELP BUTTON
+           ================================================================ */
         .help-btn {
             position: fixed;
             bottom: 18px;
@@ -1339,44 +1357,109 @@
         }
 
         /* ================================================================
-               RESPONSIVE
-               ================================================================ */
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 6px 12px;
+            }
+            .glass-card {
+                padding: 16px;
+                border-radius: 1.5rem;
+            }
+            .admin-form-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .admin-form-row>* {
+                min-width: unset;
+                width: 100%;
+            }
+            .admin-form-row .flex-grow {
+                flex: unset;
+            }
+            .admin-form-row input,
+            .admin-form-row select,
+            .admin-form-row textarea {
+                width: 100%;
+            }
+            .admin-form-row .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .admin-section-box {
+                padding: 12px;
+            }
+            .admin-tabs {
+                justify-content: center;
+            }
+            .admin-tab {
+                font-size: 0.7rem;
+                padding: 6px 14px;
+                flex: 1 1 auto;
+                text-align: center;
+                min-width: 80px;
+            }
+            .day-tabs {
+                justify-content: center;
+            }
+            .day-tab {
+                font-size: 0.7rem;
+                padding: 5px 12px;
+            }
+            .admin-table-wrap table {
+                font-size: 0.75rem;
+                min-width: 280px;
+            }
+            .admin-table-wrap th,
+            .admin-table-wrap td {
+                padding: 8px 10px;
+            }
+            .overall-rank-btn-wrap .btn {
+                min-width: 140px;
+                font-size: 0.85rem;
+                padding: 10px 20px;
+                width: 100%;
+            }
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 12px;
                 align-items: center;
             }
             .container {
-                padding: 0 6px 12px;
+                padding: 0 4px 10px;
             }
             .login-panel {
-                padding: 1.6rem 1.2rem 1.6rem;
+                padding: 1.4rem 1rem 1.4rem;
                 border-radius: 2rem;
             }
             .institution-name {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
             .institution-sub {
-                font-size: 0.6rem;
-                letter-spacing: 3px;
+                font-size: 0.55rem;
+                letter-spacing: 2px;
             }
             .institution-deco {
-                width: 36px;
+                width: 30px;
                 height: 2px;
             }
             .login-header .title-main {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             .login-header .logo-icon {
-                width: 42px;
-                height: 42px;
-                border-radius: 14px;
+                width: 38px;
+                height: 38px;
+                border-radius: 12px;
             }
             .login-header .logo-icon i {
-                font-size: 18px;
+                font-size: 16px;
             }
             .login-input-wrap {
-                padding: 0 14px;
+                padding: 0 12px;
                 border-radius: 1rem;
             }
             .login-input-wrap input {
@@ -1384,95 +1467,122 @@
                 font-size: 0.9rem;
             }
             .login-actions .btn {
-                min-height: 44px;
-                font-size: 0.9rem;
+                min-height: 42px;
+                font-size: 0.85rem;
             }
             .btn-register-blink {
-                font-size: 0.85rem;
-                padding: 8px 16px;
+                font-size: 0.8rem;
+                padding: 8px 14px;
             }
             .loading-title {
-                font-size: 1.4rem;
+                font-size: 1.3rem;
             }
             .loading-logo {
-                width: 64px;
-                height: 64px;
-                border-radius: 20px;
+                width: 56px;
+                height: 56px;
+                border-radius: 18px;
             }
             .loading-logo i {
-                font-size: 30px;
+                font-size: 26px;
             }
             .loading-wishing {
-                font-size: 0.95rem;
-                max-width: 260px;
+                font-size: 0.85rem;
+                max-width: 220px;
             }
             .loading-spinner {
-                width: 44px;
-                height: 44px;
+                width: 38px;
+                height: 38px;
                 border-width: 3px;
             }
             .loading-progress {
-                width: 140px;
+                width: 120px;
             }
             .modal-glass {
-                padding: 20px;
-                border-radius: 1.4rem;
+                padding: 16px;
+                border-radius: 1.2rem;
             }
             .modal-glass h3 {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 10px;
+                gap: 8px;
             }
             .stat-value {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
+            }
+            .stat-card {
+                padding: 12px;
             }
             .dashboard-header {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 12px;
-                padding: 14px 16px;
-                border-radius: 1.5rem;
+                gap: 10px;
+                padding: 12px 14px;
+                border-radius: 1.2rem;
             }
             .timer-ring-container {
-                width: 110px;
-                height: 110px;
+                width: 100px;
+                height: 100px;
             }
             .timer-ring-container svg {
-                width: 110px;
-                height: 110px;
+                width: 100px;
+                height: 100px;
             }
             .timer-ring-container .timer-text {
-                font-size: 26px;
-            }
-            .admin-tab {
-                font-size: 0.7rem;
-                padding: 6px 14px;
-            }
-            .admin-table-wrap table {
-                font-size: 0.75rem;
-                min-width: 280px;
-            }
-            .admin-form-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 6px;
-            }
-            .admin-form-row>* {
-                min-width: unset;
+                font-size: 22px;
             }
             .help-btn {
-                bottom: 12px;
-                right: 12px;
-                padding: 6px 12px;
-                font-size: 0.7rem;
+                bottom: 10px;
+                right: 10px;
+                padding: 5px 10px;
+                font-size: 0.65rem;
             }
             .help-btn span {
                 display: none;
             }
             .glass-card {
-                padding: 16px;
+                padding: 12px;
+                border-radius: 1.2rem;
+            }
+            .question-card {
+                padding: 14px;
+            }
+            .question-title {
+                font-size: 0.95rem;
+            }
+            .opt-btn {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            .admin-tabs {
+                gap: 4px;
+            }
+            .admin-tab {
+                font-size: 0.65rem;
+                padding: 5px 10px;
+                min-width: 60px;
+            }
+            .admin-form-row {
+                gap: 6px;
+            }
+            .admin-form-row input,
+            .admin-form-row select,
+            .admin-form-row textarea {
+                font-size: 0.8rem;
+                padding: 7px 12px;
+            }
+            .admin-table-wrap table {
+                font-size: 0.7rem;
+                min-width: 240px;
+            }
+            .admin-table-wrap th,
+            .admin-table-wrap td {
+                padding: 6px 8px;
+            }
+            .day-tab {
+                font-size: 0.65rem;
+                padding: 4px 10px;
             }
         }
 
@@ -1482,46 +1592,55 @@
                 align-items: center;
             }
             .login-panel {
-                padding: 1.2rem 0.8rem 1.2rem;
-                border-radius: 1.6rem;
+                padding: 1rem 0.7rem 1rem;
+                border-radius: 1.4rem;
             }
             .institution-name {
-                font-size: 1.1rem;
-            }
-            .login-header .title-main {
                 font-size: 1rem;
             }
+            .login-header .title-main {
+                font-size: 0.95rem;
+            }
             .login-header .logo-icon {
-                width: 34px;
-                height: 34px;
+                width: 30px;
+                height: 30px;
             }
             .login-header .logo-icon i {
-                font-size: 14px;
+                font-size: 12px;
             }
             .login-input-wrap input {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 padding: 10px 0;
             }
             .login-actions .btn {
-                min-height: 38px;
-                font-size: 0.8rem;
+                min-height: 36px;
+                font-size: 0.75rem;
             }
             .btn-register-blink {
-                font-size: 0.75rem;
-                padding: 6px 12px;
+                font-size: 0.7rem;
+                padding: 5px 10px;
             }
             .loading-title {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 6px;
+                gap: 4px;
             }
             .stat-card {
-                padding: 12px;
+                padding: 8px;
             }
             .stat-value {
-                font-size: 1.5rem;
+                font-size: 1.2rem;
+            }
+            .admin-tab {
+                font-size: 0.6rem;
+                padding: 4px 8px;
+                min-width: 50px;
+            }
+            .day-tab {
+                font-size: 0.6rem;
+                padding: 3px 8px;
             }
         }
 
@@ -1585,8 +1704,8 @@
 
                 <!-- ===== INSTITUTION NAME AT TOP ===== -->
                 <div class="institution-header">
-                    <div class="institution-name">NOORUSSALAM MADRASA</div>
-                    <div class="institution-sub"><i class="fas fa-ribbon"></i> മീലാദ് ക്വിസ് 2026 <i class="fas fa-ribbon"></i></div>
+                    <div class="institution-name">SKSBV NOORUSSALAM MADRASA</div>
+                    <div class="institution-sub"><i class="fas fa-ribbon"></i> മിസ്‌കെ കമാൽ-2 <i class="fas fa-ribbon"></i></div>
                     <div class="institution-deco"></div>
                 </div>
 
@@ -1596,19 +1715,23 @@
                         <div class="logo-icon"><i class="fas fa-users"></i></div>
                         <span class="title-main">രക്ഷിതാക്കൾക്കായുള്ള മത്സരം</span>
                     </div>
-                    <div class="title-sub"><i class="fas fa-lock"></i> പ്രവേശനം</div>
+                    <div class="title-sub"><i class="fas fa-lock"></i>LOG IN</div>
                 </div>
 
                 <!-- ===== LOGIN FORM ===== -->
                 <form id="loginForm">
-                    <div class="login-input-wrap">
-                        <i class="fas fa-id-card"></i>
-                        <input type="text" id="loginIdInput" placeholder="ID നൽകുക (PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" />
+                    <!-- PARENT ID LABEL above input — white color -->
+                    <div class="login-field-group">
+                        <label class="login-field-label"><i class="fas fa-id-card" style="margin-right:6px;opacity:0.5;"></i>PARENT ID</label>
+                        <div class="login-input-wrap">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="loginIdInput" placeholder="ID നൽകുക (PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" />
+                        </div>
                     </div>
 
                     <div class="login-remember">
                         <input type="checkbox" id="rememberMe" checked />
-                        <label for="rememberMe">എന്നെ ഓർക്കുക</label>
+                        <label for="rememberMe">Remember Me</label>
                     </div>
 
                     <div class="login-actions">
@@ -1617,7 +1740,7 @@
                         </button>
 
                         <button type="button" class="btn btn-block btn-register-blink" id="showRegisterBtn">
-                            <i class="fas fa-user-plus"></i> പുതിയത്? രജിസ്റ്റർ ചെയ്യുക
+                            <i class="fas fa-user-plus"></i> പുതിയ രക്ഷിതാവ് രജിസ്ട്രേഷൻ
                         </button>
                     </div>
 
@@ -1848,7 +1971,7 @@
         </div>
 
         <!-- ================================================================
-        ADMIN DASHBOARD — IMPROVED ALIGNMENT
+        ADMIN DASHBOARD — IMPROVED MOBILE ALIGNMENT
         ================================================================ -->
         <div id="adminDashboard" class="hidden">
             <div class="dashboard-header">
@@ -2121,10 +2244,6 @@
 
                 // Admin login — check against secure config
                 if (user.role === 'admin') {
-                    // The admin password is verified via the studentId match
-                    // The actual password "ADMIN123" is stored in the ADMIN_CONFIG
-                    // but the login uses the studentId field which must contain the password.
-                    // For security, we check that the ID matches the admin password.
                     if (id !== ADMIN_CONFIG.password) {
                         throw new Error('അസാധുവായ അഡ്മിൻ ഐഡി.');
                     }
@@ -3327,8 +3446,7 @@
                 '6. സമയപരിധിക്കുള്ളിൽ എല്ലാ ഉത്തരങ്ങളും സമർപ്പിക്കുക.\n' +
                 '7. സമർപ്പിച്ച ശേഷം ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക.\n' +
                 '8. "എന്റെ മത്സര ചരിത്രം" വഴി മുൻ ദിവസങ്ങളിലെ സ്കോറുകൾ കാണാം.\n' +
-                '9. ഓരോ ദിവസവും ഒരു ക്വിസ് മാത്രമേ പങ്കെടുക്കാൻ സാധിക്കൂ.\n\n' +
-                '✨ ഭാഗ്യം!'
+                '9. ഓരോ ദിവസവും ഒരു ക്വിസ് മാത്രമേ പങ്കെടുക്കാൻ സാധിക്കൂ.'
             );
         }
 
