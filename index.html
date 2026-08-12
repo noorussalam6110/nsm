@@ -840,7 +840,7 @@
         }
 
         /* ================================================================
-           STATS GRID
+           STATS GRID — only two stat cards now (removed score)
            ================================================================ */
         .stats-grid {
             display: grid;
@@ -1844,10 +1844,10 @@
                 </div>
             </div>
 
+            <!-- Stats Grid: only day and question count (score removed) -->
             <div class="stats-grid">
                 <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">ദിവസം 1</span><div class="text-muted" style="font-size:0.8rem;">ഇന്നത്തെ ക്വിസ്</div></div></div>
                 <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="text-muted" style="font-size:0.8rem;">ചോദ്യങ്ങൾ</div></div></div>
-                <div class="stat-card"><div><span class="stat-value gold" id="scoreDisplay">—</span><div class="text-muted" style="font-size:0.8rem;">നിങ്ങളുടെ സ്കോർ</div></div></div>
             </div>
 
             <!-- Timer -->
@@ -1878,6 +1878,12 @@
                     <div class="icon">⏰</div>
                     <h2>ഫലം ഇനി ലഭ്യമല്ല</h2>
                     <p>അടുത്ത മത്സരത്തിന് 30 മിനിറ്റ് മുമ്പ് മുതൽ ഫലം കാണാൻ സാധിക്കില്ല.</p>
+                </div>
+                <!-- New: Pre-start countdown -->
+                <div class="status-box hidden" id="preStartMsg">
+                    <div class="icon">⏳</div>
+                    <h2>മത്സരം തുടങ്ങാറായി</h2>
+                    <p id="preStartText">തുടങ്ങാൻ <strong>--:--</strong> ശേഷിക്കുന്നു</p>
                 </div>
             </div>
 
@@ -2264,8 +2270,20 @@
                 if (!sessions || sessions.length === 0) throw new Error('സെഷനുകൾ ലഭ്യമല്ല.');
 
                 const now = new Date();
+                // Find active session (now between start and end) OR next session within 30 minutes before start
                 let active = sessions.find(s => now >= new Date(s.startTime) && now <= new Date(s.endTime));
-                if (!active) active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
+                if (!active) {
+                    // find the session that starts within the next 30 minutes
+                    active = sessions.find(s => {
+                        const start = new Date(s.startTime);
+                        const diff = (start - now) / 60000; // minutes
+                        return diff > 0 && diff <= 30;
+                    });
+                }
+                if (!active) {
+                    // fallback: next upcoming session
+                    active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
+                }
 
                 await _supabase.from('LoginTrack').insert({ studentId: user.id, day: active.day });
 
@@ -2478,28 +2496,141 @@
                 expiryTime = new Date(rankRevealTime.getTime() + 12 * 3600000); // fallback 12 hours after reveal
             }
 
-            ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea',
+            // visibility start: 30 minutes before start
+            const visibilityStart = new Date(start.getTime() - 30 * 60000);
+
+            ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'preStartMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea',
                 'submittedArea', 'rankingArea'
             ].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('publicationCountdown').classList.add('hidden');
             document.getElementById('resultsExpiryCountdown').classList.add('hidden');
 
-            if (now < start) {
+            // Case 1: Before visibility window
+            if (now < visibilityStart) {
                 document.getElementById('waitingMsg').classList.remove('hidden');
-                const diff = Math.floor((start - now) / 1000);
-                if (diff <= 1800) {
+                const diff = Math.floor((visibilityStart - now) / 1000);
+                if (diff <= 3600) {
                     document.getElementById('waitingTimeText').innerHTML =
-                        `⏳ മത്സരം തുടങ്ങാൻ <strong>${formatCountdown(diff)}</strong> ശേഷിക്കുന്നു.`;
-                    startCountdownTimer(start, 'start');
+                        `⏳ മത്സരം ലഭ്യമാകാൻ <strong>${formatCountdown(diff)}</strong> ശേഷിക്കുന്നു.`;
+                    startCountdownTimer(visibilityStart, 'visibility');
                 } else {
                     document.getElementById('waitingTimeText').textContent =
-                        `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
+                        `ദയവായി ${formatDate(visibilityStart)} ന് ശേഷം വീണ്ടും പരിശോധിക്കുക.`;
                 }
                 return;
             }
 
+            // Case 2: Within 30 minutes before start but not yet started
+            if (now >= visibilityStart && now < start) {
+                document.getElementById('preStartMsg').classList.remove('hidden');
+                const diff = Math.floor((start - now) / 1000);
+                document.getElementById('preStartText').innerHTML =
+                    `തുടങ്ങാൻ <strong>${formatCountdown(diff)}</strong> ശേഷിക്കുന്നു`;
+                startCountdownTimer(start, 'preStart');
+
+                // Load questions to show count, but don't enable the button
+                const { data: qs } = await _supabase
+                    .from('Question')
+                    .select('*')
+                    .eq('sessionDay', window.currentSession.day)
+                    .order('id', { ascending: true });
+                if (qs && qs.length > 0) {
+                    window.questions = qs;
+                    document.getElementById('questionCountDisplay').textContent = qs.length;
+                }
+                // View button is hidden because viewQuestionsArea is hidden
+                // We'll show it with a disabled state? Actually we want to show the button but disabled.
+                // So we show viewQuestionsArea with disabled button and a message.
+                document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                document.getElementById('viewQuestionsBtn').textContent = '⏳ മത്സരം തുടങ്ങുന്നത് വരെ കാത്തിരിക്കുക';
+                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                document.getElementById('viewQuestionsBtn').disabled = true;
+                document.getElementById('quizStatusMessage').textContent =
+                    `⏳ ${formatCountdown(diff)} ശേഷിക്കുന്നു`;
+                return;
+            }
+
+            // Case 3: Active contest (now between start and end)
+            if (now >= start && now <= end) {
+                // Check if user has already attempted
+                const { data: attempt } = await _supabase
+                    .from('Attempt')
+                    .select('id, status, score')
+                    .eq('studentId', window.currentUser.id)
+                    .eq('sessionDay', window.currentSession.day)
+                    .maybeSingle();
+
+                if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
+                    document.getElementById('submittedArea').classList.remove('hidden');
+                    // We removed the score stat card, so we don't display score here
+                    return;
+                }
+
+                if (attempt && attempt.status === 'STARTED') {
+                    window.currentAttemptId = attempt.id;
+                    window.hasViewedQuestions = true;
+                    window.quizStarted = true;
+                    document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                    document.getElementById('viewQuestionsBtn').textContent = '🔒 കാലഹരണപ്പെട്ടു (ആരംഭിച്ചു)';
+                    document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                    document.getElementById('viewQuestionsBtn').disabled = true;
+                    document.getElementById('quizStatusMessage').textContent =
+                        '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                    await loadQuestionsAndStart(true);
+                    return;
+                }
+
+                // Check if they have viewed questions before
+                const { data: anyAttempt } = await _supabase
+                    .from('Attempt')
+                    .select('id')
+                    .eq('studentId', window.currentUser.id)
+                    .eq('sessionDay', window.currentSession.day)
+                    .maybeSingle();
+
+                if (anyAttempt) {
+                    window.hasViewedQuestions = true;
+                    window.currentAttemptId = anyAttempt.id;
+                    document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                    document.getElementById('viewQuestionsBtn').textContent = '🔒 കാലഹരണപ്പെട്ടു';
+                    document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
+                    document.getElementById('viewQuestionsBtn').disabled = true;
+                    document.getElementById('quizStatusMessage').textContent =
+                        '⚠️ നിങ്ങൾ ഇതിനകം ചോദ്യങ്ങൾ കണ്ടു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
+                    await loadQuestionsAndStart(true);
+                    return;
+                }
+
+                // First time: show the View Questions button (enabled)
+                document.getElementById('viewQuestionsArea').classList.remove('hidden');
+                document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
+                document.getElementById('viewQuestionsBtn').className = 'btn btn-gold';
+                document.getElementById('viewQuestionsBtn').disabled = false;
+                document.getElementById('quizStatusMessage').textContent =
+                    '⏳ ക്വിസ് ആരംഭിക്കാൻ തയ്യാറാണോ? "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക.';
+
+                // Load questions and show count
+                const { data: qs } = await _supabase
+                    .from('Question')
+                    .select('*')
+                    .eq('sessionDay', window.currentSession.day)
+                    .order('id', { ascending: true });
+                if (qs && qs.length > 0) {
+                    window.questions = qs;
+                    document.getElementById('questionCountDisplay').textContent = qs.length;
+                } else {
+                    showToast('ഈ ദിവസത്തേക്ക് ചോദ്യങ്ങളില്ല', 'error');
+                }
+
+                document.getElementById('viewQuestionsBtn').onclick = function() {
+                    if (this.disabled) return;
+                    document.getElementById('confirmModal').classList.remove('hidden');
+                };
+                return;
+            }
+
+            // Case 4: Contest ended
             if (now > end) {
-                // Contest ended
                 if (now < rankRevealTime) {
                     // Wait for 3 minutes after end
                     document.getElementById('endedMsg').classList.remove('hidden');
@@ -2508,103 +2639,31 @@
                     document.getElementById('endedMsgText').innerHTML =
                         `⏳ ഫലം ലഭ്യമാകാൻ <strong>${formatCountdown(Math.floor((rankRevealTime - now)/1000))}</strong> ശേഷിക്കുന്നു.`;
                     startCountdownTimer(rankRevealTime, 'rankReveal');
-                    // Ensure ranking area is hidden
                     document.getElementById('rankingArea').classList.add('hidden');
                     return;
                 }
 
-                // Now we are past rankRevealTime
+                // After rank reveal
                 if (now >= rankRevealTime && now < expiryTime) {
-                    // Show ranking
                     document.getElementById('rankingArea').classList.remove('hidden');
-                    // Show expiry countdown
                     document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
                     startCountdownTimer(expiryTime, 'expiry');
                     await loadParentRankingData();
+                    // Also show that the contest has ended (but ranking visible)
+                    document.getElementById('endedMsg').classList.remove('hidden');
+                    document.getElementById('endedMsg').querySelector('h2').textContent =
+                        '🏁 മത്സരം അവസാനിച്ചു';
+                    document.getElementById('endedMsgText').textContent =
+                        `📊 ഫലങ്ങൾ ലഭ്യമാണ് (${formatDate(expiryTime)} വരെ)`;
                     return;
                 }
 
                 if (now >= expiryTime) {
-                    // Results expired
                     document.getElementById('resultsExpiredMsg').classList.remove('hidden');
                     document.getElementById('rankingArea').classList.add('hidden');
                     return;
                 }
             }
-
-            // Active session (now between start and end)
-            const { data: attempt } = await _supabase
-                .from('Attempt')
-                .select('id, status, score')
-                .eq('studentId', window.currentUser.id)
-                .eq('sessionDay', window.currentSession.day)
-                .maybeSingle();
-
-            if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
-                document.getElementById('submittedArea').classList.remove('hidden');
-                document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
-                return;
-            }
-
-            if (attempt && attempt.status === 'STARTED') {
-                window.currentAttemptId = attempt.id;
-                window.hasViewedQuestions = true;
-                window.quizStarted = true;
-                document.getElementById('viewQuestionsArea').classList.remove('hidden');
-                document.getElementById('viewQuestionsBtn').textContent = '🔒 കാലഹരണപ്പെട്ടു (ആരംഭിച്ചു)';
-                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
-                document.getElementById('viewQuestionsBtn').disabled = true;
-                document.getElementById('quizStatusMessage').textContent =
-                    '⚠️ നിങ്ങൾ ഇതിനകം ക്വിസ് ആരംഭിച്ചു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
-                await loadQuestionsAndStart(true);
-                return;
-            }
-
-            const { data: anyAttempt } = await _supabase
-                .from('Attempt')
-                .select('id')
-                .eq('studentId', window.currentUser.id)
-                .eq('sessionDay', window.currentSession.day)
-                .maybeSingle();
-
-            if (anyAttempt) {
-                window.hasViewedQuestions = true;
-                window.currentAttemptId = anyAttempt.id;
-                document.getElementById('viewQuestionsArea').classList.remove('hidden');
-                document.getElementById('viewQuestionsBtn').textContent = '🔒 കാലഹരണപ്പെട്ടു';
-                document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
-                document.getElementById('viewQuestionsBtn').disabled = true;
-                document.getElementById('quizStatusMessage').textContent =
-                    '⚠️ നിങ്ങൾ ഇതിനകം ചോദ്യങ്ങൾ കണ്ടു. ഇന്ന് വീണ്ടും പ്രവേശിക്കാൻ സാധിക്കുകയില്ല.';
-                await loadQuestionsAndStart(true);
-                return;
-            }
-
-            // First time
-            document.getElementById('viewQuestionsArea').classList.remove('hidden');
-            document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
-            document.getElementById('viewQuestionsBtn').className = 'btn btn-gold';
-            document.getElementById('viewQuestionsBtn').disabled = false;
-            document.getElementById('quizStatusMessage').textContent =
-                '⏳ ക്വിസ് ആരംഭിക്കാൻ തയ്യാറാണോ? "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക.';
-
-            const { data: qs } = await _supabase
-                .from('Question')
-                .select('*')
-                .eq('sessionDay', window.currentSession.day)
-                .order('id', { ascending: true });
-
-            if (qs && qs.length > 0) {
-                window.questions = qs;
-                document.getElementById('questionCountDisplay').textContent = qs.length;
-            } else {
-                showToast('ഈ ദിവസത്തേക്ക് ചോദ്യങ്ങളില്ല', 'error');
-            }
-
-            document.getElementById('viewQuestionsBtn').onclick = function() {
-                if (this.disabled) return;
-                document.getElementById('confirmModal').classList.remove('hidden');
-            };
         }
 
         function startCountdownTimer(targetTime, type) {
@@ -2612,18 +2671,25 @@
             window.pubInterval = setInterval(() => {
                 const diff = Math.max(0, Math.floor((targetTime - new Date()) / 1000));
                 let display = formatCountdown(diff);
-                if (type === 'start') {
-                    document.getElementById('waitingTimeText').innerHTML =
-                        `⏳ മത്സരം തുടങ്ങാൻ <strong>${display}</strong> ശേഷിക്കുന്നു.`;
+                if (type === 'start' || type === 'visibility') {
+                    // For waiting message
+                    const el = document.getElementById('waitingTimeText');
+                    if (el) el.innerHTML = `⏳ മത്സരം ലഭ്യമാകാൻ <strong>${display}</strong> ശേഷിക്കുന്നു.`;
+                } else if (type === 'preStart') {
+                    const el = document.getElementById('preStartText');
+                    if (el) el.innerHTML = `തുടങ്ങാൻ <strong>${display}</strong> ശേഷിക്കുന്നു`;
+                    const btnMsg = document.getElementById('quizStatusMessage');
+                    if (btnMsg) btnMsg.textContent = `⏳ ${display} ശേഷിക്കുന്നു`;
                 } else if (type === 'rankReveal') {
-                    document.getElementById('endedMsgText').innerHTML =
+                    const el = document.getElementById('endedMsgText');
+                    if (el) el.innerHTML =
                         `⏳ ഫലം ലഭ്യമാകാൻ <strong>${display}</strong> ശേഷിക്കുന്നു.`;
                 } else if (type === 'expiry') {
                     document.getElementById('resultsExpiryTimer').textContent = display;
                 }
                 if (diff <= 0) {
                     clearInterval(window.pubInterval);
-                    if (type === 'start' || type === 'rankReveal' || type === 'expiry') {
+                    if (type === 'visibility' || type === 'preStart' || type === 'rankReveal' || type === 'expiry') {
                         location.reload();
                     }
                 }
@@ -2932,7 +2998,7 @@
                 document.getElementById('questionsArea').classList.add('hidden');
                 document.getElementById('timerArea').classList.add('hidden');
                 document.getElementById('submittedArea').classList.remove('hidden');
-                document.getElementById('scoreDisplay').textContent = score;
+                // We removed the score stat card, so we don't display score here
                 showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
 
                 setTimeout(() => renderParentDashboard(), 1000);
@@ -3443,6 +3509,8 @@
         console.log('✅ All Supabase operations active');
         console.log('✅ Admin password secured in ADMIN_CONFIG');
         console.log('⚠️ For production, move admin password to a secure backend.');
+        console.log('✅ Score stat card removed from dashboard.');
+        console.log('✅ Next day content appears 30 minutes before contest start.');
     </script>
 </body>
 </html>
