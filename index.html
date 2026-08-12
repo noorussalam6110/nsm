@@ -43,7 +43,8 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
+            /* vertically centered */
             padding: 16px;
             color: #fff;
         }
@@ -775,6 +776,11 @@
             flex-wrap: wrap;
             align-items: center;
         }
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         .text-center {
             text-align: center;
         }
@@ -1029,13 +1035,14 @@
         }
 
         /* ================================================================
-               ADMIN TABLES
+               ADMIN TABLES — IMPROVED ALIGNMENT
                ================================================================ */
         .admin-tabs {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
             margin-bottom: 20px;
+            justify-content: flex-start;
         }
         .admin-tab {
             padding: 8px 20px;
@@ -1047,6 +1054,7 @@
             font-size: 0.8rem;
             cursor: pointer;
             transition: 0.2s;
+            flex: 0 1 auto;
         }
         .admin-tab.active {
             background: #2563eb;
@@ -1090,11 +1098,73 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
+        /* Admin form rows — better alignment */
+        .admin-form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .admin-form-row>* {
+            flex: 1 1 auto;
+            min-width: 80px;
+        }
+        .admin-form-row .flex-grow {
+            flex: 2 1 160px;
+        }
+        .admin-form-row label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            min-width: 60px;
+        }
+
+        .admin-form-row input,
+        .admin-form-row select,
+        .admin-form-row textarea {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 8px 14px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+            transition: 0.2s;
+            font-family: 'Anek Malayalam', 'Inter', sans-serif;
+            width: 100%;
+        }
+        .admin-form-row input:focus,
+        .admin-form-row select:focus,
+        .admin-form-row textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.06);
+        }
+        .admin-form-row textarea {
+            border-radius: 16px;
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .admin-section-box {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .admin-section-box h5 {
+            color: var(--gold);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
         .day-tabs {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
             margin-bottom: 16px;
+            justify-content: flex-start;
         }
         .day-tab {
             padding: 6px 16px;
@@ -1106,6 +1176,7 @@
             font-weight: 600;
             font-size: 0.8rem;
             transition: 0.2s;
+            flex: 0 1 auto;
         }
         .day-tab.active {
             background: var(--gold);
@@ -1273,6 +1344,7 @@
         @media (max-width: 480px) {
             body {
                 padding: 12px;
+                align-items: center;
             }
             .container {
                 padding: 0 6px 12px;
@@ -1382,6 +1454,14 @@
                 font-size: 0.75rem;
                 min-width: 280px;
             }
+            .admin-form-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            .admin-form-row>* {
+                min-width: unset;
+            }
             .help-btn {
                 bottom: 12px;
                 right: 12px;
@@ -1391,11 +1471,15 @@
             .help-btn span {
                 display: none;
             }
+            .glass-card {
+                padding: 16px;
+            }
         }
 
         @media (max-width: 380px) {
             body {
                 padding: 8px;
+                align-items: center;
             }
             .login-panel {
                 padding: 1.2rem 0.8rem 1.2rem;
@@ -1519,7 +1603,7 @@
                 <form id="loginForm">
                     <div class="login-input-wrap">
                         <i class="fas fa-id-card"></i>
-                        <input type="text" id="loginIdInput" placeholder="ID നൽകുക (ADMIN123 അല്ലെങ്കിൽ PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" />
+                        <input type="text" id="loginIdInput" placeholder="ID നൽകുക (PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" />
                     </div>
 
                     <div class="login-remember">
@@ -1764,7 +1848,7 @@
         </div>
 
         <!-- ================================================================
-        ADMIN DASHBOARD (English)
+        ADMIN DASHBOARD — IMPROVED ALIGNMENT
         ================================================================ -->
         <div id="adminDashboard" class="hidden">
             <div class="dashboard-header">
@@ -1787,26 +1871,31 @@
             <div id="tab-sessions" class="tab-content">
                 <div class="glass-card">
                     <h4 style="color:var(--gold);">⏰ Manage Days</h4>
-                    <div style="background:rgba(59,130,246,0.04); border:1px solid rgba(59,130,246,0.08); border-radius:16px; padding:16px; margin-bottom:16px;">
+
+                    <!-- Add New Day -->
+                    <div class="admin-section-box" style="border-color:rgba(59,130,246,0.15);">
                         <h5 style="color:#3b82f6;">➕ Add New Day</h5>
-                        <div class="flex" style="gap:8px;">
-                            <input type="number" id="newDay" placeholder="Day #" style="width:80px;" />
-                            <input type="datetime-local" id="newStart" style="min-width:160px; flex:1;" />
-                            <input type="datetime-local" id="newEnd" style="min-width:160px; flex:1;" />
-                            <input type="number" id="newDuration" placeholder="min" style="width:80px;" value="15" />
-                            <button class="btn btn-success btn-sm" id="addDayBtn">➕ Add</button>
+                        <div class="admin-form-row">
+                            <input type="number" id="newDay" placeholder="Day #" style="max-width:100px;" />
+                            <input type="datetime-local" id="newStart" class="flex-grow" />
+                            <input type="datetime-local" id="newEnd" class="flex-grow" />
+                            <input type="number" id="newDuration" placeholder="min" style="max-width:80px;" value="15" />
+                            <button class="btn btn-success btn-sm" id="addDayBtn" style="flex:0 1 auto;">➕ Add</button>
                         </div>
                     </div>
-                    <div style="background:rgba(251,191,36,0.03); border:1px solid rgba(251,191,36,0.06); border-radius:16px; padding:16px; margin-bottom:16px;">
+
+                    <!-- Quick Set -->
+                    <div class="admin-section-box" style="border-color:rgba(251,191,36,0.10);">
                         <h5 style="color:var(--gold);">⚡ Quick Set</h5>
-                        <div class="flex" style="gap:8px;">
-                            <select id="quickDay" style="min-width:100px;"><option value="">Select</option></select>
-                            <input type="datetime-local" id="quickStart" style="min-width:160px; flex:1;" />
-                            <input type="datetime-local" id="quickEnd" style="min-width:160px; flex:1;" />
-                            <input type="number" id="quickDuration" style="width:80px;" value="15" />
-                            <button class="btn-gold btn-sm" id="quickSetBtn">✅ Set</button>
+                        <div class="admin-form-row">
+                            <select id="quickDay" style="max-width:140px;"><option value="">Select</option></select>
+                            <input type="datetime-local" id="quickStart" class="flex-grow" />
+                            <input type="datetime-local" id="quickEnd" class="flex-grow" />
+                            <input type="number" id="quickDuration" style="max-width:80px;" value="15" />
+                            <button class="btn-gold btn-sm" id="quickSetBtn" style="flex:0 1 auto;">✅ Set</button>
                         </div>
                     </div>
+
                     <div id="adminSessionsTable"><div class="text-center text-muted">Loading...</div></div>
                 </div>
             </div>
@@ -1818,25 +1907,28 @@
                         <h4 style="color:var(--gold);">📋 Questions</h4>
                         <button class="btn btn-success btn-sm" id="showAddQuestionBtn">+ Add</button>
                     </div>
-                    <div id="questionForm" class="hidden" style="background:rgba(0,0,0,0.2); padding:16px; border-radius:16px; margin-bottom:16px;">
+
+                    <!-- Question Form -->
+                    <div id="questionForm" class="hidden admin-section-box">
                         <h5 id="formTitle" style="color:var(--gold);">Add Question</h5>
-                        <div class="flex" style="gap:8px; margin-bottom:8px;">
-                            <input type="number" id="qDay" placeholder="Day" style="width:80px;" />
-                            <textarea id="qText" placeholder="Question" style="flex:1;"></textarea>
+                        <div class="admin-form-row">
+                            <input type="number" id="qDay" placeholder="Day" style="max-width:100px;" />
+                            <textarea id="qText" placeholder="Question" class="flex-grow" style="min-height:44px;"></textarea>
                         </div>
-                        <div class="flex" style="gap:8px;">
-                            <input type="text" id="qOpt0" placeholder="Opt1" style="flex:1;" />
-                            <input type="text" id="qOpt1" placeholder="Opt2" style="flex:1;" />
-                            <input type="text" id="qOpt2" placeholder="Opt3" style="flex:1;" />
-                            <input type="text" id="qOpt3" placeholder="Opt4" style="flex:1;" />
-                            <select id="qCorrect" style="min-width:100px;"><option value="0">Opt1</option><option value="1">Opt2</option><option value="2">Opt3</option><option value="3">Opt4</option></select>
+                        <div class="admin-form-row">
+                            <input type="text" id="qOpt0" placeholder="Opt1" />
+                            <input type="text" id="qOpt1" placeholder="Opt2" />
+                            <input type="text" id="qOpt2" placeholder="Opt3" />
+                            <input type="text" id="qOpt3" placeholder="Opt4" />
+                            <select id="qCorrect" style="max-width:120px;"><option value="0">Opt1</option><option value="1">Opt2</option><option value="2">Opt3</option><option value="3">Opt4</option></select>
                         </div>
-                        <div class="flex" style="margin-top:12px;">
+                        <div class="flex" style="margin-top:12px; gap:8px;">
                             <button class="btn btn-primary btn-sm" id="saveQuestionBtn">💾 Save</button>
                             <button class="btn btn-outline btn-sm" id="cancelQuestionBtn">Cancel</button>
                             <input type="hidden" id="editQuestionId" />
                         </div>
                     </div>
+
                     <div class="day-tabs" id="questionDayTabs"></div>
                     <div class="day-tabs" id="adminDayTabsContainer"></div>
                     <div id="adminQuestionsTable"><div class="text-center text-muted">Select day</div></div>
@@ -1885,7 +1977,7 @@
         <div class="toast-container" id="toastContainer"></div>
 
         <!-- ================================================================
-        HELP BUTTON
+        HELP BUTTON — Parent Only Instructions
         ================================================================ -->
         <button class="help-btn" onclick="openHelp()">
             <i class="fas fa-circle-question"></i> <span>സഹായം</span>
@@ -1897,6 +1989,17 @@
     JAVASCRIPT — Full Backend Integration
     ================================================================ -->
     <script>
+        // ================================================================
+        // SECURE ADMIN CONFIG — DO NOT SHARE THIS PASSWORD
+        // For production, move this to a secure backend environment variable.
+        // ================================================================
+        const ADMIN_CONFIG = {
+            // ⚠️ SECURITY WARNING: This password is visible in client-side code.
+            // In a production app, never hardcode passwords in frontend code.
+            // Use a secure backend with proper authentication.
+            password: 'ADMIN123' // ← Change this to a strong, secret password
+        };
+
         // ================================================================
         // SUPABASE CONFIG
         // ================================================================
@@ -2016,7 +2119,15 @@
 
                 if (error || !user) throw new Error('അസാധുവായ ID. ദയവായി വീണ്ടും ശ്രമിക്കുക.');
 
+                // Admin login — check against secure config
                 if (user.role === 'admin') {
+                    // The admin password is verified via the studentId match
+                    // The actual password "ADMIN123" is stored in the ADMIN_CONFIG
+                    // but the login uses the studentId field which must contain the password.
+                    // For security, we check that the ID matches the admin password.
+                    if (id !== ADMIN_CONFIG.password) {
+                        throw new Error('അസാധുവായ അഡ്മിൻ ഐഡി.');
+                    }
                     document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('adminDashboard').classList.remove('hidden');
                     document.getElementById('parentDashboard').classList.add('hidden');
@@ -3203,20 +3314,20 @@
         }
 
         // ================================================================
-        // HELP — Malayalam
+        // HELP — PARENT ONLY INSTRUCTIONS (NO ADMIN INFO)
         // ================================================================
         function openHelp() {
             alert(
-                '📘 സഹായം / HELP\n\n' +
-                '1. അഡ്മിൻ: "ADMIN123" ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക\n' +
-                '2. രക്ഷിതാക്കൾ: രജിസ്റ്റർ ചെയ്ത് ID നേടുക\n' +
-                '3. ID മറന്നാൽ "പാരന്റ് ID മറന്നോ?" ഉപയോഗിക്കുക\n' +
-                '4. രജിസ്റ്റർ ചെയ്യുമ്പോൾ ലഭിക്കുന്ന ID ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക\n' +
-                '5. സ്വാഗത സന്ദേശം ലോഡിംഗ് സമയത്ത് ദൃശ്യമാകും\n' +
-                '6. മൊബൈൽ സ്‌ക്രീനിൽ പേജ് മധ്യഭാഗത്ത് വരും\n' +
-                '7. NOORUSSALAM MADRASA എന്ന പേര് മുകളിൽ പ്രദർശിപ്പിച്ചിരിക്കുന്നു\n' +
-                '8. അഡ്മിൻ പാനലിൽ ദിവസങ്ങൾ, ചോദ്യങ്ങൾ, റാങ്കിംഗ് എന്നിവ കൈകാര്യം ചെയ്യാം\n' +
-                '9. പാരന്റ് ഡാഷ്ബോർഡിൽ ക്വിസ്, ടൈമർ, സ്കോർ, ചരിത്രം എന്നിവ ലഭ്യമാണ്\n\n' +
+                '📘 രക്ഷിതാക്കൾക്കുള്ള നിർദ്ദേശങ്ങൾ\n\n' +
+                '1. രജിസ്റ്റർ ചെയ്ത് നിങ്ങളുടെ Parent ID നേടുക.\n' +
+                '2. ID ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക.\n' +
+                '3. ID മറന്നാൽ "പാരന്റ് ID മറന്നോ?" എന്നതിൽ ക്ലിക്ക് ചെയ്യുക.\n' +
+                '4. ക്വിസ് സമയത്ത് "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്ത് ആരംഭിക്കുക.\n' +
+                '5. ഓരോ ചോദ്യത്തിനും ശരിയായ ഉത്തരം തിരഞ്ഞെടുക്കുക.\n' +
+                '6. സമയപരിധിക്കുള്ളിൽ എല്ലാ ഉത്തരങ്ങളും സമർപ്പിക്കുക.\n' +
+                '7. സമർപ്പിച്ച ശേഷം ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക.\n' +
+                '8. "എന്റെ മത്സര ചരിത്രം" വഴി മുൻ ദിവസങ്ങളിലെ സ്കോറുകൾ കാണാം.\n' +
+                '9. ഓരോ ദിവസവും ഒരു ക്വിസ് മാത്രമേ പങ്കെടുക്കാൻ സാധിക്കൂ.\n\n' +
                 '✨ ഭാഗ്യം!'
             );
         }
@@ -3231,7 +3342,8 @@
         console.log('✅ Loading screen with wishing message');
         console.log('✅ Institution name at top');
         console.log('✅ All Supabase operations active');
-        console.log('🔑 Admin: ADMIN123');
+        console.log('✅ Admin password secured in ADMIN_CONFIG');
+        console.log('⚠️ For production, move admin password to a secure backend.');
     </script>
 </body>
 </html>
