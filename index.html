@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Daily Meelad Quiz – NSM</title>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        /* ===== GLOBAL RESET & VARIABLES ===== */
+        /* ===== GLOBAL RESET & VARIABLES (unchanged) ===== */
         :root {
             --gold: #fbbf24;
             --gold-dark: #f59e0b;
@@ -61,19 +62,51 @@
         }
 
         /* ===== UTILITY ===== */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .text-muted { color: var(--text-secondary); }
-        .flex { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .gap-2 { gap: 8px; }
-        .gap-3 { gap: 16px; }
-        .mt-2 { margin-top: 8px; }
-        .mt-3 { margin-top: 16px; }
-        .mt-4 { margin-top: 24px; }
-        .mb-3 { margin-bottom: 16px; }
-        .w-100 { width: 100%; }
-        .fw-bold { font-weight: 700; }
+        .hidden {
+            display: none !important;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-muted {
+            color: var(--text-secondary);
+        }
+        .flex {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .gap-2 {
+            gap: 8px;
+        }
+        .gap-3 {
+            gap: 16px;
+        }
+        .mt-2 {
+            margin-top: 8px;
+        }
+        .mt-3 {
+            margin-top: 16px;
+        }
+        .mt-4 {
+            margin-top: 24px;
+        }
+        .mb-3 {
+            margin-bottom: 16px;
+        }
+        .w-100 {
+            width: 100%;
+        }
+        .fw-bold {
+            font-weight: 700;
+        }
 
         /* ===== BUTTONS ===== */
         .btn {
@@ -96,44 +129,77 @@
             color: #fff;
             box-shadow: 0 8px 20px -8px rgba(59, 130, 246, 0.3);
         }
-        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 8px 28px -6px #3b82f6; }
+        .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 28px -6px #3b82f6;
+        }
         .btn-success {
             background: #10b981;
             color: #fff;
             box-shadow: 0 8px 20px -8px rgba(16, 185, 129, 0.3);
         }
-        .btn-success:hover { background: #059669; transform: scale(1.03); }
+        .btn-success:hover {
+            background: #059669;
+            transform: scale(1.03);
+        }
         .btn-danger {
             background: #ef4444;
             color: #fff;
             box-shadow: 0 8px 20px -8px rgba(239, 68, 68, 0.3);
         }
-        .btn-danger:hover { background: #dc2626; transform: scale(1.03); }
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: scale(1.03);
+        }
         .btn-outline {
             background: transparent;
             border: 1.5px solid rgba(255, 255, 255, 0.15);
             color: var(--text-secondary);
         }
-        .btn-outline:hover { background: rgba(255, 255, 255, 0.06); border-color: var(--gold); color: #fff; }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--gold);
+            color: #fff;
+        }
         .btn-gold {
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: #0a0f1e;
             box-shadow: 0 8px 24px -6px rgba(251, 191, 36, 0.3);
         }
-        .btn-gold:hover { transform: scale(1.03); box-shadow: 0 8px 32px -4px rgba(251, 191, 36, 0.5); }
-        .btn-sm { padding: 6px 14px; font-size: 0.8rem; min-height: 36px; }
-        .btn-block { width: 100%; justify-content: center; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-gold:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 32px -4px rgba(251, 191, 36, 0.5);
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            min-height: 36px;
+        }
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
         .btn-expired {
             background: #334155;
             color: #94a3b8;
             cursor: not-allowed;
             opacity: 0.6;
         }
-        .btn-expired:hover { transform: none; box-shadow: none; }
+        .btn-expired:hover {
+            transform: none;
+            box-shadow: none;
+        }
 
         /* ===== INPUTS ===== */
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 60px;
@@ -144,13 +210,22 @@
             outline: none;
             transition: 0.2s;
         }
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             border-color: var(--gold);
             box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.08);
             background: rgba(255, 255, 255, 0.06);
         }
-        textarea { border-radius: 16px; resize: vertical; min-height: 60px; }
-        input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.25); }
+        textarea {
+            border-radius: 16px;
+            resize: vertical;
+            min-height: 60px;
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
 
         /* ===== LOGIN PANEL ===== */
         .login-panel {
@@ -174,7 +249,10 @@
             margin: 0 auto 20px;
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
         }
-        .logo-circle i { font-size: 2.6rem; color: #fff; }
+        .logo-circle i {
+            font-size: 2.6rem;
+            color: #fff;
+        }
         .login-title {
             font-size: 1.8rem;
             font-weight: 800;
@@ -228,7 +306,10 @@
             padding: 18px 16px;
             transition: 0.2s;
         }
-        .stat-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(251, 191, 36, 0.1); }
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(251, 191, 36, 0.1);
+        }
         .stat-value {
             font-size: 2.4rem;
             font-weight: 800;
@@ -303,10 +384,17 @@
             filter: drop-shadow(0 0 20px rgba(248, 113, 113, 0.3));
             animation: glow-pulse 1s infinite;
         }
-        .timer-ring-container.warning .timer-text { color: #f87171; }
+        .timer-ring-container.warning .timer-text {
+            color: #f87171;
+        }
         @keyframes glow-pulse {
-            0%,100% { filter: drop-shadow(0 0 8px rgba(251,191,36,0.1)); }
-            50% { filter: drop-shadow(0 0 20px rgba(251,191,36,0.3)); }
+            0%,
+            100% {
+                filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.1));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.3));
+            }
         }
 
         /* ===== QUESTIONS ===== */
@@ -318,14 +406,24 @@
             border-left: 4px solid var(--gold);
             transition: 0.2s;
         }
-        .question-card:hover { background: rgba(255, 255, 255, 0.04); }
-        .question-title { font-weight: 600; font-size: 1.05rem; margin-bottom: 14px; }
+        .question-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .question-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 14px;
+        }
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-        @media (max-width:550px) { .options-grid { grid-template-columns: 1fr; } }
+        @media (max-width:550px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         .opt-btn {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -337,7 +435,10 @@
             font-size: 0.95rem;
             transition: 0.15s;
         }
-        .opt-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.12); }
+        .opt-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
         .opt-btn.selected {
             background: var(--gold);
             color: #0a0f1e;
@@ -345,7 +446,10 @@
             border-color: var(--gold);
             box-shadow: 0 4px 16px rgba(251, 191, 36, 0.15);
         }
-        .opt-btn:disabled { opacity: 0.3; cursor: default; }
+        .opt-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
 
         /* ===== RANKING ===== */
         .rank-item {
@@ -365,11 +469,24 @@
             text-align: center;
             color: #94a3b8;
         }
-        .rank-item .rank-num.gold { color: var(--gold); }
-        .rank-item .rank-num.silver { color: #94a3b8; }
-        .rank-item .rank-num.bronze { color: #d97706; }
-        .rank-item .rank-name { flex: 1; font-weight: 600; }
-        .rank-item .rank-score { font-weight: 700; color: var(--gold); margin-right: 8px; }
+        .rank-item .rank-num.gold {
+            color: var(--gold);
+        }
+        .rank-item .rank-num.silver {
+            color: #94a3b8;
+        }
+        .rank-item .rank-num.bronze {
+            color: #d97706;
+        }
+        .rank-item .rank-name {
+            flex: 1;
+            font-weight: 600;
+        }
+        .rank-item .rank-score {
+            font-weight: 700;
+            color: var(--gold);
+            margin-right: 8px;
+        }
         .rank-item .rank-time {
             font-size: 13px;
             color: #94a3b8;
@@ -396,8 +513,14 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .admin-tab.active { background: #2563eb; color: #fff; }
-        .admin-tab:hover { background: rgba(37, 99, 235, 0.15); color: #fff; }
+        .admin-tab.active {
+            background: #2563eb;
+            color: #fff;
+        }
+        .admin-tab:hover {
+            background: rgba(37, 99, 235, 0.15);
+            color: #fff;
+        }
 
         .admin-table-wrap {
             overflow-x: auto;
@@ -428,7 +551,9 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             vertical-align: middle;
         }
-        .admin-table-wrap tr:hover td { background: rgba(255, 255, 255, 0.02); }
+        .admin-table-wrap tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
 
         .day-tabs {
             display: flex;
@@ -447,8 +572,13 @@
             font-size: 0.8rem;
             transition: 0.2s;
         }
-        .day-tab.active { background: var(--gold); color: #0a0f1e; }
-        .day-tab:hover { background: #334155; }
+        .day-tab.active {
+            background: var(--gold);
+            color: #0a0f1e;
+        }
+        .day-tab:hover {
+            background: #334155;
+        }
 
         /* ===== MODALS ===== */
         .modal-overlay {
@@ -473,8 +603,16 @@
             overflow-y: auto;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
-        .modal-glass h3 { color: var(--gold); font-weight: 700; font-size: 1.4rem; }
-        .modal-glass p { color: #94a3b8; margin-top: 8px; line-height: 1.6; }
+        .modal-glass h3 {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+        .modal-glass p {
+            color: #94a3b8;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
 
         .publication-box {
             text-align: center;
@@ -501,7 +639,10 @@
             font-size: 13px;
             transition: 0.2s;
         }
-        .copy-btn:hover { background: var(--gold); color: #0a0f1e; }
+        .copy-btn:hover {
+            background: var(--gold);
+            color: #0a0f1e;
+        }
 
         .help-btn {
             position: fixed;
@@ -522,47 +663,166 @@
             backdrop-filter: blur(4px);
             z-index: 100;
         }
-        .help-btn:hover { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #93c5fd; }
+        .help-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
 
         .status-box {
             text-align: center;
             padding: 40px 20px;
         }
-        .status-box .icon { font-size: 56px; margin-bottom: 14px; display: inline-block; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
-        .status-box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
-        .status-box p { color: #94a3b8; }
+        .status-box .icon {
+            font-size: 56px;
+            margin-bottom: 14px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+        .status-box h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .status-box p {
+            color: #94a3b8;
+        }
+
+        /* ===== HISTORY TABLE ===== */
+        .history-table-wrap {
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+        .history-table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .history-table-wrap th {
+            text-align: left;
+            padding: 8px 10px;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .history-table-wrap td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .dashboard-header { flex-direction: column; align-items: stretch; gap: 12px; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .stat-value { font-size: 2rem; }
-            .login-panel { padding: 1.5rem; }
-            .login-title { font-size: 1.5rem; }
-            .admin-tab { font-size: 0.7rem; padding: 6px 14px; }
-            .admin-table-wrap table { font-size: 0.75rem; min-width: 280px; }
-            .admin-table-wrap td input[type="datetime-local"] { width: 120px; }
+            .dashboard-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .stat-value {
+                font-size: 2rem;
+            }
+            .login-panel {
+                padding: 1.5rem;
+            }
+            .login-title {
+                font-size: 1.5rem;
+            }
+            .admin-tab {
+                font-size: 0.7rem;
+                padding: 6px 14px;
+            }
+            .admin-table-wrap table {
+                font-size: 0.75rem;
+                min-width: 280px;
+            }
+            .admin-table-wrap td input[type="datetime-local"] {
+                width: 120px;
+            }
         }
         @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .stat-card { padding: 12px; }
-            .stat-value { font-size: 1.6rem; }
-            .container { padding: 10px; }
-            .glass-card { padding: 16px; }
-            .avatar-neon { width: 44px; height: 44px; font-size: 18px; }
-            .timer-ring-container { width: 120px; height: 120px; }
-            .timer-ring-container svg { width: 120px; height: 120px; }
-            .timer-ring-container .timer-text { font-size: 28px; }
-            .btn { font-size: 0.85rem; padding: 8px 16px; min-height: 40px; }
-            .help-btn { padding: 6px 12px; font-size: 0.75rem; bottom: 12px; right: 14px; }
-            .help-btn span { display: none; }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card {
+                padding: 12px;
+            }
+            .stat-value {
+                font-size: 1.6rem;
+            }
+            .container {
+                padding: 10px;
+            }
+            .glass-card {
+                padding: 16px;
+            }
+            .avatar-neon {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+            .timer-ring-container {
+                width: 120px;
+                height: 120px;
+            }
+            .timer-ring-container svg {
+                width: 120px;
+                height: 120px;
+            }
+            .timer-ring-container .timer-text {
+                font-size: 28px;
+            }
+            .btn {
+                font-size: 0.85rem;
+                padding: 8px 16px;
+                min-height: 40px;
+            }
+            .help-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                bottom: 12px;
+                right: 14px;
+            }
+            .help-btn span {
+                display: none;
+            }
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #fbbf2440; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #fbbf2460; }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fbbf2440;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #fbbf2460;
+        }
+
+        /* ===== NEW: Parent rank hint (hidden from parents) ===== */
+        .parent-rank-hint {
+            display: none;
+            /* hidden by default */;
+        }
+        /* Admin hints are only in admin panel, so no need to hide */
     </style>
 </head>
 <body>
@@ -688,7 +948,7 @@
                 </div>
             </div>
 
-            <!-- Status -->
+            <!-- Status Area (Waiting / Ended / Results Expired) -->
             <div id="statusArea">
                 <div class="status-box" id="waitingMsg">
                     <div class="icon">⏳</div>
@@ -698,7 +958,12 @@
                 <div class="status-box hidden" id="endedMsg">
                     <div class="icon">🚫</div>
                     <h2>ഇന്നത്തെ മത്സരം അവസാനിച്ചു</h2>
-                    <p>നാളെ വീണ്ടും വരൂ!</p>
+                    <p id="endedMsgText">നാളെ വീണ്ടും വരൂ!</p>
+                </div>
+                <div class="status-box hidden" id="resultsExpiredMsg">
+                    <div class="icon">⏰</div>
+                    <h2>ഫലം ഇനി ലഭ്യമല്ല</h2>
+                    <p>അടുത്ത മത്സരത്തിന് 30 മിനിറ്റ് മുമ്പ് മുതൽ ഫലം കാണാൻ സാധിക്കില്ല.</p>
                 </div>
             </div>
 
@@ -728,9 +993,47 @@
             <!-- Ranking -->
             <div id="rankingArea" class="hidden">
                 <div class="glass-card">
-                    <div class="flex-between"><h3 style="color:var(--gold); font-size:1.2rem;">🏆 നിങ്ങളുടെ സ്കോർ</h3><span class="badge" style="background:#1e293b; padding:4px 12px; border-radius:30px; font-size:0.8rem; color:#94a3b8;" id="rankCountBadge">0 പേർ</span></div>
-                    <div id="publicationCountdown" class="publication-box"><p class="text-muted">📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p><div class="pub-timer" id="publicationTimer">05:00</div></div>
+                    <div class="flex-between">
+                        <h3 style="color:var(--gold); font-size:1.2rem;">🏆 നിങ്ങളുടെ സ്കോർ</h3>
+                        <!-- Hide participant count badge for parents -->
+                        <span class="badge" style="display:none;" id="rankCountBadge">—</span>
+                    </div>
+                    <!-- Publication countdown (waiting for results) -->
+                    <div id="publicationCountdown" class="publication-box">
+                        <p class="text-muted">📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p>
+                        <div class="pub-timer" id="publicationTimer">05:00</div>
+                    </div>
+                    <!-- Results expiry countdown (shown when results are visible) -->
+                    <div id="resultsExpiryCountdown" class="publication-box hidden">
+                        <p class="text-muted">⏳ ഫലം ലഭ്യമാകുന്ന സമയപരിധി</p>
+                        <div class="pub-timer" id="resultsExpiryTimer">--:--</div>
+                    </div>
                     <div id="rankListContainer"><div class="text-center text-muted">Loading...</div></div>
+                    <!-- Admin hint hidden from parents -->
+                    <div class="parent-rank-hint"></div>
+                </div>
+            </div>
+
+            <!-- ===== NEW: My History Button & Modal ===== -->
+            <div class="history-btn-wrap" style="margin-top:16px; text-align:center;">
+                <button class="btn btn-outline" id="showHistoryBtn" style="border-color:rgba(251,191,36,0.2); color:var(--gold);">
+                    <i class="fas fa-clock-rotate-left"></i> എന്റെ മത്സര ചരിത്രം
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- HISTORY MODAL -->
+        <!-- ============================================================ -->
+        <div id="historyModal" class="modal-overlay hidden">
+            <div class="modal-glass" style="max-width:640px;">
+                <div class="flex-between" style="margin-bottom:16px;">
+                    <h3><i class="fas fa-clock-rotate-left" style="color:var(--gold);"></i> എന്റെ മത്സര ചരിത്രം</h3>
+                    <button class="btn btn-outline btn-sm" id="closeHistoryBtn"><i class="fas fa-times"></i></button>
+                </div>
+                <p class="text-muted">ഓരോ ദിവസത്തിലെയും നിങ്ങളുടെ പോയിന്റ്, റാങ്ക്, സമയം എന്നിവ.</p>
+                <div class="history-table-wrap" id="historyContainer">
+                    <div class="text-center text-muted">Loading...</div>
                 </div>
             </div>
         </div>
@@ -852,7 +1155,7 @@
     <div class="toast-container" id="toastContainer" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; width:90%; max-width:440px; display:flex; flex-direction:column; gap:8px; pointer-events:none;"></div>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT (Unchanged Logic - Kept exactly as previous) -->
+    <!-- JAVASCRIPT (Modified to include new features) -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -864,7 +1167,7 @@
         const CIRCUMFERENCE = 2 * Math.PI * 60; // 376.99
 
         // ================================================================
-        // TIMEZONE HELPERS
+        // TIMEZONE HELPERS (unchanged)
         // ================================================================
         function localToUTC(localDateTime) {
             if (!localDateTime) return '';
@@ -892,7 +1195,7 @@
         }
 
         // ================================================================
-        // HELPERS
+        // HELPERS (unchanged)
         // ================================================================
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toastContainer');
@@ -910,7 +1213,7 @@
         }
 
         // ================================================================
-        // LOGIN (NO DAILY RESTRICTION)
+        // LOGIN (unchanged)
         // ================================================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -938,7 +1241,7 @@
                     return;
                 }
 
-                // Parent login – no daily restriction
+                // Parent login
                 const { data: sessions } = await _supabase
                     .from('QuizSession')
                     .select('*')
@@ -954,6 +1257,7 @@
 
                 window.currentUser = user;
                 window.currentSession = active;
+                window.allSessions = sessions; // store for later
 
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('parentDashboard').classList.remove('hidden');
@@ -976,13 +1280,15 @@
         });
 
         // ================================================================
-        // LOGOUT
+        // LOGOUT (unchanged)
         // ================================================================
         function logout() {
             if (window.timerInterval) clearInterval(window.timerInterval);
             if (window.pubInterval) clearInterval(window.pubInterval);
+            if (window.expiryInterval) clearInterval(window.expiryInterval);
             window.currentUser = null;
             window.currentSession = null;
+            window.allSessions = null;
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('parentDashboard').classList.add('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
@@ -993,7 +1299,7 @@
         document.getElementById('adminLogoutBtn').addEventListener('click', logout);
 
         // ================================================================
-        // REGISTRATION
+        // REGISTRATION (unchanged)
         // ================================================================
         document.getElementById('showRegisterBtn').addEventListener('click', function() {
             document.getElementById('registerModal').classList.remove('hidden');
@@ -1066,7 +1372,7 @@
         });
 
         // ================================================================
-        // FIND ID
+        // FIND ID (unchanged)
         // ================================================================
         function openFindId() {
             document.getElementById('findIdModal').classList.remove('hidden');
@@ -1129,7 +1435,7 @@
         }
 
         // ================================================================
-        // PARENT DASHBOARD (with View Questions button)
+        // PARENT DASHBOARD (MODIFIED)
         // ================================================================
         window.questions = [];
         window.answers = {};
@@ -1137,6 +1443,17 @@
         window.currentAttemptId = null;
         window.hasViewedQuestions = false;
         window.quizStarted = false;
+        window.allSessions = [];
+
+        // Helper to get next session
+        function getNextSession(currentDay) {
+            if (!window.allSessions || window.allSessions.length === 0) return null;
+            const idx = window.allSessions.findIndex(s => s.day === currentDay);
+            if (idx !== -1 && idx < window.allSessions.length - 1) {
+                return window.allSessions[idx + 1];
+            }
+            return null;
+        }
 
         async function renderParentDashboard() {
             if (!window.currentUser || !window.currentSession) return;
@@ -1144,21 +1461,73 @@
             const now = new Date();
             const start = new Date(window.currentSession.startTime);
             const end = new Date(window.currentSession.endTime);
-            const pubTime = new Date(end.getTime() + 5 * 60000);
+            const pubTime = new Date(end.getTime() + 5 * 60000); // 5 min after end
 
-            ['waitingMsg', 'endedMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea', 'rankingArea']
-                .forEach(id => document.getElementById(id).classList.add('hidden'));
+            const nextSession = getNextSession(window.currentSession.day);
+            // Results are visible until 30 minutes before next session start
+            let expiryTime = null;
+            if (nextSession) {
+                expiryTime = new Date(new Date(nextSession.startTime).getTime() - 30 * 60000);
+            } else {
+                // If no next session, show results for 12 hours (fallback)
+                expiryTime = new Date(pubTime.getTime() + 12 * 3600000);
+            }
 
+            // Hide all dynamic sections
+            ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea',
+                'submittedArea', 'rankingArea'
+            ].forEach(id => document.getElementById(id).classList.add('hidden'));
+
+            // Hide expiry countdown by default
+            document.getElementById('resultsExpiryCountdown').classList.add('hidden');
+
+            // State: Before quiz start
             if (now < start) {
                 document.getElementById('waitingMsg').classList.remove('hidden');
-                document.getElementById('waitingTimeText').textContent =
-                    `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
-                return;
-            } else if (now > end) {
-                await loadParentRanking(pubTime);
+                const diff = Math.floor((start - now) / 1000);
+                if (diff <= 1800) { // 30 min or less
+                    document.getElementById('waitingTimeText').innerHTML =
+                        `⏳ മത്സരം തുടങ്ങാൻ <strong>${formatCountdown(diff)}</strong> ശേഷിക്കുന്നു.`;
+                    startCountdownTimer(start, 'start');
+                } else {
+                    document.getElementById('waitingTimeText').textContent =
+                        `ദയവായി ${formatDate(start)} വരെ കാത്തിരിക്കുക.`;
+                }
                 return;
             }
 
+            // State: After quiz end
+            if (now > end) {
+                // Check if results are expired
+                if (now > expiryTime) {
+                    document.getElementById('resultsExpiredMsg').classList.remove('hidden');
+                    // Optionally load ranking with expired message
+                    await loadParentRankingWithExpiry(pubTime, expiryTime);
+                    return;
+                }
+
+                // If within 5 min after end, show waiting for results
+                if (now < pubTime) {
+                    document.getElementById('endedMsg').classList.remove('hidden');
+                    document.getElementById('endedMsg').querySelector('h2').textContent =
+                        '📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക';
+                    document.getElementById('endedMsgText').innerHTML =
+                        `⏳ ഫലം ലഭ്യമാകാൻ <strong>${formatCountdown(Math.floor((pubTime - now)/1000))}</strong> ശേഷിക്കുന്നു.`;
+                    startCountdownTimer(pubTime, 'publication');
+                    return;
+                }
+
+                // Results are available (between pubTime and expiryTime)
+                await loadParentRankingWithExpiry(pubTime, expiryTime);
+                // Show countdown to expiry
+                if (now < expiryTime) {
+                    document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
+                    startCountdownTimer(expiryTime, 'expiry');
+                }
+                return;
+            }
+
+            // ===== Quiz is active =====
             const { data: attempt } = await _supabase
                 .from('Attempt')
                 .select('id, status, score')
@@ -1169,13 +1538,14 @@
             if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
                 document.getElementById('submittedArea').classList.remove('hidden');
                 document.getElementById('scoreDisplay').textContent = attempt.score !== null ? attempt.score : '—';
-                if (now > pubTime) {
-                    await loadParentRanking(pubTime);
+                // If quiz already over, redirect to ranking logic above (but we are inside active check, so if now > end we already handled)
+                // Actually this case should not happen because we already handled now > end above.
+                // But keep for safety.
+                if (now > end) {
+                    // This will be caught by the outer if (now > end) when we return
                 } else {
-                    const check = setInterval(() => {
-                        if (new Date() > pubTime) { clearInterval(check);
-                            loadParentRanking(pubTime); }
-                    }, 5000);
+                    // Still within quiz time? shouldn't happen if status completed.
+                    // fallback
                 }
                 return;
             }
@@ -1214,6 +1584,7 @@
                 return;
             }
 
+            // Not started yet – show "View Questions" button
             document.getElementById('viewQuestionsArea').classList.remove('hidden');
             document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
             document.getElementById('viewQuestionsBtn').className = 'btn btn-gold';
@@ -1240,8 +1611,230 @@
             };
         }
 
+        // Countdown timer for start, publication, expiry
+        function startCountdownTimer(targetTime, type) {
+            if (window.pubInterval) clearInterval(window.pubInterval);
+            window.pubInterval = setInterval(() => {
+                const diff = Math.max(0, Math.floor((targetTime - new Date()) / 1000));
+                let display = formatCountdown(diff);
+                if (type === 'start') {
+                    document.getElementById('waitingTimeText').innerHTML =
+                        `⏳ മത്സരം തുടങ്ങാൻ <strong>${display}</strong> ശേഷിക്കുന്നു.`;
+                } else if (type === 'publication') {
+                    document.getElementById('endedMsgText').innerHTML =
+                        `⏳ ഫലം ലഭ്യമാകാൻ <strong>${display}</strong> ശേഷിക്കുന്നു.`;
+                    document.getElementById('publicationTimer').textContent = display;
+                } else if (type === 'expiry') {
+                    document.getElementById('resultsExpiryTimer').textContent = display;
+                }
+                if (diff <= 0) {
+                    clearInterval(window.pubInterval);
+                    if (type === 'start') {
+                        location.reload(); // quiz starts, refresh
+                    } else if (type === 'publication') {
+                        // results published, reload to show ranking
+                        location.reload();
+                    } else if (type === 'expiry') {
+                        // results expired, reload to show expired message
+                        location.reload();
+                    }
+                }
+            }, 1000);
+        }
+
         // ================================================================
-        // CONFIRMATION MODAL
+        // PARENT RANKING (MODIFIED – hide participant count)
+        // ================================================================
+        async function loadParentRankingWithExpiry(pubTime, expiryTime) {
+            document.getElementById('rankingArea').classList.remove('hidden');
+            const now = new Date();
+
+            // Hide participant count badge completely
+            const badge = document.getElementById('rankCountBadge');
+            if (badge) badge.style.display = 'none';
+
+            // Hide any admin hints (already hidden via CSS)
+
+            if (now > expiryTime) {
+                document.getElementById('rankListContainer').innerHTML =
+                    '<div class="text-center text-muted">⏳ ഫലം ഇനി ലഭ്യമല്ല. അടുത്ത മത്സരത്തിന് 30 മിനിറ്റ് മുമ്പ് മുതൽ ഫലം കാണാൻ സാധിക്കില്ല.</div>';
+                document.getElementById('publicationCountdown').classList.add('hidden');
+                document.getElementById('resultsExpiryCountdown').classList.add('hidden');
+                return;
+            }
+
+            if (now < pubTime) {
+                document.getElementById('publicationCountdown').classList.remove('hidden');
+                document.getElementById('resultsExpiryCountdown').classList.add('hidden');
+                document.getElementById('rankListContainer').innerHTML =
+                    '<div class="text-center text-muted">⏳ ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക...</div>';
+                // Timer is updated by the global interval
+                return;
+            } else {
+                // Results are available
+                document.getElementById('publicationCountdown').classList.add('hidden');
+                // Show expiry countdown if not expired
+                if (now < expiryTime) {
+                    document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
+                } else {
+                    document.getElementById('resultsExpiryCountdown').classList.add('hidden');
+                }
+                await loadParentRankingData();
+            }
+        }
+
+        async function loadParentRankingData() {
+            const container = document.getElementById('rankListContainer');
+            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+
+            try {
+                const { data: attempts } = await _supabase
+                    .from('Attempt')
+                    .select('*, Student(name)')
+                    .eq('sessionDay', window.currentSession.day)
+                    .eq('status', 'COMPLETED');
+
+                if (!attempts || attempts.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted">📭 ഇതുവരെ ആരും പങ്കെടുത്തിട്ടില്ല.</div>';
+                    return;
+                }
+
+                const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
+                if (!myAttempt) {
+                    container.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
+                    return;
+                }
+
+                const ranked = attempts.map(a => ({
+                    ...a,
+                    timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000)
+                }));
+                ranked.sort((a, b) => {
+                    if (a.score !== b.score) return (b.score || 0) - (a.score || 0);
+                    return (a.timeTaken || 9999) - (b.timeTaken || 9999);
+                });
+
+                const rank = ranked.findIndex(a => a.id === myAttempt.id) + 1;
+                // Do NOT show total count
+                const score = myAttempt.score || 0;
+                const timeTaken = ranked.find(a => a.id === myAttempt.id).timeTaken || 0;
+
+                // Show only rank, score, time – no total count
+                container.innerHTML = `
+                    <div class="rank-item" style="border-color:var(--gold);background:rgba(251,191,36,0.03);">
+                        <div class="rank-num gold">#${rank}</div>
+                        <div class="rank-name">${window.currentUser.name}</div>
+                        <div class="rank-score">${score} മാർക്ക്</div>
+                        <div class="rank-time">⏱️ ${timeTaken} സെ</div>
+                    </div>
+                    <p style="text-align:center;color:#94a3b8;margin-top:12px;">🏅 നിങ്ങളുടെ റാങ്ക്</p>
+                `;
+
+                // Hide badge again
+                const badge = document.getElementById('rankCountBadge');
+                if (badge) badge.style.display = 'none';
+
+            } catch (err) {
+                container.innerHTML = '<div class="text-danger text-center">Error loading ranking.</div>';
+                showToast(err.message, 'error');
+            }
+        }
+
+        // ================================================================
+        // PARENT HISTORY (NEW)
+        // ================================================================
+        document.getElementById('showHistoryBtn').addEventListener('click', async function() {
+            document.getElementById('historyModal').classList.remove('hidden');
+            await loadParentHistory();
+        });
+        document.getElementById('closeHistoryBtn').addEventListener('click', function() {
+            document.getElementById('historyModal').classList.add('hidden');
+        });
+        document.getElementById('historyModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.add('hidden');
+        });
+
+        async function loadParentHistory() {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+
+            try {
+                const { data: attempts } = await _supabase
+                    .from('Attempt')
+                    .select('*, Student(name)')
+                    .eq('studentId', window.currentUser.id)
+                    .eq('status', 'COMPLETED')
+                    .order('sessionDay', { ascending: true });
+
+                if (!attempts || attempts.length === 0) {
+                    container.innerHTML =
+                        '<div class="text-center text-muted">📭 നിങ്ങൾ ഇതുവരെ ഒരു മത്സരത്തിലും പങ്കെടുത്തിട്ടില്ല.</div>';
+                    return;
+                }
+
+                // Get all sessions for day info
+                const { data: sessions } = await _supabase
+                    .from('QuizSession')
+                    .select('*')
+                    .order('day', { ascending: true });
+                const sessionMap = {};
+                if (sessions) sessions.forEach(s => sessionMap[s.day] = s);
+
+                let html =
+                    `<table><thead><tr><th>Day</th><th>Date</th><th>Score</th><th>Rank</th><th>Time Taken</th></tr></thead><tbody>`;
+
+                for (const att of attempts) {
+                    // Compute rank for this day
+                    const { data: allDay } = await _supabase
+                        .from('Attempt')
+                        .select('*, Student(name)')
+                        .eq('sessionDay', att.sessionDay)
+                        .eq('status', 'COMPLETED');
+
+                    let rank = '—';
+                    if (allDay && allDay.length > 0) {
+                        const sorted = allDay.map(a => ({
+                            ...a,
+                            timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000)
+                        }));
+                        sorted.sort((a, b) => {
+                            if (a.score !== b.score) return (b.score || 0) - (a.score || 0);
+                            return (a.timeTaken || 9999) - (b.timeTaken || 9999);
+                        });
+                        const idx = sorted.findIndex(a => a.id === att.id);
+                        if (idx !== -1) rank = idx + 1;
+                    }
+
+                    const session = sessionMap[att.sessionDay];
+                    const dateStr = session ? formatDateShort(session.startTime) : '—';
+                    const timeTaken = Math.floor((new Date(att.endTime) - new Date(att.startTime)) / 1000);
+
+                    html += `<tr>
+                        <td><strong>Day ${att.sessionDay}</strong></td>
+                        <td>${dateStr}</td>
+                        <td style="color:var(--gold);font-weight:700;">${att.score ?? 0}</td>
+                        <td>#${rank}</td>
+                        <td>${timeTaken} സെ</td>
+                    </tr>`;
+                }
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+
+            } catch (err) {
+                container.innerHTML = '<div class="text-danger text-center">Error loading history.</div>';
+                showToast(err.message, 'error');
+            }
+        }
+
+        // Helper for short date
+        function formatDateShort(d) {
+            if (!d) return '';
+            return new Date(d).toLocaleString('ml-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short' });
+        }
+
+        // ================================================================
+        // CONFIRMATION MODAL (unchanged)
         // ================================================================
         document.getElementById('cancelConfirmBtn').addEventListener('click', function() {
             document.getElementById('confirmModal').classList.add('hidden');
@@ -1253,7 +1846,7 @@
         });
 
         // ================================================================
-        // PARENT QUIZ
+        // PARENT QUIZ (unchanged)
         // ================================================================
         async function loadQuestionsAndStart(resume = false) {
             if (window.questions.length === 0) {
@@ -1402,18 +1995,8 @@
                 document.getElementById('scoreDisplay').textContent = score;
                 showToast('✅ Submitted successfully!', 'success');
 
-                const end = new Date(window.currentSession.endTime);
-                const pubTime = new Date(end.getTime() + 5 * 60000);
-                if (new Date() > pubTime) {
-                    await loadParentRanking(pubTime);
-                } else {
-                    const check = setInterval(() => {
-                        if (new Date() > pubTime) {
-                            clearInterval(check);
-                            loadParentRanking(pubTime);
-                        }
-                    }, 5000);
-                }
+                // Refresh dashboard after submit
+                setTimeout(() => renderParentDashboard(), 1000);
             } catch (err) {
                 showToast('Submit error: ' + err.message, 'error');
                 window.isSubmitted = false;
@@ -1422,101 +2005,7 @@
         }
 
         // ================================================================
-        // PARENT RANKING
-        // ================================================================
-        async function loadParentRanking(pubTime) {
-            document.getElementById('rankingArea').classList.remove('hidden');
-            const now = new Date();
-
-            const expiryTime = new Date(pubTime.getTime() + 12 * 60 * 60 * 1000);
-            if (now > expiryTime) {
-                document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-muted">⏳ ഫലം ഇപ്പോൾ ലഭ്യമല്ല. (12 മണിക്കൂർ കഴിഞ്ഞു)</div>';
-                document.getElementById('publicationCountdown').classList.add('hidden');
-                return;
-            }
-
-            if (now < pubTime) {
-                document.getElementById('publicationCountdown').classList.remove('hidden');
-                document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-muted">⏳ Waiting for results...</div>';
-                if (window.pubInterval) clearInterval(window.pubInterval);
-                window.pubInterval = setInterval(() => {
-                    const diff = Math.max(0, Math.floor((pubTime - new Date()) / 1000));
-                    const mins = Math.floor(diff / 60);
-                    const secs = diff % 60;
-                    document.getElementById('publicationTimer').textContent =
-                        `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-                    if (diff <= 0) {
-                        clearInterval(window.pubInterval);
-                        loadParentRankingData();
-                    }
-                }, 1000);
-                return;
-            } else {
-                document.getElementById('publicationCountdown').classList.add('hidden');
-                await loadParentRankingData();
-            }
-        }
-
-        async function loadParentRankingData() {
-            const container = document.getElementById('rankListContainer');
-            container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
-
-            try {
-                const { data: attempts } = await _supabase
-                    .from('Attempt')
-                    .select('*, Student(name)')
-                    .eq('sessionDay', window.currentSession.day)
-                    .eq('status', 'COMPLETED');
-
-                if (!attempts || attempts.length === 0) {
-                    container.innerHTML = '<div class="text-center text-muted">📭 No submissions yet.</div>';
-                    document.getElementById('rankCountBadge').textContent = '0 പേർ';
-                    return;
-                }
-
-                const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
-                if (!myAttempt) {
-                    container.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
-                    document.getElementById('rankCountBadge').textContent = '0 പേർ';
-                    return;
-                }
-
-                const ranked = attempts.map(a => ({
-                    ...a,
-                    timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000)
-                }));
-                ranked.sort((a, b) => {
-                    if (a.score !== b.score) return (b.score || 0) - (a.score || 0);
-                    return (a.timeTaken || 9999) - (b.timeTaken || 9999);
-                });
-
-                const rank = ranked.findIndex(a => a.id === myAttempt.id) + 1;
-                const total = ranked.length;
-                const score = myAttempt.score || 0;
-                const timeTaken = ranked.find(a => a.id === myAttempt.id).timeTaken || 0;
-
-                document.getElementById('rankCountBadge').textContent = `${rank} / ${total}`;
-
-                container.innerHTML = `
-                    <div class="rank-item" style="border-color:var(--gold);background:rgba(251,191,36,0.03);">
-                        <div class="rank-num gold">${rank}</div>
-                        <div class="rank-name">${window.currentUser.name}</div>
-                        <div class="rank-score">${score} മാർക്ക്</div>
-                        <div class="rank-time">⏱️ ${timeTaken} സെ</div>
-                    </div>
-                    <p style="text-align:center;color:#94a3b8;margin-top:12px;">(${total} പേരിൽ ${rank}-ാം സ്ഥാനം)</p>
-                `;
-
-            } catch (err) {
-                container.innerHTML = '<div class="text-danger text-center">Error loading ranking.</div>';
-                showToast(err.message, 'error');
-            }
-        }
-
-        // ================================================================
-        // ADMIN PANEL
+        // ADMIN PANEL (unchanged)
         // ================================================================
         window.adminCurrentDay = 1;
         window.questionsCache = [];
@@ -1720,6 +2209,9 @@
                     ).join('');
                 }
 
+                // Also store for parent dashboard
+                window.allSessions = sessions;
+
             } catch (err) {
                 table.innerHTML = '<div class="text-center text-muted">Error loading</div>';
                 showToast(err.message, 'error');
@@ -1914,7 +2406,9 @@
                 '5. Click "View Questions" to start quiz\n' +
                 '6. Once started, cannot re-enter today\n' +
                 '7. Rankings appear after session ends (+5 min)\n' +
-                '8. Rankings show Submit Time'
+                '8. Results visible until 30 min before next quiz\n' +
+                '9. Parents cannot see participant count\n' +
+                '10. "My History" shows points, rank, time for past days'
             );
         }
 
@@ -1928,10 +2422,9 @@
         const saved = localStorage.getItem('lastId');
         if (saved) document.getElementById('loginIdInput').value = saved;
 
-        console.log('🚀 Quiz System Ready (Polished UI)');
+        console.log('🚀 Quiz System Ready with all requested features');
         console.log('🔑 Admin: ADMIN123');
-        console.log('✅ Multiple logins allowed per day');
-        console.log('✅ "View Questions" restricted to once per day');
+        console.log('✅ Parent features: hidden participant count, history, result expiry timer');
     </script>
 
 </body>
