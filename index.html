@@ -1911,7 +1911,7 @@
                         <h3 style="color:var(--gold); font-size:1.2rem;">🏆 നിങ്ങളുടെ സ്കോർ</h3>
                         <span class="badge" style="display:none;" id="rankCountBadge">—</span>
                     </div>
-                    <div id="publicationCountdown" class="publication-box">
+                    <div id="publicationCountdown" class="publication-box hidden">
                         <p class="text-muted">📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p>
                         <div class="pub-timer" id="publicationTimer">05:00</div>
                     </div>
@@ -2467,19 +2467,21 @@
             const now = new Date();
             const start = new Date(window.currentSession.startTime);
             const end = new Date(window.currentSession.endTime);
-            const pubTime = new Date(end.getTime() + 5 * 60000);
+            // Ranking becomes visible 3 minutes after end
+            const rankRevealTime = new Date(end.getTime() + 3 * 60000);
 
             const nextSession = getNextSession(window.currentSession.day);
             let expiryTime = null;
             if (nextSession) {
                 expiryTime = new Date(new Date(nextSession.startTime).getTime() - 30 * 60000);
             } else {
-                expiryTime = new Date(pubTime.getTime() + 12 * 3600000);
+                expiryTime = new Date(rankRevealTime.getTime() + 12 * 3600000); // fallback 12 hours after reveal
             }
 
             ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea',
                 'submittedArea', 'rankingArea'
             ].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById('publicationCountdown').classList.add('hidden');
             document.getElementById('resultsExpiryCountdown').classList.add('hidden');
 
             if (now < start) {
@@ -2497,29 +2499,40 @@
             }
 
             if (now > end) {
-                if (now > expiryTime) {
-                    document.getElementById('resultsExpiredMsg').classList.remove('hidden');
-                    await loadParentRankingWithExpiry(pubTime, expiryTime);
-                    return;
-                }
-                if (now < pubTime) {
+                // Contest ended
+                if (now < rankRevealTime) {
+                    // Wait for 3 minutes after end
                     document.getElementById('endedMsg').classList.remove('hidden');
                     document.getElementById('endedMsg').querySelector('h2').textContent =
                         '📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക';
                     document.getElementById('endedMsgText').innerHTML =
-                        `⏳ ഫലം ലഭ്യമാകാൻ <strong>${formatCountdown(Math.floor((pubTime - now)/1000))}</strong> ശേഷിക്കുന്നു.`;
-                    startCountdownTimer(pubTime, 'publication');
+                        `⏳ ഫലം ലഭ്യമാകാൻ <strong>${formatCountdown(Math.floor((rankRevealTime - now)/1000))}</strong> ശേഷിക്കുന്നു.`;
+                    startCountdownTimer(rankRevealTime, 'rankReveal');
+                    // Ensure ranking area is hidden
+                    document.getElementById('rankingArea').classList.add('hidden');
                     return;
                 }
-                await loadParentRankingWithExpiry(pubTime, expiryTime);
-                if (now < expiryTime) {
+
+                // Now we are past rankRevealTime
+                if (now >= rankRevealTime && now < expiryTime) {
+                    // Show ranking
+                    document.getElementById('rankingArea').classList.remove('hidden');
+                    // Show expiry countdown
                     document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
                     startCountdownTimer(expiryTime, 'expiry');
+                    await loadParentRankingData();
+                    return;
                 }
-                return;
+
+                if (now >= expiryTime) {
+                    // Results expired
+                    document.getElementById('resultsExpiredMsg').classList.remove('hidden');
+                    document.getElementById('rankingArea').classList.add('hidden');
+                    return;
+                }
             }
 
-            // Active session
+            // Active session (now between start and end)
             const { data: attempt } = await _supabase
                 .from('Attempt')
                 .select('id, status, score')
@@ -2602,16 +2615,15 @@
                 if (type === 'start') {
                     document.getElementById('waitingTimeText').innerHTML =
                         `⏳ മത്സരം തുടങ്ങാൻ <strong>${display}</strong> ശേഷിക്കുന്നു.`;
-                } else if (type === 'publication') {
+                } else if (type === 'rankReveal') {
                     document.getElementById('endedMsgText').innerHTML =
                         `⏳ ഫലം ലഭ്യമാകാൻ <strong>${display}</strong> ശേഷിക്കുന്നു.`;
-                    document.getElementById('publicationTimer').textContent = display;
                 } else if (type === 'expiry') {
                     document.getElementById('resultsExpiryTimer').textContent = display;
                 }
                 if (diff <= 0) {
                     clearInterval(window.pubInterval);
-                    if (type === 'start' || type === 'publication' || type === 'expiry') {
+                    if (type === 'start' || type === 'rankReveal' || type === 'expiry') {
                         location.reload();
                     }
                 }
@@ -2621,37 +2633,6 @@
         // ================================================================
         // PARENT RANKING
         // ================================================================
-        async function loadParentRankingWithExpiry(pubTime, expiryTime) {
-            document.getElementById('rankingArea').classList.remove('hidden');
-            const now = new Date();
-            const badge = document.getElementById('rankCountBadge');
-            if (badge) badge.style.display = 'none';
-
-            if (now > expiryTime) {
-                document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-muted">⏳ ഫലം ഇനി ലഭ്യമല്ല. അടുത്ത മത്സരത്തിന് 30 മിനിറ്റ് മുമ്പ് മുതൽ ഫലം കാണാൻ സാധിക്കില്ല.</div>';
-                document.getElementById('publicationCountdown').classList.add('hidden');
-                document.getElementById('resultsExpiryCountdown').classList.add('hidden');
-                return;
-            }
-
-            if (now < pubTime) {
-                document.getElementById('publicationCountdown').classList.remove('hidden');
-                document.getElementById('resultsExpiryCountdown').classList.add('hidden');
-                document.getElementById('rankListContainer').innerHTML =
-                    '<div class="text-center text-muted">⏳ ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക...</div>';
-                return;
-            } else {
-                document.getElementById('publicationCountdown').classList.add('hidden');
-                if (now < expiryTime) {
-                    document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
-                } else {
-                    document.getElementById('resultsExpiryCountdown').classList.add('hidden');
-                }
-                await loadParentRankingData();
-            }
-        }
-
         async function loadParentRankingData() {
             const container = document.getElementById('rankListContainer');
             container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> ലോഡ് ചെയ്യുന്നു...</div>';
