@@ -30,6 +30,7 @@
             --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
             --radius: 2rem;
             --radius-sm: 1rem;
+            --header-height: 80px;
         }
 
         html,
@@ -37,6 +38,7 @@
             height: 100%;
             margin: 0;
             font-family: 'Anek Malayalam', 'Inter', sans-serif;
+            scroll-behavior: smooth;
         }
 
         body {
@@ -44,9 +46,10 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 16px;
             color: #fff;
+            padding-top: 16px;
         }
 
         .container {
@@ -797,10 +800,13 @@
             width: 100%;
         }
 
-        /* ===== DASHBOARD HEADER ===== */
+        /* ================================================================
+           STICKY DASHBOARD HEADER
+           ================================================================ */
         .dashboard-header {
-            background: rgba(10, 20, 40, 0.7);
+            background: rgba(10, 20, 40, 0.85);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 2rem;
             padding: 16px 24px;
             margin-bottom: 28px;
@@ -810,6 +816,18 @@
             justify-content: space-between;
             align-items: center;
             gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-header.scrolled {
+            background: rgba(10, 20, 40, 0.96);
+            border-radius: 1.2rem;
+            padding: 12px 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
         }
 
         .avatar-neon {
@@ -1033,10 +1051,9 @@
         }
 
         /* ================================================================
-           ADMIN PANEL — IMPROVED ALIGNMENT & RESPONSIVE
+           ADMIN PANEL — TABLES & IMPROVED ALIGNMENT
            ================================================================ */
 
-        /* ---- Admin Tabs ---- */
         .admin-tabs {
             display: flex;
             flex-wrap: wrap;
@@ -1110,7 +1127,7 @@
             background: rgba(255, 255, 255, 0.03);
         }
 
-        /* ---- Admin Form Rows (improved alignment) ---- */
+        /* ---- Admin Form Rows ---- */
         .admin-form-row {
             display: flex;
             flex-wrap: wrap;
@@ -1164,7 +1181,6 @@
             min-height: 50px;
         }
 
-        /* Buttons inside admin form rows — keep them auto-sized */
         .admin-form-row .btn,
         .admin-form-row .btn-sm {
             flex: 0 1 auto;
@@ -1172,7 +1188,6 @@
             white-space: nowrap;
         }
 
-        /* ---- Admin Section Boxes ---- */
         .admin-section-box {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 16px;
@@ -1188,7 +1203,6 @@
             font-weight: 600;
         }
 
-        /* ---- Day Tabs ---- */
         .day-tabs {
             display: flex;
             flex-wrap: wrap;
@@ -1220,7 +1234,6 @@
             background: #334155;
         }
 
-        /* ---- Status Boxes ---- */
         .status-box {
             text-align: center;
             padding: 40px 20px;
@@ -1368,7 +1381,7 @@
         }
 
         /* ================================================================
-           RESPONSIVE — improved mobile alignment
+           RESPONSIVE
            ================================================================ */
         @media (max-width: 768px) {
             .container {
@@ -1379,7 +1392,6 @@
                 border-radius: 1.5rem;
             }
 
-            /* Admin form rows: stack on mobile */
             .admin-form-row {
                 flex-direction: column;
                 align-items: stretch;
@@ -1412,7 +1424,6 @@
                 padding: 12px 14px;
             }
 
-            /* Admin tabs: compact & wrap */
             .admin-tabs {
                 justify-content: center;
                 gap: 4px;
@@ -1426,7 +1437,6 @@
                 white-space: nowrap;
             }
 
-            /* Day tabs: compact */
             .day-tabs {
                 justify-content: center;
                 gap: 4px;
@@ -1455,12 +1465,22 @@
                 padding: 10px 20px;
                 width: 100%;
             }
+
+            .dashboard-header {
+                padding: 12px 16px;
+                border-radius: 1.2rem;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                position: sticky;
+                top: 0;
+            }
         }
 
         @media (max-width: 480px) {
             body {
                 padding: 12px;
-                align-items: center;
+                align-items: flex-start;
             }
             .container {
                 padding: 0 4px 10px;
@@ -1558,6 +1578,8 @@
                 gap: 10px;
                 padding: 12px 14px;
                 border-radius: 1.2rem;
+                position: sticky;
+                top: 0;
             }
 
             .timer-ring-container {
@@ -1597,7 +1619,6 @@
                 font-size: 0.85rem;
             }
 
-            /* Admin: extra compact on very small screens */
             .admin-tab {
                 font-size: 0.6rem;
                 padding: 5px 8px;
@@ -1632,7 +1653,7 @@
         @media (max-width: 380px) {
             body {
                 padding: 8px;
-                align-items: center;
+                align-items: flex-start;
             }
             .login-panel {
                 padding: 1rem 0.7rem 1rem;
@@ -1695,6 +1716,18 @@
             .admin-table-wrap th,
             .admin-table-wrap td {
                 padding: 4px 6px;
+            }
+            .dashboard-header {
+                padding: 8px 10px;
+                border-radius: 1rem;
+                position: sticky;
+                top: 0;
+            }
+            .avatar-neon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+                border-radius: 14px;
             }
         }
 
@@ -1858,7 +1891,8 @@
 
         <!-- ===== PARENT DASHBOARD ===== -->
         <div id="parentDashboard" class="hidden">
-            <div class="dashboard-header">
+            <!-- STICKY HEADER -->
+            <div class="dashboard-header" id="parentHeader">
                 <div class="flex" style="gap:14px;">
                     <div class="avatar-neon"><span id="avatarText">P</span></div>
                     <div>
@@ -1930,6 +1964,7 @@
                 </div>
             </div>
 
+            <!-- RANKING AREA — hidden during active quiz -->
             <div id="rankingArea" class="hidden">
                 <div class="glass-card">
                     <div class="flex-between">
@@ -1949,7 +1984,8 @@
                 </div>
             </div>
 
-            <div class="history-btn-wrap">
+            <!-- HISTORY BUTTON — hidden during active quiz -->
+            <div class="history-btn-wrap" id="historyBtnWrap">
                 <button class="btn btn-outline" id="showHistoryBtn" style="border-color:rgba(251,191,36,0.2); color:var(--gold);">
                     <i class="fas fa-clock-rotate-left"></i> Results
                 </button>
@@ -1991,10 +2027,11 @@
         </div>
 
         <!-- ================================================================
-        ADMIN DASHBOARD — improved alignment
+        ADMIN DASHBOARD — with sticky header & tables
         ================================================================ -->
         <div id="adminDashboard" class="hidden">
-            <div class="dashboard-header">
+            <!-- STICKY ADMIN HEADER -->
+            <div class="dashboard-header" id="adminHeader">
                 <h2 class="fw-bold" style="color:var(--gold); font-size:1.4rem;"><i class="fas fa-user-shield"></i> Admin Panel</h2>
                 <button class="btn btn-danger btn-sm" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i> Exit</button>
             </div>
@@ -2010,12 +2047,11 @@
                 <button class="admin-tab" data-tab="rankings" onclick="switchAdminTab('rankings')">📊 Rankings</button>
             </div>
 
-            <!-- Sessions -->
+            <!-- Sessions Tab — Table -->
             <div id="tab-sessions" class="tab-content">
                 <div class="glass-card">
                     <h4 style="color:var(--gold);">⏰ Manage Days</h4>
 
-                    <!-- Add New Day -->
                     <div class="admin-section-box" style="border-color:rgba(59,130,246,0.15);">
                         <h5 style="color:#3b82f6;">➕ Add New Day</h5>
                         <div class="admin-form-row">
@@ -2027,7 +2063,6 @@
                         </div>
                     </div>
 
-                    <!-- Quick Set -->
                     <div class="admin-section-box" style="border-color:rgba(251,191,36,0.10);">
                         <h5 style="color:var(--gold);">⚡ Quick Set</h5>
                         <div class="admin-form-row">
@@ -2039,11 +2074,14 @@
                         </div>
                     </div>
 
-                    <div id="adminSessionsTable"><div class="text-center text-muted">Loading...</div></div>
+                    <!-- Sessions Table -->
+                    <div class="admin-table-wrap" id="adminSessionsTableWrap">
+                        <div id="adminSessionsTable"><div class="text-center text-muted">Loading...</div></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Questions -->
+            <!-- Questions Tab — Table -->
             <div id="tab-questions" class="tab-content hidden">
                 <div class="glass-card">
                     <div class="flex-between" style="margin-bottom:16px;">
@@ -2051,7 +2089,6 @@
                         <button class="btn btn-success btn-sm" id="showAddQuestionBtn">+ Add</button>
                     </div>
 
-                    <!-- Question Form -->
                     <div id="questionForm" class="hidden admin-section-box">
                         <h5 id="formTitle" style="color:var(--gold);">Add Question</h5>
                         <div class="admin-form-row">
@@ -2073,11 +2110,15 @@
                     </div>
 
                     <div id="adminDayTabsContainer" class="day-tabs"></div>
-                    <div id="adminQuestionsTable"><div class="text-center text-muted">Select day</div></div>
+
+                    <!-- Questions Table -->
+                    <div class="admin-table-wrap">
+                        <div id="adminQuestionsTable"><div class="text-center text-muted">Select day</div></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Rankings -->
+            <!-- Rankings Tab — Table -->
             <div id="tab-rankings" class="tab-content hidden">
                 <div class="glass-card">
                     <h4 style="color:var(--gold);">🏆 Rankings</h4>
@@ -2087,11 +2128,16 @@
                         <button class="btn" id="overallRankBtn"><i class="fas fa-trophy"></i> Overall Rank</button>
                     </div>
 
-                    <div id="adminRankListContainer"><div class="text-center text-muted">Select day</div></div>
+                    <!-- Rankings Table -->
+                    <div class="admin-table-wrap">
+                        <div id="adminRankListContainer"><div class="text-center text-muted">Select day</div></div>
+                    </div>
 
                     <div id="overallRankContainer" class="overall-rank-container hidden">
                         <h5 style="color:var(--gold); text-align:center; margin-bottom:12px;">📊 Overall Rankings (All Days)</h5>
-                        <div id="overallRankList"><div class="text-center text-muted">Loading...</div></div>
+                        <div class="admin-table-wrap">
+                            <div id="overallRankList"><div class="text-center text-muted">Loading...</div></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2105,8 +2151,10 @@
                     <button class="btn btn-outline btn-sm" id="closeOverallRankBtn"><i class="fas fa-times"></i></button>
                 </div>
                 <p class="text-muted">All days combined — top performers</p>
-                <div id="overallRankModalContent" style="margin-top:16px;">
-                    <div class="text-center text-muted">Loading...</div>
+                <div class="admin-table-wrap">
+                    <div id="overallRankModalContent" style="margin-top:16px;">
+                        <div class="text-center text-muted">Loading...</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2495,11 +2543,16 @@
 
             const visibilityStart = new Date(start.getTime() - 30 * 60000);
 
+            // Hide all status areas first
             ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'preStartMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea',
                 'submittedArea', 'rankingArea'
             ].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('publicationCountdown').classList.add('hidden');
             document.getElementById('resultsExpiryCountdown').classList.add('hidden');
+
+            // Hide history button by default — will be shown only when results are visible
+            const historyWrap = document.getElementById('historyBtnWrap');
+            historyWrap.classList.add('hidden');
 
             if (now < visibilityStart) {
                 document.getElementById('waitingMsg').classList.remove('hidden');
@@ -2540,7 +2593,11 @@
                 return;
             }
 
+            // ===== ACTIVE QUIZ — hide results and history =====
             if (now >= start && now <= end) {
+                // History button is hidden during active quiz
+                historyWrap.classList.add('hidden');
+
                 const { data: attempt } = await _supabase
                     .from('Attempt')
                     .select('id, status, score')
@@ -2613,6 +2670,7 @@
                 return;
             }
 
+            // ===== QUIZ ENDED — show results and history =====
             if (now > end) {
                 if (now < rankRevealTime) {
                     document.getElementById('endedMsg').classList.remove('hidden');
@@ -2622,6 +2680,8 @@
                         `⏳ ഫലം ലഭ്യമാകാൻ <strong style="color:var(--gold);">${formatCountdown(Math.floor((rankRevealTime - now)/1000))}</strong> ശേഷിക്കുന്നു.`;
                     startCountdownTimer(rankRevealTime, 'rankReveal');
                     document.getElementById('rankingArea').classList.add('hidden');
+                    // History hidden until results are shown
+                    historyWrap.classList.add('hidden');
                     return;
                 }
 
@@ -2635,12 +2695,16 @@
                         '🏁 മത്സരം അവസാനിച്ചു';
                     document.getElementById('endedMsgText').textContent =
                         `📊 ഫലങ്ങൾ ലഭ്യമാണ് (${formatDate(expiryTime)} വരെ)`;
+                    // Show history button when results are visible
+                    historyWrap.classList.remove('hidden');
                     return;
                 }
 
                 if (now >= expiryTime) {
                     document.getElementById('resultsExpiredMsg').classList.remove('hidden');
                     document.getElementById('rankingArea').classList.add('hidden');
+                    // Hide history when results are expired
+                    historyWrap.classList.add('hidden');
                     return;
                 }
             }
@@ -3462,7 +3526,7 @@
                 '5. ഓരോ ചോദ്യത്തിനും ശരിയായ ഉത്തരം തിരഞ്ഞെടുക്കുക.\n' +
                 '6. സമയപരിധിക്കുള്ളിൽ എല്ലാ ഉത്തരങ്ങളും സമർപ്പിക്കുക.\n' +
                 '7. സമർപ്പിച്ച ശേഷം ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക.\n' +
-                '8. "Reults" വഴി മുൻ ദിവസങ്ങളിലെ സ്കോറുകൾ കാണാം.\n' +
+                '8. "Results" വഴി മുൻ ദിവസങ്ങളിലെ സ്കോറുകൾ കാണാം.\n' +
                 '9. ഓരോ ദിവസവും ഒരു ക്വിസ് മാത്രമേ പങ്കെടുക്കാൻ സാധിക്കൂ.'
             );
         }
@@ -3473,12 +3537,26 @@
         const savedId = localStorage.getItem('lastId');
         if (savedId) document.getElementById('loginIdInput').value = savedId;
 
+        // ================================================================
+        // STICKY HEADER SCROLL EFFECT
+        // ================================================================
+        document.addEventListener('scroll', function() {
+            const headers = document.querySelectorAll('.dashboard-header');
+            headers.forEach(header => {
+                if (window.scrollY > 10) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+        });
+
         console.log('🚀 NOORUSSALAM MADRASA — Full Backend Connected');
         console.log('✅ Loading screen with wishing message');
-        console.log('✅ Institution name at top');
-        console.log('✅ All Supabase operations active');
-        console.log('✅ Admin password secured in ADMIN_CONFIG');
-        console.log('✅ Admin panel alignment improved for mobile & desktop');
+        console.log('✅ Sticky header for both parent and admin dashboards');
+        console.log('✅ Admin panel uses tables for Sessions, Questions, Rankings');
+        console.log('✅ Previous results hidden during active quiz');
+        console.log('✅ History button hidden during active quiz');
     </script>
 </body>
 </html>
