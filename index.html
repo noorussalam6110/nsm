@@ -23,8 +23,8 @@
             --slate: #1e293b;
             --slate-light: #334155;
             --text-primary: #f8fafc;
-            --text-secondary: #d1d5db;   /* lighter for better contrast */
-            --text-muted: #9ca3af;        /* more visible muted text */
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
             --glass-bg: rgba(255, 255, 255, 0.06);
             --glass-border: rgba(255, 255, 255, 0.08);
             --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
@@ -56,9 +56,7 @@
             padding: 0 12px 20px;
         }
 
-        /* ================================================================
-           LOADING OVERLAY — Attractive with wishing message
-           ================================================================ */
+        /* ===== LOADING OVERLAY ===== */
         #loadingOverlay {
             position: fixed;
             inset: 0;
@@ -122,7 +120,7 @@
 
         .loading-subtitle {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.5); /* increased opacity */
+            color: rgba(255, 255, 255, 0.5);
             text-align: center;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -243,9 +241,7 @@
             }
         }
 
-        /* ================================================================
-           GLASS CARD
-           ================================================================ */
+        /* ===== GLASS CARD ===== */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(18px);
@@ -261,9 +257,7 @@
             transform: translateY(-2px);
         }
 
-        /* ================================================================
-           LOGIN PANEL — perfectly centered on mobile
-           ================================================================ */
+        /* ===== LOGIN PANEL ===== */
         #loginSection {
             width: 100%;
             max-width: 440px;
@@ -306,7 +300,6 @@
             pointer-events: none;
         }
 
-        /* ---- INSTITUTION HEADER (NOORUSSALAM MADRASA) ---- */
         .institution-header {
             text-align: center;
             position: relative;
@@ -351,7 +344,6 @@
             border-radius: 4px;
         }
 
-        /* ---- LOGIN HEADER (Daily Meelad Quiz) ---- */
         .login-header {
             text-align: center;
             margin-bottom: 22px;
@@ -409,7 +401,6 @@
             margin: 0 4px;
         }
 
-        /* ---- FORM ---- */
         .login-field-group {
             position: relative;
             z-index: 1;
@@ -463,7 +454,7 @@
         }
 
         .login-input-wrap input::placeholder {
-            color: rgba(255, 255, 255, 0.4); /* increased contrast */
+            color: rgba(255, 255, 255, 0.4);
         }
 
         .login-remember {
@@ -529,12 +520,10 @@
             position: relative;
             z-index: 1;
             min-height: 24px;
-            color: #fca5a5; /* error color with good contrast */
+            color: #fca5a5;
         }
 
-        /* ================================================================
-           BUTTONS
-           ================================================================ */
+        /* ===== BUTTONS ===== */
         .btn {
             border: none;
             cursor: pointer;
@@ -675,9 +664,7 @@
             }
         }
 
-        /* ================================================================
-           MODALS
-           ================================================================ */
+        /* ===== MODALS ===== */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -810,9 +797,7 @@
             width: 100%;
         }
 
-        /* ================================================================
-           DASHBOARD HEADER
-           ================================================================ */
+        /* ===== DASHBOARD HEADER ===== */
         .dashboard-header {
             background: rgba(10, 20, 40, 0.7);
             backdrop-filter: blur(20px);
@@ -841,9 +826,7 @@
             flex-shrink: 0;
         }
 
-        /* ================================================================
-           STATS GRID — only two stat cards now (removed score)
-           ================================================================ */
+        /* ===== STATS GRID ===== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -878,9 +861,7 @@
             color: transparent;
         }
 
-        /* ================================================================
-           TIMER
-           ================================================================ */
+        /* ===== TIMER ===== */
         .timer-wrapper {
             display: flex;
             flex-direction: column;
@@ -951,9 +932,7 @@
             }
         }
 
-        /* ================================================================
-           QUESTIONS
-           ================================================================ */
+        /* ===== QUESTIONS ===== */
         .question-card {
             background: rgba(255, 255, 255, 0.04);
             border-radius: 1.2rem;
@@ -1008,9 +987,7 @@
             cursor: default;
         }
 
-        /* ================================================================
-           RANKING
-           ================================================================ */
+        /* ===== RANKING ===== */
         .rank-item {
             display: flex;
             align-items: center;
@@ -1056,27 +1033,34 @@
         }
 
         /* ================================================================
-           ADMIN TABLES — IMPROVED ALIGNMENT
+           ADMIN PANEL — IMPROVED ALIGNMENT & RESPONSIVE
            ================================================================ */
+
+        /* ---- Admin Tabs ---- */
         .admin-tabs {
             display: flex;
-            gap: 6px;
             flex-wrap: wrap;
+            gap: 6px;
             margin-bottom: 20px;
             justify-content: flex-start;
         }
+
         .admin-tab {
-            padding: 8px 20px;
+            padding: 10px 20px;
             border: none;
             border-radius: 40px;
             background: rgba(255, 255, 255, 0.06);
             color: #b0b8c5;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: 0.2s;
             flex: 0 1 auto;
+            min-width: 80px;
+            text-align: center;
+            white-space: nowrap;
         }
+
         .admin-tab.active {
             background: #2563eb;
             color: #fff;
@@ -1086,6 +1070,7 @@
             color: #fff;
         }
 
+        /* ---- Admin Tables ---- */
         .admin-table-wrap {
             overflow-x: auto;
             margin: 12px 0;
@@ -1094,6 +1079,7 @@
             background: rgba(0, 0, 0, 0.2);
             -webkit-overflow-scrolling: touch;
         }
+
         .admin-table-wrap table {
             width: 100%;
             border-collapse: collapse;
@@ -1101,6 +1087,7 @@
             min-width: 320px;
             color: #e2e8f0;
         }
+
         .admin-table-wrap th {
             text-align: left;
             padding: 12px 14px;
@@ -1112,34 +1099,40 @@
             background: rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
+
         .admin-table-wrap td {
             padding: 10px 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             vertical-align: middle;
         }
+
         .admin-table-wrap tr:hover td {
             background: rgba(255, 255, 255, 0.03);
         }
 
-        /* Admin form rows — improved mobile alignment */
+        /* ---- Admin Form Rows (improved alignment) ---- */
         .admin-form-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px 12px;
             align-items: center;
             margin-bottom: 10px;
         }
+
         .admin-form-row>* {
             flex: 1 1 auto;
             min-width: 80px;
         }
+
         .admin-form-row .flex-grow {
             flex: 2 1 160px;
         }
+
         .admin-form-row label {
+            flex: 0 0 auto;
+            min-width: 60px;
             font-size: 0.8rem;
             color: var(--text-secondary);
-            min-width: 60px;
         }
 
         .admin-form-row input,
@@ -1155,42 +1148,57 @@
             transition: 0.2s;
             font-family: 'Anek Malayalam', 'Inter', sans-serif;
             width: 100%;
+            min-width: 0;
         }
+
         .admin-form-row input:focus,
         .admin-form-row select:focus,
         .admin-form-row textarea:focus {
             border-color: var(--gold);
             box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.08);
         }
+
         .admin-form-row textarea {
             border-radius: 16px;
             resize: vertical;
             min-height: 50px;
         }
 
+        /* Buttons inside admin form rows — keep them auto-sized */
+        .admin-form-row .btn,
+        .admin-form-row .btn-sm {
+            flex: 0 1 auto;
+            min-width: 60px;
+            white-space: nowrap;
+        }
+
+        /* ---- Admin Section Boxes ---- */
         .admin-section-box {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 16px;
-            padding: 16px;
+            padding: 16px 18px;
             margin-bottom: 16px;
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
+
         .admin-section-box h5 {
             color: var(--gold);
             font-size: 0.9rem;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             font-weight: 600;
         }
 
+        /* ---- Day Tabs ---- */
         .day-tabs {
             display: flex;
-            gap: 6px;
             flex-wrap: wrap;
+            gap: 6px;
             margin-bottom: 16px;
             justify-content: flex-start;
         }
+
         .day-tab {
-            padding: 6px 16px;
+            padding: 7px 18px;
             border-radius: 30px;
             background: #1e293b;
             color: #94a3b8;
@@ -1200,7 +1208,10 @@
             font-size: 0.8rem;
             transition: 0.2s;
             flex: 0 1 auto;
+            text-align: center;
+            white-space: nowrap;
         }
+
         .day-tab.active {
             background: var(--gold);
             color: #0a0f1e;
@@ -1209,9 +1220,7 @@
             background: #334155;
         }
 
-        /* ================================================================
-           STATUS BOXES
-           ================================================================ */
+        /* ---- Status Boxes ---- */
         .status-box {
             text-align: center;
             padding: 40px 20px;
@@ -1280,9 +1289,7 @@
             text-align: center;
         }
 
-        /* ================================================================
-           TOAST
-           ================================================================ */
+        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             bottom: 20px;
@@ -1332,9 +1339,7 @@
             }
         }
 
-        /* ================================================================
-           HELP BUTTON
-           ================================================================ */
+        /* ===== HELP BUTTON ===== */
         .help-btn {
             position: fixed;
             bottom: 18px;
@@ -1363,7 +1368,7 @@
         }
 
         /* ================================================================
-           RESPONSIVE
+           RESPONSIVE — improved mobile alignment
            ================================================================ */
         @media (max-width: 768px) {
             .container {
@@ -1373,6 +1378,8 @@
                 padding: 16px;
                 border-radius: 1.5rem;
             }
+
+            /* Admin form rows: stack on mobile */
             .admin-form-row {
                 flex-direction: column;
                 align-items: stretch;
@@ -1390,30 +1397,49 @@
             .admin-form-row textarea {
                 width: 100%;
             }
-            .admin-form-row .btn {
+            .admin-form-row .btn,
+            .admin-form-row .btn-sm {
                 width: 100%;
                 justify-content: center;
+                flex: 1 1 auto;
             }
+            .admin-form-row label {
+                min-width: unset;
+                width: 100%;
+            }
+
             .admin-section-box {
-                padding: 12px;
+                padding: 12px 14px;
             }
+
+            /* Admin tabs: compact & wrap */
             .admin-tabs {
                 justify-content: center;
+                gap: 4px;
             }
             .admin-tab {
                 font-size: 0.7rem;
-                padding: 6px 14px;
+                padding: 6px 12px;
                 flex: 1 1 auto;
                 text-align: center;
-                min-width: 80px;
+                min-width: 60px;
+                white-space: nowrap;
             }
+
+            /* Day tabs: compact */
             .day-tabs {
                 justify-content: center;
+                gap: 4px;
             }
             .day-tab {
                 font-size: 0.7rem;
                 padding: 5px 12px;
+                flex: 1 1 auto;
+                text-align: center;
+                min-width: 50px;
+                white-space: nowrap;
             }
+
             .admin-table-wrap table {
                 font-size: 0.75rem;
                 min-width: 280px;
@@ -1422,6 +1448,7 @@
             .admin-table-wrap td {
                 padding: 8px 10px;
             }
+
             .overall-rank-btn-wrap .btn {
                 min-width: 140px;
                 font-size: 0.85rem;
@@ -1438,6 +1465,7 @@
             .container {
                 padding: 0 4px 10px;
             }
+
             .login-panel {
                 padding: 1.4rem 1rem 1.4rem;
                 border-radius: 2rem;
@@ -1480,6 +1508,7 @@
                 font-size: 0.8rem;
                 padding: 8px 14px;
             }
+
             .loading-title {
                 font-size: 1.3rem;
             }
@@ -1503,6 +1532,7 @@
             .loading-progress {
                 width: 120px;
             }
+
             .modal-glass {
                 padding: 16px;
                 border-radius: 1.2rem;
@@ -1510,6 +1540,7 @@
             .modal-glass h3 {
                 font-size: 1rem;
             }
+
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
                 gap: 8px;
@@ -1520,6 +1551,7 @@
             .stat-card {
                 padding: 12px;
             }
+
             .dashboard-header {
                 flex-direction: column;
                 align-items: stretch;
@@ -1527,6 +1559,7 @@
                 padding: 12px 14px;
                 border-radius: 1.2rem;
             }
+
             .timer-ring-container {
                 width: 100px;
                 height: 100px;
@@ -1538,6 +1571,7 @@
             .timer-ring-container .timer-text {
                 font-size: 22px;
             }
+
             .help-btn {
                 bottom: 10px;
                 right: 10px;
@@ -1547,6 +1581,7 @@
             .help-btn span {
                 display: none;
             }
+
             .glass-card {
                 padding: 12px;
                 border-radius: 1.2rem;
@@ -1561,16 +1596,19 @@
                 padding: 10px 12px;
                 font-size: 0.85rem;
             }
-            .admin-tabs {
-                gap: 4px;
-            }
+
+            /* Admin: extra compact on very small screens */
             .admin-tab {
-                font-size: 0.65rem;
-                padding: 5px 10px;
-                min-width: 60px;
+                font-size: 0.6rem;
+                padding: 5px 8px;
+                min-width: 50px;
+                white-space: nowrap;
             }
-            .admin-form-row {
-                gap: 6px;
+            .day-tab {
+                font-size: 0.6rem;
+                padding: 4px 8px;
+                min-width: 44px;
+                white-space: nowrap;
             }
             .admin-form-row input,
             .admin-form-row select,
@@ -1586,9 +1624,8 @@
             .admin-table-wrap td {
                 padding: 6px 8px;
             }
-            .day-tab {
-                font-size: 0.65rem;
-                padding: 4px 10px;
+            .admin-section-box {
+                padding: 10px 12px;
             }
         }
 
@@ -1626,6 +1663,7 @@
                 font-size: 0.7rem;
                 padding: 5px 10px;
             }
+
             .loading-title {
                 font-size: 1rem;
             }
@@ -1639,14 +1677,24 @@
             .stat-value {
                 font-size: 1.2rem;
             }
+
             .admin-tab {
-                font-size: 0.6rem;
-                padding: 4px 8px;
-                min-width: 50px;
+                font-size: 0.55rem;
+                padding: 4px 6px;
+                min-width: 44px;
             }
             .day-tab {
-                font-size: 0.6rem;
-                padding: 3px 8px;
+                font-size: 0.55rem;
+                padding: 3px 6px;
+                min-width: 38px;
+            }
+            .admin-table-wrap table {
+                font-size: 0.65rem;
+                min-width: 200px;
+            }
+            .admin-table-wrap th,
+            .admin-table-wrap td {
+                padding: 4px 6px;
             }
         }
 
@@ -1667,29 +1715,24 @@
 </head>
 <body>
 
-    <!-- ================================================================
-    LOADING OVERLAY — Attractive with Wishing Message
-    ================================================================ -->
+    <!-- ===== LOADING OVERLAY ===== -->
     <div id="loadingOverlay">
         <div class="loading-logo">
             <i class="fas fa-star"></i>
         </div>
         <div class="loading-title">NOORUSSALAM MADRASA</div>
         <div class="loading-subtitle"><i class="fas fa-book-open"></i> Daily Meelad Quiz</div>
-
         <div class="loading-spinner-wrap">
             <div class="loading-spinner"></div>
             <div class="loading-progress">
                 <div class="loading-progress-bar"></div>
             </div>
         </div>
-
         <div class="loading-wishing">
             <i class="fas fa-hand-sparkles"></i>
             സ്വാഗതം! നിങ്ങളുടെ ജ്ഞാനയാത്രയ്ക്ക് ആശംസകൾ
             <i class="fas fa-heart" style="color:#f472b6;"></i>
         </div>
-
         <div class="loading-deco">
             <span></span>
             <span></span>
@@ -1697,25 +1740,17 @@
         </div>
     </div>
 
-    <!-- ================================================================
-    MAIN CONTAINER
-    ================================================================ -->
+    <!-- ===== MAIN CONTAINER ===== -->
     <div class="container">
 
-        <!-- ================================================================
-        LOGIN SECTION
-        ================================================================ -->
+        <!-- ===== LOGIN SECTION ===== -->
         <div id="loginSection">
             <div class="login-panel">
-
-                <!-- ===== INSTITUTION NAME AT TOP ===== -->
                 <div class="institution-header">
                     <div class="institution-name">SKSBV NOORUSSALAM MADRASA</div>
                     <div class="institution-sub"><i class="fas fa-ribbon"></i> മിസ്‌കെ കമാൽ-2 <i class="fas fa-ribbon"></i></div>
                     <div class="institution-deco"></div>
                 </div>
-
-                <!-- ===== LOGIN HEADER ===== -->
                 <div class="login-header">
                     <div class="logo-wrap">
                         <div class="logo-icon"><i class="fas fa-users"></i></div>
@@ -1723,10 +1758,7 @@
                     </div>
                     <div class="title-sub"><i class="fas fa-lock"></i>LOG IN</div>
                 </div>
-
-                <!-- ===== LOGIN FORM ===== -->
                 <form id="loginForm">
-                    <!-- PARENT ID LABEL above input — white color -->
                     <div class="login-field-group">
                         <label class="login-field-label"><i class="fas fa-id-card" style="margin-right:6px;opacity:0.5;"></i>PARENT ID</label>
                         <div class="login-input-wrap">
@@ -1734,36 +1766,29 @@
                             <input type="text" id="loginIdInput" placeholder="ID നൽകുക (PAR...)" autofocus oninput="this.value = this.value.toUpperCase();" />
                         </div>
                     </div>
-
                     <div class="login-remember">
                         <input type="checkbox" id="rememberMe" checked />
                         <label for="rememberMe">Remember Me</label>
                     </div>
-
                     <div class="login-actions">
                         <button type="submit" class="btn btn-primary btn-block">
                             <i class="fas fa-key"></i> പ്രവേശിക്കുക
                         </button>
-
                         <button type="button" class="btn btn-block btn-register-blink" id="showRegisterBtn">
                             <i class="fas fa-user-plus"></i> പുതിയ രക്ഷിതാവ് രജിസ്ട്രേഷൻ
                         </button>
                     </div>
-
                     <div class="login-forgot">
                         <a onclick="openFindId()">
                             <i class="fas fa-question-circle" style="color:#f59e0b;"></i> പാരന്റ് ID മറന്നോ?
                         </a>
                     </div>
-
                     <div id="loginMessage"></div>
                 </form>
             </div>
         </div>
 
-        <!-- ================================================================
-        REGISTER MODAL
-        ================================================================ -->
+        <!-- ===== REGISTER MODAL ===== -->
         <div id="registerModal" class="modal-overlay hidden">
             <div class="modal-glass">
                 <div class="flex-between" style="margin-bottom:16px;">
@@ -1797,9 +1822,7 @@
             </div>
         </div>
 
-        <!-- ================================================================
-        FIND ID MODAL
-        ================================================================ -->
+        <!-- ===== FIND ID MODAL ===== -->
         <div id="findIdModal" class="modal-overlay hidden">
             <div class="modal-glass">
                 <div class="flex-between" style="margin-bottom:16px;">
@@ -1833,9 +1856,7 @@
             </div>
         </div>
 
-        <!-- ================================================================
-        PARENT DASHBOARD
-        ================================================================ -->
+        <!-- ===== PARENT DASHBOARD ===== -->
         <div id="parentDashboard" class="hidden">
             <div class="dashboard-header">
                 <div class="flex" style="gap:14px;">
@@ -1850,13 +1871,11 @@
                 </div>
             </div>
 
-            <!-- Stats Grid: only day and question count (score removed) -->
             <div class="stats-grid">
                 <div class="stat-card"><div><span class="stat-value" id="quizDayDisplay">ദിവസം 1</span><div class="text-muted" style="font-size:0.8rem;">ഇന്നത്തെ ക്വിസ്</div></div></div>
                 <div class="stat-card"><div><span class="stat-value" id="questionCountDisplay">0</span><div class="text-muted" style="font-size:0.8rem;">ചോദ്യങ്ങൾ</div></div></div>
             </div>
 
-            <!-- Timer -->
             <div id="timerArea" class="hidden timer-wrapper">
                 <div class="timer-ring-container" id="timerRingContainer">
                     <svg viewBox="0 0 140 140">
@@ -1868,7 +1887,6 @@
                 </div>
             </div>
 
-            <!-- Status Area -->
             <div id="statusArea">
                 <div class="status-box" id="waitingMsg">
                     <div class="icon">⏳</div>
@@ -1885,7 +1903,6 @@
                     <h2>ഫലം ഇനി ലഭ്യമല്ല</h2>
                     <p>അടുത്ത മത്സരത്തിന് 30 മിനിറ്റ് മുമ്പ് മുതൽ ഫലം കാണാൻ സാധിക്കില്ല.</p>
                 </div>
-                <!-- New: Pre-start countdown -->
                 <div class="status-box hidden" id="preStartMsg">
                     <div class="icon">⏳</div>
                     <h2>മത്സരം തുടങ്ങാറായി</h2>
@@ -1893,7 +1910,6 @@
                 </div>
             </div>
 
-            <!-- View Questions -->
             <div id="viewQuestionsArea" class="hidden text-center mt-3">
                 <button class="btn btn-gold" id="viewQuestionsBtn" style="max-width:360px; margin:0 auto; width:100%;">
                     📝 ചോദ്യങ്ങൾ കാണുക
@@ -1901,13 +1917,11 @@
                 <div id="quizStatusMessage" class="mt-2 text-muted" style="font-size:0.9rem;"></div>
             </div>
 
-            <!-- Questions -->
             <div id="questionsArea" class="hidden">
                 <div id="questionsContainer"></div>
                 <button class="btn btn-success btn-block mt-3" id="submitQuizBtn">📤 സമർപ്പിക്കുക</button>
             </div>
 
-            <!-- Submitted -->
             <div id="submittedArea" class="hidden">
                 <div class="status-box">
                     <div class="icon">✅</div>
@@ -1916,7 +1930,6 @@
                 </div>
             </div>
 
-            <!-- Ranking -->
             <div id="rankingArea" class="hidden">
                 <div class="glass-card">
                     <div class="flex-between">
@@ -1936,7 +1949,6 @@
                 </div>
             </div>
 
-            <!-- My History -->
             <div class="history-btn-wrap">
                 <button class="btn btn-outline" id="showHistoryBtn" style="border-color:rgba(251,191,36,0.2); color:var(--gold);">
                     <i class="fas fa-clock-rotate-left"></i> Results
@@ -1944,9 +1956,7 @@
             </div>
         </div>
 
-        <!-- ================================================================
-        HISTORY MODAL
-        ================================================================ -->
+        <!-- ===== HISTORY MODAL ===== -->
         <div id="historyModal" class="modal-overlay hidden">
             <div class="modal-glass" style="max-width:640px;">
                 <div class="flex-between" style="margin-bottom:16px;">
@@ -1960,9 +1970,7 @@
             </div>
         </div>
 
-        <!-- ================================================================
-        CONFIRMATION MODAL
-        ================================================================ -->
+        <!-- ===== CONFIRMATION MODAL ===== -->
         <div id="confirmModal" class="modal-overlay hidden">
             <div class="modal-glass">
                 <h3>⚠️ ശ്രദ്ധിക്കുക</h3>
@@ -1983,7 +1991,7 @@
         </div>
 
         <!-- ================================================================
-        ADMIN DASHBOARD — IMPROVED MOBILE ALIGNMENT
+        ADMIN DASHBOARD — improved alignment
         ================================================================ -->
         <div id="adminDashboard" class="hidden">
             <div class="dashboard-header">
@@ -2011,11 +2019,11 @@
                     <div class="admin-section-box" style="border-color:rgba(59,130,246,0.15);">
                         <h5 style="color:#3b82f6;">➕ Add New Day</h5>
                         <div class="admin-form-row">
-                            <input type="number" id="newDay" placeholder="Day #" style="max-width:100px;" />
+                            <input type="number" id="newDay" placeholder="Day #" style="max-width:120px;" />
                             <input type="datetime-local" id="newStart" class="flex-grow" />
                             <input type="datetime-local" id="newEnd" class="flex-grow" />
-                            <input type="number" id="newDuration" placeholder="min" style="max-width:80px;" value="15" />
-                            <button class="btn btn-success btn-sm" id="addDayBtn" style="flex:0 1 auto;">➕ Add</button>
+                            <input type="number" id="newDuration" placeholder="min" style="max-width:90px;" value="15" />
+                            <button class="btn btn-success btn-sm" id="addDayBtn">➕ Add</button>
                         </div>
                     </div>
 
@@ -2023,11 +2031,11 @@
                     <div class="admin-section-box" style="border-color:rgba(251,191,36,0.10);">
                         <h5 style="color:var(--gold);">⚡ Quick Set</h5>
                         <div class="admin-form-row">
-                            <select id="quickDay" style="max-width:140px;"><option value="">Select</option></select>
+                            <select id="quickDay" style="max-width:160px;"><option value="">Select</option></select>
                             <input type="datetime-local" id="quickStart" class="flex-grow" />
                             <input type="datetime-local" id="quickEnd" class="flex-grow" />
-                            <input type="number" id="quickDuration" style="max-width:80px;" value="15" />
-                            <button class="btn-gold btn-sm" id="quickSetBtn" style="flex:0 1 auto;">✅ Set</button>
+                            <input type="number" id="quickDuration" style="max-width:90px;" value="15" />
+                            <button class="btn-gold btn-sm" id="quickSetBtn">✅ Set</button>
                         </div>
                     </div>
 
@@ -2047,7 +2055,7 @@
                     <div id="questionForm" class="hidden admin-section-box">
                         <h5 id="formTitle" style="color:var(--gold);">Add Question</h5>
                         <div class="admin-form-row">
-                            <input type="number" id="qDay" placeholder="Day" style="max-width:100px;" />
+                            <input type="number" id="qDay" placeholder="Day" style="max-width:120px;" />
                             <textarea id="qText" placeholder="Question" class="flex-grow" style="min-height:44px;"></textarea>
                         </div>
                         <div class="admin-form-row">
@@ -2055,7 +2063,7 @@
                             <input type="text" id="qOpt1" placeholder="Opt2" />
                             <input type="text" id="qOpt2" placeholder="Opt3" />
                             <input type="text" id="qOpt3" placeholder="Opt4" />
-                            <select id="qCorrect" style="max-width:120px;"><option value="0">Opt1</option><option value="1">Opt2</option><option value="2">Opt3</option><option value="3">Opt4</option></select>
+                            <select id="qCorrect" style="max-width:140px;"><option value="0">Opt1</option><option value="1">Opt2</option><option value="2">Opt3</option><option value="3">Opt4</option></select>
                         </div>
                         <div class="flex" style="margin-top:12px; gap:8px;">
                             <button class="btn btn-primary btn-sm" id="saveQuestionBtn">💾 Save</button>
@@ -2064,8 +2072,7 @@
                         </div>
                     </div>
 
-                    <div class="day-tabs" id="questionDayTabs"></div>
-                    <div class="day-tabs" id="adminDayTabsContainer"></div>
+                    <div id="adminDayTabsContainer" class="day-tabs"></div>
                     <div id="adminQuestionsTable"><div class="text-center text-muted">Select day</div></div>
                 </div>
             </div>
@@ -2090,9 +2097,7 @@
             </div>
         </div>
 
-        <!-- ================================================================
-        OVERALL RANK MODAL
-        ================================================================ -->
+        <!-- ===== OVERALL RANK MODAL ===== -->
         <div id="overallRankModal" class="modal-overlay hidden overall-rank-modal">
             <div class="modal-glass">
                 <div class="flex-between" style="margin-bottom:16px;">
@@ -2106,33 +2111,25 @@
             </div>
         </div>
 
-        <!-- ================================================================
-        TOAST CONTAINER
-        ================================================================ -->
+        <!-- ===== TOAST CONTAINER ===== -->
         <div class="toast-container" id="toastContainer"></div>
 
-        <!-- ================================================================
-        HELP BUTTON — Parent Only Instructions
-        ================================================================ -->
+        <!-- ===== HELP BUTTON ===== -->
         <button class="help-btn" onclick="openHelp()">
             <i class="fas fa-circle-question"></i> <span>സഹായം</span>
         </button>
 
-    </div> <!-- end container -->
+    </div>
 
     <!-- ================================================================
-    JAVASCRIPT — Full Backend Integration
+    JAVASCRIPT
     ================================================================ -->
     <script>
         // ================================================================
-        // SECURE ADMIN CONFIG — DO NOT SHARE THIS PASSWORD
-        // For production, move this to a secure backend environment variable.
+        // SECURE ADMIN CONFIG
         // ================================================================
         const ADMIN_CONFIG = {
-            // ⚠️ SECURITY WARNING: This password is visible in client-side code.
-            // In a production app, never hardcode passwords in frontend code.
-            // Use a secure backend with proper authentication.
-            password: 'ADMIN123' // ← Change this to a strong, secret password
+            password: 'ADMIN123'
         };
 
         // ================================================================
@@ -2144,7 +2141,7 @@
         const CIRCUMFERENCE = 2 * Math.PI * 60;
 
         // ================================================================
-        // LOADING OVERLAY — hide after page fully loads
+        // LOADING OVERLAY
         // ================================================================
         window.addEventListener('load', function() {
             setTimeout(function() {
@@ -2254,7 +2251,6 @@
 
                 if (error || !user) throw new Error('അസാധുവായ ID. ദയവായി വീണ്ടും ശ്രമിക്കുക.');
 
-                // Admin login — check against secure config
                 if (user.role === 'admin') {
                     if (id !== ADMIN_CONFIG.password) {
                         throw new Error('അസാധുവായ അഡ്മിൻ ഐഡി.');
@@ -2267,7 +2263,6 @@
                     return;
                 }
 
-                // Parent login
                 const { data: sessions } = await _supabase
                     .from('QuizSession')
                     .select('*')
@@ -2276,18 +2271,15 @@
                 if (!sessions || sessions.length === 0) throw new Error('സെഷനുകൾ ലഭ്യമല്ല.');
 
                 const now = new Date();
-                // Find active session (now between start and end) OR next session within 30 minutes before start
                 let active = sessions.find(s => now >= new Date(s.startTime) && now <= new Date(s.endTime));
                 if (!active) {
-                    // find the session that starts within the next 30 minutes
                     active = sessions.find(s => {
                         const start = new Date(s.startTime);
-                        const diff = (start - now) / 60000; // minutes
+                        const diff = (start - now) / 60000;
                         return diff > 0 && diff <= 30;
                     });
                 }
                 if (!active) {
-                    // fallback: next upcoming session
                     active = sessions.find(s => new Date(s.startTime) > now) || sessions[sessions.length - 1];
                 }
 
@@ -2466,7 +2458,7 @@
         });
 
         // ================================================================
-        // PARENT DASHBOARD — FULL BACKEND LOGIC
+        // PARENT DASHBOARD
         // ================================================================
         window.questions = [];
         window.answers = {};
@@ -2491,7 +2483,6 @@
             const now = new Date();
             const start = new Date(window.currentSession.startTime);
             const end = new Date(window.currentSession.endTime);
-            // Ranking becomes visible 3 minutes after end
             const rankRevealTime = new Date(end.getTime() + 3 * 60000);
 
             const nextSession = getNextSession(window.currentSession.day);
@@ -2499,10 +2490,9 @@
             if (nextSession) {
                 expiryTime = new Date(new Date(nextSession.startTime).getTime() - 30 * 60000);
             } else {
-                expiryTime = new Date(rankRevealTime.getTime() + 12 * 3600000); // fallback 12 hours after reveal
+                expiryTime = new Date(rankRevealTime.getTime() + 12 * 3600000);
             }
 
-            // visibility start: 30 minutes before start
             const visibilityStart = new Date(start.getTime() - 30 * 60000);
 
             ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'preStartMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea',
@@ -2511,7 +2501,6 @@
             document.getElementById('publicationCountdown').classList.add('hidden');
             document.getElementById('resultsExpiryCountdown').classList.add('hidden');
 
-            // Case 1: Before visibility window
             if (now < visibilityStart) {
                 document.getElementById('waitingMsg').classList.remove('hidden');
                 const diff = Math.floor((visibilityStart - now) / 1000);
@@ -2526,7 +2515,6 @@
                 return;
             }
 
-            // Case 2: Within 30 minutes before start but not yet started
             if (now >= visibilityStart && now < start) {
                 document.getElementById('preStartMsg').classList.remove('hidden');
                 const diff = Math.floor((start - now) / 1000);
@@ -2534,7 +2522,6 @@
                     `തുടങ്ങാൻ <strong style="color:var(--gold);">${formatCountdown(diff)}</strong> ശേഷിക്കുന്നു`;
                 startCountdownTimer(start, 'preStart');
 
-                // Load questions to show count, but don't enable the button
                 const { data: qs } = await _supabase
                     .from('Question')
                     .select('*')
@@ -2544,9 +2531,6 @@
                     window.questions = qs;
                     document.getElementById('questionCountDisplay').textContent = qs.length;
                 }
-                // View button is hidden because viewQuestionsArea is hidden
-                // We'll show it with a disabled state? Actually we want to show the button but disabled.
-                // So we show viewQuestionsArea with disabled button and a message.
                 document.getElementById('viewQuestionsArea').classList.remove('hidden');
                 document.getElementById('viewQuestionsBtn').textContent = '⏳ മത്സരം തുടങ്ങുന്നത് വരെ കാത്തിരിക്കുക';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-expired';
@@ -2556,9 +2540,7 @@
                 return;
             }
 
-            // Case 3: Active contest (now between start and end)
             if (now >= start && now <= end) {
-                // Check if user has already attempted
                 const { data: attempt } = await _supabase
                     .from('Attempt')
                     .select('id, status, score')
@@ -2568,7 +2550,6 @@
 
                 if (attempt && (attempt.status === 'COMPLETED' || attempt.status === 'TIMED_OUT')) {
                     document.getElementById('submittedArea').classList.remove('hidden');
-                    // We removed the score stat card, so we don't display score here
                     return;
                 }
 
@@ -2586,7 +2567,6 @@
                     return;
                 }
 
-                // Check if they have viewed questions before
                 const { data: anyAttempt } = await _supabase
                     .from('Attempt')
                     .select('id')
@@ -2607,7 +2587,6 @@
                     return;
                 }
 
-                // First time: show the View Questions button (enabled)
                 document.getElementById('viewQuestionsArea').classList.remove('hidden');
                 document.getElementById('viewQuestionsBtn').textContent = '📝 ചോദ്യങ്ങൾ കാണുക';
                 document.getElementById('viewQuestionsBtn').className = 'btn btn-gold';
@@ -2615,7 +2594,6 @@
                 document.getElementById('quizStatusMessage').textContent =
                     '⏳ ക്വിസ് ആരംഭിക്കാൻ തയ്യാറാണോ? "ചോദ്യങ്ങൾ കാണുക" ക്ലിക്ക് ചെയ്യുക.';
 
-                // Load questions and show count
                 const { data: qs } = await _supabase
                     .from('Question')
                     .select('*')
@@ -2635,10 +2613,8 @@
                 return;
             }
 
-            // Case 4: Contest ended
             if (now > end) {
                 if (now < rankRevealTime) {
-                    // Wait for 3 minutes after end
                     document.getElementById('endedMsg').classList.remove('hidden');
                     document.getElementById('endedMsg').querySelector('h2').textContent =
                         '📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക';
@@ -2649,13 +2625,11 @@
                     return;
                 }
 
-                // After rank reveal
                 if (now >= rankRevealTime && now < expiryTime) {
                     document.getElementById('rankingArea').classList.remove('hidden');
                     document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
                     startCountdownTimer(expiryTime, 'expiry');
                     await loadParentRankingData();
-                    // Also show that the contest has ended (but ranking visible)
                     document.getElementById('endedMsg').classList.remove('hidden');
                     document.getElementById('endedMsg').querySelector('h2').textContent =
                         '🏁 മത്സരം അവസാനിച്ചു';
@@ -2677,8 +2651,7 @@
             window.pubInterval = setInterval(() => {
                 const diff = Math.max(0, Math.floor((targetTime - new Date()) / 1000));
                 let display = formatCountdown(diff);
-                if (type === 'start' || type === 'visibility') {
-                    // For waiting message
+                if (type === 'visibility') {
                     const el = document.getElementById('waitingTimeText');
                     if (el) el.innerHTML = `⏳ മത്സരം ലഭ്യമാകാൻ <strong style="color:var(--gold);">${display}</strong> ശേഷിക്കുന്നു.`;
                 } else if (type === 'preStart') {
@@ -3004,7 +2977,6 @@
                 document.getElementById('questionsArea').classList.add('hidden');
                 document.getElementById('timerArea').classList.add('hidden');
                 document.getElementById('submittedArea').classList.remove('hidden');
-                // We removed the score stat card, so we don't display score here
                 showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
 
                 setTimeout(() => renderParentDashboard(), 1000);
@@ -3016,7 +2988,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL — FULL BACKEND
+        // ADMIN PANEL
         // ================================================================
         window.adminCurrentDay = 1;
         window.questionsCache = [];
@@ -3137,9 +3109,8 @@
                 if (!sessions || sessions.length === 0) {
                     table.innerHTML = '<div class="text-center text-muted">No days. Add one above.</div>';
                     document.getElementById('quickDay').innerHTML = '<option value="">No days</option>';
-                    document.getElementById('questionDayTabs').innerHTML = '';
-                    document.getElementById('rankDayTabs').innerHTML = '';
                     document.getElementById('adminDayTabsContainer').innerHTML = '';
+                    document.getElementById('rankDayTabs').innerHTML = '';
                     return;
                 }
 
@@ -3158,9 +3129,9 @@
                     const localEnd = utcToLocal(s.endTime);
                     html += `<tr>
                         <td><strong style="color:#e2e8f0;">Day ${s.day}</strong></td>
-                        <td><input type="datetime-local" class="edit-start" value="${localStart}" style="min-width:160px;" /></td>
-                        <td><input type="datetime-local" class="edit-end" value="${localEnd}" style="min-width:160px;" /></td>
-                        <td><input type="number" class="edit-duration" value="${s.duration}" style="width:80px;" /></td>
+                        <td><input type="datetime-local" class="edit-start" value="${localStart}" style="min-width:140px;" /></td>
+                        <td><input type="datetime-local" class="edit-end" value="${localEnd}" style="min-width:140px;" /></td>
+                        <td><input type="number" class="edit-duration" value="${s.duration}" style="width:70px;" /></td>
                         <td>
                             <button class="btn btn-primary btn-sm update-row-btn" data-day="${s.day}">💾 Update</button>
                             <button class="btn btn-danger btn-sm" onclick="deleteDay(${s.day})">🗑️</button>
@@ -3199,9 +3170,9 @@
                 });
 
                 const days = sessions.map(s => s.day);
-                const qContainer = document.getElementById('questionDayTabs');
-                if (qContainer) {
-                    qContainer.innerHTML = days.map(d =>
+                const aContainer = document.getElementById('adminDayTabsContainer');
+                if (aContainer) {
+                    aContainer.innerHTML = days.map(d =>
                         `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
                     ).join('');
                 }
@@ -3210,13 +3181,6 @@
                 if (rContainer) {
                     rContainer.innerHTML = days.map(d =>
                         `<button class="day-tab ${d === 1 ? 'active' : ''}" data-day="${d}" onclick="loadAdminRankings(${d})">Day ${d}</button>`
-                    ).join('');
-                }
-
-                const aContainer = document.getElementById('adminDayTabsContainer');
-                if (aContainer) {
-                    aContainer.innerHTML = days.map(d =>
-                        `<button class="day-tab ${d === window.adminCurrentDay ? 'active' : ''}" data-day="${d}" onclick="loadAdminQuestions(${d})">Day ${d}</button>`
                     ).join('');
                 }
 
@@ -3486,7 +3450,7 @@
         }
 
         // ================================================================
-        // HELP — PARENT ONLY INSTRUCTIONS (NO ADMIN INFO)
+        // HELP
         // ================================================================
         function openHelp() {
             alert(
@@ -3498,7 +3462,7 @@
                 '5. ഓരോ ചോദ്യത്തിനും ശരിയായ ഉത്തരം തിരഞ്ഞെടുക്കുക.\n' +
                 '6. സമയപരിധിക്കുള്ളിൽ എല്ലാ ഉത്തരങ്ങളും സമർപ്പിക്കുക.\n' +
                 '7. സമർപ്പിച്ച ശേഷം ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക.\n' +
-                '8. "എന്റെ മത്സര ചരിത്രം" വഴി മുൻ ദിവസങ്ങളിലെ സ്കോറുകൾ കാണാം.\n' +
+                '8. "Reults" വഴി മുൻ ദിവസങ്ങളിലെ സ്കോറുകൾ കാണാം.\n' +
                 '9. ഓരോ ദിവസവും ഒരു ക്വിസ് മാത്രമേ പങ്കെടുക്കാൻ സാധിക്കൂ.'
             );
         }
@@ -3514,10 +3478,7 @@
         console.log('✅ Institution name at top');
         console.log('✅ All Supabase operations active');
         console.log('✅ Admin password secured in ADMIN_CONFIG');
-        console.log('⚠️ For production, move admin password to a secure backend.');
-        console.log('✅ Score stat card removed from dashboard.');
-        console.log('✅ Next day content appears 30 minutes before contest start.');
-        console.log('✅ Improved contrast for dark theme.');
+        console.log('✅ Admin panel alignment improved for mobile & desktop');
     </script>
 </body>
 </html>
