@@ -37,6 +37,7 @@
         body {
             height: 100%;
             margin: 0;
+            overflow: visible; /* Sticky fix */
             font-family: 'Anek Malayalam', 'Inter', sans-serif;
             scroll-behavior: smooth;
         }
@@ -63,6 +64,7 @@
             width: 100%;
             margin: 0 auto;
             padding: 0 12px 20px;
+            overflow: visible; /* Sticky fix */
             transition: min-height 0.3s ease;
         }
 
@@ -828,9 +830,13 @@
         }
 
         /* ================================================================
-           STICKY DASHBOARD HEADER
+           STICKY DASHBOARD HEADER — FIXED FOR MOBILE
            ================================================================ */
         .dashboard-header {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 999;
             background: rgba(10, 20, 40, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -843,11 +849,9 @@
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease;
+            will-change: transform; /* performance */
         }
 
         .dashboard-header.scrolled {
@@ -855,6 +859,11 @@
             border-radius: 1.2rem;
             padding: 12px 20px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ===== HIDE RESULTS EXPIRY TIMER COMPLETELY ===== */
+        #resultsExpiryCountdown {
+            display: none !important;
         }
 
         .avatar-neon {
@@ -1454,6 +1463,7 @@
                 flex-direction: column;
                 align-items: stretch;
                 gap: 10px;
+                position: -webkit-sticky;
                 position: sticky;
                 top: 0;
             }
@@ -1587,6 +1597,7 @@
                 gap: 10px;
                 padding: 12px 14px;
                 border-radius: 1.2rem;
+                position: -webkit-sticky;
                 position: sticky;
                 top: 0;
             }
@@ -1732,6 +1743,7 @@
             .dashboard-header {
                 padding: 8px 10px;
                 border-radius: 1rem;
+                position: -webkit-sticky;
                 position: sticky;
                 top: 0;
             }
@@ -1991,6 +2003,7 @@
                         <p class="text-muted">📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p>
                         <div class="pub-timer" id="publicationTimer">05:00</div>
                     </div>
+                    <!-- Expiry timer is now hidden via CSS -->
                     <div id="resultsExpiryCountdown" class="publication-box hidden">
                         <p class="text-muted">⏳ ഫലം ലഭ്യമാകുന്ന സമയപരിധി</p>
                         <div class="pub-timer" id="resultsExpiryTimer">--:--</div>
@@ -2615,8 +2628,9 @@
                     ].forEach(id => document.getElementById(id).classList.add('hidden'));
 
                     document.getElementById('rankingArea').classList.remove('hidden');
-                    document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
-                    startCountdownTimer(expiryTime, 'expiry');
+                    // Expiry timer is hidden globally, but we keep the logic for countdown if needed
+                    // document.getElementById('resultsExpiryCountdown').classList.remove('hidden'); // Removed
+                    // startCountdownTimer(expiryTime, 'expiry'); // We can skip or keep silent
                     await loadParentRankingData();
 
                     document.getElementById('endedMsg').classList.remove('hidden');
@@ -2646,7 +2660,7 @@
                 'timerArea', 'submittedArea', 'rankingArea'
             ].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('publicationCountdown').classList.add('hidden');
-            document.getElementById('resultsExpiryCountdown').classList.add('hidden');
+            // document.getElementById('resultsExpiryCountdown').classList.add('hidden'); // handled by CSS
 
             const historyWrap = document.getElementById('historyBtnWrap');
             historyWrap.classList.add('hidden');
@@ -2782,8 +2796,8 @@
 
                 if (now >= rankRevealTime && now < expiryTime) {
                     document.getElementById('rankingArea').classList.remove('hidden');
-                    document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
-                    startCountdownTimer(expiryTime, 'expiry');
+                    // Expiry timer is hidden, but we can still run the logic silently if needed
+                    // startCountdownTimer(expiryTime, 'expiry'); // Not displaying
                     await loadParentRankingData();
                     document.getElementById('endedMsg').classList.remove('hidden');
                     document.getElementById('endedMsg').querySelector('h2').textContent =
@@ -2825,7 +2839,8 @@
                     if (el) el.innerHTML =
                         `⏳ ഫലം ലഭ്യമാകാൻ <strong style="color:var(--gold);">${display}</strong> ശേഷിക്കുന്നു.`;
                 } else if (type === 'expiry') {
-                    document.getElementById('resultsExpiryTimer').textContent = display;
+                    // We no longer show expiry timer, but we can still update if needed (just hidden)
+                    // document.getElementById('resultsExpiryTimer').textContent = display;
                 }
                 if (diff <= 0) {
                     clearInterval(window.pubInterval);
@@ -3668,9 +3683,9 @@
             });
         });
 
-        console.log('🚀 NOORUSSALAM MADRASA — Updated: HH:MM:SS timer format, compact result card with medals.');
-        console.log('✅ All timers now display in 00:00:00 format.');
-        console.log('✅ Result card is smaller, horizontal, and visually polished.');
+        console.log('🚀 NOORUSSALAM MADRASA — Final: Expiry timer hidden, sticky header fixed for mobile.');
+        console.log('✅ "ഫലം ലഭ്യമാകുന്ന സമയപരിധി" completely hidden via CSS.');
+        console.log('✅ Sticky header now stays on top even on mobile scrolling.');
     </script>
 </body>
 </html>
