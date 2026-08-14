@@ -1032,48 +1032,6 @@
             cursor: default;
         }
 
-        /* ===== RANKING TABLE ===== */
-        .rank-table-wrap {
-            overflow-x: auto;
-            margin: 12px 0;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.2);
-        }
-        .rank-table-wrap table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-            color: #e2e8f0;
-        }
-        .rank-table-wrap th {
-            text-align: left;
-            padding: 10px 14px;
-            color: #94a3b8;
-            font-weight: 600;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        .rank-table-wrap td {
-            padding: 10px 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            vertical-align: middle;
-        }
-        .rank-table-wrap tr:hover td {
-            background: rgba(255, 255, 255, 0.03);
-        }
-        .rank-table-wrap tr.my-rank td {
-            background: rgba(251, 191, 36, 0.12);
-            border-left: 3px solid var(--gold);
-        }
-        .rank-table-wrap .medal {
-            font-size: 1.2rem;
-            margin-right: 4px;
-        }
-
         /* ================================================================
            ADMIN PANEL — TABLES & IMPROVED ALIGNMENT
            ================================================================ */
@@ -2621,9 +2579,7 @@
         // Auto-refresh only when results are shown
         function startAutoRefresh() {
             if (window.autoRefreshInterval) clearInterval(window.autoRefreshInterval);
-            // Refresh every 30 seconds
             window.autoRefreshInterval = setInterval(() => {
-                // Only reload if ranking area is visible (results are on screen)
                 if (!document.getElementById('rankingArea').classList.contains('hidden')) {
                     location.reload();
                 }
@@ -2904,13 +2860,14 @@
         }
 
         // ================================================================
-        // PARENT RANKING (Table format)
+        // PARENT RANKING (ONLY USER'S OWN DATA)
         // ================================================================
         async function loadParentRankingData() {
             const container = document.getElementById('rankListContainer');
             container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> ലോഡ് ചെയ്യുന്നു...</div>';
 
             try {
+                // Get all attempts for this day to compute rank
                 const { data: attempts } = await _supabase
                     .from('Attempt')
                     .select('*, Student(name)')
@@ -2922,46 +2879,40 @@
                     return;
                 }
 
+                // Find the current user's attempt
+                const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
+                if (!myAttempt) {
+                    container.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
+                    return;
+                }
+
+                // Sort all attempts by score (desc) then time (asc) to compute rank
                 const ranked = attempts.map(a => ({
                     ...a,
-                    timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000),
-                    userName: a.Student?.name || 'Unknown'
+                    timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000)
                 }));
                 ranked.sort((a, b) => {
                     if (a.score !== b.score) return (b.score || 0) - (a.score || 0);
                     return (a.timeTaken || 9999) - (b.timeTaken || 9999);
                 });
 
-                // Build table
-                let html = `<div class="rank-table-wrap"><table>
-                    <thead><tr><th>#</th><th>രക്ഷിതാവ്</th><th>സ്കോർ</th><th>സമയം (സെ)</th></tr></thead><tbody>`;
-                ranked.forEach((r, idx) => {
-                    const rank = idx + 1;
-                    let medal = '';
-                    if (rank === 1) medal = '🥇 ';
-                    else if (rank === 2) medal = '🥈 ';
-                    else if (rank === 3) medal = '🥉 ';
-                    const isMyRow = r.studentId === window.currentUser.id;
-                    const rowClass = isMyRow ? 'my-rank' : '';
-                    html += `<tr class="${rowClass}">
-                        <td><strong>${medal}${rank}</strong></td>
-                        <td>${r.userName}</td>
-                        <td style="color:var(--gold);font-weight:700;">${r.score ?? 0}</td>
-                        <td>${r.timeTaken || 0}</td>
-                    </tr>`;
-                });
-                html += `</tbody></table></div>`;
+                const userRank = ranked.findIndex(a => a.id === myAttempt.id) + 1;
+                const score = myAttempt.score || 0;
+                const timeTaken = Math.floor((new Date(myAttempt.endTime) - new Date(myAttempt.startTime)) / 1000);
 
-                // Add a small note if user's rank found
-                const myEntry = ranked.find(r => r.studentId === window.currentUser.id);
-                if (myEntry) {
-                    const myRank = ranked.indexOf(myEntry) + 1;
-                    html += `<p style="text-align:center;color:var(--gold);margin-top:12px;">🏅 നിങ്ങളുടെ റാങ്ക്: #${myRank}  |  സ്കോർ: ${myEntry.score}  |  സമയം: ${myEntry.timeTaken} സെ</p>`;
-                } else {
-                    html += `<p style="text-align:center;color:var(--text-muted);margin-top:12px;">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</p>`;
-                }
-
-                container.innerHTML = html;
+                // Display only the user's own rank and score in a nice card
+                container.innerHTML = `
+                    <div style="background:rgba(251,191,36,0.08); border:2px solid var(--gold); border-radius:20px; padding:24px; text-align:center; margin:12px 0;">
+                        <div style="font-size:4rem; margin-bottom:8px;">🏅</div>
+                        <div style="font-size:1.5rem; font-weight:700; color:var(--gold);">#${userRank}</div>
+                        <div style="font-size:1rem; color:var(--text-secondary);">${window.currentUser.name}</div>
+                        <div style="display:flex; justify-content:center; gap:24px; margin-top:16px; flex-wrap:wrap;">
+                            <div><span style="color:var(--text-muted);">സ്കോർ</span><br><span style="font-size:2rem; font-weight:800; color:#fff;">${score}</span></div>
+                            <div><span style="color:var(--text-muted);">സമയം</span><br><span style="font-size:2rem; font-weight:800; color:#fff;">${timeTaken} സെ</span></div>
+                        </div>
+                        <p style="color:var(--gold); margin-top:12px; font-weight:600;">✅ നിങ്ങളുടെ റാങ്ക്</p>
+                    </div>
+                `;
 
             } catch (err) {
                 container.innerHTML = '<div class="text-danger text-center">റാങ്കിംഗ് ലോഡ് ചെയ്യുന്നതിൽ പിശക്.</div>';
@@ -3690,9 +3641,8 @@
             });
         });
 
-        console.log('🚀 NOORUSSALAM MADRASA — Full Backend Connected');
-        console.log('✅ Previous session results now shown until 30 mins before next session.');
-        console.log('✅ Ranking displayed as table with user row highlighted.');
+        console.log('🚀 NOORUSSALAM MADRASA — Fixed: Parents see only their own rank & score.');
+        console.log('✅ Ranking displayed as a personal card, not a full table.');
         console.log('✅ Auto-refresh every 30 seconds when results are visible.');
     </script>
 </body>
