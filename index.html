@@ -1985,8 +1985,7 @@
             <div id="rankingArea" class="hidden">
                 <div class="glass-card">
                     <div class="flex-between">
-                        <h3 style="color:var(--gold); font-size:1.2rem;">🏆 നിങ്ങളുടെ സ്കോർ</h3>
-                        <span class="badge" style="display:none;" id="rankCountBadge">—</span>
+                        <h3 style="color:var(--gold); font-size:1.2rem;">🏆 നിങ്ങളുടെ ഫലം</h3>
                     </div>
                     <div id="publicationCountdown" class="publication-box hidden">
                         <p class="text-muted">📢 ഫലപ്രഖ്യാപനത്തിനായി കാത്തിരിക്കുക</p>
@@ -2400,7 +2399,6 @@
             if (window.timerInterval) clearInterval(window.timerInterval);
             if (window.pubInterval) clearInterval(window.pubInterval);
             if (window.expiryInterval) clearInterval(window.expiryInterval);
-            if (window.autoRefreshInterval) clearInterval(window.autoRefreshInterval);
             window.currentUser = null;
             window.currentSession = null;
             window.allSessions = null;
@@ -2458,7 +2456,8 @@
 
             const btn = document.getElementById('registerBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span style="display:inline-block;width:1.2rem;height:1.2rem;border:2px solid rgba(255,255,255,0.1);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;"></span>';
+            btn.innerHTML =
+                '<span style="display:inline-block;width:1.2rem;height:1.2rem;border:2px solid rgba(255,255,255,0.1);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;"></span>';
 
             try {
                 const prefix = 'PAR';
@@ -2556,7 +2555,7 @@
         });
 
         // ================================================================
-        // PARENT DASHBOARD (FIXED LOGIC + AUTO REFRESH)
+        // PARENT DASHBOARD — NO AUTO-REFRESH
         // ================================================================
         window.questions = [];
         window.answers = {};
@@ -2565,7 +2564,6 @@
         window.hasViewedQuestions = false;
         window.quizStarted = false;
         window.allSessions = [];
-        window.autoRefreshInterval = null;
 
         function getNextSession(currentDay) {
             if (!window.allSessions || window.allSessions.length === 0) return null;
@@ -2576,16 +2574,9 @@
             return null;
         }
 
-        // Auto-refresh only when results are shown
-        function startAutoRefresh() {
-            if (window.autoRefreshInterval) clearInterval(window.autoRefreshInterval);
-            window.autoRefreshInterval = setInterval(() => {
-                if (!document.getElementById('rankingArea').classList.contains('hidden')) {
-                    location.reload();
-                }
-            }, 30000);
-        }
-
+        // ================================================================
+        // RENDER PARENT DASHBOARD (No auto-refresh)
+        // ================================================================
         async function renderParentDashboard() {
             if (!window.currentUser || !window.currentSession) return;
 
@@ -2615,40 +2606,32 @@
                     expiryTime = new Date(rankRevealTime.getTime() + 12 * 3600000);
                 }
 
-                // If we are within the result viewing window of the previous session
                 if (now >= rankRevealTime && now < expiryTime) {
-                    // Override currentSession to previous for this render cycle
                     window.currentSession = prevSession;
                     document.getElementById('quizDayDisplay').textContent = 'ദിവസം ' + prevSession.day;
 
-                    // Hide all irrelevant sections
-                    ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'preStartMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea', 'submittedArea']
-                    .forEach(id => document.getElementById(id).classList.add('hidden'));
+                    ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'preStartMsg', 'viewQuestionsArea', 'questionsArea',
+                        'timerArea', 'submittedArea'
+                    ].forEach(id => document.getElementById(id).classList.add('hidden'));
 
-                    // Show Ranking and Results
                     document.getElementById('rankingArea').classList.remove('hidden');
                     document.getElementById('resultsExpiryCountdown').classList.remove('hidden');
                     startCountdownTimer(expiryTime, 'expiry');
-                    await loadParentRankingData(); // Uses window.currentSession.day
+                    await loadParentRankingData();
 
-                    // Show the 'ended' message with results info
                     document.getElementById('endedMsg').classList.remove('hidden');
                     document.getElementById('endedMsg').querySelector('h2').textContent = '🏁 മത്സരം അവസാനിച്ചു';
-                    document.getElementById('endedMsgText').textContent = `📊 ഫലങ്ങൾ ലഭ്യമാണ് (${formatDate(expiryTime)} വരെ)`;
+                    document.getElementById('endedMsgText').textContent =
+                        `📊 ഫലങ്ങൾ ലഭ്യമാണ് (${formatDate(expiryTime)} വരെ)`;
 
-                    // Show history button
                     document.getElementById('historyBtnWrap').classList.remove('hidden');
-
-                    // Start auto-refresh
-                    startAutoRefresh();
-                    return; // IMPORTANT: Exit here
+                    return;
                 }
             }
-            // ================================================================
-            // END OF FIX
-            // ================================================================
 
-            // If we reach here, proceed with the NORMAL currentSession logic
+            // ================================================================
+            // NORMAL CURRENT SESSION LOGIC
+            // ================================================================
             const start = new Date(window.currentSession.startTime);
             const end = new Date(window.currentSession.endTime);
             const rankRevealTime = new Date(end.getTime() + 3 * 60000);
@@ -2661,21 +2644,14 @@
             }
             const visibilityStart = new Date(start.getTime() - 30 * 60000);
 
-            // Hide all status areas first
-            ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'preStartMsg', 'viewQuestionsArea', 'questionsArea', 'timerArea',
-                'submittedArea', 'rankingArea'
+            ['waitingMsg', 'endedMsg', 'resultsExpiredMsg', 'preStartMsg', 'viewQuestionsArea', 'questionsArea',
+                'timerArea', 'submittedArea', 'rankingArea'
             ].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('publicationCountdown').classList.add('hidden');
             document.getElementById('resultsExpiryCountdown').classList.add('hidden');
 
             const historyWrap = document.getElementById('historyBtnWrap');
             historyWrap.classList.add('hidden');
-
-            // Clear auto-refresh when not showing results
-            if (window.autoRefreshInterval) {
-                clearInterval(window.autoRefreshInterval);
-                window.autoRefreshInterval = null;
-            }
 
             if (now < visibilityStart) {
                 document.getElementById('waitingMsg').classList.remove('hidden');
@@ -2817,7 +2793,6 @@
                     document.getElementById('endedMsgText').textContent =
                         `📊 ഫലങ്ങൾ ലഭ്യമാണ് (${formatDate(expiryTime)} വരെ)`;
                     historyWrap.classList.remove('hidden');
-                    startAutoRefresh();
                     return;
                 }
 
@@ -2830,6 +2805,9 @@
             }
         }
 
+        // ================================================================
+        // COUNTDOWN TIMER
+        // ================================================================
         function startCountdownTimer(targetTime, type) {
             if (window.pubInterval) clearInterval(window.pubInterval);
             window.pubInterval = setInterval(() => {
@@ -2837,7 +2815,8 @@
                 let display = formatCountdown(diff);
                 if (type === 'visibility') {
                     const el = document.getElementById('waitingTimeText');
-                    if (el) el.innerHTML = `⏳ മത്സരം ലഭ്യമാകാൻ <strong style="color:var(--gold);">${display}</strong> ശേഷിക്കുന്നു.`;
+                    if (el) el.innerHTML =
+                        `⏳ മത്സരം ലഭ്യമാകാൻ <strong style="color:var(--gold);">${display}</strong> ശേഷിക്കുന്നു.`;
                 } else if (type === 'preStart') {
                     const el = document.getElementById('preStartText');
                     if (el) el.innerHTML = `തുടങ്ങാൻ <strong style="color:var(--gold);">${display}</strong> ശേഷിക്കുന്നു`;
@@ -2860,14 +2839,13 @@
         }
 
         // ================================================================
-        // PARENT RANKING (ONLY USER'S OWN DATA)
+        // PARENT RANKING — Beautiful Card with Medals
         // ================================================================
         async function loadParentRankingData() {
             const container = document.getElementById('rankListContainer');
             container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> ലോഡ് ചെയ്യുന്നു...</div>';
 
             try {
-                // Get all attempts for this day to compute rank
                 const { data: attempts } = await _supabase
                     .from('Attempt')
                     .select('*, Student(name)')
@@ -2879,14 +2857,12 @@
                     return;
                 }
 
-                // Find the current user's attempt
                 const myAttempt = attempts.find(a => a.studentId === window.currentUser.id);
                 if (!myAttempt) {
                     container.innerHTML = '<div class="text-center text-muted">നിങ്ങളുടെ ഉത്തരങ്ങൾ ഇതുവരെ രേഖപ്പെടുത്തിയിട്ടില്ല.</div>';
                     return;
                 }
 
-                // Sort all attempts by score (desc) then time (asc) to compute rank
                 const ranked = attempts.map(a => ({
                     ...a,
                     timeTaken: Math.floor((new Date(a.endTime) - new Date(a.startTime)) / 1000)
@@ -2900,17 +2876,53 @@
                 const score = myAttempt.score || 0;
                 const timeTaken = Math.floor((new Date(myAttempt.endTime) - new Date(myAttempt.startTime)) / 1000);
 
-                // Display only the user's own rank and score in a nice card
+                let medalEmoji = '';
+                let medalColor = 'var(--gold)';
+                let rankLabel = '';
+
+                if (userRank === 1) { medalEmoji = '🥇';
+                    medalColor = '#fbbf24';
+                    rankLabel = '🏆 ഒന്നാം സ്ഥാനം'; } else if (userRank === 2) { medalEmoji = '🥈';
+                    medalColor = '#c0c0c0';
+                    rankLabel = '🥈 രണ്ടാം സ്ഥാനം'; } else if (userRank === 3) { medalEmoji = '🥉';
+                    medalColor = '#cd7f32';
+                    rankLabel = '🥉 മൂന്നാം സ്ഥാനം'; } else { medalEmoji = '🏅';
+                    rankLabel = '✅ നിങ്ങളുടെ റാങ്ക്'; }
+
+                // Format time as minutes & seconds
+                const mins = Math.floor(timeTaken / 60);
+                const secs = timeTaken % 60;
+                const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+
                 container.innerHTML = `
-                    <div style="background:rgba(251,191,36,0.08); border:2px solid var(--gold); border-radius:20px; padding:24px; text-align:center; margin:12px 0;">
-                        <div style="font-size:4rem; margin-bottom:8px;">🏅</div>
-                        <div style="font-size:1.5rem; font-weight:700; color:var(--gold);">#${userRank}</div>
-                        <div style="font-size:1rem; color:var(--text-secondary);">${window.currentUser.name}</div>
-                        <div style="display:flex; justify-content:center; gap:24px; margin-top:16px; flex-wrap:wrap;">
-                            <div><span style="color:var(--text-muted);">സ്കോർ</span><br><span style="font-size:2rem; font-weight:800; color:#fff;">${score}</span></div>
-                            <div><span style="color:var(--text-muted);">സമയം</span><br><span style="font-size:2rem; font-weight:800; color:#fff;">${timeTaken} സെ</span></div>
+                    <div style="background:linear-gradient(145deg, rgba(251,191,36,0.10), rgba(251,191,36,0.03)); 
+                                border:2px solid ${userRank <= 3 ? 'var(--gold)' : 'rgba(255,255,255,0.08)'}; 
+                                border-radius:28px; 
+                                padding:28px 20px; 
+                                text-align:center; 
+                                margin:12px 0; 
+                                box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+                                transition: all 0.3s ease;">
+                        <div style="font-size:4.5rem; line-height:1.2; margin-bottom:2px;">${medalEmoji}</div>
+                        <div style="font-size:2.2rem; font-weight:900; color:${userRank <= 3 ? 'var(--gold)' : '#fff'}; letter-spacing:-0.5px;">
+                            #${userRank}
                         </div>
-                        <p style="color:var(--gold); margin-top:12px; font-weight:600;">✅ നിങ്ങളുടെ റാങ്ക്</p>
+                        <div style="font-size:1.1rem; color:var(--text-secondary); margin-top:2px; font-weight:500;">
+                            ${window.currentUser.name}
+                        </div>
+                        <div style="display:flex; justify-content:center; gap:20px; margin-top:18px; flex-wrap:wrap;">
+                            <div style="background:rgba(255,255,255,0.04); padding:12px 18px; border-radius:16px; min-width:80px; border:1px solid rgba(255,255,255,0.04);">
+                                <div style="color:var(--text-muted); font-size:0.7rem; text-transform:uppercase; letter-spacing:1px;">സ്കോർ</div>
+                                <div style="font-size:2.2rem; font-weight:800; color:var(--gold);">${score}</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.04); padding:12px 18px; border-radius:16px; min-width:80px; border:1px solid rgba(255,255,255,0.04);">
+                                <div style="color:var(--text-muted); font-size:0.7rem; text-transform:uppercase; letter-spacing:1px;">സമയം</div>
+                                <div style="font-size:2.2rem; font-weight:800; color:#fff;">${timeStr}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:18px; color:${userRank <= 3 ? 'var(--gold)' : 'var(--text-muted)'}; font-weight:${userRank <= 3 ? '700' : '400'}; font-size:1rem;">
+                            ${userRank <= 3 ? '🎉 അഭിനന്ദനങ്ങൾ!' : rankLabel}
+                        </div>
                     </div>
                 `;
 
@@ -2986,13 +2998,16 @@
                     const session = sessionMap[att.sessionDay];
                     const dateStr = session ? formatDateShort(session.startTime) : '—';
                     const timeTaken = Math.floor((new Date(att.endTime) - new Date(att.startTime)) / 1000);
+                    const mins = Math.floor(timeTaken / 60);
+                    const secs = timeTaken % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
 
                     html += `<tr>
                         <td><strong>ദിവസം ${att.sessionDay}</strong></td>
                         <td>${dateStr}</td>
                         <td style="color:var(--gold);font-weight:700;">${att.score ?? 0}</td>
                         <td>#${rank}</td>
-                        <td>${timeTaken} സെ</td>
+                        <td>${timeStr}</td>
                     </tr>`;
                 }
 
@@ -3136,6 +3151,9 @@
             };
         }
 
+        // ================================================================
+        // SUBMIT QUIZ — RELOAD ON TIMEOUT
+        // ================================================================
         async function submitParentQuiz(isTimeout = false) {
             if (window.isSubmitted) return;
             window.isSubmitted = true;
@@ -3164,10 +3182,18 @@
 
                 document.getElementById('questionsArea').classList.add('hidden');
                 document.getElementById('timerArea').classList.add('hidden');
-                document.getElementById('submittedArea').classList.remove('hidden');
-                showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
 
-                setTimeout(() => renderParentDashboard(), 1000);
+                if (isTimeout) {
+                    // Timeout → reload to show results
+                    showToast('⏰ സമയം കഴിഞ്ഞു. ഫലങ്ങൾ ലഭ്യമാകും...', 'info');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    document.getElementById('submittedArea').classList.remove('hidden');
+                    showToast('✅ വിജയകരമായി സമർപ്പിച്ചു!', 'success');
+                    setTimeout(() => renderParentDashboard(), 1000);
+                }
             } catch (err) {
                 showToast('സമർപ്പിക്കുന്നതിൽ പിശക്: ' + err.message, 'error');
                 window.isSubmitted = false;
@@ -3176,7 +3202,7 @@
         }
 
         // ================================================================
-        // ADMIN PANEL (unchanged)
+        // ADMIN PANEL
         // ================================================================
         window.adminCurrentDay = 1;
         window.questionsCache = [];
@@ -3300,7 +3326,8 @@
                 document.getElementById('quickEnd').value = utcToLocal(first.endTime);
                 document.getElementById('quickDuration').value = first.duration || 15;
 
-                let html = `<table><thead><tr><th>Day</th><th>Start</th><th>End</th><th>Duration</th><th>Actions</th></tr></thead><tbody>`;
+                let html =
+                    `<table><thead><tr><th>Day</th><th>Start</th><th>End</th><th>Duration</th><th>Actions</th></tr></thead><tbody>`;
                 sessions.forEach(s => {
                     const localStart = utcToLocal(s.startTime);
                     const localEnd = utcToLocal(s.endTime);
@@ -3456,7 +3483,8 @@
                     table.innerHTML = '<div class="text-center text-muted">No questions for this day.</div>';
                     return;
                 }
-                let html = `<table><thead><tr><th>#</th><th>Question</th><th>Options</th><th>Correct</th><th>Actions</th></tr></thead><tbody>`;
+                let html =
+                    `<table><thead><tr><th>#</th><th>Question</th><th>Options</th><th>Correct</th><th>Actions</th></tr></thead><tbody>`;
                 window.questionsCache.forEach((q, i) => {
                     html += `<tr>
                         <td>${i+1}</td>
@@ -3502,7 +3530,8 @@
                     if (a.score !== b.score) return (b.score || 0) - (a.score || 0);
                     return (a.timeTaken || 9999) - (b.timeTaken || 9999);
                 });
-                let html = `<table><thead><tr><th>Rank</th><th>Parent</th><th>Score</th><th>Time Taken</th><th>Submitted</th></tr></thead><tbody>`;
+                let html =
+                    `<table><thead><tr><th>Rank</th><th>Parent</th><th>Score</th><th>Time Taken</th><th>Submitted</th></tr></thead><tbody>`;
                 ranked.forEach((r, idx) => {
                     const rank = idx + 1;
                     let medal = '';
@@ -3577,7 +3606,8 @@
                     if (a.totalScore !== b.totalScore) return b.totalScore - a.totalScore;
                     return a.avgTime - b.avgTime;
                 });
-                let html = `<table><thead><tr><th>Rank</th><th>Parent</th><th>Total Score</th><th>Avg Time</th><th>Attempts</th></tr></thead><tbody>`;
+                let html =
+                    `<table><thead><tr><th>Rank</th><th>Parent</th><th>Total Score</th><th>Avg Time</th><th>Attempts</th></tr></thead><tbody>`;
                 ranked.forEach((r, idx) => {
                     const rank = idx + 1;
                     let medal = '';
@@ -3641,9 +3671,10 @@
             });
         });
 
-        console.log('🚀 NOORUSSALAM MADRASA — Fixed: Parents see only their own rank & score.');
-        console.log('✅ Ranking displayed as a personal card, not a full table.');
-        console.log('✅ Auto-refresh every 30 seconds when results are visible.');
+        console.log('🚀 NOORUSSALAM MADRASA — Updated: No auto-refresh, beautiful result cards with medals.');
+        console.log('✅ Page reloads only when quiz time ends (timeout).');
+        console.log('✅ Medals for 1st 🥇, 2nd 🥈, 3rd 🥉 positions.');
+        console.log('✅ Result card shows Rank, Score, Time in a beautiful layout.');
     </script>
 </body>
 </html>
