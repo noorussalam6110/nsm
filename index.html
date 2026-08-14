@@ -1782,7 +1782,7 @@
             padding: 28px 20px 24px;
             text-align: center;
             margin: 8px auto;
-            max-width: 420px;
+            max-width: 460px;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -1815,7 +1815,7 @@
         }
 
         .rank-card .rank-label {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             letter-spacing: 2px;
             font-weight: 500;
@@ -1857,35 +1857,51 @@
             font-size: 1.1rem;
             color: var(--text-secondary);
             font-weight: 500;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             position: relative;
             z-index: 1;
         }
 
+        /* ===== UPDATED: Separate Boxes for Score and Time ===== */
         .rank-card .rank-stats {
             display: flex;
             justify-content: center;
-            gap: 24px;
+            gap: 16px;
             flex-wrap: wrap;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
-            padding-top: 14px;
+            padding-top: 16px;
             position: relative;
             z-index: 1;
         }
 
         .rank-card .rank-stats .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 10px 24px;
+            min-width: 100px;
             text-align: center;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .rank-card .rank-stats .stat-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(251, 191, 36, 0.25);
+            transform: translateY(-2px);
         }
 
         .rank-card .rank-stats .stat-item .stat-label {
             color: var(--text-muted);
-            font-size: 0.55rem;
+            font-size: 0.6rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .rank-card .rank-stats .stat-item .stat-value {
-            font-size: 1.3rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: #fff;
             line-height: 1.3;
@@ -1896,8 +1912,8 @@
         }
 
         .rank-card .rank-celebration {
-            margin-top: 10px;
-            font-size: 1.1rem;
+            margin-top: 12px;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--gold);
             position: relative;
@@ -3022,7 +3038,7 @@
         async function loadParentRankingData() {
             const container = document.getElementById('rankListContainer');
             container.innerHTML =
-            '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> ലോഡ് ചെയ്യുന്നു...</div>';
+                '<div class="text-center text-muted"><i class="fas fa-spinner fa-pulse"></i> ലോഡ് ചെയ്യുന്നു...</div>';
 
             try {
                 const { data: attempts } = await _supabase
@@ -3082,7 +3098,7 @@
                 const secs = timeTaken % 60;
                 const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
 
-                // ===== ATTRACTIVE CENTERED CARD =====
+                // ===== ATTRACTIVE CENTERED CARD WITH SEPARATE BOXES =====
                 container.innerHTML = `
                     <div class="rank-card ${rankClass}">
                         <div class="rank-glow"></div>
@@ -3847,8 +3863,8 @@
             });
         });
 
-        console.log('🚀 NOORUSSALAM MADRASA — Centered attractive rank card with "താങ്കളുടെ ഇന്നത്തെ റാങ്ക്"');
-        console.log('✅ Rank card now centered with medal, rank number, name, score & time.');
+        console.log('🚀 NOORUSSALAM MADRASA — Centered attractive rank card with separate boxes for Score & Time.');
+        console.log('✅ Score and Time now in individual glass boxes with hover effects.');
     </script>
 </body>
 </html>
