@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>KBC Premium Dashboard</title>
+    <title>KBC - Audience Poll</title>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet" />
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
-        /* ---------- RESET & FULLSCREEN ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -17,73 +16,47 @@
             font-family: 'Anek Malayalam', 'Segoe UI', sans-serif;
         }
 
-        html,
         body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
             background: #08080f;
-        }
-
-        body {
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 16px;
         }
 
-        /* ---------- MAIN CARD ---------- */
         .main-card {
-            max-width: 1300px;
+            max-width: 500px;
             width: 100%;
-            height: 100%;
-            max-height: 950px;
             background: rgba(18, 18, 40, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-radius: 40px;
-            padding: 20px 30px;
+            border-radius: 32px;
+            padding: 24px;
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 215, 0, 0.08);
             border: 1px solid rgba(255, 215, 0, 0.12);
-            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* Animated orbs */
-        .main-card::before,
-        .main-card::after {
+        .main-card::before {
             content: '';
             position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.3;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.03), transparent, rgba(255, 215, 0, 0.05), transparent);
+            animation: shimmerRotate 20s linear infinite;
+            pointer-events: none;
             z-index: 0;
-            animation: orbFloat 12s ease-in-out infinite alternate;
         }
-        .main-card::before {
-            width: 400px;
-            height: 400px;
-            top: -150px;
-            right: -150px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.2), transparent 70%);
-        }
-        .main-card::after {
-            width: 350px;
-            height: 350px;
-            bottom: -120px;
-            left: -120px;
-            background: radial-gradient(circle, rgba(255, 100, 0, 0.15), transparent 70%);
-            animation-delay: 4s;
-        }
-        @keyframes orbFloat {
+        @keyframes shimmerRotate {
             0% {
-                transform: translate(0, 0) scale(1);
+                transform: rotate(0deg);
             }
             100% {
-                transform: translate(30px, 20px) scale(1.2);
+                transform: rotate(360deg);
             }
         }
         .main-card>* {
@@ -91,479 +64,23 @@
             z-index: 1;
         }
 
-        /* Glowing border for Host mode */
-        body.host-active .main-card {
-            border-color: #ffd700;
-            box-shadow: 0 0 80px rgba(255, 215, 0, 0.12), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.2);
-            animation: cardPulse 4s ease-in-out infinite;
-        }
-        @keyframes cardPulse {
-            0%,
-            100% {
-                box-shadow: 0 0 60px rgba(255, 215, 0, 0.08), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.15);
-            }
-            50% {
-                box-shadow: 0 0 120px rgba(255, 215, 0, 0.18), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.3);
-            }
-        }
-
-        /* ---------- APP TITLE (Double-click) ---------- */
-        .app-title {
+        /* Sync hint */
+        .sync-hint {
             text-align: center;
-            color: #ffd700;
-            font-size: 1.6rem;
-            font-weight: 900;
-            margin-bottom: 6px;
-            text-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
-            cursor: default;
-            user-select: none;
-            letter-spacing: 2px;
-            flex-shrink: 0;
-        }
-        .app-title small {
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.25);
-            font-weight: 400;
-            display: block;
-            letter-spacing: 1px;
-        }
-
-        /* ---------- MODE SWITCHER (HIDDEN IN HOST MODE) ---------- */
-        .mode-switcher {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-bottom: 8px;
-            flex-shrink: 0;
-        }
-        body.host-active .mode-switcher {
-            display: none !important;
-        }
-        .mode-btn {
-            padding: 8px 24px;
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            background: rgba(255, 215, 0, 0.04);
-            color: #aaa;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s ease;
-            max-width: 220px;
-            flex: 1;
-            backdrop-filter: blur(8px);
-        }
-        .mode-btn.active {
-            background: #ffd700;
-            color: #0a0a12;
-            border-color: #ffd700;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
-        }
-        .mode-btn:hover {
-            transform: scale(1.03);
-            border-color: rgba(255, 215, 0, 0.6);
-        }
-
-        /* ================================================================
-           HOST VIEW – ONLY GRAPHS (NO A/B/C/D LABELS)
-           ================================================================ */
-        #hostView {
-            display: none;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-            animation: hostFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        #hostView.active-view {
-            display: flex;
-        }
-        @keyframes hostFadeIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.97) translateY(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        /* Header */
-        .host-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            flex-shrink: 0;
-            padding: 0 4px;
-        }
-        .host-header h2 {
-            color: rgba(255, 215, 0, 0.9);
-            font-size: 1.5rem;
-            font-weight: 800;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
-            letter-spacing: 2px;
-        }
-        .live-badge {
-            background: #ff1a4a;
-            color: #fff;
-            padding: 5px 20px;
-            border-radius: 60px;
-            font-size: 0.95rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            animation: blinkLive 1.4s infinite;
-            box-shadow: 0 0 40px rgba(255, 26, 74, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .live-badge::before {
-            content: '';
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #fff;
-            border-radius: 50%;
-            animation: blinkDot 1.4s infinite;
-        }
-        @keyframes blinkLive {
-            0%,
-            100% {
-                opacity: 1;
-                box-shadow: 0 0 30px rgba(255, 26, 74, 0.4);
-            }
-            50% {
-                opacity: 0.85;
-                box-shadow: 0 0 60px rgba(255, 26, 74, 0.7);
-            }
-        }
-        @keyframes blinkDot {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.2;
-                transform: scale(0.7);
-            }
-        }
-
-        /* Question – Small, clean Q1/Q2 */
-        #questionHost {
-            background: rgba(10, 10, 30, 0.5);
-            backdrop-filter: blur(4px);
-            padding: 6px 20px;
-            border-radius: 14px;
-            color: #ffd700;
-            font-size: 2.2rem;
-            font-weight: 900;
-            text-align: center;
-            margin-bottom: 10px;
-            border-left: 6px solid #ffd700;
-            min-height: 44px;
-            letter-spacing: 1px;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        /* ----- GRID – ONLY BARS, NO A/B/C/D LABELS ----- */
-        .options-grid-host {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            flex: 1;
-            min-height: 0;
-            margin-bottom: 8px;
-        }
-        .option-item {
-            background: rgba(20, 20, 48, 0.5);
-            backdrop-filter: blur(4px);
-            padding: 12px 18px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            /* NO LABEL - Pure bar display */;
-        }
-
-        /* ----- GIANT BARS (Fill remaining space) ----- */
-        .bar-bg {
-            width: 100%;
-            height: 100%;
-            min-height: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 30px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.8);
-            position: relative;
-            border: 1px solid rgba(255, 215, 0, 0.06);
-            flex: 1;
-        }
-        .bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #f7971e, #ffd200, #f7971e);
-            background-size: 200% 100%;
-            animation: shimmerBar 2.8s linear infinite;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 16px;
-            color: #0a0a12;
-            font-weight: 900;
-            font-size: 1rem;
-            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-        @keyframes shimmerBar {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
-
-        /* Status */
-        #hostStatus {
-            color: rgba(255, 255, 255, 0.5);
-            text-align: center;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: 0.3s;
-            padding: 4px 12px;
-            border-radius: 60px;
-            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+            padding: 6px 16px;
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(4px);
-            flex-shrink: 0;
-            margin-bottom: 2px;
-        }
-        #hostStatus.flash-green {
-            color: #0f0;
-            background: rgba(0, 255, 0, 0.06);
-            animation: statusFlash 0.5s ease;
-        }
-        @keyframes statusFlash {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.04);
-                text-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
-            }
-        }
-
-        /* Stats */
-        .host-stats {
-            display: flex;
-            justify-content: space-between;
-            color: rgba(255, 255, 255, 0.7);
-            padding: 8px 6px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            font-weight: 600;
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-        .host-stats span {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 6px 18px;
-            border-radius: 60px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(4px);
         }
-        .host-stats .num {
+        .sync-hint .highlight {
             color: #ffd700;
-            font-size: 2.2rem;
-            font-weight: 900;
-            display: inline-block;
-            transition: 0.2s;
-            min-width: 36px;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
-        }
-        .host-stats .num.pop {
-            animation: popNum 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes popNum {
-            0% {
-                transform: scale(1);
-            }
-            40% {
-                transform: scale(2);
-                color: #fff;
-                text-shadow: 0 0 60px #ffd700;
-            }
-            100% {
-                transform: scale(1);
-            }
         }
 
-        /* ---------- ADMIN TOGGLE (Only for Admin) ---------- */
-        .admin-toggle {
-            position: fixed;
-            top: 18px;
-            right: 18px;
-            z-index: 9999;
-            background: rgba(255, 215, 0, 0.06);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            color: #ffd700;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-        .admin-toggle:hover {
-            background: rgba(255, 215, 0, 0.15);
-            transform: scale(1.1) rotate(90deg);
-            border-color: rgba(255, 215, 0, 0.4);
-        }
-        body.host-active .admin-toggle {
-            display: flex;
-        }
-
-        /* ---------- ADMIN PANEL ---------- */
-        .admin-panel {
-            position: fixed;
-            top: 68px;
-            right: 18px;
-            z-index: 9998;
-            background: rgba(12, 12, 30, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: 18px;
-            padding: 18px 22px;
-            min-width: 260px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .admin-panel.open {
-            display: flex;
-        }
-        .admin-panel label {
-            color: #ffd700;
-            font-weight: 600;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            opacity: 0.7;
-        }
-        .admin-panel input {
-            padding: 8px 14px;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
-            font-size: 0.9rem;
-            outline: none;
-            width: 100%;
-            transition: 0.3s;
-        }
-        .admin-panel input:focus {
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
-        }
-        .admin-panel .btn-group {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .admin-panel .btn-group button {
-            flex: 1;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s ease;
-            font-size: 0.75rem;
-            min-width: 56px;
-            letter-spacing: 0.5px;
-        }
-        .admin-panel .btn-load {
-            background: #ffd700;
-            color: #0a0a12;
-        }
-        .admin-panel .btn-load:hover {
-            background: #ffe44d;
-            transform: scale(1.02);
-        }
-        .admin-panel .btn-next {
-            background: #ffd700;
-            color: #0a0a12;
-        }
-        .admin-panel .btn-next:hover {
-            background: #ffe44d;
-            transform: scale(1.02);
-        }
-        .admin-panel .btn-reset {
-            background: #cc0033;
-            color: #fff;
-        }
-        .admin-panel .btn-reset:hover {
-            background: #ff1a4a;
-            transform: scale(1.02);
-        }
-        .admin-panel .btn-back {
-            background: rgba(255, 255, 255, 0.06);
-            color: #ccc;
-        }
-        .admin-panel .btn-back:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
-        }
-        .admin-panel .close-panel {
-            position: absolute;
-            top: 8px;
-            right: 12px;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .admin-panel .close-panel:hover {
-            color: #fff;
-        }
-
-        /* ================================================================
-           AUDIENCE VIEW (Mobile – Voting buttons exist here only)
-           ================================================================ */
-        #audienceView {
-            display: block;
-            overflow-y: auto;
-            flex: 1;
-        }
-        #audienceView.active-view {
-            display: block;
-        }
+        /* Question */
         #questionAud {
             background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
@@ -575,7 +92,7 @@
             text-align: center;
             margin-bottom: 18px;
             border-left: 4px solid #ffd700;
-            min-height: 48px;
+            min-height: 50px;
             letter-spacing: 1px;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
@@ -583,19 +100,21 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Voting Buttons */
         .options-grid-aud {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 14px;
         }
         .opt-btn {
             background: rgba(20, 20, 48, 0.6);
             backdrop-filter: blur(4px);
-            padding: 20px 10px;
-            border-radius: 18px;
+            padding: 24px 10px;
+            border-radius: 20px;
             border: 1.5px solid rgba(255, 255, 255, 0.04);
             color: #fff;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: 700;
             text-align: center;
             cursor: pointer;
@@ -617,305 +136,63 @@
         .opt-btn .label {
             color: #ffd700;
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 4px;
             opacity: 0.7;
         }
+
+        /* Status */
         #audStatus {
             color: rgba(255, 255, 255, 0.5);
             text-align: center;
-            margin-top: 16px;
-            font-size: 0.9rem;
+            margin-top: 18px;
+            font-size: 0.95rem;
             font-weight: 500;
         }
         .aud-footer {
             text-align: center;
-            margin-top: 10px;
+            margin-top: 12px;
             color: rgba(255, 255, 255, 0.15);
             font-size: 0.65rem;
         }
-        .sync-hint {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 0.75rem;
-            margin-bottom: 12px;
-            padding: 6px 16px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(4px);
-        }
-        .sync-hint .highlight {
-            color: #ffd700;
-        }
 
-        /* ================================================================
-           RESPONSIVE: PROJECTOR (1024px+)
-           ================================================================ */
-        @media (min-width: 1024px) {
+        @media (max-width: 400px) {
             .main-card {
-                max-height: 1000px;
-                padding: 28px 44px;
-                border-radius: 48px;
-            }
-            .app-title {
-                font-size: 2rem;
-            }
-            .app-title small {
-                font-size: 0.7rem;
-            }
-            .host-header h2 {
-                font-size: 2rem;
-            }
-            .live-badge {
-                font-size: 1.2rem;
-                padding: 8px 32px;
-                gap: 12px;
-            }
-            .live-badge::before {
-                width: 14px;
-                height: 14px;
-            }
-            #questionHost {
-                font-size: 3rem;
-                padding: 8px 28px;
-                min-height: 56px;
-                border-left-width: 8px;
-                margin-bottom: 14px;
-            }
-            .options-grid-host {
-                gap: 22px;
-            }
-            .option-item {
-                padding: 16px 28px;
+                padding: 16px;
                 border-radius: 24px;
             }
-            .bar-fill {
-                font-size: 1.4rem;
-                padding-right: 26px;
-            }
-            .host-stats {
-                font-size: 1.3rem;
-                padding: 10px 8px;
-            }
-            .host-stats span {
-                padding: 8px 30px;
-                gap: 14px;
-            }
-            .host-stats .num {
-                font-size: 2.8rem;
-                min-width: 56px;
-            }
-            #hostStatus {
-                font-size: 1.3rem;
-                padding: 6px 14px;
-            }
-            .admin-toggle {
-                width: 50px;
-                height: 50px;
-                font-size: 1.6rem;
-                top: 22px;
-                right: 22px;
-            }
-            .admin-panel {
-                top: 80px;
-                right: 22px;
-                padding: 22px 26px;
-                min-width: 300px;
-            }
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 600px) {
-            .main-card {
-                padding: 14px;
-                max-height: none;
-                border-radius: 28px;
-            }
-            .options-grid-aud {
-                gap: 10px;
-            }
             .opt-btn {
-                padding: 22px 10px;
-                font-size: 1.3rem;
-                border-radius: 16px;
-            }
-            .opt-btn .label {
-                font-size: 0.95rem;
+                padding: 20px 8px;
+                font-size: 1.2rem;
             }
             #questionAud {
-                font-size: 1.7rem;
+                font-size: 1.6rem;
                 padding: 12px;
                 min-height: 44px;
-            }
-            .host-stats {
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
-                font-size: 0.95rem;
-            }
-            .host-stats span {
-                width: 100%;
-                justify-content: center;
-                padding: 6px 14px;
-            }
-            .host-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-            }
-            .host-header h2 {
-                font-size: 1.1rem;
-            }
-            #questionHost {
-                font-size: 1.7rem;
-                padding: 6px 14px;
-                min-height: 40px;
-                border-left-width: 4px;
-                margin-bottom: 10px;
-            }
-            .options-grid-host {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            .option-item {
-                padding: 10px 14px;
-            }
-            .bar-bg {
-                min-height: 22px;
-            }
-            .bar-fill {
-                font-size: 0.85rem;
-                padding-right: 10px;
-            }
-            .host-stats .num {
-                font-size: 1.6rem;
-                min-width: 32px;
-            }
-            .admin-toggle {
-                width: 38px;
-                height: 38px;
-                font-size: 1.1rem;
-                top: 8px;
-                right: 8px;
-            }
-            .admin-panel {
-                top: 52px;
-                right: 8px;
-                left: 8px;
-                min-width: auto;
-                padding: 14px;
-            }
-            .live-badge {
-                font-size: 0.75rem;
-                padding: 4px 14px;
-            }
-            .live-badge::before {
-                width: 8px;
-                height: 8px;
-            }
-            #hostStatus {
-                font-size: 0.85rem;
-                padding: 4px 8px;
-            }
-            body {
-                padding: 8px;
-                overflow-y: auto;
-            }
-            .main-card {
-                height: auto;
-                max-height: none;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="main-card" id="mainCard">
-        <!-- App Title (Double-click for Host) -->
-        <div class="app-title" id="appTitle">
-            🎤 KBC Audience Poll
-            <small>🔒 Double-click Title to access Host Dashboard</small>
+    <div class="main-card">
+        <div class="sync-hint">
+            📡 <span class="highlight">Auto-syncing with Host...</span>
         </div>
-
-        <!-- Mode Switcher (Hidden in Host mode) -->
-        <div class="mode-switcher">
-            <button class="mode-btn active" id="audienceModeBtn" onclick="switchMode('audience')">📱 Audience View</button>
+        <div id="questionAud">Question 1</div>
+        <div class="options-grid-aud" id="optionsGridAud">
+            <div class="opt-btn" data-opt="0"><span class="label">A</span> <span id="optText0">...</span></div>
+            <div class="opt-btn" data-opt="1"><span class="label">B</span> <span id="optText1">...</span></div>
+            <div class="opt-btn" data-opt="2"><span class="label">C</span> <span id="optText2">...</span></div>
+            <div class="opt-btn" data-opt="3"><span class="label">D</span> <span id="optText3">...</span></div>
         </div>
-
-        <!-- ============================================================
-        HOST VIEW – ONLY GRAPHS (NO A/B/C/D LABELS)
-        ============================================================ -->
-        <div id="hostView">
-            <div class="host-header">
-                <h2>🎯 Host Dashboard</h2>
-                <div class="live-badge"> LIVE </div>
-            </div>
-
-            <div id="questionHost">Q1</div>
-
-            <!-- Only Bars – No A/B/C/D Labels -->
-            <div class="options-grid-host" id="optionsContainerHost">
-                <div class="option-item">
-                    <div class="bar-bg"><div class="bar-fill" id="bar0">0%</div></div>
-                </div>
-                <div class="option-item">
-                    <div class="bar-bg"><div class="bar-fill" id="bar1">0%</div></div>
-                </div>
-                <div class="option-item">
-                    <div class="bar-bg"><div class="bar-fill" id="bar2">0%</div></div>
-                </div>
-                <div class="option-item">
-                    <div class="bar-bg"><div class="bar-fill" id="bar3">0%</div></div>
-                </div>
-            </div>
-
-            <div id="hostStatus">⏳ Waiting for audience votes...</div>
-
-            <div class="host-stats">
-                <span>📊 Total Votes: <span class="num" id="totalVotes">0</span></span>
-                <span>👥 Voters: <span class="num" id="onlineCount">0</span></span>
-            </div>
-        </div>
-
-        <!-- ============================================================
-        AUDIENCE VIEW (Mobile – Voting buttons exist here only)
-        ============================================================ -->
-        <div id="audienceView" class="active-view">
-            <div class="sync-hint">
-                📡 <span class="highlight">Auto-syncing with Host...</span>
-            </div>
-            <div id="questionAud">Question 1</div>
-            <div class="options-grid-aud" id="optionsGridAud">
-                <div class="opt-btn" data-opt="0"><span class="label">A</span> <span id="optText0">...</span></div>
-                <div class="opt-btn" data-opt="1"><span class="label">B</span> <span id="optText1">...</span></div>
-                <div class="opt-btn" data-opt="2"><span class="label">C</span> <span id="optText2">...</span></div>
-                <div class="opt-btn" data-opt="3"><span class="label">D</span> <span id="optText3">...</span></div>
-            </div>
-            <div id="audStatus">✅ Connected. Select an option!</div>
-            <div class="aud-footer">⚠️ Once voted, you cannot change your response</div>
-        </div>
-    </div>
-
-    <!-- ============================================================
-    ADMIN PANEL (Hidden behind Gear)
-    ============================================================ -->
-    <button class="admin-toggle" id="adminToggle" title="Toggle Admin Controls">⚙️</button>
-    <div class="admin-panel" id="adminPanel">
-        <button class="close-panel" id="closeAdminPanel">✕</button>
-        <label for="pollIdInputAdmin">📌 Poll ID</label>
-        <input type="text" id="pollIdInputAdmin" value="poll_1" placeholder="e.g. poll_2">
-        <div class="btn-group">
-            <button class="btn-load" onclick="loadPollAdmin()">Load</button>
-            <button class="btn-next" onclick="createNextPollAdmin()">Next</button>
-            <button class="btn-reset" onclick="clearAllVotesAdmin()">Reset</button>
-            <button class="btn-back" onclick="switchMode('audience')">Audience</button>
-        </div>
+        <div id="audStatus">✅ Connected. Select an option!</div>
+        <div class="aud-footer">⚠️ Once voted, you cannot change your response</div>
     </div>
 
     <script>
-        // ---------- Firebase Config ----------
+        // ---------- FIREBASE CONFIG (SAME AS HOST) ----------
         const firebaseConfig = {
             apiKey: "AIzaSyDdsjnW0VzoT3vDM-wEGMuipRZgVNDOsJA",
             authDomain: "responds-97113.firebaseapp.com",
@@ -926,39 +203,18 @@
             measurementId: "G-SF8VYBDT4F"
         };
 
-        const HOST_PASSWORD = "admin123";
-
-        // ---------- Init Firebase ----------
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         db.enablePersistence().catch(err => console.warn("Persistence warning:", err));
 
         let currentPollId = "poll_1";
-        let currentMode = 'audience';
         let userId = null;
         let hasVoted = false;
-        let unsubscribeVotes = null,
-            unsubscribeQuestion = null,
-            unsubscribeMyVote = null,
-            unsubscribeConfig = null;
-        let prevTotal = 0;
+        let unsubscribeQuestion = null;
+        let unsubscribeMyVote = null;
+        let unsubscribeConfig = null;
 
         // DOM refs
-        const pollInput = document.getElementById('pollIdInputAdmin');
-
-        // Host
-        const questionHost = document.getElementById('questionHost');
-        const bars = [
-            document.getElementById('bar0'),
-            document.getElementById('bar1'),
-            document.getElementById('bar2'),
-            document.getElementById('bar3')
-        ];
-        const totalSpan = document.getElementById('totalVotes');
-        const onlineSpan = document.getElementById('onlineCount');
-        const hostStatus = document.getElementById('hostStatus');
-
-        // Audience
         const questionAud = document.getElementById('questionAud');
         const optTextsA = [
             document.getElementById('optText0'),
@@ -968,25 +224,8 @@
         ];
         const audBtns = document.querySelectorAll('.opt-btn');
         const audStatus = document.getElementById('audStatus');
-        const audienceBtn = document.getElementById('audienceModeBtn');
 
-        // Admin panel
-        const adminToggle = document.getElementById('adminToggle');
-        const adminPanel = document.getElementById('adminPanel');
-        const closeAdmin = document.getElementById('closeAdminPanel');
-
-        // ---------- Admin panel toggle ----------
-        adminToggle.addEventListener('click', () => adminPanel.classList.toggle('open'));
-        closeAdmin.addEventListener('click', () => adminPanel.classList.remove('open'));
-        document.addEventListener('click', (e) => {
-            if (adminPanel.classList.contains('open') &&
-                !adminPanel.contains(e.target) &&
-                e.target !== adminToggle) {
-                adminPanel.classList.remove('open');
-            }
-        });
-
-        // ---------- Auth ----------
+        // ---------- AUTH ----------
         firebase.auth().signInAnonymously()
             .then((cred) => {
                 userId = cred.user.uid;
@@ -997,36 +236,9 @@
             .catch((err) => {
                 console.error("Auth Error:", err);
                 audStatus.innerText = '⚠️ Network error! Please refresh.';
-                hostStatus.innerText = '⚠️ Firebase Auth error!';
             });
 
-        // ---------- Mode switch ----------
-        window.switchMode = function(mode) {
-            currentMode = mode;
-            document.getElementById('hostView').classList.toggle('active-view', mode === 'host');
-            document.getElementById('audienceView').classList.toggle('active-view', mode === 'audience');
-            audienceBtn.classList.toggle('active', mode === 'audience');
-            document.body.classList.toggle('host-active', mode === 'host');
-            if (mode !== 'host') adminPanel.classList.remove('open');
-            detachListeners();
-            if (userId) loadPoll();
-        };
-
-        // ---------- Double-click to enter Host ----------
-        document.getElementById('appTitle').addEventListener('dblclick', function() {
-            if (currentMode === 'host') {
-                alert("ℹ️ You are already in Host View.");
-                return;
-            }
-            const pass = prompt("🔒 Enter password to access Host Dashboard:");
-            if (pass === HOST_PASSWORD) {
-                switchMode('host');
-            } else if (pass !== null) {
-                alert("❌ Incorrect password!");
-            }
-        });
-
-        // ---------- Config listener (Auto-sync) ----------
+        // ---------- CONFIG LISTENER (Auto-sync with Host) ----------
         function listenToConfig() {
             const configRef = db.collection('config').doc('app');
             unsubscribeConfig = configRef.onSnapshot((doc) => {
@@ -1035,179 +247,41 @@
                     const globalPollId = data.currentPollId;
                     if (globalPollId && globalPollId !== currentPollId) {
                         console.log("🔄 Auto-sync triggered by Host:", globalPollId);
-                        pollInput.value = globalPollId;
                         currentPollId = globalPollId;
                         detachListeners();
-                        if (currentMode === 'host') setupHostListener(currentPollId);
-                        else setupAudienceListener(currentPollId);
+                        setupAudienceListener(currentPollId);
                         updateQuestionUI(currentPollId);
                     }
                 }
             }, (err) => console.warn("Config listener error:", err));
         }
 
-        // ---------- Update global poll ID ----------
-        function updateGlobalPollId(pollId) {
-            db.collection('config').doc('app').set({
-                currentPollId: pollId,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(err => console.error("Error updating global config:", err));
-        }
-
-        // ---------- Detach listeners ----------
+        // ---------- DETACH LISTENERS ----------
         function detachListeners() {
-            if (unsubscribeVotes) { unsubscribeVotes();
-                unsubscribeVotes = null; }
             if (unsubscribeQuestion) { unsubscribeQuestion();
                 unsubscribeQuestion = null; }
             if (unsubscribeMyVote) { unsubscribeMyVote();
                 unsubscribeMyVote = null; }
         }
 
-        // ---------- Helpers ----------
+        // ---------- HELPERS ----------
         function getQuestionNumber(pollId) {
             const num = pollId.replace('poll_', '');
             return num || '?';
         }
 
         function updateQuestionUI(pollId) {
-            const qNum = getQuestionNumber(pollId);
-            questionHost.innerText = "Q" + qNum;
-            questionAud.innerText = "Question " + qNum;
+            questionAud.innerText = "Question " + getQuestionNumber(pollId);
         }
 
-        // ---------- Load poll ----------
-        window.loadPoll = function() {
-            let newId = pollInput.value.trim();
-            if (!newId) newId = 'poll_1';
-            currentPollId = newId;
-            pollInput.value = currentPollId;
+        // ---------- LOAD POLL ----------
+        function loadPoll() {
             updateQuestionUI(currentPollId);
-            if (currentMode === 'host') updateGlobalPollId(currentPollId);
             detachListeners();
-            if (currentMode === 'host') setupHostListener(currentPollId);
-            else setupAudienceListener(currentPollId);
-        };
-
-        // Admin wrappers
-        window.loadPollAdmin = function() { loadPoll();
-            adminPanel.classList.remove('open'); };
-        window.createNextPollAdmin = function() { createNextPoll();
-            adminPanel.classList.remove('open'); };
-        window.clearAllVotesAdmin = function() { clearAllVotes();
-            adminPanel.classList.remove('open'); };
-
-        // ---------- Host logic (Bars only - Pure Display) ----------
-        function setupHostListener(pollId) {
-            // Question listener
-            db.collection('polls').doc(pollId).onSnapshot((doc) => {
-                const qNum = getQuestionNumber(pollId);
-                questionHost.innerText = "Q" + qNum;
-            }, (err) => console.error("Host question error:", err));
-
-            // Votes listener – updates bars and stats
-            const votesRef = db.collection('polls').doc(pollId).collection('votes');
-            unsubscribeVotes = votesRef.onSnapshot((snapshot) => {
-                const counts = [0, 0, 0, 0];
-                let total = 0;
-                const users = new Set();
-
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if (data.option !== undefined && data.option >= 0 && data.option <= 3) {
-                        counts[data.option] += 1;
-                    }
-                    total += 1;
-                    users.add(doc.id);
-                });
-
-                let maxVotes = Math.max(...counts, 1);
-                bars.forEach((bar, idx) => {
-                    let percentage = (counts[idx] / maxVotes) * 100;
-                    if (total === 0) percentage = 0;
-                    bar.style.width = percentage + '%';
-                    bar.innerText = counts[idx] > 0 ? counts[idx] + ' (' + Math.round((counts[idx] / total) *
-                        100) + '%)' : '0%';
-                });
-
-                if (total !== prevTotal) {
-                    totalSpan.innerText = total;
-                    totalSpan.classList.remove('pop');
-                    void totalSpan.offsetWidth;
-                    totalSpan.classList.add('pop');
-
-                    hostStatus.classList.remove('flash-green');
-                    void hostStatus.offsetWidth;
-                    hostStatus.classList.add('flash-green');
-                    setTimeout(() => hostStatus.classList.remove('flash-green'), 600);
-                    prevTotal = total;
-                }
-
-                onlineSpan.innerText = users.size;
-                hostStatus.innerText = total > 0 ? `✅ ${total} people voted! (Live)` : '⏳ Waiting for audience votes...';
-                hostStatus.style.color = total > 0 ? '#0f0' : '#ffd700';
-
-            }, (error) => {
-                console.error("Votes snapshot error:", error);
-                hostStatus.innerText = '⚠️ Real-time error!';
-                hostStatus.style.color = 'red';
-            });
+            setupAudienceListener(currentPollId);
         }
 
-        // ---------- Create next poll ----------
-        window.createNextPoll = function() {
-            const newId = prompt("Enter Poll ID for the next question (e.g., poll_2):", "poll_2");
-            if (!newId) return;
-            const trimmedId = newId.trim();
-            db.collection('polls').doc(trimmedId).get().then(doc => {
-                if (doc.exists) {
-                    pollInput.value = trimmedId;
-                    loadPoll();
-                } else {
-                    if (confirm(`'${trimmedId}' not found. Create a sample question?`)) {
-                        const sampleData = {
-                            question: "Sample Question",
-                            options: ["Option A", "Option B", "Option C", "Option D"],
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        };
-                        db.collection('polls').doc(trimmedId).set(sampleData).then(() => {
-                            alert("Sample question created! 🎉");
-                            pollInput.value = trimmedId;
-                            loadPoll();
-                        }).catch(err => alert("Error creating: " + err.message));
-                    }
-                }
-            });
-        };
-
-        // ---------- Clear all votes ----------
-        window.clearAllVotes = function() {
-            if (currentMode !== 'host') return;
-            if (!confirm("⚠️ Are you sure you want to DELETE ALL VOTES for this question? This cannot be undone!")) return;
-            const votesRef = db.collection('polls').doc(currentPollId).collection('votes');
-            votesRef.get().then((snapshot) => {
-                if (snapshot.empty) {
-                    alert("ℹ️ No votes to clear.");
-                    return;
-                }
-                const batch = db.batch();
-                snapshot.forEach((doc) => batch.delete(doc.ref));
-                return batch.commit();
-            }).then(() => {
-                alert("✅ All votes cleared! Audience can vote again.");
-                bars.forEach(bar => { bar.style.width = '0%';
-                    bar.innerText = '0%'; });
-                totalSpan.innerText = '0';
-                onlineSpan.innerText = '0';
-                hostStatus.innerText = '⏳ Votes cleared. Waiting for audience...';
-                prevTotal = 0;
-            }).catch((err) => {
-                alert("❌ Error clearing votes: " + err.message);
-                console.error(err);
-            });
-        };
-
-        // ---------- Audience logic (Voting buttons exist here) ----------
+        // ---------- AUDIENCE LISTENER ----------
         function setupAudienceListener(pollId) {
             unsubscribeQuestion = db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
@@ -1248,7 +322,7 @@
             if (!hasVoted) audBtns.forEach(btn => btn.classList.remove('selected', 'disabled'));
         }
 
-        // ---------- Vote click (only for Audience) ----------
+        // ---------- VOTE CLICK ----------
         audBtns.forEach((btn) => {
             btn.addEventListener('click', function() {
                 if (hasVoted) { alert("⚠️ You have already voted!"); return; }
@@ -1271,19 +345,15 @@
             });
         });
 
-        // ---------- Auth state change ----------
+        // ---------- AUTH STATE CHANGE ----------
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 userId = user.uid;
-                if (!document.querySelector('#hostView .active-view') && !document.querySelector('#audienceView .active-view')) {
-                    switchMode('audience');
-                } else {
-                    loadPoll();
-                }
+                // Already handled in signInAnonymously
             }
         });
 
-        console.log("✅ KBC Premium Dashboard (Host: Only Graphs, No A/B/C/D Labels) Ready!");
+        console.log("✅ Audience View Ready! (Voting Buttons Only)");
     </script>
 </body>
 </html>
