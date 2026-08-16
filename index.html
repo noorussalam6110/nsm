@@ -22,7 +22,6 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            /* No scroll at all for body */
             background: #08080f;
         }
 
@@ -33,21 +32,18 @@
             padding: 16px;
         }
 
-        /* ---------- MAIN CARD (Fits 100% height) ---------- */
+        /* ---------- MAIN CARD ---------- */
         .main-card {
             max-width: 1300px;
             width: 100%;
             height: 100%;
             max-height: 900px;
-            /* Prevents overflow on very tall screens */
             background: rgba(18, 18, 40, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-radius: 40px;
             padding: 24px 32px;
-            box-shadow:
-                0 40px 100px rgba(0, 0, 0, 0.8),
-                inset 0 0 0 1px rgba(255, 215, 0, 0.08);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 215, 0, 0.08);
             border: 1px solid rgba(255, 215, 0, 0.12);
             transition: all 0.4s ease;
             position: relative;
@@ -117,7 +113,7 @@
             color: #ffd700;
             font-size: 1.6rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
             cursor: default;
             user-select: none;
@@ -132,13 +128,18 @@
             letter-spacing: 1px;
         }
 
-        /* ---------- MODE SWITCHER ---------- */
+        /* ---------- MODE SWITCHER (HIDDEN COMPLETELY IN HOST MODE) ---------- */
         .mode-switcher {
             display: flex;
             gap: 16px;
             justify-content: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             flex-shrink: 0;
+            transition: 0.3s;
+        }
+        body.host-active .mode-switcher {
+            display: none;
+            /* ഹോസ്റ്റ് മോഡിൽ ഈ ബട്ടൺ പൂർണ്ണമായും മറയ്ക്കുന്നു */;
         }
         .mode-btn {
             padding: 8px 24px;
@@ -166,14 +167,13 @@
         }
 
         /* ================================================================
-           HOST VIEW – FULL SCREEN, NO SCROLL, GIANT BARS
+           HOST VIEW – PURE DISPLAY (NO VOTING BUTTONS)
            ================================================================ */
         #hostView {
             display: none;
             flex-direction: column;
             flex: 1;
             min-height: 0;
-            /* flex override */
             animation: hostFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
         #hostView.active-view {
@@ -195,7 +195,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             flex-shrink: 0;
             padding: 0 4px;
         }
@@ -254,7 +254,7 @@
             }
         }
 
-        /* Question – small, clean "Q1" */
+        /* Question – Small, clean "Q1" (Display only) */
         #questionHost {
             background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
@@ -264,7 +264,7 @@
             font-size: 2.4rem;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             border-left: 6px solid #ffd700;
             min-height: 50px;
             letter-spacing: 1px;
@@ -276,14 +276,14 @@
             flex-shrink: 0;
         }
 
-        /* Options Grid – TAKES REMAINING SPACE (GIANT BARS) */
+        /* Options Grid – Only Labels & GIANT BARS (NO CLICK) */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 18px;
             flex: 1;
             min-height: 0;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         .option-item {
             background: rgba(20, 20, 48, 0.5);
@@ -296,6 +296,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            /* No cursor:pointer, no onclick - pure display */;
         }
         .option-item:hover {
             border-color: rgba(255, 215, 0, 0.15);
@@ -309,6 +310,7 @@
             margin-bottom: 6px;
             flex-shrink: 0;
             letter-spacing: 1px;
+            /* Just a label, not clickable */;
         }
 
         /* Premium Glowing Bars - FILLS THE SPACE */
@@ -365,7 +367,7 @@
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(4px);
             flex-shrink: 0;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         #hostStatus.flash-green {
             color: #0f0;
@@ -430,7 +432,7 @@
             }
         }
 
-        /* ---------- ADMIN TOGGLE (Floating Gear) ---------- */
+        /* ---------- ADMIN TOGGLE (Floating Gear - Only for Admin) ---------- */
         .admin-toggle {
             position: fixed;
             top: 20px;
@@ -460,7 +462,7 @@
             display: flex;
         }
 
-        /* ---------- ADMIN PANEL (Glassmorphism) ---------- */
+        /* ---------- ADMIN PANEL (Glassmorphism - Hidden by default) ---------- */
         .admin-panel {
             position: fixed;
             top: 72px;
@@ -568,7 +570,7 @@
         }
 
         /* ================================================================
-           AUDIENCE VIEW (Mobile-First, Scrollable)
+           AUDIENCE VIEW (Mobile-First - Only here voting buttons exist)
            ================================================================ */
         #audienceView {
             display: block;
@@ -665,7 +667,7 @@
         }
 
         /* ================================================================
-           RESPONSIVE: PROJECTOR (1024px+) – even bigger bars
+           RESPONSIVE: PROJECTOR (1024px+) 
            ================================================================ */
         @media (min-width: 1024px) {
             .main-card {
@@ -696,7 +698,7 @@
                 padding: 10px 28px;
                 min-height: 60px;
                 border-left-width: 8px;
-                margin-bottom: 18px;
+                margin-bottom: 16px;
             }
             .options-grid-host {
                 gap: 24px;
@@ -791,7 +793,7 @@
                 padding: 8px 16px;
                 min-height: 44px;
                 border-left-width: 4px;
-                margin-bottom: 14px;
+                margin-bottom: 12px;
             }
             .options-grid-host {
                 grid-template-columns: 1fr;
@@ -844,7 +846,6 @@
             body {
                 padding: 8px;
                 overflow-y: auto;
-                /* Allow mobile scroll only if needed */
             }
             .main-card {
                 height: auto;
@@ -862,13 +863,13 @@
             <small>🔒 Double-click Title to access Host Dashboard</small>
         </div>
 
-        <!-- Mode Switcher -->
+        <!-- Mode Switcher (HIDDEN when Host is active) -->
         <div class="mode-switcher">
             <button class="mode-btn active" id="audienceModeBtn" onclick="switchMode('audience')">📱 Audience View</button>
         </div>
 
         <!-- ============================================================
-        HOST VIEW – FULL SCREEN, NO SCROLL, GIANT BARS
+        HOST VIEW – PURE DISPLAY DASHBOARD (NO VOTING BUTTONS)
         ============================================================ -->
         <div id="hostView">
             <div class="host-header">
@@ -878,6 +879,7 @@
 
             <div id="questionHost">Q1</div>
 
+            <!-- Only Labels and Giant Bars – No Click Events -->
             <div class="options-grid-host" id="optionsContainerHost">
                 <div class="option-item">
                     <span class="option-label">A.</span>
@@ -906,7 +908,7 @@
         </div>
 
         <!-- ============================================================
-        AUDIENCE VIEW (Mobile)
+        AUDIENCE VIEW (Mobile) – Only place with Voting Buttons
         ============================================================ -->
         <div id="audienceView" class="active-view">
             <div class="sync-hint">
@@ -925,7 +927,7 @@
     </div>
 
     <!-- ============================================================
-    FLOATING ADMIN PANEL (Hidden behind Gear)
+    FLOATING ADMIN PANEL (Only for Admin, hidden behind Gear)
     ============================================================ -->
     <button class="admin-toggle" id="adminToggle" title="Toggle Admin Controls">⚙️</button>
     <div class="admin-panel" id="adminPanel">
@@ -1123,7 +1125,7 @@
         window.clearAllVotesAdmin = function() { clearAllVotes();
             adminPanel.classList.remove('open'); };
 
-        // ---------- Host logic (Bars only) ----------
+        // ---------- Host logic (Bars only - Pure Display) ----------
         function setupHostListener(pollId) {
             // Question listener (just to know it exists)
             db.collection('polls').doc(pollId).onSnapshot((doc) => {
@@ -1131,7 +1133,7 @@
                 questionHost.innerText = "Q" + qNum;
             }, (err) => console.error("Host question error:", err));
 
-            // Votes listener
+            // Votes listener – updates bars and stats
             const votesRef = db.collection('polls').doc(pollId).collection('votes');
             unsubscribeVotes = votesRef.onSnapshot((snapshot) => {
                 const counts = [0, 0, 0, 0];
@@ -1233,7 +1235,7 @@
             });
         };
 
-        // ---------- Audience logic ----------
+        // ---------- Audience logic (Voting buttons exist here) ----------
         function setupAudienceListener(pollId) {
             unsubscribeQuestion = db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
@@ -1274,7 +1276,7 @@
             if (!hasVoted) audBtns.forEach(btn => btn.classList.remove('selected', 'disabled'));
         }
 
-        // ---------- Vote click ----------
+        // ---------- Vote click (only for Audience) ----------
         audBtns.forEach((btn) => {
             btn.addEventListener('click', function() {
                 if (hasVoted) { alert("⚠️ You have already voted!"); return; }
@@ -1309,7 +1311,7 @@
             }
         });
 
-        console.log("✅ KBC Premium Dashboard (No Scroll, Giant Bars) Ready!");
+        console.log("✅ KBC Premium Dashboard (Pure Display, No Voting Buttons in Host) Ready!");
     </script>
 </body>
 </html>
