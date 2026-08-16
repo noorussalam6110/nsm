@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KBC Audience Poll</title>
-    <!-- Google Font: Anek Malayalam -->
+    <title>KBC Projector - Host Dashboard</title>
+    <!-- Google Font: Anek Malayalam (Clean, modern) -->
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet">
     <!-- Firebase v8 Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
@@ -15,6 +15,7 @@
     </script>
 
     <style>
+        /* ----- RESET & BASE ----- */
         * {
             margin: 0;
             padding: 0;
@@ -23,49 +24,31 @@
         }
 
         body {
-            background: #0a0a12;
+            background: #05050a;
             min-height: 100vh;
-            padding: 20px;
+            padding: 25px;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow-x: hidden;
         }
 
-        /* ---- Background Glow (Host Only) ---- */
-        body.host-active {
-            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a12 70%);
-        }
-        body.host-active .main-card {
-            border-color: #ffd700;
-            box-shadow: 0 0 80px rgba(255, 215, 0, 0.2), 0 20px 60px rgba(0, 0, 0, 0.9);
-            animation: cardPulse 3s infinite alternate;
-        }
-
-        @keyframes cardPulse {
-            0% {
-                box-shadow: 0 0 40px rgba(255, 215, 0, 0.1), 0 20px 60px rgba(0, 0, 0, 0.9);
-            }
-            100% {
-                box-shadow: 0 0 80px rgba(255, 215, 0, 0.3), 0 20px 60px rgba(0, 0, 0, 0.9);
-            }
-        }
-
+        /* ----- Projector Card (Huge & Glowing) ----- */
         .main-card {
-            max-width: 850px;
-            /* Default for mobile */
+            max-width: 1200px;
+            /* Base, but projector takes over */
             width: 100%;
-            background: #141428;
-            border-radius: 30px;
-            padding: 25px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-            border: 2px solid #b8860b;
+            background: #0f0f20;
+            border-radius: 40px;
+            padding: 30px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            border: 3px solid #b8860b;
             transition: all 0.5s ease;
             position: relative;
             overflow: hidden;
         }
 
-        /* ---- Shimmer Effect Overlay (Host) ---- */
+        /* Animated Gold Shimmer Background */
         .main-card::before {
             content: '';
             position: absolute;
@@ -73,8 +56,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.03), transparent, rgba(255, 215, 0, 0.05), transparent);
-            animation: shimmerRotate 20s linear infinite;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.04), transparent, rgba(255, 215, 0, 0.08), transparent);
+            animation: shimmerRotate 25s linear infinite;
             pointer-events: none;
             z-index: 0;
         }
@@ -91,66 +74,78 @@
             z-index: 1;
         }
 
-        /* ----- App Title ----- */
+        /* Glowing Border Pulse for Host Mode */
+        body.host-active .main-card {
+            border-color: #ffd700;
+            box-shadow: 0 0 100px rgba(255, 215, 0, 0.15), 0 30px 80px rgba(0, 0, 0, 0.9);
+            animation: cardPulse 3s infinite alternate;
+        }
+        @keyframes cardPulse {
+            0% {
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.1), 0 30px 80px rgba(0, 0, 0, 0.9);
+            }
+            100% {
+                box-shadow: 0 0 120px rgba(255, 215, 0, 0.25), 0 30px 80px rgba(0, 0, 0, 0.9);
+            }
+        }
+
+        /* ----- App Title (Double-click Entry) ----- */
         .app-title {
             text-align: center;
             color: #ffd700;
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             font-weight: 900;
             margin-bottom: 15px;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
             cursor: default;
             user-select: none;
-            padding: 5px;
-            border-radius: 15px;
-            transition: 0.3s;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
         .app-title small {
-            font-size: 0.65rem;
-            color: #666;
+            font-size: 0.7rem;
+            color: #555;
             font-weight: 400;
             display: block;
-            letter-spacing: 0;
+            letter-spacing: 1px;
         }
 
-        /* ----- Mode Switcher ----- */
+        /* ----- Mode Switcher (Hidden in Projector logic, but visible for safety) ----- */
         .mode-switcher {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             justify-content: center;
             margin-bottom: 20px;
         }
         .mode-btn {
-            padding: 12px 25px;
+            padding: 14px 30px;
             border: 2px solid #ffd700;
             background: transparent;
             color: #aaa;
-            border-radius: 50px;
+            border-radius: 60px;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: 0.3s;
+            max-width: 300px;
             flex: 1;
-            max-width: 250px;
         }
         .mode-btn.active {
             background: #ffd700;
             color: #000;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
         }
         .mode-btn:hover {
-            transform: scale(1.03);
+            transform: scale(1.05);
         }
 
-        /* ----- Poll ID Input (Visible ONLY in Host Mode) ----- */
+        /* ----- Poll ID (Visible ONLY in Host Mode) ----- */
         .poll-id-area {
             display: none;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: #0d0d20;
-            padding: 10px 15px;
-            border-radius: 60px;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: #111125;
+            padding: 15px 25px;
+            border-radius: 80px;
             align-items: center;
             flex-wrap: wrap;
             border: 1px solid #333;
@@ -161,17 +156,17 @@
         .poll-id-area label {
             color: #ffd700;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
         }
         .poll-id-area input {
             flex: 1;
-            padding: 10px 15px;
-            border-radius: 40px;
+            padding: 14px 20px;
+            border-radius: 50px;
             border: none;
             background: #1e1e3a;
             color: white;
-            font-size: 1rem;
-            min-width: 120px;
+            font-size: 1.2rem;
+            min-width: 150px;
             outline: 1px solid #444;
             transition: 0.3s;
         }
@@ -182,29 +177,32 @@
             background: #ffd700;
             color: #000;
             border: none;
-            padding: 10px 20px;
-            border-radius: 40px;
+            padding: 14px 30px;
+            border-radius: 50px;
             font-weight: bold;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: 0.2s;
         }
         .poll-id-area button:hover {
             background: #ffe066;
-            transform: scale(1.02);
+            transform: scale(1.03);
         }
 
-        /* ===================== HOST VIEW ===================== */
+        /* ================================================================
+                   HOST VIEW - PROJECTOR OPTIMIZED (Max Animation & Size)
+                   ================================================================ */
         #hostView {
             display: none;
         }
         #hostView.active-view {
             display: block;
-            animation: hostFadeIn 0.6s ease-out;
+            animation: hostFadeIn 0.7s cubic-bezier(0.23, 1, 0.32, 1);
         }
         @keyframes hostFadeIn {
             0% {
                 opacity: 0;
-                transform: scale(0.97) translateY(20px);
+                transform: scale(0.96) translateY(30px);
             }
             100% {
                 opacity: 1;
@@ -212,58 +210,61 @@
             }
         }
 
+        /* Back Button (small, subtle) */
         .btn-back {
-            background: #444;
-            color: #fff;
+            background: #333;
+            color: #ccc;
             border: none;
-            padding: 12px 20px;
-            border-radius: 40px;
+            padding: 10px 25px;
+            border-radius: 60px;
             font-weight: bold;
             cursor: pointer;
-            margin-bottom: 15px;
-            width: 100%;
+            margin-bottom: 20px;
+            width: auto;
             transition: 0.3s;
-            letter-spacing: 1px;
             font-size: 1rem;
+            letter-spacing: 1px;
         }
         .btn-back:hover {
-            background: #666;
+            background: #555;
+            color: #fff;
             transform: scale(1.02);
         }
 
+        /* Host Header (Dashboard Title + LIVE Badge) */
         .host-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             padding: 0 5px;
         }
         .host-header h2 {
             color: #ffd700;
-            font-size: 1.6rem;
-            font-weight: 800;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            letter-spacing: 2px;
+            font-size: 2rem;
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            letter-spacing: 3px;
         }
         .live-badge {
             background: #ff0040;
             color: #fff;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-size: 1rem;
+            padding: 10px 30px;
+            border-radius: 60px;
+            font-size: 1.4rem;
             font-weight: 900;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             animation: blinkLive 1.2s infinite;
-            box-shadow: 0 0 30px rgba(255, 0, 64, 0.6);
+            box-shadow: 0 0 50px rgba(255, 0, 64, 0.6);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
         .live-badge::before {
             content: '';
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             background: #fff;
             border-radius: 50%;
             animation: blinkDot 1.2s infinite;
@@ -272,40 +273,43 @@
             0%,
             100% {
                 opacity: 1;
-                box-shadow: 0 0 30px rgba(255, 0, 64, 0.6);
+                box-shadow: 0 0 40px rgba(255, 0, 64, 0.6);
             }
             50% {
                 opacity: 0.85;
-                box-shadow: 0 0 60px rgba(255, 0, 64, 0.9);
+                box-shadow: 0 0 80px rgba(255, 0, 64, 0.9);
             }
         }
         @keyframes blinkDot {
             0%,
             100% {
                 opacity: 1;
+                transform: scale(1);
             }
             50% {
-                opacity: 0.3;
+                opacity: 0.2;
+                transform: scale(0.8);
             }
         }
 
+        /* Question - 3D Flip + Large */
         #questionHost {
-            background: linear-gradient(145deg, #0d0d25, #1a1a3a);
-            padding: 30px 20px;
-            border-radius: 20px;
+            background: linear-gradient(145deg, #0a0a1e, #16163a);
+            padding: 40px 25px;
+            border-radius: 30px;
             color: #ffd700;
-            font-size: 3.2rem;
+            font-size: 4.2rem;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 30px;
-            border-left: 6px solid #ffd700;
-            min-height: 90px;
-            letter-spacing: 3px;
-            text-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
-            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
-            animation: flipIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            margin-bottom: 35px;
+            border-left: 10px solid #ffd700;
+            min-height: 110px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 60px rgba(255, 215, 0, 0.15);
+            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6);
+            animation: flipIn 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
             transform-style: preserve-3d;
-            perspective: 1000px;
+            perspective: 1200px;
         }
         @keyframes flipIn {
             0% {
@@ -318,69 +322,73 @@
             }
         }
         #questionHost .q-sub {
-            font-size: 1.1rem;
+            font-size: 1.4rem;
             color: #ffd700;
-            opacity: 0.6;
+            opacity: 0.5;
             display: block;
             font-weight: 400;
-            margin-top: 5px;
-            letter-spacing: 1px;
+            margin-top: 10px;
+            letter-spacing: 4px;
         }
 
+        /* Options Grid */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            margin-bottom: 25px;
+            gap: 25px;
+            margin-bottom: 30px;
         }
         .option-item {
-            background: #1a1a35;
-            padding: 15px 18px;
-            border-radius: 15px;
+            background: #141430;
+            padding: 20px 25px;
+            border-radius: 20px;
             color: white;
-            border: 1px solid #2a2a4a;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            font-size: 1.2rem;
+            border: 2px solid #252550;
+            transition: 0.4s;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            font-size: 1.6rem;
         }
         .option-item:hover {
             border-color: #ffd700;
-            transform: translateY(-2px);
+            transform: translateY(-4px);
         }
         .option-label {
-            font-weight: 800;
+            font-weight: 900;
             color: #ffd700;
-            margin-right: 10px;
-            font-size: 1.3rem;
+            margin-right: 15px;
+            font-size: 1.8rem;
         }
 
+        /* Bars - Huge & Shimmering */
         .bar-bg {
             width: 100%;
-            height: 36px;
-            background: #0a0a18;
-            border-radius: 20px;
-            margin-top: 12px;
+            height: 50px;
+            background: #070712;
+            border-radius: 30px;
+            margin-top: 15px;
             overflow: hidden;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.9);
             position: relative;
         }
         .bar-fill {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, #ffb300, #ffd700, #ff8c00);
-            border-radius: 20px;
+            background: linear-gradient(90deg, #ffb300, #ffd700, #ffaa00);
+            border-radius: 30px;
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 18px;
+            padding-right: 25px;
             color: #000;
             font-weight: 900;
-            font-size: 1rem;
-            transition: width 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            font-size: 1.5rem;
+            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* Spring effect */
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
             position: relative;
             overflow: hidden;
         }
+        /* Shimmer running through bar */
         .bar-fill::after {
             content: '';
             position: absolute;
@@ -388,8 +396,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: barShimmer 2.5s infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            animation: barShimmer 2s infinite;
         }
         @keyframes barShimmer {
             0% {
@@ -400,20 +408,22 @@
             }
         }
 
+        /* Status - Flash & Pulse */
         #hostStatus {
             color: #aaa;
             text-align: center;
             margin-top: 15px;
-            font-size: 1.2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             transition: 0.3s;
-            padding: 10px;
-            border-radius: 40px;
+            padding: 15px;
+            border-radius: 60px;
+            letter-spacing: 1px;
         }
         #hostStatus.flash-green {
             color: #0f0;
-            background: rgba(0, 255, 0, 0.1);
-            animation: statusFlash 0.5s ease;
+            background: rgba(0, 255, 0, 0.08);
+            animation: statusFlash 0.6s ease;
         }
         @keyframes statusFlash {
             0%,
@@ -421,97 +431,102 @@
                 transform: scale(1);
             }
             50% {
-                transform: scale(1.05);
-                text-shadow: 0 0 40px rgba(0, 255, 0, 0.5);
+                transform: scale(1.08);
+                text-shadow: 0 0 60px rgba(0, 255, 0, 0.5);
             }
         }
 
+        /* Stats - Enormous Numbers */
         .host-stats {
             display: flex;
             justify-content: space-between;
-            color: #ccc;
-            padding: 18px 10px;
-            border-top: 1px solid #333;
-            margin-top: 18px;
+            color: #ddd;
+            padding: 20px 15px;
+            border-top: 2px solid #333;
+            margin-top: 25px;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.6rem;
         }
         .host-stats span {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: #0d0d20;
-            padding: 10px 22px;
-            border-radius: 40px;
+            gap: 15px;
+            background: #0a0a18;
+            padding: 15px 30px;
+            border-radius: 60px;
             border: 1px solid #2a2a4a;
         }
         .host-stats .num {
             color: #ffd700;
-            font-size: 1.8rem;
+            font-size: 3rem;
             font-weight: 900;
             display: inline-block;
             transition: 0.2s;
-            min-width: 40px;
+            min-width: 60px;
             text-align: center;
         }
         .host-stats .num.pop {
-            animation: popNum 0.4s ease;
+            animation: popNum 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         @keyframes popNum {
             0% {
                 transform: scale(1);
             }
-            50% {
-                transform: scale(1.6);
+            40% {
+                transform: scale(2.2);
                 color: #fff;
+                text-shadow: 0 0 60px #ffd700;
             }
             100% {
                 transform: scale(1);
             }
         }
 
+        /* Buttons - Massive & Glowing */
         .btn-next {
             background: linear-gradient(145deg, #ffd700, #f0a500);
             color: #000;
             border: none;
-            padding: 18px;
-            border-radius: 50px;
-            font-size: 1.4rem;
+            padding: 22px;
+            border-radius: 60px;
+            font-size: 2rem;
             font-weight: 900;
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
-            margin-top: 15px;
-            box-shadow: 0 4px 30px rgba(255, 215, 0, 0.3);
-            letter-spacing: 1px;
+            margin-top: 20px;
+            box-shadow: 0 8px 40px rgba(255, 215, 0, 0.25);
+            letter-spacing: 2px;
         }
         .btn-next:hover {
             transform: scale(1.02);
-            box-shadow: 0 4px 50px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 8px 60px rgba(255, 215, 0, 0.5);
         }
 
         .btn-clear {
             background: #cc0000;
             color: #fff;
             border: none;
-            padding: 16px;
-            border-radius: 50px;
+            padding: 18px;
+            border-radius: 60px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
-            margin-top: 12px;
-            font-size: 1.1rem;
+            margin-top: 15px;
+            font-size: 1.5rem;
             transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+            box-shadow: 0 8px 30px rgba(255, 0, 0, 0.25);
             letter-spacing: 1px;
         }
         .btn-clear:hover {
             background: #ff2222;
             transform: scale(1.02);
-            box-shadow: 0 4px 30px rgba(255, 0, 0, 0.5);
+            box-shadow: 0 8px 50px rgba(255, 0, 0, 0.5);
         }
 
-        /* ===================== AUDIENCE VIEW (Mobile First) ===================== */
+        /* ================================================================
+                   AUDIENCE VIEW (Mobile-Optimized - Unchanged & Perfect)
+                   ================================================================ */
         #audienceView {
             display: block;
         }
@@ -592,7 +607,6 @@
             color: #555;
             font-size: 0.7rem;
         }
-        /* Audience Sync Hint */
         .sync-hint {
             text-align: center;
             color: #666;
@@ -608,133 +622,159 @@
         }
 
         /* ================================================================
-                   RESPONSIVE - LAPTOP / PROJECTOR (HOST VIEW LARGE)
+                   RESPONSIVE : PROJECTOR OVERRIDE (1200px+)
                    ================================================================ */
-        @media (min-width: 1024px) {
+        @media (min-width: 1200px) {
+
+            body {
+                padding: 40px;
+                background: #05050a;
+            }
+
             .main-card {
-                max-width: 1100px;
-                /* Wider for projector */
-                padding: 35px 40px;
-                border-radius: 40px;
+                max-width: 1400px;
+                padding: 50px 60px;
+                border-radius: 60px;
+                border-width: 4px;
+            }
+
+            /* ---- App Title ---- */
+            .app-title {
+                font-size: 2.8rem;
+            }
+            .app-title small {
+                font-size: 0.8rem;
+                color: #666;
             }
 
             /* ---- Host Header ---- */
             .host-header h2 {
-                font-size: 2rem;
+                font-size: 2.8rem;
             }
             .live-badge {
-                font-size: 1.2rem;
-                padding: 10px 25px;
+                font-size: 1.8rem;
+                padding: 14px 40px;
+                gap: 16px;
+                box-shadow: 0 0 80px rgba(255, 0, 64, 0.7);
             }
             .live-badge::before {
-                width: 14px;
-                height: 14px;
+                width: 20px;
+                height: 20px;
             }
 
-            /* ---- Host Question ---- */
+            /* ---- Question (Gigantic) ---- */
             #questionHost {
-                font-size: 4rem;
-                padding: 40px 30px;
-                min-height: 120px;
-                border-left-width: 8px;
-                margin-bottom: 35px;
+                font-size: 5.5rem;
+                padding: 55px 40px;
+                min-height: 150px;
+                border-left-width: 14px;
+                margin-bottom: 45px;
+                border-radius: 40px;
+                text-shadow: 0 0 80px rgba(255, 215, 0, 0.2);
             }
             #questionHost .q-sub {
-                font-size: 1.3rem;
+                font-size: 1.8rem;
+                margin-top: 15px;
+                letter-spacing: 6px;
+                opacity: 0.6;
             }
 
-            /* ---- Host Options & Bars ---- */
+            /* ---- Options (Huge Text) ---- */
             .options-grid-host {
-                gap: 25px;
+                gap: 35px;
             }
             .option-item {
-                padding: 22px 25px;
-                font-size: 1.5rem;
-                border-radius: 20px;
+                padding: 30px 35px;
+                font-size: 2.2rem;
+                border-radius: 25px;
+                border-width: 3px;
             }
             .option-label {
-                font-size: 1.6rem;
-                margin-right: 15px;
+                font-size: 2.4rem;
+                margin-right: 20px;
             }
+
+            /* ---- Bars (Gigantic & Shiny) ---- */
             .bar-bg {
-                height: 45px;
-                border-radius: 30px;
-                margin-top: 15px;
+                height: 70px;
+                border-radius: 40px;
+                margin-top: 20px;
             }
             .bar-fill {
-                font-size: 1.2rem;
-                padding-right: 25px;
-                border-radius: 30px;
+                font-size: 2rem;
+                padding-right: 35px;
+                border-radius: 40px;
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.4);
             }
 
-            /* ---- Host Stats ---- */
+            /* ---- Stats (Massive Numbers) ---- */
             .host-stats {
-                font-size: 1.4rem;
-                padding: 20px 15px;
-                margin-top: 20px;
+                font-size: 2rem;
+                padding: 25px 20px;
+                margin-top: 30px;
+                border-top-width: 3px;
             }
             .host-stats span {
-                padding: 14px 28px;
-                border-radius: 50px;
+                padding: 20px 45px;
+                border-radius: 80px;
+                gap: 20px;
             }
             .host-stats .num {
-                font-size: 2.2rem;
-                min-width: 50px;
+                font-size: 4.5rem;
+                min-width: 80px;
             }
 
-            /* ---- Host Buttons ---- */
-            .btn-next {
-                font-size: 1.6rem;
-                padding: 22px;
-                border-radius: 60px;
+            /* ---- Status ---- */
+            #hostStatus {
+                font-size: 2rem;
+                padding: 20px;
                 margin-top: 20px;
+                border-radius: 80px;
+            }
+
+            /* ---- Buttons (Huge) ---- */
+            .btn-next {
+                font-size: 2.5rem;
+                padding: 30px;
+                border-radius: 80px;
+                box-shadow: 0 8px 60px rgba(255, 215, 0, 0.35);
             }
             .btn-clear {
-                font-size: 1.3rem;
-                padding: 18px;
-                border-radius: 60px;
-                margin-top: 15px;
+                font-size: 2rem;
+                padding: 24px;
+                border-radius: 80px;
             }
             .btn-back {
-                font-size: 1.2rem;
-                padding: 16px;
-            }
-
-            /* ---- Host Status ---- */
-            #hostStatus {
                 font-size: 1.4rem;
-                padding: 12px;
+                padding: 14px 35px;
+                border-radius: 80px;
             }
 
             /* ---- Poll ID Area ---- */
             .poll-id-area {
-                padding: 15px 20px;
+                padding: 20px 30px;
+                border-radius: 100px;
             }
             .poll-id-area input {
-                font-size: 1.2rem;
-                padding: 12px 18px;
+                font-size: 1.6rem;
+                padding: 18px 25px;
             }
             .poll-id-area button {
-                font-size: 1.2rem;
-                padding: 12px 28px;
+                font-size: 1.6rem;
+                padding: 18px 40px;
             }
 
-            /* Hide the "Double-click" hint on large screens to look cleaner */
+            /* ---- Hide Double-click hint to look cleaner ---- */
             .app-title small {
-                font-size: 0.7rem;
+                font-size: 0.8rem;
+                color: #555;
             }
+
+            /* ---- Audience side remains untouched (mobile first) ---- */
         }
 
-        /* ================================================================
-                   RESPONSIVE - MOBILE (AUDIENCE FOCUSED, LARGER TAP TARGETS)
-                   ================================================================ */
+        /* Mobile adjustments (600px and below) */
         @media (max-width: 600px) {
-            .main-card {
-                padding: 16px;
-                max-width: 100%;
-            }
-
-            /* ---- Audience Options: Big & Spacious for fingers ---- */
             .options-grid-aud {
                 gap: 15px;
             }
@@ -742,150 +782,82 @@
                 padding: 28px 12px;
                 font-size: 1.5rem;
                 border-radius: 18px;
-                box-shadow: 0 6px 0 #0a0a12;
             }
             .opt-btn .label {
                 font-size: 1.1rem;
-                margin-bottom: 6px;
-            }
-
-            /* ---- Host Options (Also bigger on mobile if needed) ---- */
-            .options-grid-host {
-                gap: 12px;
-            }
-            .option-item {
-                padding: 16px 12px;
-                font-size: 1.1rem;
-            }
-            .option-label {
-                font-size: 1.2rem;
-                margin-right: 8px;
-            }
-            .bar-bg {
-                height: 28px;
-            }
-            .bar-fill {
-                font-size: 0.8rem;
-                padding-right: 10px;
-            }
-
-            /* ---- Text Adjustments ---- */
-            #questionHost {
-                font-size: 2.2rem;
-                padding: 20px 15px;
-                min-height: 70px;
             }
             #questionAud {
                 font-size: 2rem;
-                padding: 15px;
-                min-height: 55px;
             }
-            .app-title {
-                font-size: 1.5rem;
-            }
-            .app-title small {
-                font-size: 0.6rem;
-            }
-
-            /* ---- Stats Stack vertically ---- */
             .host-stats {
                 flex-direction: column;
-                gap: 10px;
                 align-items: center;
-                font-size: 1rem;
+                gap: 12px;
             }
             .host-stats span {
                 width: 100%;
                 justify-content: center;
-                padding: 8px 12px;
             }
-            .host-stats .num {
-                font-size: 1.4rem;
-            }
-
             .host-header {
                 flex-direction: column;
-                gap: 8px;
                 align-items: flex-start;
+                gap: 10px;
             }
-            .host-header h2 {
-                font-size: 1.2rem;
+            #questionHost {
+                font-size: 2.4rem;
+                padding: 25px 15px;
+                min-height: 80px;
+            }
+            .options-grid-host {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .option-item {
+                font-size: 1.1rem;
+                padding: 16px;
+            }
+            .bar-bg {
+                height: 30px;
+            }
+            .bar-fill {
+                font-size: 0.9rem;
+                padding-right: 12px;
+            }
+            .host-stats .num {
+                font-size: 1.8rem;
             }
             .btn-next {
-                font-size: 1.1rem;
-                padding: 14px;
+                font-size: 1.2rem;
+                padding: 16px;
             }
             .btn-clear {
-                font-size: 0.9rem;
-                padding: 12px;
-            }
-            .btn-back {
-                font-size: 0.95rem;
-                padding: 12px;
-            }
-            .mode-btn {
-                font-size: 0.85rem;
-                padding: 10px 15px;
-                max-width: 200px;
-            }
-            .poll-id-area {
-                padding: 8px 12px;
-            }
-            .poll-id-area input {
-                font-size: 0.9rem;
-                padding: 8px 12px;
-                min-width: 80px;
-            }
-            .poll-id-area button {
-                font-size: 0.9rem;
-                padding: 8px 16px;
-            }
-            #hostStatus {
-                font-size: 0.95rem;
-                padding: 6px;
-            }
-            #audStatus {
-                font-size: 0.9rem;
-                margin-top: 16px;
-            }
-            .sync-hint {
-                font-size: 0.75rem;
-                padding: 6px 10px;
-            }
-            .aud-footer {
-                font-size: 0.65rem;
+                font-size: 1rem;
+                padding: 14px;
             }
             .live-badge {
-                font-size: 0.7rem;
-                padding: 4px 12px;
+                font-size: 0.8rem;
+                padding: 6px 16px;
             }
-            .live-badge::before {
-                width: 8px;
-                height: 8px;
+            .app-title {
+                font-size: 1.6rem;
+            }
+            .host-header h2 {
+                font-size: 1.3rem;
             }
         }
 
-        /* Extra Small Screens (Old phones) */
+        /* Extra small */
         @media (max-width: 400px) {
+            #questionHost {
+                font-size: 1.8rem;
+            }
             .opt-btn {
                 padding: 22px 8px;
                 font-size: 1.3rem;
             }
-            .opt-btn .label {
-                font-size: 1rem;
-            }
-            #questionAud {
-                font-size: 1.6rem;
-            }
-            #questionHost {
-                font-size: 1.8rem;
-            }
             .option-item {
-                font-size: 0.95rem;
-                padding: 12px 10px;
-            }
-            .option-label {
                 font-size: 1rem;
+                padding: 12px;
             }
         }
     </style>
@@ -896,10 +868,10 @@
         <!-- App Title (Double-click here for Host access) -->
         <div class="app-title" id="appTitle">
             🎤 KBC Audience Poll
-            <small>🔒 Double-click Title to access Host View</small>
+            <small>🔒 Double-click Title to access Host Dashboard</small>
         </div>
 
-        <!-- Only Audience Mode Button is Visible -->
+        <!-- Mode Switcher -->
         <div class="mode-switcher">
             <button class="mode-btn active" id="audienceModeBtn" onclick="switchMode('audience')">📱 Audience View</button>
         </div>
@@ -911,7 +883,9 @@
             <button onclick="loadPoll()">Load</button>
         </div>
 
-        <!-- ============ HOST VIEW ============ -->
+        <!-- ================================================================
+        HOST VIEW - THE PROJECTOR DASHBOARD
+        ================================================================ -->
         <div id="hostView">
             <button class="btn-back" onclick="switchMode('audience')">⬅️ Back to Audience</button>
 
@@ -949,9 +923,10 @@
             </div>
         </div>
 
-        <!-- ============ AUDIENCE VIEW ============ -->
+        <!-- ================================================================
+        AUDIENCE VIEW (Mobile Friendly)
+        ================================================================ -->
         <div id="audienceView" class="active-view">
-            <!-- Auto-sync notification for audience -->
             <div class="sync-hint">
                 📡 <span class="highlight">Auto-syncing with Host...</span>
             </div>
@@ -1054,7 +1029,7 @@
                 alert("ℹ️ You are already in Host View.");
                 return;
             }
-            const pass = prompt("🔒 Enter password to access Host View:");
+            const pass = prompt("🔒 Enter password to access Host Dashboard:");
             if (pass === HOST_PASSWORD) {
                 switchMode('host');
             } else if (pass !== null) {
@@ -1144,7 +1119,7 @@
             }
         };
 
-        // ------------------ HOST LOGIC ------------------
+        // ------------------ HOST LOGIC (Projector Dashboard) ------------------
         function setupHostListener(pollId) {
             db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
@@ -1307,9 +1282,6 @@
         }
 
         function resetAudienceUI() {
-            // This function is now only called when a new question loads,
-            // but we rely on the snapshot listener above to actually reset the UI.
-            // Just a safety net.
             if (!hasVoted) {
                 audBtns.forEach(btn => btn.classList.remove('selected', 'disabled'));
             }
@@ -1358,7 +1330,7 @@
             }
         });
 
-        console.log("✅ KBC Poll System Ready! (Laptop Optimized Host View)");
+        console.log("✅ KBC Projector Dashboard Ready! (MAXIMUM EFFECTS)");
     </script>
 
 </body>
