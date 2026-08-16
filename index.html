@@ -157,6 +157,146 @@
             font-size: 0.65rem;
         }
 
+        /* ================================================================
+           ADMIN TOGGLE (Password Protected, Computer Only)
+           ================================================================ */
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(255, 215, 0, 0.06);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            color: #ffd700;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .admin-toggle:hover {
+            background: rgba(255, 215, 0, 0.15);
+            transform: scale(1.1) rotate(90deg);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        /* ---------- ADMIN PANEL ---------- */
+        .admin-panel {
+            position: fixed;
+            top: 72px;
+            right: 20px;
+            z-index: 9998;
+            background: rgba(12, 12, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 20px;
+            padding: 18px 22px;
+            min-width: 260px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .admin-panel.open {
+            display: flex;
+        }
+        .admin-panel label {
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+        .admin-panel input {
+            padding: 8px 14px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            width: 100%;
+            transition: 0.3s;
+        }
+        .admin-panel input:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+        .admin-panel .btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .admin-panel .btn-group button {
+            flex: 1;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-size: 0.75rem;
+            min-width: 56px;
+            letter-spacing: 0.5px;
+        }
+        .admin-panel .btn-load {
+            background: #ffd700;
+            color: #0a0a12;
+        }
+        .admin-panel .btn-load:hover {
+            background: #ffe44d;
+            transform: scale(1.02);
+        }
+        .admin-panel .btn-next {
+            background: #ffd700;
+            color: #0a0a12;
+        }
+        .admin-panel .btn-next:hover {
+            background: #ffe44d;
+            transform: scale(1.02);
+        }
+        .admin-panel .btn-reset {
+            background: #cc0033;
+            color: #fff;
+        }
+        .admin-panel .btn-reset:hover {
+            background: #ff1a4a;
+            transform: scale(1.02);
+        }
+        .admin-panel .close-panel {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .admin-panel .close-panel:hover {
+            color: #fff;
+        }
+
+        /* ================================================================
+           🔥 HIDE ADMIN BUTTON & PANEL ON MOBILE (Computer Only)
+           ================================================================ */
+        @media (max-width: 768px) {
+            .admin-toggle {
+                display: none !important;
+            }
+            .admin-panel {
+                display: none !important;
+            }
+        }
+
         @media (max-width: 400px) {
             .main-card {
                 padding: 16px;
@@ -191,8 +331,23 @@
         <div class="aud-footer">⚠️ Once voted, you cannot change your response</div>
     </div>
 
+    <!-- ============================================================
+    ADMIN BUTTON & PANEL (Password Protected, Computer Only)
+    ============================================================ -->
+    <button class="admin-toggle" id="adminToggle" title="Admin Controls">⚙️</button>
+    <div class="admin-panel" id="adminPanel">
+        <button class="close-panel" id="closeAdminPanel">✕</button>
+        <label for="pollIdInputAdmin">📌 Poll ID</label>
+        <input type="text" id="pollIdInputAdmin" value="poll_1" placeholder="e.g. poll_2">
+        <div class="btn-group">
+            <button class="btn-load" onclick="loadPollAdmin()">Load</button>
+            <button class="btn-next" onclick="createNextPollAdmin()">Next</button>
+            <button class="btn-reset" onclick="clearAllVotesAdmin()">Reset</button>
+        </div>
+    </div>
+
     <script>
-        // ---------- FIREBASE CONFIG (SAME AS HOST) ----------
+        // ---------- FIREBASE CONFIG ----------
         const firebaseConfig = {
             apiKey: "AIzaSyDdsjnW0VzoT3vDM-wEGMuipRZgVNDOsJA",
             authDomain: "responds-97113.firebaseapp.com",
@@ -202,6 +357,9 @@
             appId: "1:917085174768:web:19a93ba15729e1c3f63b35",
             measurementId: "G-SF8VYBDT4F"
         };
+
+        // 🔑 PASSWORD FOR ADMIN ACCESS
+        const ADMIN_PASSWORD = "admin123";
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -224,6 +382,43 @@
         ];
         const audBtns = document.querySelectorAll('.opt-btn');
         const audStatus = document.getElementById('audStatus');
+
+        // Admin panel refs
+        const adminToggle = document.getElementById('adminToggle');
+        const adminPanel = document.getElementById('adminPanel');
+        const closeAdmin = document.getElementById('closeAdminPanel');
+        const pollInput = document.getElementById('pollIdInputAdmin');
+
+        // ---------- ADMIN PANEL TOGGLE (PASSWORD PROTECTED) ----------
+        adminToggle.addEventListener('click', () => {
+            // If panel is already open, just close it
+            if (adminPanel.classList.contains('open')) {
+                adminPanel.classList.remove('open');
+                return;
+            }
+
+            // Ask for password
+            const enteredPassword = prompt("🔒 Enter admin password to access controls:");
+            if (enteredPassword === null) {
+                // User cancelled
+                return;
+            }
+
+            if (enteredPassword === ADMIN_PASSWORD) {
+                adminPanel.classList.add('open');
+            } else {
+                alert("❌ Incorrect password!");
+            }
+        });
+
+        closeAdmin.addEventListener('click', () => adminPanel.classList.remove('open'));
+        document.addEventListener('click', (e) => {
+            if (adminPanel.classList.contains('open') &&
+                !adminPanel.contains(e.target) &&
+                e.target !== adminToggle) {
+                adminPanel.classList.remove('open');
+            }
+        });
 
         // ---------- AUTH ----------
         firebase.auth().signInAnonymously()
@@ -248,6 +443,7 @@
                     if (globalPollId && globalPollId !== currentPollId) {
                         console.log("🔄 Auto-sync triggered by Host:", globalPollId);
                         currentPollId = globalPollId;
+                        pollInput.value = currentPollId;
                         detachListeners();
                         setupAudienceListener(currentPollId);
                         updateQuestionUI(currentPollId);
@@ -280,6 +476,69 @@
             detachListeners();
             setupAudienceListener(currentPollId);
         }
+
+        // ---------- ADMIN WRAPPERS ----------
+        window.loadPollAdmin = function() {
+            let newId = pollInput.value.trim();
+            if (!newId) newId = 'poll_1';
+            currentPollId = newId;
+            pollInput.value = currentPollId;
+            loadPoll();
+            adminPanel.classList.remove('open');
+        };
+
+        window.createNextPollAdmin = function() {
+            const newId = prompt("Enter Poll ID for the next question (e.g., poll_2):", "poll_2");
+            if (!newId) return;
+            const trimmedId = newId.trim();
+            db.collection('polls').doc(trimmedId).get().then(doc => {
+                if (doc.exists) {
+                    pollInput.value = trimmedId;
+                    currentPollId = trimmedId;
+                    loadPoll();
+                } else {
+                    if (confirm(`'${trimmedId}' not found. Create a sample question?`)) {
+                        const sampleData = {
+                            question: "Sample Question",
+                            options: ["Option A", "Option B", "Option C", "Option D"],
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        db.collection('polls').doc(trimmedId).set(sampleData).then(() => {
+                            alert("Sample question created! 🎉");
+                            pollInput.value = trimmedId;
+                            currentPollId = trimmedId;
+                            loadPoll();
+                        }).catch(err => alert("Error creating: " + err.message));
+                    }
+                }
+            });
+            adminPanel.classList.remove('open');
+        };
+
+        window.clearAllVotesAdmin = function() {
+            if (!confirm("⚠️ Are you sure you want to DELETE ALL VOTES for this question?")) return;
+            const votesRef = db.collection('polls').doc(currentPollId).collection('votes');
+            votesRef.get().then((snapshot) => {
+                if (snapshot.empty) {
+                    alert("ℹ️ No votes to clear.");
+                    return;
+                }
+                const batch = db.batch();
+                snapshot.forEach((doc) => batch.delete(doc.ref));
+                return batch.commit();
+            }).then(() => {
+                alert("✅ All votes cleared! Audience can vote again.");
+                // Reset UI
+                audBtns.forEach(btn => btn.classList.remove('selected', 'disabled'));
+                audStatus.innerText = '📢 Votes cleared! Select your opinion!';
+                audStatus.style.color = '#ffd700';
+                hasVoted = false;
+            }).catch((err) => {
+                alert("❌ Error clearing votes: " + err.message);
+                console.error(err);
+            });
+            adminPanel.classList.remove('open');
+        };
 
         // ---------- AUDIENCE LISTENER ----------
         function setupAudienceListener(pollId) {
@@ -349,11 +608,10 @@
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 userId = user.uid;
-                // Already handled in signInAnonymously
             }
         });
 
-        console.log("✅ Audience View Ready! (Voting Buttons Only)");
+        console.log("✅ Audience View Ready! (Password Protected Admin on Computer)");
     </script>
 </body>
 </html>
