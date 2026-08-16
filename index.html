@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
-        /* ---------- RESET & FULLSCREEN BASE ---------- */
+        /* ---------- RESET & FULLSCREEN ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -37,12 +37,12 @@
             max-width: 1300px;
             width: 100%;
             height: 100%;
-            max-height: 900px;
+            max-height: 950px;
             background: rgba(18, 18, 40, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-radius: 40px;
-            padding: 24px 32px;
+            padding: 20px 30px;
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 215, 0, 0.08);
             border: 1px solid rgba(255, 215, 0, 0.12);
             transition: all 0.4s ease;
@@ -52,7 +52,7 @@
             flex-direction: column;
         }
 
-        /* Animated gradient orbs */
+        /* Animated orbs */
         .main-card::before,
         .main-card::after {
             content: '';
@@ -91,7 +91,7 @@
             z-index: 1;
         }
 
-        /* Glowing border when Host is active */
+        /* Glowing border for Host mode */
         body.host-active .main-card {
             border-color: #ffd700;
             box-shadow: 0 0 80px rgba(255, 215, 0, 0.12), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.2);
@@ -113,7 +113,7 @@
             color: #ffd700;
             font-size: 1.6rem;
             font-weight: 900;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
             cursor: default;
             user-select: none;
@@ -128,18 +128,16 @@
             letter-spacing: 1px;
         }
 
-        /* ---------- MODE SWITCHER (HIDDEN COMPLETELY IN HOST MODE) ---------- */
+        /* ---------- MODE SWITCHER (HIDDEN IN HOST MODE) ---------- */
         .mode-switcher {
             display: flex;
             gap: 16px;
             justify-content: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             flex-shrink: 0;
-            transition: 0.3s;
         }
         body.host-active .mode-switcher {
-            display: none;
-            /* ഹോസ്റ്റ് മോഡിൽ ഈ ബട്ടൺ പൂർണ്ണമായും മറയ്ക്കുന്നു */;
+            display: none !important;
         }
         .mode-btn {
             padding: 8px 24px;
@@ -167,7 +165,7 @@
         }
 
         /* ================================================================
-           HOST VIEW – PURE DISPLAY (NO VOTING BUTTONS)
+           HOST VIEW – ONLY GRAPHS (NO A/B/C/D LABELS)
            ================================================================ */
         #hostView {
             display: none;
@@ -190,18 +188,18 @@
             }
         }
 
-        /* Host Header */
+        /* Header */
         .host-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             flex-shrink: 0;
             padding: 0 4px;
         }
         .host-header h2 {
             color: rgba(255, 215, 0, 0.9);
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 800;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
             letter-spacing: 2px;
@@ -209,9 +207,9 @@
         .live-badge {
             background: #ff1a4a;
             color: #fff;
-            padding: 6px 22px;
+            padding: 5px 20px;
             border-radius: 60px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 800;
             letter-spacing: 2px;
             animation: blinkLive 1.4s infinite;
@@ -254,19 +252,19 @@
             }
         }
 
-        /* Question – Small, clean "Q1" (Display only) */
+        /* Question – Small, clean Q1/Q2 */
         #questionHost {
             background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
-            padding: 8px 20px;
-            border-radius: 16px;
+            padding: 6px 20px;
+            border-radius: 14px;
             color: #ffd700;
-            font-size: 2.4rem;
+            font-size: 2.2rem;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
             border-left: 6px solid #ffd700;
-            min-height: 50px;
+            min-height: 44px;
             letter-spacing: 1px;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
@@ -276,48 +274,33 @@
             flex-shrink: 0;
         }
 
-        /* Options Grid – Only Labels & GIANT BARS (NO CLICK) */
+        /* ----- GRID – ONLY BARS, NO A/B/C/D LABELS ----- */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 18px;
+            gap: 16px;
             flex: 1;
             min-height: 0;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .option-item {
             background: rgba(20, 20, 48, 0.5);
             backdrop-filter: blur(4px);
-            padding: 14px 20px;
-            border-radius: 22px;
+            padding: 12px 18px;
+            border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: 0.3s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            /* No cursor:pointer, no onclick - pure display */;
-        }
-        .option-item:hover {
-            border-color: rgba(255, 215, 0, 0.15);
-            transform: translateY(-2px);
-        }
-        .option-label {
-            font-weight: 800;
-            color: #ffd700;
-            font-size: 1.8rem;
-            display: block;
-            margin-bottom: 6px;
-            flex-shrink: 0;
-            letter-spacing: 1px;
-            /* Just a label, not clickable */;
+            /* NO LABEL - Pure bar display */;
         }
 
-        /* Premium Glowing Bars - FILLS THE SPACE */
+        /* ----- GIANT BARS (Fill remaining space) ----- */
         .bar-bg {
             width: 100%;
             height: 100%;
-            min-height: 32px;
+            min-height: 30px;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 30px;
             overflow: hidden;
@@ -336,10 +319,10 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 18px;
+            padding-right: 16px;
             color: #0a0a12;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
             position: relative;
@@ -354,20 +337,20 @@
             }
         }
 
-        /* Status & Stats – Fixed at bottom */
+        /* Status */
         #hostStatus {
             color: rgba(255, 255, 255, 0.5);
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             transition: 0.3s;
-            padding: 6px 12px;
+            padding: 4px 12px;
             border-radius: 60px;
             letter-spacing: 0.5px;
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(4px);
             flex-shrink: 0;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         #hostStatus.flash-green {
             color: #0f0;
@@ -385,33 +368,34 @@
             }
         }
 
+        /* Stats */
         .host-stats {
             display: flex;
             justify-content: space-between;
             color: rgba(255, 255, 255, 0.7);
-            padding: 10px 8px;
+            padding: 8px 6px;
             border-top: 1px solid rgba(255, 255, 255, 0.04);
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             flex-shrink: 0;
         }
         .host-stats span {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: rgba(0, 0, 0, 0.3);
-            padding: 8px 20px;
+            padding: 6px 18px;
             border-radius: 60px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(4px);
         }
         .host-stats .num {
             color: #ffd700;
-            font-size: 2.4rem;
+            font-size: 2.2rem;
             font-weight: 900;
             display: inline-block;
             transition: 0.2s;
-            min-width: 40px;
+            min-width: 36px;
             text-align: center;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
         }
@@ -432,20 +416,20 @@
             }
         }
 
-        /* ---------- ADMIN TOGGLE (Floating Gear - Only for Admin) ---------- */
+        /* ---------- ADMIN TOGGLE (Only for Admin) ---------- */
         .admin-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 18px;
+            right: 18px;
             z-index: 9999;
             background: rgba(255, 215, 0, 0.06);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 215, 0, 0.15);
             color: #ffd700;
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             cursor: pointer;
             transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: none;
@@ -462,22 +446,22 @@
             display: flex;
         }
 
-        /* ---------- ADMIN PANEL (Glassmorphism - Hidden by default) ---------- */
+        /* ---------- ADMIN PANEL ---------- */
         .admin-panel {
             position: fixed;
-            top: 72px;
-            right: 20px;
+            top: 68px;
+            right: 18px;
             z-index: 9998;
             background: rgba(12, 12, 30, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: 20px;
-            padding: 20px 24px;
-            min-width: 280px;
+            border-radius: 18px;
+            padding: 18px 22px;
+            min-width: 260px;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
             display: none;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         .admin-panel.open {
             display: flex;
@@ -485,18 +469,18 @@
         .admin-panel label {
             color: #ffd700;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             opacity: 0.7;
         }
         .admin-panel input {
-            padding: 10px 16px;
+            padding: 8px 14px;
             border-radius: 40px;
             border: 1px solid rgba(255, 255, 255, 0.06);
             background: rgba(0, 0, 0, 0.3);
             color: #fff;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             outline: none;
             width: 100%;
             transition: 0.3s;
@@ -507,19 +491,19 @@
         }
         .admin-panel .btn-group {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         .admin-panel .btn-group button {
             flex: 1;
-            padding: 8px 14px;
+            padding: 6px 12px;
             border: none;
             border-radius: 40px;
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s ease;
-            font-size: 0.8rem;
-            min-width: 60px;
+            font-size: 0.75rem;
+            min-width: 56px;
             letter-spacing: 0.5px;
         }
         .admin-panel .btn-load {
@@ -556,8 +540,8 @@
         }
         .admin-panel .close-panel {
             position: absolute;
-            top: 10px;
-            right: 14px;
+            top: 8px;
+            right: 12px;
             background: none;
             border: none;
             color: rgba(255, 255, 255, 0.3);
@@ -570,7 +554,7 @@
         }
 
         /* ================================================================
-           AUDIENCE VIEW (Mobile-First - Only here voting buttons exist)
+           AUDIENCE VIEW (Mobile – Voting buttons exist here only)
            ================================================================ */
         #audienceView {
             display: block;
@@ -589,9 +573,9 @@
             font-size: 2rem;
             font-weight: 800;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             border-left: 4px solid #ffd700;
-            min-height: 50px;
+            min-height: 48px;
             letter-spacing: 1px;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
@@ -602,12 +586,12 @@
         .options-grid-aud {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            gap: 12px;
         }
         .opt-btn {
             background: rgba(20, 20, 48, 0.6);
             backdrop-filter: blur(4px);
-            padding: 22px 12px;
+            padding: 20px 10px;
             border-radius: 18px;
             border: 1.5px solid rgba(255, 255, 255, 0.04);
             color: #fff;
@@ -641,7 +625,7 @@
         #audStatus {
             color: rgba(255, 255, 255, 0.5);
             text-align: center;
-            margin-top: 18px;
+            margin-top: 16px;
             font-size: 0.9rem;
             font-weight: 500;
         }
@@ -655,7 +639,7 @@
             text-align: center;
             color: rgba(255, 255, 255, 0.2);
             font-size: 0.75rem;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             padding: 6px 16px;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 40px;
@@ -667,12 +651,12 @@
         }
 
         /* ================================================================
-           RESPONSIVE: PROJECTOR (1024px+) 
+           RESPONSIVE: PROJECTOR (1024px+)
            ================================================================ */
         @media (min-width: 1024px) {
             .main-card {
                 max-height: 1000px;
-                padding: 30px 44px;
+                padding: 28px 44px;
                 border-radius: 48px;
             }
             .app-title {
@@ -685,7 +669,7 @@
                 font-size: 2rem;
             }
             .live-badge {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
                 padding: 8px 32px;
                 gap: 12px;
             }
@@ -695,144 +679,136 @@
             }
             #questionHost {
                 font-size: 3rem;
-                padding: 10px 28px;
-                min-height: 60px;
+                padding: 8px 28px;
+                min-height: 56px;
                 border-left-width: 8px;
-                margin-bottom: 16px;
+                margin-bottom: 14px;
             }
             .options-grid-host {
-                gap: 24px;
+                gap: 22px;
             }
             .option-item {
-                padding: 18px 28px;
-                border-radius: 26px;
-            }
-            .option-label {
-                font-size: 2.2rem;
-                margin-bottom: 8px;
+                padding: 16px 28px;
+                border-radius: 24px;
             }
             .bar-fill {
-                font-size: 1.5rem;
-                padding-right: 28px;
+                font-size: 1.4rem;
+                padding-right: 26px;
             }
             .host-stats {
-                font-size: 1.4rem;
-                padding: 12px 10px;
+                font-size: 1.3rem;
+                padding: 10px 8px;
             }
             .host-stats span {
-                padding: 10px 32px;
-                gap: 16px;
+                padding: 8px 30px;
+                gap: 14px;
             }
             .host-stats .num {
-                font-size: 3rem;
-                min-width: 60px;
+                font-size: 2.8rem;
+                min-width: 56px;
             }
             #hostStatus {
-                font-size: 1.4rem;
-                padding: 8px 16px;
+                font-size: 1.3rem;
+                padding: 6px 14px;
             }
             .admin-toggle {
-                width: 52px;
-                height: 52px;
-                font-size: 1.8rem;
-                top: 24px;
-                right: 24px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.6rem;
+                top: 22px;
+                right: 22px;
             }
             .admin-panel {
-                top: 84px;
-                right: 24px;
-                padding: 24px 28px;
-                min-width: 320px;
+                top: 80px;
+                right: 22px;
+                padding: 22px 26px;
+                min-width: 300px;
             }
         }
 
         /* Mobile adjustments */
         @media (max-width: 600px) {
             .main-card {
-                padding: 16px;
+                padding: 14px;
                 max-height: none;
                 border-radius: 28px;
             }
             .options-grid-aud {
-                gap: 12px;
+                gap: 10px;
             }
             .opt-btn {
-                padding: 24px 10px;
-                font-size: 1.4rem;
+                padding: 22px 10px;
+                font-size: 1.3rem;
                 border-radius: 16px;
             }
             .opt-btn .label {
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
             #questionAud {
-                font-size: 1.8rem;
-                padding: 14px;
-                min-height: 48px;
+                font-size: 1.7rem;
+                padding: 12px;
+                min-height: 44px;
             }
             .host-stats {
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
-                font-size: 1rem;
+                gap: 8px;
+                font-size: 0.95rem;
             }
             .host-stats span {
                 width: 100%;
                 justify-content: center;
-                padding: 8px 16px;
+                padding: 6px 14px;
             }
             .host-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 8px;
+                gap: 6px;
             }
             .host-header h2 {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             #questionHost {
-                font-size: 1.8rem;
-                padding: 8px 16px;
-                min-height: 44px;
+                font-size: 1.7rem;
+                padding: 6px 14px;
+                min-height: 40px;
                 border-left-width: 4px;
-                margin-bottom: 12px;
+                margin-bottom: 10px;
             }
             .options-grid-host {
                 grid-template-columns: 1fr;
-                gap: 12px;
+                gap: 10px;
             }
             .option-item {
-                padding: 12px 16px;
-            }
-            .option-label {
-                font-size: 1.6rem;
-                margin-bottom: 4px;
+                padding: 10px 14px;
             }
             .bar-bg {
-                min-height: 24px;
+                min-height: 22px;
             }
             .bar-fill {
-                font-size: 0.9rem;
-                padding-right: 12px;
+                font-size: 0.85rem;
+                padding-right: 10px;
             }
             .host-stats .num {
-                font-size: 1.8rem;
-                min-width: 36px;
+                font-size: 1.6rem;
+                min-width: 32px;
             }
             .admin-toggle {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-                top: 10px;
-                right: 10px;
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+                top: 8px;
+                right: 8px;
             }
             .admin-panel {
-                top: 56px;
-                right: 10px;
-                left: 10px;
+                top: 52px;
+                right: 8px;
+                left: 8px;
                 min-width: auto;
-                padding: 16px;
+                padding: 14px;
             }
             .live-badge {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 padding: 4px 14px;
             }
             .live-badge::before {
@@ -840,8 +816,8 @@
                 height: 8px;
             }
             #hostStatus {
-                font-size: 0.9rem;
-                padding: 4px 10px;
+                font-size: 0.85rem;
+                padding: 4px 8px;
             }
             body {
                 padding: 8px;
@@ -863,13 +839,13 @@
             <small>🔒 Double-click Title to access Host Dashboard</small>
         </div>
 
-        <!-- Mode Switcher (HIDDEN when Host is active) -->
+        <!-- Mode Switcher (Hidden in Host mode) -->
         <div class="mode-switcher">
             <button class="mode-btn active" id="audienceModeBtn" onclick="switchMode('audience')">📱 Audience View</button>
         </div>
 
         <!-- ============================================================
-        HOST VIEW – PURE DISPLAY DASHBOARD (NO VOTING BUTTONS)
+        HOST VIEW – ONLY GRAPHS (NO A/B/C/D LABELS)
         ============================================================ -->
         <div id="hostView">
             <div class="host-header">
@@ -879,22 +855,18 @@
 
             <div id="questionHost">Q1</div>
 
-            <!-- Only Labels and Giant Bars – No Click Events -->
+            <!-- Only Bars – No A/B/C/D Labels -->
             <div class="options-grid-host" id="optionsContainerHost">
                 <div class="option-item">
-                    <span class="option-label">A.</span>
                     <div class="bar-bg"><div class="bar-fill" id="bar0">0%</div></div>
                 </div>
                 <div class="option-item">
-                    <span class="option-label">B.</span>
                     <div class="bar-bg"><div class="bar-fill" id="bar1">0%</div></div>
                 </div>
                 <div class="option-item">
-                    <span class="option-label">C.</span>
                     <div class="bar-bg"><div class="bar-fill" id="bar2">0%</div></div>
                 </div>
                 <div class="option-item">
-                    <span class="option-label">D.</span>
                     <div class="bar-bg"><div class="bar-fill" id="bar3">0%</div></div>
                 </div>
             </div>
@@ -908,7 +880,7 @@
         </div>
 
         <!-- ============================================================
-        AUDIENCE VIEW (Mobile) – Only place with Voting Buttons
+        AUDIENCE VIEW (Mobile – Voting buttons exist here only)
         ============================================================ -->
         <div id="audienceView" class="active-view">
             <div class="sync-hint">
@@ -927,7 +899,7 @@
     </div>
 
     <!-- ============================================================
-    FLOATING ADMIN PANEL (Only for Admin, hidden behind Gear)
+    ADMIN PANEL (Hidden behind Gear)
     ============================================================ -->
     <button class="admin-toggle" id="adminToggle" title="Toggle Admin Controls">⚙️</button>
     <div class="admin-panel" id="adminPanel">
@@ -1127,7 +1099,7 @@
 
         // ---------- Host logic (Bars only - Pure Display) ----------
         function setupHostListener(pollId) {
-            // Question listener (just to know it exists)
+            // Question listener
             db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
                 questionHost.innerText = "Q" + qNum;
@@ -1311,7 +1283,7 @@
             }
         });
 
-        console.log("✅ KBC Premium Dashboard (Pure Display, No Voting Buttons in Host) Ready!");
+        console.log("✅ KBC Premium Dashboard (Host: Only Graphs, No A/B/C/D Labels) Ready!");
     </script>
 </body>
 </html>
