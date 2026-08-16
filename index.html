@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KBC Projector - Medium Dashboard</title>
+    <title>KBC Projector - Minimal Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
     </script>
@@ -34,7 +34,6 @@
         /* ---------- MAIN CARD ---------- */
         .main-card {
             max-width: 1100px;
-            /* Balanced width for both laptop & projector */
             width: 100%;
             background: #0f0f20;
             border-radius: 35px;
@@ -137,8 +136,8 @@
         }
 
         /* ================================================================
-                   HOST VIEW - MEDIUM PROJECTOR DASHBOARD (PERFECT SIZE)
-                   ================================================================ */
+        HOST VIEW - MINIMAL DASHBOARD (ONLY LABELS & BARS)
+        ================================================================ */
         #hostView {
             display: none;
         }
@@ -162,7 +161,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding: 0 5px;
         }
         .host-header h2 {
@@ -218,46 +217,38 @@
             }
         }
 
-        /* Question - 3D Flip + Medium Large */
+        /* ----- Question - Now Small & Clean (Only Q1, Q2...) ----- */
         #questionHost {
             background: linear-gradient(145deg, #0a0a1e, #16163a);
-            padding: 30px 25px;
-            border-radius: 25px;
+            padding: 12px 20px;
+            border-radius: 16px;
             color: #ffd700;
-            font-size: 3.6rem;
+            font-size: 2.6rem;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 30px;
-            border-left: 8px solid #ffd700;
-            min-height: 90px;
-            letter-spacing: 3px;
-            text-shadow: 0 0 60px rgba(255, 215, 0, 0.15);
-            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6);
-            animation: flipIn 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            transform-style: preserve-3d;
-            perspective: 1200px;
+            margin-bottom: 25px;
+            border-left: 6px solid #ffd700;
+            min-height: 60px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+            animation: fadeInQ 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        @keyframes flipIn {
+        @keyframes fadeInQ {
             0% {
-                transform: rotateX(90deg) scale(0.8);
                 opacity: 0;
+                transform: scale(0.95) translateY(-5px);
             }
             100% {
-                transform: rotateX(0deg) scale(1);
                 opacity: 1;
+                transform: scale(1) translateY(0);
             }
         }
-        #questionHost .q-sub {
-            font-size: 1.2rem;
-            color: #ffd700;
-            opacity: 0.5;
-            display: block;
-            font-weight: 400;
-            margin-top: 8px;
-            letter-spacing: 4px;
-        }
 
-        /* Options Grid */
+        /* ----- Options - Only Labels (A, B, C, D) and Bars ----- */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -266,13 +257,12 @@
         }
         .option-item {
             background: #141430;
-            padding: 18px 22px;
+            padding: 16px 22px;
             border-radius: 18px;
             color: white;
             border: 2px solid #252550;
             transition: 0.4s;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-            font-size: 1.4rem;
         }
         .option-item:hover {
             border-color: #ffd700;
@@ -281,17 +271,17 @@
         .option-label {
             font-weight: 900;
             color: #ffd700;
-            margin-right: 12px;
-            font-size: 1.6rem;
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 6px;
         }
 
-        /* Bars - Medium Large */
+        /* Bars */
         .bar-bg {
             width: 100%;
             height: 40px;
             background: #070712;
             border-radius: 25px;
-            margin-top: 12px;
             overflow: hidden;
             box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.9);
             position: relative;
@@ -535,8 +525,8 @@
         }
 
         /* ================================================================
-                   AUDIENCE VIEW (Mobile-First)
-                   ================================================================ */
+        AUDIENCE VIEW (Mobile-First - Unchanged)
+        ================================================================ */
         #audienceView {
             display: block;
         }
@@ -557,16 +547,6 @@
             letter-spacing: 2px;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
             animation: fadeInQ 0.5s ease;
-        }
-        @keyframes fadeInQ {
-            0% {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
         .options-grid-aud {
             display: grid;
@@ -631,9 +611,8 @@
         }
 
         /* ================================================================
-                   LAPTOP / PROJECTOR OPTIMIZATION (1024px+)
-                   Balanced sizes - Not too big, not too small
-                   ================================================================ */
+        LAPTOP / PROJECTOR OPTIMIZATION (1024px+)
+        ================================================================ */
         @media (min-width: 1024px) {
 
             body {
@@ -669,40 +648,32 @@
                 height: 18px;
             }
 
+            /* Small Question Block */
             #questionHost {
-                font-size: 4.5rem;
-                padding: 45px 35px;
-                min-height: 140px;
-                border-left-width: 12px;
-                margin-bottom: 35px;
-                border-radius: 30px;
-                text-shadow: 0 0 80px rgba(255, 215, 0, 0.2);
-            }
-            #questionHost .q-sub {
-                font-size: 1.6rem;
-                margin-top: 12px;
-                letter-spacing: 6px;
-                opacity: 0.6;
+                font-size: 3.2rem;
+                padding: 16px 30px;
+                min-height: 70px;
+                border-left-width: 10px;
+                margin-bottom: 30px;
+                border-radius: 20px;
             }
 
             .options-grid-host {
-                gap: 30px;
+                gap: 28px;
             }
             .option-item {
-                padding: 25px 30px;
-                font-size: 2rem;
+                padding: 22px 28px;
                 border-radius: 22px;
                 border-width: 3px;
             }
             .option-label {
-                font-size: 2.4rem;
-                margin-right: 20px;
+                font-size: 2.6rem;
+                margin-bottom: 8px;
             }
 
             .bar-bg {
                 height: 55px;
                 border-radius: 35px;
-                margin-top: 18px;
             }
             .bar-fill {
                 font-size: 1.8rem;
@@ -734,7 +705,6 @@
                 border-radius: 80px;
             }
 
-            /* Admin Toggle & Panel - Small & Subtle */
             .admin-toggle {
                 width: 55px;
                 height: 55px;
@@ -789,17 +759,21 @@
                 gap: 10px;
             }
             #questionHost {
-                font-size: 2.4rem;
-                padding: 25px 15px;
-                min-height: 80px;
+                font-size: 2rem;
+                padding: 10px 16px;
+                min-height: 50px;
+                border-left-width: 4px;
+                margin-bottom: 18px;
             }
             .options-grid-host {
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
             .option-item {
-                font-size: 1.1rem;
-                padding: 16px;
+                padding: 14px 18px;
+            }
+            .option-label {
+                font-size: 1.6rem;
             }
             .bar-bg {
                 height: 30px;
@@ -843,7 +817,7 @@
         </div>
 
         <!-- ================================================================
-        HOST VIEW - BALANCED DASHBOARD (NOT TOO BIG)
+        HOST VIEW - MINIMAL DASHBOARD (Only A, B, C, D + Bars)
         ================================================================ -->
         <div id="hostView">
             <div class="host-header">
@@ -851,26 +825,25 @@
                 <div class="live-badge"> LIVE </div>
             </div>
 
-            <div id="questionHost">
-                Question 1
-                <span class="q-sub">⚡ Audience Opinion</span>
-            </div>
+            <!-- Small Question Block: Q1, Q2,... -->
+            <div id="questionHost">Q1</div>
 
+            <!-- Options: Only Labels (A, B, C, D) and Bars -->
             <div class="options-grid-host" id="optionsContainerHost">
                 <div class="option-item">
-                    <span class="option-label">A.</span> <span class="opt-text-h">---</span>
+                    <span class="option-label">A.</span>
                     <div class="bar-bg"><div class="bar-fill" id="bar0">0%</div></div>
                 </div>
                 <div class="option-item">
-                    <span class="option-label">B.</span> <span class="opt-text-h">---</span>
+                    <span class="option-label">B.</span>
                     <div class="bar-bg"><div class="bar-fill" id="bar1">0%</div></div>
                 </div>
                 <div class="option-item">
-                    <span class="option-label">C.</span> <span class="opt-text-h">---</span>
+                    <span class="option-label">C.</span>
                     <div class="bar-bg"><div class="bar-fill" id="bar2">0%</div></div>
                 </div>
                 <div class="option-item">
-                    <span class="option-label">D.</span> <span class="opt-text-h">---</span>
+                    <span class="option-label">D.</span>
                     <div class="bar-bg"><div class="bar-fill" id="bar3">0%</div></div>
                 </div>
             </div>
@@ -903,7 +876,7 @@
     </div>
 
     <!-- ================================================================
-    FLOATING ADMIN PANEL
+    FLOATING ADMIN PANEL (Hidden behind Gear icon)
     ================================================================ -->
     <button class="admin-toggle" id="adminToggle" title="Toggle Admin Controls">⚙️</button>
 
@@ -954,7 +927,6 @@
 
         // Host refs
         const questionHost = document.getElementById('questionHost');
-        const optTextsH = document.querySelectorAll('.opt-text-h');
         const bars = [document.getElementById('bar0'), document.getElementById('bar1'), document.getElementById('bar2'), document
             .getElementById('bar3')
         ];
@@ -1086,9 +1058,10 @@
         // ------------------ UPDATE UI TITLE ------------------
         function updateQuestionUI(pollId) {
             const qNum = getQuestionNumber(pollId);
-            const qText = "Question " + qNum;
-            questionHost.innerHTML = qText + '<span class="q-sub">⚡ Audience Opinion</span>';
-            questionAud.innerText = qText;
+            // Host: Only "Q1", "Q2"...
+            questionHost.innerText = "Q" + qNum;
+            // Audience: "Question 1", "Question 2"...
+            questionAud.innerText = "Question " + qNum;
         }
 
         // ------------------ LOAD POLL ------------------
@@ -1122,21 +1095,16 @@
         window.clearAllVotesAdmin = function() { clearAllVotes();
             adminPanel.classList.remove('open'); };
 
-        // ------------------ HOST LOGIC ------------------
+        // ------------------ HOST LOGIC (Only Bars & Stats) ------------------
         function setupHostListener(pollId) {
+            // Listen to question (just to know if it exists, but we only display Q number)
             db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
-                questionHost.innerHTML = "Question " + qNum + '<span class="q-sub">⚡ Audience Opinion</span>';
-                if (doc.exists) {
-                    const data = doc.data();
-                    optTextsH.forEach((el, idx) => {
-                        el.innerText = data.options[idx] || "---";
-                    });
-                } else {
-                    optTextsH.forEach(el => el.innerText = "---");
-                }
+                questionHost.innerText = "Q" + qNum;
+                // No need to update option text since we removed it.
             }, (err) => console.error("Host question error:", err));
 
+            // Listen to votes (Live Bars)
             const votesRef = db.collection('polls').doc(pollId).collection('votes');
             unsubscribeVotes = votesRef.onSnapshot((snapshot) => {
                 const counts = [0, 0, 0, 0];
@@ -1196,8 +1164,8 @@
                     } else {
                         if (confirm(`'${trimmedId}' not found. Create a sample question?`)) {
                             const sampleData = {
-                                question: "What is the national bird of India?",
-                                options: ["Crow", "Peacock", "Parrot", "Cuckoo"],
+                                question: "Sample Question",
+                                options: ["Option A", "Option B", "Option C", "Option D"],
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
                             };
                             db.collection('polls').doc(trimmedId).set(sampleData).then(() => {
@@ -1332,7 +1300,7 @@
             }
         });
 
-        console.log("✅ KBC Balanced Projector Dashboard Ready! (Perfect size for laptops & projectors)");
+        console.log("✅ KBC Minimal Projector Dashboard Ready! (Only A, B, C, D & Bars)");
     </script>
 
 </body>
