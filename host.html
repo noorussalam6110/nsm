@@ -31,7 +31,6 @@
             padding: 20px;
         }
 
-        /* ---------- MAIN CARD ---------- */
         .main-card {
             max-width: 1400px;
             width: 100%;
@@ -39,19 +38,17 @@
             max-height: 950px;
             background: rgba(18, 18, 40, 0.75);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border-radius: 48px;
             padding: 28px 40px;
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 215, 0, 0.08);
             border: 1px solid rgba(255, 215, 0, 0.12);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             border-color: #ffd700;
             box-shadow: 0 0 80px rgba(255, 215, 0, 0.12), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.2);
             animation: cardPulse 4s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
         }
 
         @keyframes cardPulse {
@@ -64,7 +61,6 @@
             }
         }
 
-        /* Animated orbs */
         .main-card::before,
         .main-card::after {
             content: '';
@@ -133,7 +129,6 @@
             -webkit-text-fill-color: rgba(255, 215, 0, 0.5);
         }
 
-        /* ---------- HEADER ---------- */
         .host-header {
             display: flex;
             justify-content: space-between;
@@ -148,7 +143,6 @@
             color: rgba(255, 215, 0, 0.7);
             font-size: 1.2rem;
             font-weight: 600;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
             letter-spacing: 2px;
             -webkit-text-fill-color: rgba(255, 215, 0, 0.7);
         }
@@ -200,7 +194,7 @@
             }
         }
 
-        /* ---------- QUESTION (Q1, Q2...) ---------- */
+        /* ---------- QUESTION NUMBER (FIXED) ---------- */
         #questionHost {
             background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
@@ -220,9 +214,32 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            transition: 0.3s;
+        }
+        #questionHost.loading {
+            color: rgba(255, 215, 0, 0.4);
+            animation: pulseLoading 1.2s ease-in-out infinite;
+        }
+        @keyframes pulseLoading {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        #questionHost .poll-status {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.3);
+            display: block;
+            margin-top: 4px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* ---------- GRID - GIANT BARS WITH A/B/C/D LABELS ---------- */
+        /* ---------- GRID WITH A/B/C/D LABELS ---------- */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -242,8 +259,6 @@
             flex-direction: column;
             justify-content: center;
         }
-
-        /* A/B/C/D Labels - Clearly visible above bars */
         .option-label {
             font-weight: 800;
             color: #ffd700;
@@ -254,7 +269,6 @@
             letter-spacing: 1px;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
         }
-
         .bar-bg {
             width: 100%;
             height: 100%;
@@ -326,7 +340,7 @@
             }
         }
 
-        /* ---------- STATS (SMALLER BOXES) ---------- */
+        /* ---------- STATS (SMALLER) ---------- */
         .host-stats {
             display: flex;
             justify-content: space-between;
@@ -374,9 +388,6 @@
             }
         }
 
-        /* ================================================================
-           LAPTOP / PROJECTOR OPTIMIZATION (1024px+)
-           ================================================================ */
         @media (min-width: 1024px) {
             .main-card {
                 max-height: 1000px;
@@ -389,13 +400,6 @@
             .event-heading .sub-line {
                 font-size: 1rem;
                 letter-spacing: 8px;
-            }
-            .host-header h2 {
-                font-size: 1.3rem;
-            }
-            .live-badge {
-                font-size: 1rem;
-                padding: 6px 28px;
             }
             #questionHost {
                 font-size: 3.4rem;
@@ -414,14 +418,10 @@
                 font-size: 1.8rem;
                 margin-bottom: 6px;
             }
-            .bar-bg {
-                min-height: 44px;
-            }
             .bar-fill {
                 font-size: 1.6rem;
                 padding-right: 26px;
             }
-            /* Smaller Stats on Laptop */
             .host-stats {
                 font-size: 0.9rem;
                 padding: 6px 8px;
@@ -440,9 +440,6 @@
             }
         }
 
-        /* ================================================================
-           MOBILE ADJUSTMENTS
-           ================================================================ */
         @media (max-width: 600px) {
             .main-card {
                 padding: 12px;
@@ -463,17 +460,6 @@
                 border-top: none;
                 padding-top: 0;
             }
-            .host-header h2 {
-                font-size: 1rem;
-            }
-            .live-badge {
-                font-size: 0.7rem;
-                padding: 3px 12px;
-            }
-            .live-badge::before {
-                width: 8px;
-                height: 8px;
-            }
             #questionHost {
                 font-size: 1.8rem;
                 padding: 6px 14px;
@@ -491,9 +477,6 @@
             .option-label {
                 font-size: 1.2rem;
                 margin-bottom: 2px;
-            }
-            .bar-bg {
-                min-height: 24px;
             }
             .bar-fill {
                 font-size: 0.9rem;
@@ -533,26 +516,24 @@
 <body>
 
     <div class="main-card">
-        <!-- ============================================================
-        EVENT HEADING
-        ============================================================ -->
         <div class="event-heading">
             <h1>NOORUSSALAM MADRASA.<br /><span style="font-size:0.7em;">QUIZ GRAND FINALE</span></h1>
             <span class="sub-line">🏆 The Ultimate Showdown 🏆</span>
         </div>
 
-        <!-- HEADER -->
         <div class="host-header">
             <h2>🎯 Host Dashboard</h2>
             <div class="live-badge"> LIVE </div>
         </div>
 
-        <!-- QUESTION -->
-        <div id="questionHost">Q1</div>
-
         <!-- ============================================================
-        GRID WITH A/B/C/D LABELS + BARS
+        QUESTION NUMBER (FIXED LOADING)
         ============================================================ -->
+        <div id="questionHost">
+            <span id="qNumberDisplay">Q1</span>
+            <span class="poll-status" id="pollStatus"></span>
+        </div>
+
         <div class="options-grid-host" id="optionsContainerHost">
             <div class="option-item">
                 <span class="option-label">A.</span>
@@ -572,12 +553,8 @@
             </div>
         </div>
 
-        <!-- STATUS -->
         <div id="hostStatus">⏳ Waiting for audience votes...</div>
 
-        <!-- ============================================================
-        STATS (SMALLER BOXES)
-        ============================================================ -->
         <div class="host-stats">
             <span>📊 Total Votes: <span class="num" id="totalVotes">0</span></span>
             <span>👥 Voters: <span class="num" id="onlineCount">0</span></span>
@@ -602,9 +579,12 @@
 
         let currentPollId = "poll_1";
         let unsubscribeVotes = null;
+        let unsubscribePoll = null;
         let prevTotal = 0;
 
         // DOM refs
+        const qNumberDisplay = document.getElementById('qNumberDisplay');
+        const pollStatus = document.getElementById('pollStatus');
         const questionHost = document.getElementById('questionHost');
         const bars = [
             document.getElementById('bar0'),
@@ -619,10 +599,13 @@
         // ---------- AUTH ----------
         firebase.auth().signInAnonymously()
             .then(() => {
-                console.log("Authenticated");
+                console.log("✅ Authenticated");
                 loadPoll();
             })
-            .catch(err => console.error("Auth error:", err));
+            .catch(err => {
+                console.error("Auth error:", err);
+                hostStatus.innerText = '⚠️ Auth failed! Please refresh.';
+            });
 
         // ---------- HELPERS ----------
         function getQuestionNumber(pollId) {
@@ -630,31 +613,63 @@
             return num || '?';
         }
 
-        function updateQuestionUI(pollId) {
-            questionHost.innerText = "Q" + getQuestionNumber(pollId);
+        function updateQuestionDisplay(pollId, isLoading = false, docExists = true) {
+            const qNum = getQuestionNumber(pollId);
+            qNumberDisplay.innerText = "Q" + qNum;
+
+            if (isLoading) {
+                questionHost.classList.add('loading');
+                pollStatus.innerText = '⏳ Loading...';
+            } else if (!docExists) {
+                questionHost.classList.remove('loading');
+                pollStatus.innerText = '⚠️ Poll not found. Create via Admin.';
+                pollStatus.style.color = 'rgba(255, 100, 100, 0.6)';
+            } else {
+                questionHost.classList.remove('loading');
+                pollStatus.innerText = '✅ Live';
+                pollStatus.style.color = 'rgba(0, 255, 0, 0.4)';
+            }
         }
 
         // ---------- LOAD POLL ----------
         function loadPoll() {
-            updateQuestionUI(currentPollId);
+            // Show loading state immediately
+            updateQuestionDisplay(currentPollId, true);
 
+            // Update global config
             db.collection('config').doc('app').set({
                 currentPollId: currentPollId,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).catch(err => console.error("Error updating global config:", err));
 
+            // Detach old listeners
             if (unsubscribeVotes) { unsubscribeVotes();
                 unsubscribeVotes = null; }
+            if (unsubscribePoll) { unsubscribePoll();
+                unsubscribePoll = null; }
+
             setupHostListener(currentPollId);
         }
 
         // ---------- HOST LISTENER ----------
         function setupHostListener(pollId) {
-            db.collection('polls').doc(pollId).onSnapshot((doc) => {
-                const qNum = getQuestionNumber(pollId);
-                questionHost.innerText = "Q" + qNum;
-            }, (err) => console.error("Host question error:", err));
+            // Listen to the poll document to check if it exists
+            const pollRef = db.collection('polls').doc(pollId);
+            unsubscribePoll = pollRef.onSnapshot((doc) => {
+                const exists = doc.exists;
+                updateQuestionDisplay(pollId, false, exists);
+                if (exists) {
+                    // If poll exists, we also get the options (though we don't display them directly)
+                    // We just need to know the poll exists for the status
+                }
+            }, (err) => {
+                console.error("Poll listener error:", err);
+                updateQuestionDisplay(pollId, false, false);
+                pollStatus.innerText = '⚠️ Error loading poll';
+                pollStatus.style.color = 'rgba(255, 50, 50, 0.6)';
+            });
 
+            // Listen to votes
             const votesRef = db.collection('polls').doc(pollId).collection('votes');
             unsubscribeVotes = votesRef.onSnapshot((snapshot) => {
                 const counts = [0, 0, 0, 0];
@@ -703,7 +718,7 @@
             });
         }
 
-        // Listen to config changes (auto-sync)
+        // ---------- CONFIG LISTENER (Auto-sync) ----------
         db.collection('config').doc('app').onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
@@ -714,9 +729,11 @@
                     loadPoll();
                 }
             }
+        }, (err) => {
+            console.warn("Config listener error:", err);
         });
 
-        console.log("✅ Host Dashboard Ready! (With A/B/C/D Labels & Smaller Stats)");
+        console.log("✅ Host Dashboard Ready! (Fixed Question Loading)");
     </script>
 </body>
 </html>
