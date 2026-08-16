@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KBC Projector - Host Dashboard</title>
+    <title>KBC Projector - Pure Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
     </script>
@@ -13,7 +13,7 @@
     </script>
 
     <style>
-        /* --------------------------- RESET & BASE --------------------------- */
+        /* ---------- RESET ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -31,7 +31,7 @@
             overflow-x: hidden;
         }
 
-        /* --------------------------- MAIN CARD --------------------------- */
+        /* ---------- MAIN CARD ---------- */
         .main-card {
             max-width: 1400px;
             width: 100%;
@@ -45,7 +45,7 @@
             overflow: hidden;
         }
 
-        /* Animated Gold Shimmer Background (Cinematic) */
+        /* Cinematic Shimmer */
         .main-card::before {
             content: '';
             position: absolute;
@@ -86,7 +86,7 @@
             }
         }
 
-        /* --------------------------- APP TITLE (Double-click Entry) --------------------------- */
+        /* ---------- APP TITLE (Double-click entry) ---------- */
         .app-title {
             text-align: center;
             color: #ffd700;
@@ -106,7 +106,7 @@
             letter-spacing: 1px;
         }
 
-        /* --------------------------- MODE SWITCHER (Hidden in Projector logic) --------------------------- */
+        /* ---------- MODE SWITCHER ---------- */
         .mode-switcher {
             display: flex;
             gap: 20px;
@@ -135,59 +135,8 @@
             transform: scale(1.05);
         }
 
-        /* --------------------------- POLL ID (Visible ONLY in Host) --------------------------- */
-        .poll-id-area {
-            display: none;
-            gap: 15px;
-            margin-bottom: 25px;
-            background: #111125;
-            padding: 15px 25px;
-            border-radius: 80px;
-            align-items: center;
-            flex-wrap: wrap;
-            border: 1px solid #333;
-        }
-        .poll-id-area.visible {
-            display: flex;
-        }
-        .poll-id-area label {
-            color: #ffd700;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        .poll-id-area input {
-            flex: 1;
-            padding: 14px 20px;
-            border-radius: 50px;
-            border: none;
-            background: #1e1e3a;
-            color: white;
-            font-size: 1.2rem;
-            min-width: 150px;
-            outline: 1px solid #444;
-            transition: 0.3s;
-        }
-        .poll-id-area input:focus {
-            outline: 2px solid #ffd700;
-        }
-        .poll-id-area button {
-            background: #ffd700;
-            color: #000;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .poll-id-area button:hover {
-            background: #ffe066;
-            transform: scale(1.03);
-        }
-
         /* ================================================================
-                   HOST VIEW - PROJECTOR DASHBOARD (READ-ONLY, MAX EFFECTS)
+                   HOST VIEW - PURE PROJECTOR DASHBOARD (NO CLUTTER)
                    ================================================================ */
         #hostView {
             display: none;
@@ -207,29 +156,7 @@
             }
         }
 
-        /* ----- Back Button (Small & Subtle for Admin) ----- */
-        .admin-controls-top {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 15px;
-        }
-        .btn-back {
-            background: #333;
-            color: #ccc;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 60px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.3s;
-        }
-        .btn-back:hover {
-            background: #555;
-            color: #fff;
-        }
-
-        /* ----- Host Header (Dashboard Title + LIVE Badge) ----- */
+        /* Host Header (Title + LIVE Badge) */
         .host-header {
             display: flex;
             justify-content: space-between;
@@ -290,7 +217,7 @@
             }
         }
 
-        /* ----- Question - 3D Flip + Giant (READ ONLY) ----- */
+        /* Question - 3D Flip + Giant */
         #questionHost {
             background: linear-gradient(145deg, #0a0a1e, #16163a);
             padding: 40px 25px;
@@ -329,7 +256,7 @@
             letter-spacing: 4px;
         }
 
-        /* ----- Options Display (ONLY BARS - No clickable buttons) ----- */
+        /* Options (PURE DISPLAY - NO BUTTONS) */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -353,7 +280,7 @@
             font-size: 1.8rem;
         }
 
-        /* ----- GIANT BARS (For Projector Visibility) ----- */
+        /* Giant Bars */
         .bar-bg {
             width: 100%;
             height: 50px;
@@ -377,12 +304,11 @@
             font-weight: 900;
             font-size: 1.5rem;
             transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-            /* Spring bounce */
             box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
             position: relative;
             overflow: hidden;
         }
-        /* Shimmer running through bar */
+        /* Shimmer */
         .bar-fill::after {
             content: '';
             position: absolute;
@@ -402,7 +328,7 @@
             }
         }
 
-        /* ----- Status (Flash on new vote) ----- */
+        /* Status */
         #hostStatus {
             color: #aaa;
             text-align: center;
@@ -430,7 +356,7 @@
             }
         }
 
-        /* ----- Stats (ENORMOUS Numbers) ----- */
+        /* Stats */
         .host-stats {
             display: flex;
             justify-content: space-between;
@@ -476,56 +402,139 @@
             }
         }
 
-        /* ----- ADMIN CONTROLS (Buttons at bottom, not distracting) ----- */
-        .admin-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        .btn-next {
-            background: linear-gradient(145deg, #ffd700, #f0a500);
-            color: #000;
-            border: none;
-            padding: 16px 30px;
-            border-radius: 60px;
-            font-size: 1.4rem;
-            font-weight: 900;
+        /* ---------- ADMIN TOGGLE (FLOATING GEAR - HIDDEN BY DEFAULT) ---------- */
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(255, 215, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.8rem;
             cursor: pointer;
-            flex: 1;
             transition: 0.3s;
-            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.2);
-            letter-spacing: 1px;
-            min-width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
-        .btn-next:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 50px rgba(255, 215, 0, 0.4);
+        .admin-toggle:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.1) rotate(90deg);
+        }
+        /* Only show toggle button when in Host Mode */
+        body.host-active .admin-toggle {
+            display: flex;
+        }
+        body:not(.host-active) .admin-toggle {
+            display: none;
         }
 
-        .btn-clear {
-            background: #cc0000;
-            color: #fff;
+        /* ---------- ADMIN PANEL (HIDDEN BY DEFAULT) ---------- */
+        .admin-panel {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9998;
+            background: rgba(15, 15, 32, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid #ffd700;
+            border-radius: 20px;
+            padding: 25px 30px;
+            min-width: 300px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .admin-panel.open {
+            display: flex;
+        }
+        .admin-panel label {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        .admin-panel input {
+            padding: 10px 15px;
+            border-radius: 40px;
+            border: 1px solid #444;
+            background: #1e1e3a;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            width: 100%;
+        }
+        .admin-panel input:focus {
+            border-color: #ffd700;
+        }
+        .admin-panel .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .admin-panel .btn-group button {
+            flex: 1;
+            padding: 10px 15px;
             border: none;
-            padding: 16px 30px;
-            border-radius: 60px;
+            border-radius: 40px;
             font-weight: bold;
             cursor: pointer;
-            flex: 1;
-            font-size: 1.3rem;
             transition: 0.3s;
-            box-shadow: 0 8px 30px rgba(255, 0, 0, 0.2);
-            letter-spacing: 1px;
-            min-width: 200px;
+            font-size: 0.9rem;
+            min-width: 80px;
         }
-        .btn-clear:hover {
+        .admin-panel .btn-load {
+            background: #ffd700;
+            color: #000;
+        }
+        .admin-panel .btn-load:hover {
+            background: #ffe066;
+        }
+        .admin-panel .btn-next {
+            background: #ffd700;
+            color: #000;
+        }
+        .admin-panel .btn-next:hover {
+            background: #ffe066;
+        }
+        .admin-panel .btn-reset {
+            background: #cc0000;
+            color: #fff;
+        }
+        .admin-panel .btn-reset:hover {
             background: #ff2222;
-            transform: scale(1.02);
-            box-shadow: 0 8px 50px rgba(255, 0, 0, 0.4);
+        }
+        .admin-panel .btn-back {
+            background: #444;
+            color: #ccc;
+        }
+        .admin-panel .btn-back:hover {
+            background: #666;
+            color: #fff;
+        }
+        .admin-panel .close-panel {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .admin-panel .close-panel:hover {
+            color: #fff;
         }
 
         /* ================================================================
-                   AUDIENCE VIEW (Mobile-First - Unchanged)
+                   AUDIENCE VIEW (Mobile-First)
                    ================================================================ */
         #audienceView {
             display: block;
@@ -621,7 +630,7 @@
         }
 
         /* ================================================================
-                   PROJECTOR OVERRIDE (1200px+) - MAXIMUM SIZES
+                   PROJECTOR SIZE OVERRIDE (1200px+)
                    ================================================================ */
         @media (min-width: 1200px) {
 
@@ -637,7 +646,6 @@
                 border-width: 4px;
             }
 
-            /* App Title */
             .app-title {
                 font-size: 2.8rem;
             }
@@ -646,7 +654,6 @@
                 color: #666;
             }
 
-            /* Host Header */
             .host-header h2 {
                 font-size: 3.2rem;
             }
@@ -661,7 +668,6 @@
                 height: 24px;
             }
 
-            /* Question (Gigantic) */
             #questionHost {
                 font-size: 6rem;
                 padding: 60px 50px;
@@ -678,7 +684,6 @@
                 opacity: 0.6;
             }
 
-            /* Options (Huge Text & Bars) */
             .options-grid-host {
                 gap: 40px;
             }
@@ -693,7 +698,6 @@
                 margin-right: 25px;
             }
 
-            /* Bars (Gigantic & Shiny) */
             .bar-bg {
                 height: 80px;
                 border-radius: 50px;
@@ -706,7 +710,6 @@
                 box-shadow: 0 0 80px rgba(255, 215, 0, 0.4);
             }
 
-            /* Stats (Massive Numbers) */
             .host-stats {
                 font-size: 2.8rem;
                 padding: 30px 25px;
@@ -723,7 +726,6 @@
                 min-width: 100px;
             }
 
-            /* Status */
             #hostStatus {
                 font-size: 2.5rem;
                 padding: 25px;
@@ -731,50 +733,31 @@
                 border-radius: 100px;
             }
 
-            /* Admin Buttons (Big but subtle) */
-            .admin-actions {
-                gap: 25px;
-            }
-            .btn-next {
+            /* Admin Toggle & Panel - Still small but accessible */
+            .admin-toggle {
+                width: 60px;
+                height: 60px;
                 font-size: 2rem;
-                padding: 24px 40px;
-                border-radius: 100px;
-                box-shadow: 0 8px 60px rgba(255, 215, 0, 0.35);
+                top: 30px;
+                right: 30px;
             }
-            .btn-clear {
-                font-size: 1.8rem;
-                padding: 24px 40px;
-                border-radius: 100px;
+            .admin-panel {
+                top: 100px;
+                right: 30px;
+                padding: 30px 35px;
+                min-width: 350px;
             }
-
-            /* Poll ID Area */
-            .poll-id-area {
-                padding: 25px 35px;
-                border-radius: 100px;
-            }
-            .poll-id-area input {
-                font-size: 1.8rem;
-                padding: 20px 30px;
-            }
-            .poll-id-area button {
-                font-size: 1.8rem;
-                padding: 20px 50px;
-            }
-
-            /* Admin Back Button */
-            .btn-back {
+            .admin-panel input {
                 font-size: 1.2rem;
-                padding: 10px 30px;
+                padding: 12px 20px;
             }
-
-            /* Hide small hint to keep clean */
-            .app-title small {
-                font-size: 0.8rem;
-                color: #555;
+            .admin-panel .btn-group button {
+                font-size: 1.1rem;
+                padding: 12px 20px;
             }
         }
 
-        /* Mobile adjustments (600px and below) */
+        /* Mobile adjustments */
         @media (max-width: 600px) {
             .options-grid-aud {
                 gap: 15px;
@@ -827,27 +810,19 @@
             .host-stats .num {
                 font-size: 1.8rem;
             }
-            .btn-next {
-                font-size: 1.2rem;
-                padding: 16px;
+            .admin-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 1.4rem;
+                top: 10px;
+                right: 10px;
             }
-            .btn-clear {
-                font-size: 1rem;
-                padding: 14px;
-            }
-            .live-badge {
-                font-size: 0.8rem;
-                padding: 6px 16px;
-            }
-            .app-title {
-                font-size: 1.6rem;
-            }
-            .host-header h2 {
-                font-size: 1.3rem;
-            }
-            .admin-actions {
-                flex-direction: column;
-                gap: 10px;
+            .admin-panel {
+                top: 60px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+                padding: 20px;
             }
         }
     </style>
@@ -866,34 +841,20 @@
             <button class="mode-btn active" id="audienceModeBtn" onclick="switchMode('audience')">📱 Audience View</button>
         </div>
 
-        <!-- Poll ID Selector (Hidden for Audience, Visible only in Host) -->
-        <div class="poll-id-area" id="pollIdArea">
-            <label for="pollIdInput">📌 Poll ID:</label>
-            <input type="text" id="pollIdInput" value="poll_1" placeholder="e.g. poll_2">
-            <button onclick="loadPoll()">Load</button>
-        </div>
-
         <!-- ================================================================
-        HOST VIEW - THE PROJECTOR DASHBOARD (READ-ONLY)
+        HOST VIEW - PURE DASHBOARD (NO ADMIN CLUTTER)
         ================================================================ -->
         <div id="hostView">
-            <!-- Top Admin Control (Back button) -->
-            <div class="admin-controls-top">
-                <button class="btn-back" onclick="switchMode('audience')">⬅️ Back to Audience</button>
-            </div>
-
             <div class="host-header">
                 <h2>🎯 Host Dashboard</h2>
                 <div class="live-badge"> LIVE </div>
             </div>
 
-            <!-- Giant Question Display -->
             <div id="questionHost">
                 Question 1
                 <span class="q-sub">⚡ Audience Opinion</span>
             </div>
 
-            <!-- Options with Giant Bars (NO CLICKABLE BUTTONS - Pure Display) -->
             <div class="options-grid-host" id="optionsContainerHost">
                 <div class="option-item">
                     <span class="option-label">A.</span> <span class="opt-text-h">---</span>
@@ -913,19 +874,11 @@
                 </div>
             </div>
 
-            <!-- Live Status -->
             <div id="hostStatus">⏳ Waiting for audience votes...</div>
 
-            <!-- Stats -->
             <div class="host-stats">
                 <span>📊 Total Votes: <span class="num" id="totalVotes">0</span></span>
                 <span>👥 Voters: <span class="num" id="onlineCount">0</span></span>
-            </div>
-
-            <!-- Admin Action Buttons (For Host to control the show) -->
-            <div class="admin-actions">
-                <button class="btn-next" onclick="createNextPoll()">➕ Next Question</button>
-                <button class="btn-clear" onclick="clearAllVotes()">🗑️ Reset Votes</button>
             </div>
         </div>
 
@@ -945,6 +898,23 @@
             </div>
             <div id="audStatus">✅ Connected. Select an option!</div>
             <div class="aud-footer">⚠️ Once voted, you cannot change your response</div>
+        </div>
+    </div>
+
+    <!-- ================================================================
+    FLOATING ADMIN PANEL (Hidden by default, toggle via Gear icon)
+    ================================================================ -->
+    <button class="admin-toggle" id="adminToggle" title="Toggle Admin Controls">⚙️</button>
+
+    <div class="admin-panel" id="adminPanel">
+        <button class="close-panel" id="closeAdminPanel">✕</button>
+        <label for="pollIdInputAdmin">📌 Poll ID</label>
+        <input type="text" id="pollIdInputAdmin" value="poll_1" placeholder="e.g. poll_2">
+        <div class="btn-group">
+            <button class="btn-load" onclick="loadPollAdmin()">Load</button>
+            <button class="btn-next" onclick="createNextPollAdmin()">Next</button>
+            <button class="btn-reset" onclick="clearAllVotesAdmin()">Reset</button>
+            <button class="btn-back" onclick="switchMode('audience')">Audience</button>
         </div>
     </div>
 
@@ -979,8 +949,7 @@
         let prevTotal = 0;
 
         // DOM refs
-        const pollInput = document.getElementById('pollIdInput');
-        const pollIdArea = document.getElementById('pollIdArea');
+        const pollInput = document.getElementById('pollIdInputAdmin');
 
         // Host refs
         const questionHost = document.getElementById('questionHost');
@@ -999,6 +968,27 @@
         const audBtns = document.querySelectorAll('.opt-btn');
         const audStatus = document.getElementById('audStatus');
         const audienceBtn = document.getElementById('audienceModeBtn');
+
+        // Admin Panel refs
+        const adminToggle = document.getElementById('adminToggle');
+        const adminPanel = document.getElementById('adminPanel');
+        const closeAdmin = document.getElementById('closeAdminPanel');
+
+        // ------------------ ADMIN PANEL TOGGLE ------------------
+        adminToggle.addEventListener('click', () => {
+            adminPanel.classList.toggle('open');
+        });
+        closeAdmin.addEventListener('click', () => {
+            adminPanel.classList.remove('open');
+        });
+        // Click outside to close
+        document.addEventListener('click', (e) => {
+            if (adminPanel.classList.contains('open') &&
+                !adminPanel.contains(e.target) &&
+                e.target !== adminToggle) {
+                adminPanel.classList.remove('open');
+            }
+        });
 
         // ------------------ AUTHENTICATION ------------------
         firebase.auth().signInAnonymously()
@@ -1020,9 +1010,10 @@
             document.getElementById('hostView').classList.toggle('active-view', mode === 'host');
             document.getElementById('audienceView').classList.toggle('active-view', mode === 'audience');
             audienceBtn.classList.toggle('active', mode === 'audience');
-
-            pollIdArea.classList.toggle('visible', mode === 'host');
             document.body.classList.toggle('host-active', mode === 'host');
+
+            // Close admin panel when switching away from host
+            if (mode !== 'host') adminPanel.classList.remove('open');
 
             detachListeners();
             if (userId) loadPoll();
@@ -1087,7 +1078,7 @@
                 unsubscribeMyVote = null; }
         }
 
-        // ------------------ HELPER: Get Question Number ------------------
+        // ------------------ HELPER ------------------
         function getQuestionNumber(pollId) {
             const num = pollId.replace('poll_', '');
             return num || '?';
@@ -1124,9 +1115,22 @@
             }
         };
 
+        // Admin wrappers for panel buttons
+        window.loadPollAdmin = function() {
+            loadPoll();
+            adminPanel.classList.remove('open');
+        };
+        window.createNextPollAdmin = function() {
+            createNextPoll();
+            adminPanel.classList.remove('open');
+        };
+        window.clearAllVotesAdmin = function() {
+            clearAllVotes();
+            adminPanel.classList.remove('open');
+        };
+
         // ------------------ HOST LOGIC (Pure Dashboard) ------------------
         function setupHostListener(pollId) {
-            // Listen to question
             db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
                 questionHost.innerHTML = "Question " + qNum + '<span class="q-sub">⚡ Audience Opinion</span>';
@@ -1140,7 +1144,6 @@
                 }
             }, (err) => console.error("Host question error:", err));
 
-            // Listen to votes (Live Bars)
             const votesRef = db.collection('polls').doc(pollId).collection('votes');
             unsubscribeVotes = votesRef.onSnapshot((snapshot) => {
                 const counts = [0, 0, 0, 0];
@@ -1165,13 +1168,11 @@
                         100) + '%)' : '0%';
                 });
 
-                // Animate Total Votes
                 if (total !== prevTotal) {
                     totalSpan.innerText = total;
                     totalSpan.classList.remove('pop');
                     void totalSpan.offsetWidth;
                     totalSpan.classList.add('pop');
-
                     hostStatus.classList.remove('flash-green');
                     void hostStatus.offsetWidth;
                     hostStatus.classList.add('flash-green');
@@ -1247,7 +1248,7 @@
             });
         };
 
-        // ------------------ AUDIENCE LOGIC (With Voting) ------------------
+        // ------------------ AUDIENCE LOGIC ------------------
         function setupAudienceListener(pollId) {
             unsubscribeQuestion = db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
@@ -1279,7 +1280,6 @@
                     audStatus.innerText = '✅ You have already voted!';
                     audStatus.style.color = '#0f0';
                 } else {
-                    // Reset state for new question
                     hasVoted = false;
                     audBtns.forEach(btn => {
                         btn.classList.remove('disabled', 'selected');
@@ -1339,7 +1339,7 @@
             }
         });
 
-        console.log("✅ KBC Projector Dashboard Ready! (Read-Only Host View)");
+        console.log("✅ KBC Pure Projector Dashboard Ready! (Admin hidden behind ⚙️ gear)");
     </script>
 
 </body>
