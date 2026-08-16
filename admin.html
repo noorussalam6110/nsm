@@ -110,7 +110,6 @@
             width: 100%;
             background: rgba(18, 18, 40, 0.75);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border-radius: 32px;
             padding: 28px 24px;
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 215, 0, 0.08);
@@ -277,6 +276,33 @@
             transform: scale(1.02);
         }
 
+        /* NEW: Reset ALL Polls Button */
+        .btn-reset-all {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 60px;
+            background: #990033;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(153, 0, 51, 0.3);
+        }
+        .btn-reset-all:hover {
+            background: #cc0044;
+            transform: scale(1.02);
+            box-shadow: 0 4px 30px rgba(153, 0, 51, 0.5);
+        }
+        .btn-reset-all:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         #adminStatus {
             text-align: center;
             color: rgba(255, 255, 255, 0.4);
@@ -331,9 +357,7 @@
 </head>
 <body>
 
-    <!-- ============================================================
-    LOGIN OVERLAY
-    ============================================================ -->
+    <!-- LOGIN OVERLAY -->
     <div id="loginOverlay">
         <div class="login-box">
             <h1>🔐 Admin Login</h1>
@@ -344,32 +368,30 @@
         </div>
     </div>
 
-    <!-- ============================================================
-    ADMIN CONTROLLER
-    ============================================================ -->
+    <!-- ADMIN CONTROLLER -->
     <div class="main-card" id="adminCard">
         <div class="admin-header">
             <h1>🎯 Admin Control</h1>
             <span class="status-dot"></span>
         </div>
 
-        <!-- Current Poll ID -->
         <div class="current-poll">
             <span class="label">📌 Current Poll</span>
             <span class="value" id="currentPollDisplay">poll_1</span>
         </div>
 
-        <!-- Load / Change Poll -->
         <div class="input-group">
             <input type="text" id="pollIdInput" placeholder="Enter Poll ID (e.g., poll_2)" />
             <button onclick="loadPoll()">Load</button>
         </div>
 
-        <!-- Actions -->
         <div class="action-buttons">
             <button class="btn-next" onclick="createNextPoll()">➕ Next</button>
-            <button class="btn-reset" onclick="clearAllVotes()">🗑️ Reset</button>
+            <button class="btn-reset" onclick="clearAllVotes()">🗑️ Reset This Poll</button>
         </div>
+
+        <!-- NEW DANGER BUTTON -->
+        <button class="btn-reset-all" onclick="resetAllPolls()">🗑️ Reset ALL Polls (Clear All Votes)</button>
 
         <div id="adminStatus">✅ Ready. Syncs with Host & Audience.</div>
         <div class="footer-note">🔒 Changes update instantly across all devices</div>
@@ -387,7 +409,6 @@
             measurementId: "G-SF8VYBDT4F"
         };
 
-        // 🔑 PASSWORD
         const ADMIN_PASSWORD = "admin123";
 
         firebase.initializeApp(firebaseConfig);
@@ -397,7 +418,6 @@
         let currentPollId = "poll_1";
         let isAuthenticated = false;
 
-        // DOM refs
         const loginOverlay = document.getElementById('loginOverlay');
         const passwordInput = document.getElementById('passwordInput');
         const loginError = document.getElementById('loginError');
@@ -438,7 +458,7 @@
                 });
         }
 
-        // ---------- LISTEN TO CONFIG (Auto-update) ----------
+        // ---------- LISTEN TO CONFIG ----------
         function listenToConfig() {
             const configRef = db.collection('config').doc('app');
             configRef.onSnapshot((doc) => {
@@ -531,7 +551,7 @@
             }).catch(err => setStatus("❌ Error: " + err.message, "error"));
         };
 
-        // ---------- CLEAR ALL VOTES ----------
+        // ---------- CLEAR ALL VOTES (For Current Poll Only) ----------
         window.clearAllVotes = function() {
             if (!confirm("⚠️ Are you sure you want to DELETE ALL VOTES for the current question?")) return;
 
@@ -552,19 +572,112 @@
             });
         };
 
+        // ---------- 🆕 RESET ALL POLLS (Clear All Votes from Every Poll) ----------
+        window.resetAllPolls = function() {
+            // 1. Strong Warning Confirmation
+            if (!confirm("⚠️ DANGER: Are you sure you want to DELETE ALL VOTES from EVERY poll?\n\nThis action is IRREVERSIBLE and cannot be undone!")) {
+                return;
+            }
+            
+            // 2. Second confirmation to be extra safe
+            if (!confirm("⚠️ FINAL WARNING: All vote counts across ALL questions will become ZERO. Proceed?")) {
+                return;
+            }
+
+            const btn = document.querySelector('.btn-reset-all');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = '⏳ Resetting all polls...';
+                btn.style.opacity = '0.6';
+            }
+
+            setStatus("⏳ Fetching all polls to reset votes...", "");
+
+            db.collection('polls').get()
+                .then((pollsSnapshot) => {
+                    if (pollsSnapshot.empty) {
+                        setStatus("ℹ️ No polls found to reset.", "success");
+                        if (btn) { btn.disabled = false; btn.innerText = '🗑️ Reset ALL Polls (Clear All Votes)'; btn.style.opacity = '1'; }
+                        return;
+                    }
+
+                    let totalDeleted = 0;
+                    const batchPromises = [];
+
+                    pollsSnapshot.forEach((pollDoc) => {
+                        const pollId = pollDoc.id;
+                        const votesRef = db.collection('polls').doc(pollId).collection('votes');
+
+                        const promise = votesRef.get().then((votesSnapshot) => {
+                            if (votesSnapshot.empty) return 0;
+
+                            const batch = db.batch();
+                            votesSnapshot.forEach((voteDoc) => {
+                                batch.delete(voteDoc.ref);
+                            });
+                            return batch.commit().then(() => {
+                                return votesSnapshot.size;
+                            });
+                        }).catch((err) => {
+                            console.warn(`Error resetting poll ${pollId}:`, err);
+                            return 0;
+                        });
+
+                        batchPromises.push(promise);
+                    });
+
+                    return Promise.all(batchPromises).then((results) => {
+                        totalDeleted = results.reduce((acc, count) => acc + count, 0);
+                        return totalDeleted;
+                    });
+
+                })
+                .then((totalDeleted) => {
+                    return db.collection('config').doc('app').set({
+                        currentPollId: 'poll_1',
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        return totalDeleted;
+                    });
+                })
+                .then((totalDeleted) => {
+                    setStatus(`✅ Successfully deleted ${totalDeleted} vote(s) from ALL polls. Switched to poll_1.`, "success");
+                    
+                    currentPollId = 'poll_1';
+                    pollInput.value = 'poll_1';
+                    currentPollDisplay.innerText = 'poll_1';
+                    
+                    loadPoll();
+
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerText = '🗑️ Reset ALL Polls (Clear All Votes)';
+                        btn.style.opacity = '1';
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error resetting all polls:", error);
+                    setStatus("❌ Error resetting polls: " + error.message, "error");
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerText = '🗑️ Reset ALL Polls (Clear All Votes)';
+                        btn.style.opacity = '1';
+                    }
+                });
+        };
+
         // ---------- AUTO-LOAD ON AUTH ----------
         firebase.auth().onAuthStateChanged(user => {
             if (user && isAuthenticated) {
-                // Already handled in initAdmin
+                // Already handled
             }
         });
 
-        // Auto-focus password input
         window.onload = function() {
             passwordInput.focus();
         };
 
-        console.log("✅ Admin Controller Ready! (No Event Heading - Clean Controller)");
+        console.log("✅ Admin Controller Ready! (With Global Reset Button)");
     </script>
 </body>
 </html>
