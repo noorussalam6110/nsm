@@ -420,7 +420,6 @@
             }
         };
 
-        // Enter key support for login
         passwordInput.addEventListener('keyup', (e) => {
             if (e.key === 'Enter') attemptLogin();
         });
@@ -473,13 +472,11 @@
             pollInput.value = currentPollId;
             currentPollDisplay.innerText = currentPollId;
 
-            // Update global config
             db.collection('config').doc('app').set({
                 currentPollId: currentPollId,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 setStatus(`✅ Loaded ${currentPollId}`, "success");
-                // Verify poll exists, if not, offer to create
                 db.collection('polls').doc(currentPollId).get().then(doc => {
                     if (!doc.exists) {
                         if (confirm(`'${currentPollId}' not found. Create a sample question?`)) {
@@ -567,7 +564,7 @@
             passwordInput.focus();
         };
 
-        console.log("✅ Admin Controller Ready! (Login Required)");
+        console.log("✅ Admin Controller Ready! (No Event Heading - Clean Controller)");
     </script>
 </body>
 </html>
