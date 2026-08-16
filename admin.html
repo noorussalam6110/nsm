@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>KBC - Admin Controller</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Anek Malayalam', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #08080f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ---------- LOGIN OVERLAY ---------- */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: 0.5s;
+        }
+        #loginOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .login-box {
+            background: rgba(18, 18, 40, 0.9);
+            padding: 40px 32px;
+            border-radius: 32px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+        .login-box h1 {
+            color: #ffd700;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .login-box p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1.1rem;
+            outline: none;
+            margin-bottom: 16px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .login-box input:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+        .login-box button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 60px;
+            background: #ffd700;
+            color: #0a0a12;
+            font-weight: 800;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .login-box button:hover {
+            background: #ffe44d;
+            transform: scale(1.02);
+        }
+        .login-error {
+            color: #ff1a4a;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            min-height: 24px;
+        }
+
+        /* ---------- MAIN ADMIN CARD ---------- */
+        .main-card {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(18, 18, 40, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 32px;
+            padding: 28px 24px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.03), transparent, rgba(255, 215, 0, 0.05), transparent);
+            animation: shimmerRotate 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes shimmerRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .main-card>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .admin-header h1 {
+            color: #ffd700;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .admin-header .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #0f0;
+            border-radius: 50%;
+            animation: blinkDot 1.4s infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        @keyframes blinkDot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+        }
+
+        /* Current Poll ID Display */
+        .current-poll {
+            background: rgba(10, 10, 30, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 14px 18px;
+            border-radius: 18px;
+            border-left: 4px solid #ffd700;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .current-poll .label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .current-poll .value {
+            color: #ffd700;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        /* Input & Buttons */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .input-group input:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+        .input-group button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 60px;
+            background: #ffd700;
+            color: #0a0a12;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .input-group button:hover {
+            background: #ffe44d;
+            transform: scale(1.02);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .action-buttons button {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 0.5px;
+        }
+        .btn-next {
+            background: #ffd700;
+            color: #0a0a12;
+        }
+        .btn-next:hover {
+            background: #ffe44d;
+            transform: scale(1.02);
+        }
+        .btn-reset {
+            background: #cc0033;
+            color: #fff;
+        }
+        .btn-reset:hover {
+            background: #ff1a4a;
+            transform: scale(1.02);
+        }
+
+        #adminStatus {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            margin-top: 18px;
+            padding: 8px;
+            border-radius: 60px;
+            background: rgba(255, 255, 255, 0.02);
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #adminStatus.success {
+            color: #0f0;
+            background: rgba(0, 255, 0, 0.06);
+        }
+        #adminStatus.error {
+            color: #ff1a4a;
+            background: rgba(255, 0, 0, 0.06);
+        }
+
+        .footer-note {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 0.6rem;
+            margin-top: 16px;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 400px) {
+            .main-card {
+                padding: 20px 16px;
+            }
+            .input-group {
+                flex-direction: column;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .action-buttons button {
+                min-width: auto;
+            }
+            .current-poll .value {
+                font-size: 1.6rem;
+            }
+            .admin-header h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    LOGIN OVERLAY
+    ============================================================ -->
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h1>🔐 Admin Login</h1>
+            <p>Enter password to access the controller</p>
+            <input type="password" id="passwordInput" placeholder="Enter Password" autofocus />
+            <button onclick="attemptLogin()">Unlock 🔓</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    ADMIN CONTROLLER
+    ============================================================ -->
+    <div class="main-card" id="adminCard">
+        <div class="admin-header">
+            <h1>🎯 Admin Control</h1>
+            <span class="status-dot"></span>
+        </div>
+
+        <!-- Current Poll ID -->
+        <div class="current-poll">
+            <span class="label">📌 Current Poll</span>
+            <span class="value" id="currentPollDisplay">poll_1</span>
+        </div>
+
+        <!-- Load / Change Poll -->
+        <div class="input-group">
+            <input type="text" id="pollIdInput" placeholder="Enter Poll ID (e.g., poll_2)" />
+            <button onclick="loadPoll()">Load</button>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-buttons">
+            <button class="btn-next" onclick="createNextPoll()">➕ Next</button>
+            <button class="btn-reset" onclick="clearAllVotes()">🗑️ Reset</button>
+        </div>
+
+        <div id="adminStatus">✅ Ready. Syncs with Host & Audience.</div>
+        <div class="footer-note">🔒 Changes update instantly across all devices</div>
+    </div>
+
+    <script>
+        // ---------- FIREBASE CONFIG ----------
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdsjnW0VzoT3vDM-wEGMuipRZgVNDOsJA",
+            authDomain: "responds-97113.firebaseapp.com",
+            projectId: "responds-97113",
+            storageBucket: "responds-97113.firebasestorage.app",
+            messagingSenderId: "917085174768",
+            appId: "1:917085174768:web:19a93ba15729e1c3f63b35",
+            measurementId: "G-SF8VYBDT4F"
+        };
+
+        // 🔑 PASSWORD
+        const ADMIN_PASSWORD = "admin123";
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        db.enablePersistence().catch(err => console.warn("Persistence warning:", err));
+
+        let currentPollId = "poll_1";
+        let isAuthenticated = false;
+
+        // DOM refs
+        const loginOverlay = document.getElementById('loginOverlay');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginError = document.getElementById('loginError');
+        const pollInput = document.getElementById('pollIdInput');
+        const currentPollDisplay = document.getElementById('currentPollDisplay');
+        const adminStatus = document.getElementById('adminStatus');
+
+        // ---------- LOGIN ----------
+        window.attemptLogin = function() {
+            const pass = passwordInput.value.trim();
+            if (pass === ADMIN_PASSWORD) {
+                isAuthenticated = true;
+                loginOverlay.classList.add('hidden');
+                loginError.innerText = '';
+                initAdmin();
+            } else {
+                loginError.innerText = '❌ Incorrect password!';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        };
+
+        // Enter key support for login
+        passwordInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') attemptLogin();
+        });
+
+        // ---------- FIREBASE AUTH ----------
+        function initAdmin() {
+            firebase.auth().signInAnonymously()
+                .then(() => {
+                    console.log("✅ Admin authenticated with Firebase");
+                    listenToConfig();
+                    loadPoll();
+                })
+                .catch((err) => {
+                    console.error("Auth error:", err);
+                    setStatus("⚠️ Firebase connection error!", "error");
+                });
+        }
+
+        // ---------- LISTEN TO CONFIG (Auto-update) ----------
+        function listenToConfig() {
+            const configRef = db.collection('config').doc('app');
+            configRef.onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    const globalPollId = data.currentPollId;
+                    if (globalPollId && globalPollId !== currentPollId) {
+                        console.log("🔄 Config updated to:", globalPollId);
+                        currentPollId = globalPollId;
+                        pollInput.value = currentPollId;
+                        currentPollDisplay.innerText = currentPollId;
+                        setStatus(`📌 Switched to ${currentPollId}`, "success");
+                    }
+                }
+            }, (err) => {
+                console.warn("Config listener error:", err);
+            });
+        }
+
+        // ---------- SET STATUS ----------
+        function setStatus(msg, type = '') {
+            adminStatus.innerText = msg;
+            adminStatus.className = type;
+        }
+
+        // ---------- LOAD POLL ----------
+        window.loadPoll = function() {
+            let newId = pollInput.value.trim();
+            if (!newId) newId = 'poll_1';
+            currentPollId = newId;
+            pollInput.value = currentPollId;
+            currentPollDisplay.innerText = currentPollId;
+
+            // Update global config
+            db.collection('config').doc('app').set({
+                currentPollId: currentPollId,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                setStatus(`✅ Loaded ${currentPollId}`, "success");
+                // Verify poll exists, if not, offer to create
+                db.collection('polls').doc(currentPollId).get().then(doc => {
+                    if (!doc.exists) {
+                        if (confirm(`'${currentPollId}' not found. Create a sample question?`)) {
+                            createSamplePoll(currentPollId);
+                        }
+                    }
+                });
+            }).catch(err => {
+                setStatus("❌ Error updating: " + err.message, "error");
+                console.error(err);
+            });
+        };
+
+        // ---------- CREATE SAMPLE POLL ----------
+        function createSamplePoll(pollId) {
+            const sampleData = {
+                question: "Sample Question",
+                options: ["Option A", "Option B", "Option C", "Option D"],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            db.collection('polls').doc(pollId).set(sampleData).then(() => {
+                setStatus(`✅ Sample question created for ${pollId}`, "success");
+            }).catch(err => {
+                setStatus("❌ Error creating sample: " + err.message, "error");
+            });
+        }
+
+        // ---------- CREATE NEXT POLL ----------
+        window.createNextPoll = function() {
+            const newId = prompt("Enter Poll ID for the next question (e.g., poll_2):", "poll_2");
+            if (!newId) return;
+            const trimmedId = newId.trim();
+
+            db.collection('polls').doc(trimmedId).get().then(doc => {
+                if (doc.exists) {
+                    pollInput.value = trimmedId;
+                    loadPoll();
+                } else {
+                    if (confirm(`'${trimmedId}' not found. Create a sample question?`)) {
+                        const sampleData = {
+                            question: "Sample Question",
+                            options: ["Option A", "Option B", "Option C", "Option D"],
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        db.collection('polls').doc(trimmedId).set(sampleData).then(() => {
+                            setStatus(`✅ Created & loaded ${trimmedId}`, "success");
+                            pollInput.value = trimmedId;
+                            loadPoll();
+                        }).catch(err => setStatus("❌ Error: " + err.message, "error"));
+                    }
+                }
+            }).catch(err => setStatus("❌ Error: " + err.message, "error"));
+        };
+
+        // ---------- CLEAR ALL VOTES ----------
+        window.clearAllVotes = function() {
+            if (!confirm("⚠️ Are you sure you want to DELETE ALL VOTES for the current question?")) return;
+
+            const votesRef = db.collection('polls').doc(currentPollId).collection('votes');
+            votesRef.get().then((snapshot) => {
+                if (snapshot.empty) {
+                    setStatus("ℹ️ No votes to clear.", "success");
+                    return;
+                }
+                const batch = db.batch();
+                snapshot.forEach((doc) => batch.delete(doc.ref));
+                return batch.commit();
+            }).then(() => {
+                setStatus("🗑️ All votes cleared! Audience can vote again.", "success");
+            }).catch((err) => {
+                setStatus("❌ Error clearing votes: " + err.message, "error");
+                console.error(err);
+            });
+        };
+
+        // ---------- AUTO-LOAD ON AUTH ----------
+        firebase.auth().onAuthStateChanged(user => {
+            if (user && isAuthenticated) {
+                // Already handled in initAdmin
+            }
+        });
+
+        // Auto-focus password input
+        window.onload = function() {
+            passwordInput.focus();
+        };
+
+        console.log("✅ Admin Controller Ready! (Login Required)");
+    </script>
+</body>
+</html>
