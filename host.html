@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>KBC - Host Dashboard</title>
+    <title>Host Dashboard - Quiz Grand Finale</title>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet" />
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -64,6 +64,7 @@
             }
         }
 
+        /* Animated orbs */
         .main-card::before,
         .main-card::after {
             content: '';
@@ -102,43 +103,76 @@
             z-index: 1;
         }
 
-        /* HEADER */
+        /* ---------- EVENT HEADING ---------- */
+        .event-heading {
+            text-align: center;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .event-heading h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.5);
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #ffd700, #ffaa00, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 10px rgba(255, 215, 0, 0.2));
+            line-height: 1.2;
+        }
+        .event-heading .sub-line {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: rgba(255, 215, 0, 0.5);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            -webkit-text-fill-color: rgba(255, 215, 0, 0.5);
+        }
+
+        /* ---------- HEADER ---------- */
         .host-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             flex-shrink: 0;
-            padding: 0 4px;
+            padding: 6px 4px 0 4px;
+            border-top: 1px solid rgba(255, 215, 0, 0.08);
+            padding-top: 8px;
         }
         .host-header h2 {
-            color: rgba(255, 215, 0, 0.9);
-            font-size: 2rem;
-            font-weight: 800;
+            color: rgba(255, 215, 0, 0.7);
+            font-size: 1.2rem;
+            font-weight: 600;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
             letter-spacing: 2px;
+            -webkit-text-fill-color: rgba(255, 215, 0, 0.7);
         }
         .live-badge {
             background: #ff1a4a;
             color: #fff;
-            padding: 8px 30px;
+            padding: 4px 20px;
             border-radius: 60px;
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             font-weight: 800;
             letter-spacing: 2px;
             animation: blinkLive 1.4s infinite;
-            box-shadow: 0 0 40px rgba(255, 26, 74, 0.4);
+            box-shadow: 0 0 30px rgba(255, 26, 74, 0.4);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .live-badge::before {
             content: '';
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             background: #fff;
             border-radius: 50%;
             animation: blinkDot 1.4s infinite;
@@ -166,19 +200,19 @@
             }
         }
 
-        /* QUESTION */
+        /* ---------- QUESTION (Q1, Q2...) ---------- */
         #questionHost {
             background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
-            padding: 10px 28px;
+            padding: 8px 28px;
             border-radius: 18px;
             color: #ffd700;
             font-size: 3rem;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             border-left: 8px solid #ffd700;
-            min-height: 60px;
+            min-height: 56px;
             letter-spacing: 2px;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
@@ -188,19 +222,19 @@
             flex-shrink: 0;
         }
 
-        /* GRID - GIANT BARS */
+        /* ---------- GRID - GIANT BARS WITH A/B/C/D LABELS ---------- */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 18px;
             flex: 1;
             min-height: 0;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .option-item {
             background: rgba(20, 20, 48, 0.5);
             backdrop-filter: blur(4px);
-            padding: 16px 22px;
+            padding: 12px 18px;
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -209,10 +243,22 @@
             justify-content: center;
         }
 
+        /* A/B/C/D Labels - Clearly visible above bars */
+        .option-label {
+            font-weight: 800;
+            color: #ffd700;
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 4px;
+            flex-shrink: 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
         .bar-bg {
             width: 100%;
             height: 100%;
-            min-height: 40px;
+            min-height: 36px;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 40px;
             overflow: hidden;
@@ -231,10 +277,10 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 24px;
+            padding-right: 20px;
             color: #0a0a12;
             font-weight: 900;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
             position: relative;
@@ -249,20 +295,20 @@
             }
         }
 
-        /* STATUS */
+        /* ---------- STATUS ---------- */
         #hostStatus {
             color: rgba(255, 255, 255, 0.5);
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 600;
             transition: 0.3s;
-            padding: 6px 14px;
+            padding: 4px 12px;
             border-radius: 60px;
             letter-spacing: 0.5px;
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(4px);
             flex-shrink: 0;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         #hostStatus.flash-green {
             color: #0f0;
@@ -280,34 +326,34 @@
             }
         }
 
-        /* STATS */
+        /* ---------- STATS (SMALLER BOXES) ---------- */
         .host-stats {
             display: flex;
             justify-content: space-between;
-            color: rgba(255, 255, 255, 0.7);
-            padding: 10px 8px;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 4px 6px;
             border-top: 1px solid rgba(255, 255, 255, 0.04);
             font-weight: 600;
-            font-size: 1.3rem;
+            font-size: 0.85rem;
             flex-shrink: 0;
         }
         .host-stats span {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             background: rgba(0, 0, 0, 0.3);
-            padding: 8px 28px;
+            padding: 4px 14px;
             border-radius: 60px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(4px);
         }
         .host-stats .num {
             color: #ffd700;
-            font-size: 3rem;
+            font-size: 1.6rem;
             font-weight: 900;
             display: inline-block;
             transition: 0.2s;
-            min-width: 50px;
+            min-width: 30px;
             text-align: center;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
         }
@@ -319,7 +365,7 @@
                 transform: scale(1);
             }
             40% {
-                transform: scale(2);
+                transform: scale(1.8);
                 color: #fff;
                 text-shadow: 0 0 60px #ffd700;
             }
@@ -328,85 +374,112 @@
             }
         }
 
+        /* ================================================================
+           LAPTOP / PROJECTOR OPTIMIZATION (1024px+)
+           ================================================================ */
         @media (min-width: 1024px) {
             .main-card {
                 max-height: 1000px;
-                padding: 32px 48px;
+                padding: 28px 44px;
                 border-radius: 56px;
             }
+            .event-heading h1 {
+                font-size: 2.8rem;
+            }
+            .event-heading .sub-line {
+                font-size: 1rem;
+                letter-spacing: 8px;
+            }
             .host-header h2 {
-                font-size: 2.4rem;
+                font-size: 1.3rem;
             }
             .live-badge {
-                font-size: 1.4rem;
-                padding: 10px 36px;
+                font-size: 1rem;
+                padding: 6px 28px;
             }
             #questionHost {
-                font-size: 3.6rem;
-                padding: 12px 32px;
-                min-height: 70px;
-                margin-bottom: 18px;
+                font-size: 3.4rem;
+                padding: 10px 32px;
+                min-height: 64px;
+                margin-bottom: 14px;
             }
             .options-grid-host {
-                gap: 24px;
+                gap: 22px;
             }
             .option-item {
-                padding: 20px 30px;
+                padding: 16px 24px;
                 border-radius: 28px;
             }
-            .bar-fill {
+            .option-label {
                 font-size: 1.8rem;
-                padding-right: 30px;
+                margin-bottom: 6px;
             }
+            .bar-bg {
+                min-height: 44px;
+            }
+            .bar-fill {
+                font-size: 1.6rem;
+                padding-right: 26px;
+            }
+            /* Smaller Stats on Laptop */
             .host-stats {
-                font-size: 1.5rem;
-                padding: 12px 10px;
+                font-size: 0.9rem;
+                padding: 6px 8px;
             }
             .host-stats span {
-                padding: 10px 36px;
-                gap: 16px;
+                padding: 4px 18px;
+                gap: 10px;
             }
             .host-stats .num {
-                font-size: 3.5rem;
-                min-width: 60px;
+                font-size: 1.8rem;
+                min-width: 36px;
             }
             #hostStatus {
-                font-size: 1.5rem;
-                padding: 8px 16px;
+                font-size: 1.2rem;
+                padding: 4px 14px;
             }
         }
 
+        /* ================================================================
+           MOBILE ADJUSTMENTS
+           ================================================================ */
         @media (max-width: 600px) {
             .main-card {
-                padding: 14px;
+                padding: 12px;
                 max-height: none;
                 border-radius: 28px;
             }
-            .host-stats {
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
-                font-size: 0.95rem;
+            .event-heading h1 {
+                font-size: 1.5rem;
             }
-            .host-stats span {
-                width: 100%;
-                justify-content: center;
-                padding: 6px 14px;
+            .event-heading .sub-line {
+                font-size: 0.6rem;
+                letter-spacing: 4px;
             }
             .host-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 6px;
+                gap: 4px;
+                border-top: none;
+                padding-top: 0;
             }
             .host-header h2 {
-                font-size: 1.2rem;
+                font-size: 1rem;
+            }
+            .live-badge {
+                font-size: 0.7rem;
+                padding: 3px 12px;
+            }
+            .live-badge::before {
+                width: 8px;
+                height: 8px;
             }
             #questionHost {
                 font-size: 1.8rem;
                 padding: 6px 14px;
                 min-height: 40px;
                 border-left-width: 4px;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
             .options-grid-host {
                 grid-template-columns: 1fr;
@@ -415,6 +488,10 @@
             .option-item {
                 padding: 10px 14px;
             }
+            .option-label {
+                font-size: 1.2rem;
+                margin-bottom: 2px;
+            }
             .bar-bg {
                 min-height: 24px;
             }
@@ -422,21 +499,26 @@
                 font-size: 0.9rem;
                 padding-right: 12px;
             }
+            .host-stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                font-size: 0.75rem;
+                padding: 4px 0;
+            }
+            .host-stats span {
+                width: 100%;
+                justify-content: center;
+                padding: 4px 12px;
+                gap: 6px;
+            }
             .host-stats .num {
-                font-size: 1.8rem;
-                min-width: 36px;
-            }
-            .live-badge {
-                font-size: 0.8rem;
-                padding: 4px 16px;
-            }
-            .live-badge::before {
-                width: 8px;
-                height: 8px;
+                font-size: 1.4rem;
+                min-width: 28px;
             }
             #hostStatus {
-                font-size: 0.9rem;
-                padding: 4px 10px;
+                font-size: 0.85rem;
+                padding: 4px 8px;
             }
             body {
                 padding: 8px;
@@ -451,30 +533,51 @@
 <body>
 
     <div class="main-card">
+        <!-- ============================================================
+        EVENT HEADING
+        ============================================================ -->
+        <div class="event-heading">
+            <h1>NOORUSSALAM MADRASA.<br /><span style="font-size:0.7em;">QUIZ GRAND FINALE</span></h1>
+            <span class="sub-line">🏆 The Ultimate Showdown 🏆</span>
+        </div>
+
+        <!-- HEADER -->
         <div class="host-header">
             <h2>🎯 Host Dashboard</h2>
             <div class="live-badge"> LIVE </div>
         </div>
 
+        <!-- QUESTION -->
         <div id="questionHost">Q1</div>
 
+        <!-- ============================================================
+        GRID WITH A/B/C/D LABELS + BARS
+        ============================================================ -->
         <div class="options-grid-host" id="optionsContainerHost">
             <div class="option-item">
+                <span class="option-label">A.</span>
                 <div class="bar-bg"><div class="bar-fill" id="bar0">0%</div></div>
             </div>
             <div class="option-item">
+                <span class="option-label">B.</span>
                 <div class="bar-bg"><div class="bar-fill" id="bar1">0%</div></div>
             </div>
             <div class="option-item">
+                <span class="option-label">C.</span>
                 <div class="bar-bg"><div class="bar-fill" id="bar2">0%</div></div>
             </div>
             <div class="option-item">
+                <span class="option-label">D.</span>
                 <div class="bar-bg"><div class="bar-fill" id="bar3">0%</div></div>
             </div>
         </div>
 
+        <!-- STATUS -->
         <div id="hostStatus">⏳ Waiting for audience votes...</div>
 
+        <!-- ============================================================
+        STATS (SMALLER BOXES)
+        ============================================================ -->
         <div class="host-stats">
             <span>📊 Total Votes: <span class="num" id="totalVotes">0</span></span>
             <span>👥 Voters: <span class="num" id="onlineCount">0</span></span>
@@ -535,7 +638,6 @@
         function loadPoll() {
             updateQuestionUI(currentPollId);
 
-            // Update global config for audience sync
             db.collection('config').doc('app').set({
                 currentPollId: currentPollId,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -546,7 +648,7 @@
             setupHostListener(currentPollId);
         }
 
-        // ---------- HOST LISTENER (BARS ONLY) ----------
+        // ---------- HOST LISTENER ----------
         function setupHostListener(pollId) {
             db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
@@ -601,14 +703,7 @@
             });
         }
 
-        // Load default poll on auth
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                // Already handled
-            }
-        });
-
-        // Listen to config changes (in case audience changes poll)
+        // Listen to config changes (auto-sync)
         db.collection('config').doc('app').onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
@@ -621,7 +716,7 @@
             }
         });
 
-        console.log("✅ Host Dashboard Ready! (Pure Display - No Buttons)");
+        console.log("✅ Host Dashboard Ready! (With A/B/C/D Labels & Smaller Stats)");
     </script>
 </body>
 </html>
