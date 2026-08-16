@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KBC Projector - Pure Dashboard</title>
+    <title>KBC Projector - Medium Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
     </script>
@@ -33,11 +33,12 @@
 
         /* ---------- MAIN CARD ---------- */
         .main-card {
-            max-width: 1400px;
+            max-width: 1100px;
+            /* Balanced width for both laptop & projector */
             width: 100%;
             background: #0f0f20;
-            border-radius: 40px;
-            padding: 30px;
+            border-radius: 35px;
+            padding: 28px;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
             border: 3px solid #b8860b;
             transition: all 0.5s ease;
@@ -74,15 +75,15 @@
         /* Glowing Border Pulse for Host Mode */
         body.host-active .main-card {
             border-color: #ffd700;
-            box-shadow: 0 0 120px rgba(255, 215, 0, 0.15), 0 30px 80px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 0 80px rgba(255, 215, 0, 0.15), 0 30px 80px rgba(0, 0, 0, 0.9);
             animation: cardPulse 3s infinite alternate;
         }
         @keyframes cardPulse {
             0% {
-                box-shadow: 0 0 60px rgba(255, 215, 0, 0.1), 0 30px 80px rgba(0, 0, 0, 0.9);
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.1), 0 30px 80px rgba(0, 0, 0, 0.9);
             }
             100% {
-                box-shadow: 0 0 150px rgba(255, 215, 0, 0.3), 0 30px 80px rgba(0, 0, 0, 0.9);
+                box-shadow: 0 0 100px rgba(255, 215, 0, 0.25), 0 30px 80px rgba(0, 0, 0, 0.9);
             }
         }
 
@@ -90,7 +91,7 @@
         .app-title {
             text-align: center;
             color: #ffd700;
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 900;
             margin-bottom: 15px;
             text-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
@@ -114,16 +115,16 @@
             margin-bottom: 20px;
         }
         .mode-btn {
-            padding: 14px 30px;
+            padding: 12px 25px;
             border: 2px solid #ffd700;
             background: transparent;
             color: #aaa;
             border-radius: 60px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: 0.3s;
-            max-width: 300px;
+            max-width: 250px;
             flex: 1;
         }
         .mode-btn.active {
@@ -136,7 +137,7 @@
         }
 
         /* ================================================================
-                   HOST VIEW - PURE PROJECTOR DASHBOARD (NO CLUTTER)
+                   HOST VIEW - MEDIUM PROJECTOR DASHBOARD (PERFECT SIZE)
                    ================================================================ */
         #hostView {
             display: none;
@@ -156,17 +157,17 @@
             }
         }
 
-        /* Host Header (Title + LIVE Badge) */
+        /* Host Header */
         .host-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             padding: 0 5px;
         }
         .host-header h2 {
             color: #ffd700;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 900;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
             letter-spacing: 3px;
@@ -174,22 +175,22 @@
         .live-badge {
             background: #ff0040;
             color: #fff;
-            padding: 10px 30px;
+            padding: 8px 25px;
             border-radius: 60px;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 900;
             letter-spacing: 2px;
             animation: blinkLive 1.2s infinite;
             box-shadow: 0 0 50px rgba(255, 0, 64, 0.6);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         .live-badge::before {
             content: '';
             display: inline-block;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: #fff;
             border-radius: 50%;
             animation: blinkDot 1.2s infinite;
@@ -202,7 +203,7 @@
             }
             50% {
                 opacity: 0.85;
-                box-shadow: 0 0 80px rgba(255, 0, 64, 0.9);
+                box-shadow: 0 0 70px rgba(255, 0, 64, 0.9);
             }
         }
         @keyframes blinkDot {
@@ -217,19 +218,19 @@
             }
         }
 
-        /* Question - 3D Flip + Giant */
+        /* Question - 3D Flip + Medium Large */
         #questionHost {
             background: linear-gradient(145deg, #0a0a1e, #16163a);
-            padding: 40px 25px;
-            border-radius: 30px;
+            padding: 30px 25px;
+            border-radius: 25px;
             color: #ffd700;
-            font-size: 4.2rem;
+            font-size: 3.6rem;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 35px;
-            border-left: 10px solid #ffd700;
-            min-height: 110px;
-            letter-spacing: 4px;
+            margin-bottom: 30px;
+            border-left: 8px solid #ffd700;
+            min-height: 90px;
+            letter-spacing: 3px;
             text-shadow: 0 0 60px rgba(255, 215, 0, 0.15);
             box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6);
             animation: flipIn 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
@@ -247,46 +248,50 @@
             }
         }
         #questionHost .q-sub {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: #ffd700;
             opacity: 0.5;
             display: block;
             font-weight: 400;
-            margin-top: 10px;
+            margin-top: 8px;
             letter-spacing: 4px;
         }
 
-        /* Options (PURE DISPLAY - NO BUTTONS) */
+        /* Options Grid */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 30px;
+            gap: 20px;
+            margin-bottom: 25px;
         }
         .option-item {
             background: #141430;
-            padding: 20px 25px;
-            border-radius: 20px;
+            padding: 18px 22px;
+            border-radius: 18px;
             color: white;
             border: 2px solid #252550;
             transition: 0.4s;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-            font-size: 1.6rem;
+            font-size: 1.4rem;
+        }
+        .option-item:hover {
+            border-color: #ffd700;
+            transform: translateY(-3px);
         }
         .option-label {
             font-weight: 900;
             color: #ffd700;
-            margin-right: 15px;
-            font-size: 1.8rem;
+            margin-right: 12px;
+            font-size: 1.6rem;
         }
 
-        /* Giant Bars */
+        /* Bars - Medium Large */
         .bar-bg {
             width: 100%;
-            height: 50px;
+            height: 40px;
             background: #070712;
-            border-radius: 30px;
-            margin-top: 15px;
+            border-radius: 25px;
+            margin-top: 12px;
             overflow: hidden;
             box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.9);
             position: relative;
@@ -295,14 +300,14 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, #ffb300, #ffd700, #ffaa00);
-            border-radius: 30px;
+            border-radius: 25px;
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 25px;
+            padding-right: 20px;
             color: #000;
             font-weight: 900;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
             position: relative;
@@ -332,11 +337,11 @@
         #hostStatus {
             color: #aaa;
             text-align: center;
-            margin-top: 15px;
-            font-size: 1.6rem;
+            margin-top: 12px;
+            font-size: 1.4rem;
             font-weight: 700;
             transition: 0.3s;
-            padding: 15px;
+            padding: 12px;
             border-radius: 60px;
             letter-spacing: 1px;
         }
@@ -361,28 +366,28 @@
             display: flex;
             justify-content: space-between;
             color: #ddd;
-            padding: 20px 15px;
+            padding: 18px 15px;
             border-top: 2px solid #333;
-            margin-top: 25px;
+            margin-top: 20px;
             font-weight: 700;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
         }
         .host-stats span {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             background: #0a0a18;
-            padding: 15px 30px;
+            padding: 12px 25px;
             border-radius: 60px;
             border: 1px solid #2a2a4a;
         }
         .host-stats .num {
             color: #ffd700;
-            font-size: 3rem;
+            font-size: 2.8rem;
             font-weight: 900;
             display: inline-block;
             transition: 0.2s;
-            min-width: 60px;
+            min-width: 50px;
             text-align: center;
         }
         .host-stats .num.pop {
@@ -393,7 +398,7 @@
                 transform: scale(1);
             }
             40% {
-                transform: scale(2.2);
+                transform: scale(2);
                 color: #fff;
                 text-shadow: 0 0 60px #ffd700;
             }
@@ -402,7 +407,7 @@
             }
         }
 
-        /* ---------- ADMIN TOGGLE (FLOATING GEAR - HIDDEN BY DEFAULT) ---------- */
+        /* ---------- ADMIN TOGGLE (FLOATING GEAR) ---------- */
         .admin-toggle {
             position: fixed;
             top: 20px;
@@ -412,13 +417,13 @@
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 215, 0, 0.3);
             color: #ffd700;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             cursor: pointer;
             transition: 0.3s;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
@@ -427,30 +432,26 @@
             background: rgba(255, 215, 0, 0.3);
             transform: scale(1.1) rotate(90deg);
         }
-        /* Only show toggle button when in Host Mode */
         body.host-active .admin-toggle {
             display: flex;
-        }
-        body:not(.host-active) .admin-toggle {
-            display: none;
         }
 
         /* ---------- ADMIN PANEL (HIDDEN BY DEFAULT) ---------- */
         .admin-panel {
             position: fixed;
-            top: 80px;
+            top: 75px;
             right: 20px;
             z-index: 9998;
             background: rgba(15, 15, 32, 0.95);
             backdrop-filter: blur(15px);
             border: 1px solid #ffd700;
-            border-radius: 20px;
-            padding: 25px 30px;
-            min-width: 300px;
+            border-radius: 18px;
+            padding: 22px 25px;
+            min-width: 280px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
             display: none;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
         .admin-panel.open {
             display: flex;
@@ -458,7 +459,7 @@
         .admin-panel label {
             color: #ffd700;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             letter-spacing: 1px;
         }
         .admin-panel input {
@@ -467,7 +468,7 @@
             border: 1px solid #444;
             background: #1e1e3a;
             color: white;
-            font-size: 1rem;
+            font-size: 0.95rem;
             outline: none;
             width: 100%;
         }
@@ -476,19 +477,19 @@
         }
         .admin-panel .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         .admin-panel .btn-group button {
             flex: 1;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border: none;
             border-radius: 40px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 0.9rem;
-            min-width: 80px;
+            font-size: 0.85rem;
+            min-width: 70px;
         }
         .admin-panel .btn-load {
             background: #ffd700;
@@ -521,12 +522,12 @@
         }
         .admin-panel .close-panel {
             position: absolute;
-            top: 10px;
-            right: 15px;
+            top: 8px;
+            right: 12px;
             background: none;
             border: none;
             color: #aaa;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             cursor: pointer;
         }
         .admin-panel .close-panel:hover {
@@ -630,130 +631,130 @@
         }
 
         /* ================================================================
-                   PROJECTOR SIZE OVERRIDE (1200px+)
+                   LAPTOP / PROJECTOR OPTIMIZATION (1024px+)
+                   Balanced sizes - Not too big, not too small
                    ================================================================ */
-        @media (min-width: 1200px) {
+        @media (min-width: 1024px) {
 
             body {
-                padding: 40px;
-                background: #05050a;
+                padding: 30px;
             }
 
             .main-card {
-                max-width: 1600px;
-                padding: 50px 70px;
-                border-radius: 60px;
+                max-width: 1200px;
+                padding: 40px 50px;
+                border-radius: 45px;
                 border-width: 4px;
             }
 
             .app-title {
-                font-size: 2.8rem;
+                font-size: 2.4rem;
             }
             .app-title small {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 color: #666;
             }
 
             .host-header h2 {
-                font-size: 3.2rem;
+                font-size: 2.4rem;
             }
             .live-badge {
-                font-size: 2.2rem;
-                padding: 16px 50px;
-                gap: 20px;
-                box-shadow: 0 0 80px rgba(255, 0, 64, 0.7);
+                font-size: 1.6rem;
+                padding: 12px 35px;
+                gap: 14px;
+                box-shadow: 0 0 60px rgba(255, 0, 64, 0.6);
             }
             .live-badge::before {
-                width: 24px;
-                height: 24px;
+                width: 18px;
+                height: 18px;
             }
 
             #questionHost {
-                font-size: 6rem;
-                padding: 60px 50px;
-                min-height: 180px;
-                border-left-width: 16px;
-                margin-bottom: 50px;
-                border-radius: 40px;
+                font-size: 4.5rem;
+                padding: 45px 35px;
+                min-height: 140px;
+                border-left-width: 12px;
+                margin-bottom: 35px;
+                border-radius: 30px;
                 text-shadow: 0 0 80px rgba(255, 215, 0, 0.2);
             }
             #questionHost .q-sub {
-                font-size: 2.2rem;
-                margin-top: 20px;
-                letter-spacing: 8px;
+                font-size: 1.6rem;
+                margin-top: 12px;
+                letter-spacing: 6px;
                 opacity: 0.6;
             }
 
             .options-grid-host {
-                gap: 40px;
+                gap: 30px;
             }
             .option-item {
-                padding: 35px 45px;
-                font-size: 2.8rem;
-                border-radius: 30px;
+                padding: 25px 30px;
+                font-size: 2rem;
+                border-radius: 22px;
                 border-width: 3px;
             }
             .option-label {
-                font-size: 3.2rem;
-                margin-right: 25px;
+                font-size: 2.4rem;
+                margin-right: 20px;
             }
 
             .bar-bg {
-                height: 80px;
-                border-radius: 50px;
-                margin-top: 25px;
+                height: 55px;
+                border-radius: 35px;
+                margin-top: 18px;
             }
             .bar-fill {
-                font-size: 2.8rem;
-                padding-right: 45px;
-                border-radius: 50px;
-                box-shadow: 0 0 80px rgba(255, 215, 0, 0.4);
+                font-size: 1.8rem;
+                padding-right: 30px;
+                border-radius: 35px;
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.4);
             }
 
             .host-stats {
-                font-size: 2.8rem;
-                padding: 30px 25px;
-                margin-top: 35px;
-                border-top-width: 4px;
+                font-size: 2rem;
+                padding: 25px 20px;
+                margin-top: 25px;
+                border-top-width: 3px;
             }
             .host-stats span {
-                padding: 25px 60px;
-                border-radius: 100px;
-                gap: 30px;
+                padding: 18px 40px;
+                border-radius: 80px;
+                gap: 20px;
             }
             .host-stats .num {
-                font-size: 5rem;
-                min-width: 100px;
+                font-size: 3.5rem;
+                min-width: 70px;
             }
 
             #hostStatus {
-                font-size: 2.5rem;
-                padding: 25px;
-                margin-top: 25px;
-                border-radius: 100px;
+                font-size: 1.8rem;
+                padding: 18px;
+                margin-top: 18px;
+                border-radius: 80px;
             }
 
-            /* Admin Toggle & Panel - Still small but accessible */
+            /* Admin Toggle & Panel - Small & Subtle */
             .admin-toggle {
-                width: 60px;
-                height: 60px;
-                font-size: 2rem;
-                top: 30px;
-                right: 30px;
+                width: 55px;
+                height: 55px;
+                font-size: 1.8rem;
+                top: 25px;
+                right: 25px;
             }
             .admin-panel {
-                top: 100px;
-                right: 30px;
-                padding: 30px 35px;
-                min-width: 350px;
+                top: 90px;
+                right: 25px;
+                padding: 25px 30px;
+                min-width: 320px;
             }
             .admin-panel input {
-                font-size: 1.2rem;
-                padding: 12px 20px;
+                font-size: 1.1rem;
+                padding: 12px 18px;
             }
             .admin-panel .btn-group button {
-                font-size: 1.1rem;
-                padding: 12px 20px;
+                font-size: 1rem;
+                padding: 10px 16px;
             }
         }
 
@@ -822,7 +823,7 @@
                 right: 10px;
                 left: 10px;
                 min-width: auto;
-                padding: 20px;
+                padding: 18px;
             }
         }
     </style>
@@ -842,7 +843,7 @@
         </div>
 
         <!-- ================================================================
-        HOST VIEW - PURE DASHBOARD (NO ADMIN CLUTTER)
+        HOST VIEW - BALANCED DASHBOARD (NOT TOO BIG)
         ================================================================ -->
         <div id="hostView">
             <div class="host-header">
@@ -883,7 +884,7 @@
         </div>
 
         <!-- ================================================================
-        AUDIENCE VIEW (Mobile Friendly with Voting Buttons)
+        AUDIENCE VIEW (Mobile Friendly)
         ================================================================ -->
         <div id="audienceView" class="active-view">
             <div class="sync-hint">
@@ -902,7 +903,7 @@
     </div>
 
     <!-- ================================================================
-    FLOATING ADMIN PANEL (Hidden by default, toggle via Gear icon)
+    FLOATING ADMIN PANEL
     ================================================================ -->
     <button class="admin-toggle" id="adminToggle" title="Toggle Admin Controls">⚙️</button>
 
@@ -981,7 +982,6 @@
         closeAdmin.addEventListener('click', () => {
             adminPanel.classList.remove('open');
         });
-        // Click outside to close
         document.addEventListener('click', (e) => {
             if (adminPanel.classList.contains('open') &&
                 !adminPanel.contains(e.target) &&
@@ -1012,7 +1012,6 @@
             audienceBtn.classList.toggle('active', mode === 'audience');
             document.body.classList.toggle('host-active', mode === 'host');
 
-            // Close admin panel when switching away from host
             if (mode !== 'host') adminPanel.classList.remove('open');
 
             detachListeners();
@@ -1058,7 +1057,7 @@
             });
         }
 
-        // ------------------ UPDATE GLOBAL POLL ID (Host calls this) ------------------
+        // ------------------ UPDATE GLOBAL POLL ID ------------------
         function updateGlobalPollId(pollId) {
             db.collection('config').doc('app').set({
                 currentPollId: pollId,
@@ -1115,21 +1114,15 @@
             }
         };
 
-        // Admin wrappers for panel buttons
-        window.loadPollAdmin = function() {
-            loadPoll();
-            adminPanel.classList.remove('open');
-        };
-        window.createNextPollAdmin = function() {
-            createNextPoll();
-            adminPanel.classList.remove('open');
-        };
-        window.clearAllVotesAdmin = function() {
-            clearAllVotes();
-            adminPanel.classList.remove('open');
-        };
+        // Admin wrappers
+        window.loadPollAdmin = function() { loadPoll();
+            adminPanel.classList.remove('open'); };
+        window.createNextPollAdmin = function() { createNextPoll();
+            adminPanel.classList.remove('open'); };
+        window.clearAllVotesAdmin = function() { clearAllVotes();
+            adminPanel.classList.remove('open'); };
 
-        // ------------------ HOST LOGIC (Pure Dashboard) ------------------
+        // ------------------ HOST LOGIC ------------------
         function setupHostListener(pollId) {
             db.collection('polls').doc(pollId).onSnapshot((doc) => {
                 const qNum = getQuestionNumber(pollId);
@@ -1218,7 +1211,7 @@
             }
         };
 
-        // ------------------ CLEAR ALL VOTES (Host Only) ------------------
+        // ------------------ CLEAR ALL VOTES ------------------
         window.clearAllVotes = function() {
             if (currentMode !== 'host') return;
             if (!confirm("⚠️ Are you sure you want to DELETE ALL VOTES for this question? This cannot be undone!")) return;
@@ -1339,7 +1332,7 @@
             }
         });
 
-        console.log("✅ KBC Pure Projector Dashboard Ready! (Admin hidden behind ⚙️ gear)");
+        console.log("✅ KBC Balanced Projector Dashboard Ready! (Perfect size for laptops & projectors)");
     </script>
 
 </body>
