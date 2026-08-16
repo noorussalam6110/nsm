@@ -1,346 +1,868 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>admin panal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>KBC - Host Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Anek Malayalam', 'Segoe UI', sans-serif;
+        }
+
+        html,
         body {
-            font-family: 'Anek Malayalam', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            min-height: 100vh;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #08080f;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
-        .admin-container { max-width: 1400px; margin: 0 auto; }
-        
-        .header {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
+
+        /* ---------- MAIN CARD ---------- */
+        .main-card {
+            max-width: 1400px;
+            width: 100%;
+            height: 100%;
+            max-height: 950px;
+            background: rgba(18, 18, 40, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 48px;
+            padding: 28px 40px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.12);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border-color: #ffd700;
+            box-shadow: 0 0 80px rgba(255, 215, 0, 0.12), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.2);
+            animation: cardPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes cardPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.08), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.15);
+            }
+            50% {
+                box-shadow: 0 0 120px rgba(255, 215, 0, 0.18), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.3);
+            }
+        }
+
+        /* Animated orbs */
+        .main-card::before,
+        .main-card::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.3;
+            z-index: 0;
+            animation: orbFloat 12s ease-in-out infinite alternate;
+        }
+        .main-card::before {
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            right: -150px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.2), transparent 70%);
+        }
+        .main-card::after {
+            width: 350px;
+            height: 350px;
+            bottom: -120px;
+            left: -120px;
+            background: radial-gradient(circle, rgba(255, 100, 0, 0.15), transparent 70%);
+            animation-delay: 4s;
+        }
+        @keyframes orbFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(30px, 20px) scale(1.2);
+            }
+        }
+        .main-card>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ---------- HEADER ---------- */
+        .host-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+            padding: 0 4px;
         }
-        .header h1 { color: white; font-size: 1.6rem; }
-        .sync-status { background: #28a745; padding: 8px 20px; border-radius: 30px; color: white; font-size: 0.85rem; }
-        
-        .admin-card {
-            background: white;
+        .host-header h2 {
+            color: rgba(255, 215, 0, 0.9);
+            font-size: 2rem;
+            font-weight: 800;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+            letter-spacing: 2px;
+        }
+        .live-badge {
+            background: #ff1a4a;
+            color: #fff;
+            padding: 8px 30px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            animation: blinkLive 1.4s infinite;
+            box-shadow: 0 0 40px rgba(255, 26, 74, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .live-badge::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            animation: blinkDot 1.4s infinite;
+        }
+        @keyframes blinkLive {
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 30px rgba(255, 26, 74, 0.4);
+            }
+            50% {
+                opacity: 0.85;
+                box-shadow: 0 0 60px rgba(255, 26, 74, 0.7);
+            }
+        }
+        @keyframes blinkDot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.2;
+                transform: scale(0.7);
+            }
+        }
+
+        /* ---------- QUESTION (Q1, Q2...) ---------- */
+        #questionHost {
+            background: rgba(10, 10, 30, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 10px 28px;
+            border-radius: 18px;
+            color: #ffd700;
+            font-size: 3rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 14px;
+            border-left: 8px solid #ffd700;
+            min-height: 60px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ---------- GRID - GIANT BARS (NO A/B/C/D) ---------- */
+        .options-grid-host {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+            margin-bottom: 12px;
+        }
+        .option-item {
+            background: rgba(20, 20, 48, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 16px 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .bar-bg {
+            width: 100%;
+            height: 100%;
+            min-height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.8);
+            position: relative;
+            border: 1px solid rgba(255, 215, 0, 0.06);
+            flex: 1;
+        }
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f7971e, #ffd200, #f7971e);
+            background-size: 200% 100%;
+            animation: shimmerBar 2.8s linear infinite;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 24px;
+            color: #0a0a12;
+            font-weight: 900;
+            font-size: 1.6rem;
+            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes shimmerBar {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ---------- STATUS ---------- */
+        #hostStatus {
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            transition: 0.3s;
+            padding: 6px 14px;
+            border-radius: 60px;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(4px);
+            flex-shrink: 0;
+            margin-bottom: 4px;
+        }
+        #hostStatus.flash-green {
+            color: #0f0;
+            background: rgba(0, 255, 0, 0.06);
+            animation: statusFlash 0.5s ease;
+        }
+        @keyframes statusFlash {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.04);
+                text-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
+            }
+        }
+
+        /* ---------- STATS ---------- */
+        .host-stats {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            font-weight: 600;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .host-stats span {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 28px;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(4px);
+        }
+        .host-stats .num {
+            color: #ffd700;
+            font-size: 3rem;
+            font-weight: 900;
+            display: inline-block;
+            transition: 0.2s;
+            min-width: 50px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+        .host-stats .num.pop {
+            animation: popNum 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popNum {
+            0% {
+                transform: scale(1);
+            }
+            40% {
+                transform: scale(2);
+                color: #fff;
+                text-shadow: 0 0 60px #ffd700;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* ---------- ADMIN TOGGLE (⚙️) ---------- */
+        .admin-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            background: rgba(255, 215, 0, 0.06);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            color: #ffd700;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .admin-toggle:hover {
+            background: rgba(255, 215, 0, 0.15);
+            transform: scale(1.1) rotate(90deg);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        /* ---------- ADMIN PANEL ---------- */
+        .admin-panel {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 9998;
+            background: rgba(12, 12, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
             border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
+            padding: 20px 24px;
+            min-width: 280px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
         }
-        .admin-card h2 { color: #302b63; margin-bottom: 20px; border-left: 5px solid #e94560; padding-left: 15px; }
-        
-        .control-group { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
-        .input-box { flex: 1; min-width: 200px; }
-        .input-box label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
-        .input-box input, .input-box select { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; font-family: monospace; }
-        .input-box input:focus, .input-box select:focus { outline: none; border-color: #e94560; }
-        
-        .btn { padding: 12px 25px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: 'Anek Malayalam', sans-serif; }
-        .btn-primary { background: #28a745; color: white; }
-        .btn-warning { background: #ffc107; color: #333; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn-info { background: #17a2b8; color: white; }
-        
-        .counter-slider { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 15px; background: #f8f9fa; border-radius: 15px; margin-bottom: 20px; }
-        .counter-slider label { font-weight: 700; }
-        .counter-slider input { width: 200px; }
-        .counter-slider span { font-size: 1.3rem; font-weight: 700; color: #e94560; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-box { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px; border-radius: 15px; text-align: center; }
-        .stat-box .number { font-size: 2rem; font-weight: 800; }
-        
-        .counters-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .counter-admin-card { background: #f8f9fa; border-radius: 15px; padding: 15px; border-left: 5px solid #e94560; }
-        .counter-title { font-size: 1.3rem; font-weight: 700; }
-        .token-display { font-size: 1.8rem; font-weight: 800; font-family: monospace; margin: 10px 0; }
-        .counter-buttons { display: flex; gap: 10px; margin-top: 10px; }
-        .small-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        
-        .toast { position: fixed; bottom: 30px; right: 30px; background: #333; color: #ffd700; padding: 12px 20px; border-radius: 10px; z-index: 1000; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @media (max-width: 768px) { .control-group { flex-direction: column; } }
+        .admin-panel.open {
+            display: flex;
+        }
+        .admin-panel label {
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+        .admin-panel input {
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+            transition: 0.3s;
+        }
+        .admin-panel input:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+        .admin-panel .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .admin-panel .btn-group button {
+            flex: 1;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-size: 0.8rem;
+            min-width: 60px;
+            letter-spacing: 0.5px;
+        }
+        .admin-panel .btn-load {
+            background: #ffd700;
+            color: #0a0a12;
+        }
+        .admin-panel .btn-load:hover {
+            background: #ffe44d;
+            transform: scale(1.02);
+        }
+        .admin-panel .btn-next {
+            background: #ffd700;
+            color: #0a0a12;
+        }
+        .admin-panel .btn-next:hover {
+            background: #ffe44d;
+            transform: scale(1.02);
+        }
+        .admin-panel .btn-reset {
+            background: #cc0033;
+            color: #fff;
+        }
+        .admin-panel .btn-reset:hover {
+            background: #ff1a4a;
+            transform: scale(1.02);
+        }
+        .admin-panel .btn-back {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ccc;
+        }
+        .admin-panel .btn-back:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+        .admin-panel .close-panel {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .admin-panel .close-panel:hover {
+            color: #fff;
+        }
+
+        @media (min-width: 1024px) {
+            .main-card {
+                max-height: 1000px;
+                padding: 32px 48px;
+                border-radius: 56px;
+            }
+            .host-header h2 {
+                font-size: 2.4rem;
+            }
+            .live-badge {
+                font-size: 1.4rem;
+                padding: 10px 36px;
+            }
+            #questionHost {
+                font-size: 3.6rem;
+                padding: 12px 32px;
+                min-height: 70px;
+                margin-bottom: 18px;
+            }
+            .options-grid-host {
+                gap: 24px;
+            }
+            .option-item {
+                padding: 20px 30px;
+                border-radius: 28px;
+            }
+            .bar-fill {
+                font-size: 1.8rem;
+                padding-right: 30px;
+            }
+            .host-stats {
+                font-size: 1.5rem;
+                padding: 12px 10px;
+            }
+            .host-stats span {
+                padding: 10px 36px;
+                gap: 16px;
+            }
+            .host-stats .num {
+                font-size: 3.5rem;
+                min-width: 60px;
+            }
+            #hostStatus {
+                font-size: 1.5rem;
+                padding: 8px 16px;
+            }
+            .admin-toggle {
+                width: 54px;
+                height: 54px;
+                font-size: 1.6rem;
+                top: 28px;
+                right: 28px;
+            }
+            .admin-panel {
+                top: 88px;
+                right: 28px;
+                padding: 24px 28px;
+                min-width: 320px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-card {
+                padding: 14px;
+                max-height: none;
+                border-radius: 28px;
+            }
+            .host-stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.95rem;
+            }
+            .host-stats span {
+                width: 100%;
+                justify-content: center;
+                padding: 6px 14px;
+            }
+            .host-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .host-header h2 {
+                font-size: 1.2rem;
+            }
+            #questionHost {
+                font-size: 1.8rem;
+                padding: 6px 14px;
+                min-height: 40px;
+                border-left-width: 4px;
+                margin-bottom: 10px;
+            }
+            .options-grid-host {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .option-item {
+                padding: 10px 14px;
+            }
+            .bar-bg {
+                min-height: 24px;
+            }
+            .bar-fill {
+                font-size: 0.9rem;
+                padding-right: 12px;
+            }
+            .host-stats .num {
+                font-size: 1.8rem;
+                min-width: 36px;
+            }
+            .admin-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                top: 10px;
+                right: 10px;
+            }
+            .admin-panel {
+                top: 56px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+                padding: 14px;
+            }
+            .live-badge {
+                font-size: 0.8rem;
+                padding: 4px 16px;
+            }
+            .live-badge::before {
+                width: 8px;
+                height: 8px;
+            }
+            #hostStatus {
+                font-size: 0.9rem;
+                padding: 4px 10px;
+            }
+            body {
+                padding: 8px;
+            }
+            .main-card {
+                height: auto;
+                max-height: none;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <div class="header">
-            <h1>🎛️ അഡ്മിൻ പാനൽ | Google Sheets Backend</h1>
-            <div class="sync-status" id="syncStatus">🟢 Connected to Sheets</div>
+
+    <div class="main-card">
+        <!-- HEADER -->
+        <div class="host-header">
+            <h2>🎯 Host Dashboard</h2>
+            <div class="live-badge"> LIVE </div>
         </div>
 
-        <div class="admin-card">
-            <h2>🎫 ടോക്കൺ അലോട്ട്മെന്റ്</h2>
-            <div class="control-group">
-                <div class="input-box">
-                    <label>ടോക്കൺ നമ്പർ (ഒഴിവാക്കിയാൽ ഓട്ടോ)</label>
-                    <input type="text" id="tokenInput" placeholder="C1-001" autocomplete="off">
-                </div>
-                <div class="input-box">
-                    <label>കൗണ്ടർ തിരഞ്ഞെടുക്കുക</label>
-                    <select id="counterSelect">
-                        <option value="auto">🤖 ഓട്ടോമാറ്റിക്</option>
-                    </select>
-                </div>
-                <div class="input-box">
-                    <button class="btn btn-primary" onclick="addToken()" style="width:100%">➕ ടോക്കൺ അലോട്ട്</button>
-                </div>
+        <!-- QUESTION (Q1, Q2...) -->
+        <div id="questionHost">Q1</div>
+
+        <!-- ONLY BARS - NO A/B/C/D LABELS -->
+        <div class="options-grid-host" id="optionsContainerHost">
+            <div class="option-item">
+                <div class="bar-bg"><div class="bar-fill" id="bar0">0%</div></div>
             </div>
-            <div class="control-group">
-                <div class="input-box">
-                    <label>സ്റ്റാറ്റസ് മാറ്റാനുള്ള ടോക്കൺ</label>
-                    <input type="text" id="statusTokenInput" placeholder="C1-001">
-                </div>
-                <div class="input-box">
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-warning" onclick="updateStatus('pending')">🟠 Pending</button>
-                        <button class="btn btn-danger" onclick="updateStatus('closed')">🔴 Close</button>
-                    </div>
-                </div>
+            <div class="option-item">
+                <div class="bar-bg"><div class="bar-fill" id="bar1">0%</div></div>
+            </div>
+            <div class="option-item">
+                <div class="bar-bg"><div class="bar-fill" id="bar2">0%</div></div>
+            </div>
+            <div class="option-item">
+                <div class="bar-bg"><div class="bar-fill" id="bar3">0%</div></div>
             </div>
         </div>
 
-        <div class="admin-card">
-            <h2>⚙️ ക്രമീകരണങ്ങൾ</h2>
-            <div class="counter-slider">
-                <label>📊 സജീവ കൗണ്ടറുകൾ:</label>
-                <input type="range" id="counterCountSlider" min="1" max="14" value="14" step="1">
-                <span id="counterCountValue">14</span>
-                <button class="btn btn-secondary" onclick="resetAll()">🔄 എല്ലാം റീസെറ്റ്</button>
-                <button class="btn btn-info" onclick="fetchData()">📡 Refresh</button>
-            </div>
-        </div>
+        <!-- STATUS -->
+        <div id="hostStatus">⏳ Waiting for audience votes...</div>
 
-        <div class="stats-grid">
-            <div class="stat-box"><div class="number" id="totalTokens">0</div><div class="label">📋 ആകെ ടോക്കൺ</div></div>
-            <div class="stat-box"><div class="number" id="activeCounters">0</div><div class="label">🟢 Active കൗണ്ടറുകൾ</div></div>
-            <div class="stat-box"><div class="number" id="waitingTokens">0</div><div class="label">🟠 ക്യൂവിൽ</div></div>
-            <div class="stat-box"><div class="number" id="completedCount">0</div><div class="label">✅ പൂർത്തിയായവ</div></div>
+        <!-- STATS -->
+        <div class="host-stats">
+            <span>📊 Total Votes: <span class="num" id="totalVotes">0</span></span>
+            <span>👥 Voters: <span class="num" id="onlineCount">0</span></span>
         </div>
+    </div>
 
-        <div class="admin-card">
-            <h2>🏪 കൗണ്ടറുകളുടെ നിലവിലെ സ്ഥിതി</h2>
-            <div class="counters-list" id="countersList"></div>
+    <!-- ADMIN PANEL (Hidden behind ⚙️) -->
+    <button class="admin-toggle" id="adminToggle" title="Admin Controls">⚙️</button>
+    <div class="admin-panel" id="adminPanel">
+        <button class="close-panel" id="closeAdminPanel">✕</button>
+        <label for="pollIdInputAdmin">📌 Poll ID</label>
+        <input type="text" id="pollIdInputAdmin" value="poll_1" placeholder="e.g. poll_2">
+        <div class="btn-group">
+            <button class="btn-load" onclick="loadPoll()">Load</button>
+            <button class="btn-next" onclick="createNextPoll()">Next</button>
+            <button class="btn-reset" onclick="clearAllVotes()">Reset</button>
         </div>
     </div>
 
     <script>
-        // REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwscj5unnnmeNYthTf60VyGbjS8T6nqFk9AzEabcFuoXtaQz4J9mr4x9ifpUaPTUtor/exec';
-        
-        let counters = [];
-        let allTokens = [];
-        
-        async function fetchData() {
-            try {
-                const response = await fetch(`${GAS_URL}?action=get_all_data`);
-                const result = await response.json();
-                
-                if(result.success && result.data) {
-                    counters = result.data.counters || [];
-                    allTokens = result.data.tokens || [];
-                    renderCountersList();
-                    updateStats();
-                    document.getElementById('syncStatus').textContent = '🟢 Connected to Sheets';
-                    document.getElementById('syncStatus').style.background = '#28a745';
-                    showToast('✅ Data synced from Google Sheets');
-                } else {
-                    throw new Error('Failed to fetch');
-                }
-            } catch(error) {
-                console.error('Fetch error:', error);
-                document.getElementById('syncStatus').textContent = '🔴 Connection Error';
-                document.getElementById('syncStatus').style.background = '#dc3545';
-                showToast('❌ Cannot connect to Google Sheets');
+        // ---------- FIREBASE CONFIG ----------
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdsjnW0VzoT3vDM-wEGMuipRZgVNDOsJA",
+            authDomain: "responds-97113.firebaseapp.com",
+            projectId: "responds-97113",
+            storageBucket: "responds-97113.firebasestorage.app",
+            messagingSenderId: "917085174768",
+            appId: "1:917085174768:web:19a93ba15729e1c3f63b35",
+            measurementId: "G-SF8VYBDT4F"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        db.enablePersistence().catch(err => console.warn("Persistence warning:", err));
+
+        let currentPollId = "poll_1";
+        let unsubscribeVotes = null;
+        let prevTotal = 0;
+
+        // DOM refs
+        const questionHost = document.getElementById('questionHost');
+        const bars = [
+            document.getElementById('bar0'),
+            document.getElementById('bar1'),
+            document.getElementById('bar2'),
+            document.getElementById('bar3')
+        ];
+        const totalSpan = document.getElementById('totalVotes');
+        const onlineSpan = document.getElementById('onlineCount');
+        const hostStatus = document.getElementById('hostStatus');
+        const pollInput = document.getElementById('pollIdInputAdmin');
+        const adminToggle = document.getElementById('adminToggle');
+        const adminPanel = document.getElementById('adminPanel');
+        const closeAdmin = document.getElementById('closeAdminPanel');
+
+        // Admin panel toggle
+        adminToggle.addEventListener('click', () => adminPanel.classList.toggle('open'));
+        closeAdmin.addEventListener('click', () => adminPanel.classList.remove('open'));
+        document.addEventListener('click', (e) => {
+            if (adminPanel.classList.contains('open') &&
+                !adminPanel.contains(e.target) &&
+                e.target !== adminToggle) {
+                adminPanel.classList.remove('open');
             }
+        });
+
+        // ---------- AUTH ----------
+        firebase.auth().signInAnonymously()
+            .then(() => {
+                console.log("Authenticated");
+                loadPoll();
+            })
+            .catch(err => console.error("Auth error:", err));
+
+        // ---------- HELPERS ----------
+        function getQuestionNumber(pollId) {
+            const num = pollId.replace('poll_', '');
+            return num || '?';
         }
-        
-        async function addToken() {
-            const input = document.getElementById('tokenInput');
-            let tokenNumber = input.value.trim().toUpperCase();
-            const selectedValue = document.getElementById('counterSelect').value;
-            
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'add_token',
-                        token_number: tokenNumber || '',
-                        counter: selectedValue === 'auto' ? 0 : parseInt(selectedValue),
-                        auto: selectedValue === 'auto'
-                    })
+
+        function updateQuestionUI(pollId) {
+            questionHost.innerText = "Q" + getQuestionNumber(pollId);
+        }
+
+        // ---------- LOAD POLL ----------
+        window.loadPoll = function() {
+            let newId = pollInput.value.trim();
+            if (!newId) newId = 'poll_1';
+            currentPollId = newId;
+            pollInput.value = currentPollId;
+            updateQuestionUI(currentPollId);
+
+            // Update global config for audience sync
+            db.collection('config').doc('app').set({
+                currentPollId: currentPollId,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(err => console.error("Error updating global config:", err));
+
+            if (unsubscribeVotes) { unsubscribeVotes();
+                unsubscribeVotes = null; }
+            setupHostListener(currentPollId);
+            adminPanel.classList.remove('open');
+        };
+
+        // ---------- HOST LISTENER (BARS ONLY) ----------
+        function setupHostListener(pollId) {
+            db.collection('polls').doc(pollId).onSnapshot((doc) => {
+                const qNum = getQuestionNumber(pollId);
+                questionHost.innerText = "Q" + qNum;
+            }, (err) => console.error("Host question error:", err));
+
+            const votesRef = db.collection('polls').doc(pollId).collection('votes');
+            unsubscribeVotes = votesRef.onSnapshot((snapshot) => {
+                const counts = [0, 0, 0, 0];
+                let total = 0;
+                const users = new Set();
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.option !== undefined && data.option >= 0 && data.option <= 3) {
+                        counts[data.option] += 1;
+                    }
+                    total += 1;
+                    users.add(doc.id);
                 });
-                const result = await response.json();
-                
-                if(result.success) {
-                    showToast(`✅ ${result.data.token_number} added to counter ${result.data.counter}`);
-                    input.value = '';
-                    await fetchData();
-                } else {
-                    showToast('❌ ' + result.data);
-                }
-            } catch(error) {
-                showToast('❌ Error adding token');
-            }
-        }
-        
-        async function updateStatus(status) {
-            const input = document.getElementById('statusTokenInput');
-            let tokenNumber = input.value.trim().toUpperCase();
-            
-            if(!tokenNumber) {
-                showToast('⚠️ Enter token number');
-                return;
-            }
-            
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'update_token_status',
-                        token_number: tokenNumber,
-                        status: status
-                    })
+
+                let maxVotes = Math.max(...counts, 1);
+                bars.forEach((bar, idx) => {
+                    let percentage = (counts[idx] / maxVotes) * 100;
+                    if (total === 0) percentage = 0;
+                    bar.style.width = percentage + '%';
+                    bar.innerText = counts[idx] > 0 ? counts[idx] + ' (' + Math.round((counts[idx] / total) *
+                        100) + '%)' : '0%';
                 });
-                const result = await response.json();
-                
-                if(result.success) {
-                    showToast(`✅ ${tokenNumber} → ${status}`);
-                    input.value = '';
-                    await fetchData();
-                } else {
-                    showToast('❌ Token not found');
+
+                if (total !== prevTotal) {
+                    totalSpan.innerText = total;
+                    totalSpan.classList.remove('pop');
+                    void totalSpan.offsetWidth;
+                    totalSpan.classList.add('pop');
+
+                    hostStatus.classList.remove('flash-green');
+                    void hostStatus.offsetWidth;
+                    hostStatus.classList.add('flash-green');
+                    setTimeout(() => hostStatus.classList.remove('flash-green'), 600);
+                    prevTotal = total;
                 }
-            } catch(error) {
-                showToast('❌ Error updating status');
-            }
-        }
-        
-        async function callNext(counterId) {
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'call_next',
-                        counter_id: counterId
-                    })
-                });
-                const result = await response.json();
-                
-                if(result.success) {
-                    showToast(`🔔 ${result.data.token} called at counter ${counterId}`);
-                    await fetchData();
-                } else {
-                    showToast('⚠️ No tokens in queue');
-                }
-            } catch(error) {
-                showToast('❌ Error');
-            }
-        }
-        
-        async function resetCurrent(counterId) {
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'reset_counter',
-                        counter_id: counterId
-                    })
-                });
-                const result = await response.json();
-                
-                if(result.success) {
-                    showToast(`↩️ ${result.data.message}`);
-                    await fetchData();
-                } else {
-                    showToast('⚠️ No current token');
-                }
-            } catch(error) {
-                showToast('❌ Error');
-            }
-        }
-        
-        async function resetAll() {
-            if(!confirm('Reset all counters and tokens?')) return;
-            
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'reset_all' })
-                });
-                const result = await response.json();
-                
-                if(result.success) {
-                    showToast('🔄 All data reset');
-                    await fetchData();
-                }
-            } catch(error) {
-                showToast('❌ Error resetting');
-            }
-        }
-        
-        function renderCountersList() {
-            const container = document.getElementById('countersList');
-            container.innerHTML = '';
-            
-            counters.forEach(counter => {
-                const card = document.createElement('div');
-                card.className = 'counter-admin-card';
-                card.innerHTML = `
-                    <div class="counter-title">🏪 കൗണ്ടർ ${counter.id}</div>
-                    <div class="token-display">📌 ${counter.currentToken && counter.currentToken !== '---' ? counter.currentToken : '---'}</div>
-                    <div>🟠 ക്യൂ: ${counter.queue ? counter.queue.length : 0} | ✅ സേവനം: ${counter.servedCount || 0}</div>
-                    ${counter.queue && counter.queue.length > 0 ? `<div style="font-size:0.8rem;">⏩ അടുത്തത്: ${counter.queue[0]}</div>` : ''}
-                    <div class="counter-buttons">
-                        <button class="small-btn" style="background:#28a745; color:white;" onclick="callNext(${counter.id})">⏩ നെക്സ്റ്റ്</button>
-                        <button class="small-btn" style="background:#ffc107;" onclick="resetCurrent(${counter.id})">🔄 Reset</button>
-                    </div>
-                `;
-                container.appendChild(card);
+
+                onlineSpan.innerText = users.size;
+                hostStatus.innerText = total > 0 ? `✅ ${total} people voted! (Live)` : '⏳ Waiting for audience votes...';
+                hostStatus.style.color = total > 0 ? '#0f0' : '#ffd700';
+
+            }, (error) => {
+                console.error("Votes snapshot error:", error);
+                hostStatus.innerText = '⚠️ Real-time error!';
+                hostStatus.style.color = 'red';
             });
         }
-        
-        function updateStats() {
-            const total = allTokens.length;
-            const active = counters.filter(c => c.currentToken && c.currentToken !== '---').length;
-            const waiting = counters.reduce((sum, c) => sum + (c.queue ? c.queue.length : 0), 0);
-            const completed = counters.reduce((sum, c) => sum + (c.servedCount || 0), 0);
-            
-            document.getElementById('totalTokens').textContent = total;
-            document.getElementById('activeCounters').textContent = active;
-            document.getElementById('waitingTokens').textContent = waiting;
-            document.getElementById('completedCount').textContent = completed;
-        }
-        
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-        
-        // Auto refresh
-        setInterval(() => fetchData(), 5000);
-        
-        // Initial load
-        fetchData();
+
+        // ---------- CREATE NEXT POLL ----------
+        window.createNextPoll = function() {
+            const newId = prompt("Enter Poll ID for the next question (e.g., poll_2):", "poll_2");
+            if (!newId) return;
+            const trimmedId = newId.trim();
+            db.collection('polls').doc(trimmedId).get().then(doc => {
+                if (doc.exists) {
+                    pollInput.value = trimmedId;
+                    loadPoll();
+                } else {
+                    if (confirm(`'${trimmedId}' not found. Create a sample question?`)) {
+                        const sampleData = {
+                            question: "Sample Question",
+                            options: ["Option A", "Option B", "Option C", "Option D"],
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        db.collection('polls').doc(trimmedId).set(sampleData).then(() => {
+                            alert("Sample question created! 🎉");
+                            pollInput.value = trimmedId;
+                            loadPoll();
+                        }).catch(err => alert("Error creating: " + err.message));
+                    }
+                }
+            });
+            adminPanel.classList.remove('open');
+        };
+
+        // ---------- CLEAR ALL VOTES ----------
+        window.clearAllVotes = function() {
+            if (!confirm("⚠️ Are you sure you want to DELETE ALL VOTES for this question?")) return;
+            const votesRef = db.collection('polls').doc(currentPollId).collection('votes');
+            votesRef.get().then((snapshot) => {
+                if (snapshot.empty) {
+                    alert("ℹ️ No votes to clear.");
+                    return;
+                }
+                const batch = db.batch();
+                snapshot.forEach((doc) => batch.delete(doc.ref));
+                return batch.commit();
+            }).then(() => {
+                alert("✅ All votes cleared!");
+                bars.forEach(bar => { bar.style.width = '0%';
+                    bar.innerText = '0%'; });
+                totalSpan.innerText = '0';
+                onlineSpan.innerText = '0';
+                hostStatus.innerText = '⏳ Votes cleared. Waiting for audience...';
+                prevTotal = 0;
+            }).catch((err) => {
+                alert("❌ Error clearing votes: " + err.message);
+                console.error(err);
+            });
+            adminPanel.classList.remove('open');
+        };
+
+        // Load default poll on auth
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                // Already handled in signInAnonymously
+            }
+        });
+
+        console.log("✅ Host Dashboard Ready! (Pure Display - No Buttons)");
     </script>
 </body>
 </html>
