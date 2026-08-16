@@ -64,7 +64,6 @@
             }
         }
 
-        /* Animated orbs */
         .main-card::before,
         .main-card::after {
             content: '';
@@ -103,7 +102,7 @@
             z-index: 1;
         }
 
-        /* ---------- HEADER ---------- */
+        /* HEADER */
         .host-header {
             display: flex;
             justify-content: space-between;
@@ -167,7 +166,7 @@
             }
         }
 
-        /* ---------- QUESTION (Q1, Q2...) ---------- */
+        /* QUESTION */
         #questionHost {
             background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
@@ -189,7 +188,7 @@
             flex-shrink: 0;
         }
 
-        /* ---------- GRID - GIANT BARS (NO A/B/C/D) ---------- */
+        /* GRID - GIANT BARS */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -250,7 +249,7 @@
             }
         }
 
-        /* ---------- STATUS ---------- */
+        /* STATUS */
         #hostStatus {
             color: rgba(255, 255, 255, 0.5);
             text-align: center;
@@ -281,7 +280,7 @@
             }
         }
 
-        /* ---------- STATS ---------- */
+        /* STATS */
         .host-stats {
             display: flex;
             justify-content: space-between;
@@ -329,140 +328,6 @@
             }
         }
 
-        /* ---------- ADMIN TOGGLE (⚙️) ---------- */
-        .admin-toggle {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            z-index: 9999;
-            background: rgba(255, 215, 0, 0.06);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            color: #ffd700;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            font-size: 1.4rem;
-            cursor: pointer;
-            transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-        .admin-toggle:hover {
-            background: rgba(255, 215, 0, 0.15);
-            transform: scale(1.1) rotate(90deg);
-            border-color: rgba(255, 215, 0, 0.4);
-        }
-
-        /* ---------- ADMIN PANEL ---------- */
-        .admin-panel {
-            position: fixed;
-            top: 80px;
-            right: 24px;
-            z-index: 9998;
-            background: rgba(12, 12, 30, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: 20px;
-            padding: 20px 24px;
-            min-width: 280px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .admin-panel.open {
-            display: flex;
-        }
-        .admin-panel label {
-            color: #ffd700;
-            font-weight: 600;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            opacity: 0.7;
-        }
-        .admin-panel input {
-            padding: 10px 16px;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
-            font-size: 0.95rem;
-            outline: none;
-            width: 100%;
-            transition: 0.3s;
-        }
-        .admin-panel input:focus {
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
-        }
-        .admin-panel .btn-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .admin-panel .btn-group button {
-            flex: 1;
-            padding: 8px 14px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s ease;
-            font-size: 0.8rem;
-            min-width: 60px;
-            letter-spacing: 0.5px;
-        }
-        .admin-panel .btn-load {
-            background: #ffd700;
-            color: #0a0a12;
-        }
-        .admin-panel .btn-load:hover {
-            background: #ffe44d;
-            transform: scale(1.02);
-        }
-        .admin-panel .btn-next {
-            background: #ffd700;
-            color: #0a0a12;
-        }
-        .admin-panel .btn-next:hover {
-            background: #ffe44d;
-            transform: scale(1.02);
-        }
-        .admin-panel .btn-reset {
-            background: #cc0033;
-            color: #fff;
-        }
-        .admin-panel .btn-reset:hover {
-            background: #ff1a4a;
-            transform: scale(1.02);
-        }
-        .admin-panel .btn-back {
-            background: rgba(255, 255, 255, 0.06);
-            color: #ccc;
-        }
-        .admin-panel .btn-back:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
-        }
-        .admin-panel .close-panel {
-            position: absolute;
-            top: 10px;
-            right: 14px;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .admin-panel .close-panel:hover {
-            color: #fff;
-        }
-
         @media (min-width: 1024px) {
             .main-card {
                 max-height: 1000px;
@@ -508,19 +373,6 @@
             #hostStatus {
                 font-size: 1.5rem;
                 padding: 8px 16px;
-            }
-            .admin-toggle {
-                width: 54px;
-                height: 54px;
-                font-size: 1.6rem;
-                top: 28px;
-                right: 28px;
-            }
-            .admin-panel {
-                top: 88px;
-                right: 28px;
-                padding: 24px 28px;
-                min-width: 320px;
             }
         }
 
@@ -574,20 +426,6 @@
                 font-size: 1.8rem;
                 min-width: 36px;
             }
-            .admin-toggle {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-                top: 10px;
-                right: 10px;
-            }
-            .admin-panel {
-                top: 56px;
-                right: 10px;
-                left: 10px;
-                min-width: auto;
-                padding: 14px;
-            }
             .live-badge {
                 font-size: 0.8rem;
                 padding: 4px 16px;
@@ -613,16 +451,13 @@
 <body>
 
     <div class="main-card">
-        <!-- HEADER -->
         <div class="host-header">
             <h2>🎯 Host Dashboard</h2>
             <div class="live-badge"> LIVE </div>
         </div>
 
-        <!-- QUESTION (Q1, Q2...) -->
         <div id="questionHost">Q1</div>
 
-        <!-- ONLY BARS - NO A/B/C/D LABELS -->
         <div class="options-grid-host" id="optionsContainerHost">
             <div class="option-item">
                 <div class="bar-bg"><div class="bar-fill" id="bar0">0%</div></div>
@@ -638,26 +473,11 @@
             </div>
         </div>
 
-        <!-- STATUS -->
         <div id="hostStatus">⏳ Waiting for audience votes...</div>
 
-        <!-- STATS -->
         <div class="host-stats">
             <span>📊 Total Votes: <span class="num" id="totalVotes">0</span></span>
             <span>👥 Voters: <span class="num" id="onlineCount">0</span></span>
-        </div>
-    </div>
-
-    <!-- ADMIN PANEL (Hidden behind ⚙️) -->
-    <button class="admin-toggle" id="adminToggle" title="Admin Controls">⚙️</button>
-    <div class="admin-panel" id="adminPanel">
-        <button class="close-panel" id="closeAdminPanel">✕</button>
-        <label for="pollIdInputAdmin">📌 Poll ID</label>
-        <input type="text" id="pollIdInputAdmin" value="poll_1" placeholder="e.g. poll_2">
-        <div class="btn-group">
-            <button class="btn-load" onclick="loadPoll()">Load</button>
-            <button class="btn-next" onclick="createNextPoll()">Next</button>
-            <button class="btn-reset" onclick="clearAllVotes()">Reset</button>
         </div>
     </div>
 
@@ -692,21 +512,6 @@
         const totalSpan = document.getElementById('totalVotes');
         const onlineSpan = document.getElementById('onlineCount');
         const hostStatus = document.getElementById('hostStatus');
-        const pollInput = document.getElementById('pollIdInputAdmin');
-        const adminToggle = document.getElementById('adminToggle');
-        const adminPanel = document.getElementById('adminPanel');
-        const closeAdmin = document.getElementById('closeAdminPanel');
-
-        // Admin panel toggle
-        adminToggle.addEventListener('click', () => adminPanel.classList.toggle('open'));
-        closeAdmin.addEventListener('click', () => adminPanel.classList.remove('open'));
-        document.addEventListener('click', (e) => {
-            if (adminPanel.classList.contains('open') &&
-                !adminPanel.contains(e.target) &&
-                e.target !== adminToggle) {
-                adminPanel.classList.remove('open');
-            }
-        });
 
         // ---------- AUTH ----------
         firebase.auth().signInAnonymously()
@@ -727,11 +532,7 @@
         }
 
         // ---------- LOAD POLL ----------
-        window.loadPoll = function() {
-            let newId = pollInput.value.trim();
-            if (!newId) newId = 'poll_1';
-            currentPollId = newId;
-            pollInput.value = currentPollId;
+        function loadPoll() {
             updateQuestionUI(currentPollId);
 
             // Update global config for audience sync
@@ -743,8 +544,7 @@
             if (unsubscribeVotes) { unsubscribeVotes();
                 unsubscribeVotes = null; }
             setupHostListener(currentPollId);
-            adminPanel.classList.remove('open');
-        };
+        }
 
         // ---------- HOST LISTENER (BARS ONLY) ----------
         function setupHostListener(pollId) {
@@ -801,64 +601,23 @@
             });
         }
 
-        // ---------- CREATE NEXT POLL ----------
-        window.createNextPoll = function() {
-            const newId = prompt("Enter Poll ID for the next question (e.g., poll_2):", "poll_2");
-            if (!newId) return;
-            const trimmedId = newId.trim();
-            db.collection('polls').doc(trimmedId).get().then(doc => {
-                if (doc.exists) {
-                    pollInput.value = trimmedId;
-                    loadPoll();
-                } else {
-                    if (confirm(`'${trimmedId}' not found. Create a sample question?`)) {
-                        const sampleData = {
-                            question: "Sample Question",
-                            options: ["Option A", "Option B", "Option C", "Option D"],
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        };
-                        db.collection('polls').doc(trimmedId).set(sampleData).then(() => {
-                            alert("Sample question created! 🎉");
-                            pollInput.value = trimmedId;
-                            loadPoll();
-                        }).catch(err => alert("Error creating: " + err.message));
-                    }
-                }
-            });
-            adminPanel.classList.remove('open');
-        };
-
-        // ---------- CLEAR ALL VOTES ----------
-        window.clearAllVotes = function() {
-            if (!confirm("⚠️ Are you sure you want to DELETE ALL VOTES for this question?")) return;
-            const votesRef = db.collection('polls').doc(currentPollId).collection('votes');
-            votesRef.get().then((snapshot) => {
-                if (snapshot.empty) {
-                    alert("ℹ️ No votes to clear.");
-                    return;
-                }
-                const batch = db.batch();
-                snapshot.forEach((doc) => batch.delete(doc.ref));
-                return batch.commit();
-            }).then(() => {
-                alert("✅ All votes cleared!");
-                bars.forEach(bar => { bar.style.width = '0%';
-                    bar.innerText = '0%'; });
-                totalSpan.innerText = '0';
-                onlineSpan.innerText = '0';
-                hostStatus.innerText = '⏳ Votes cleared. Waiting for audience...';
-                prevTotal = 0;
-            }).catch((err) => {
-                alert("❌ Error clearing votes: " + err.message);
-                console.error(err);
-            });
-            adminPanel.classList.remove('open');
-        };
-
         // Load default poll on auth
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
-                // Already handled in signInAnonymously
+                // Already handled
+            }
+        });
+
+        // Listen to config changes (in case audience changes poll)
+        db.collection('config').doc('app').onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                const globalPollId = data.currentPollId;
+                if (globalPollId && globalPollId !== currentPollId) {
+                    console.log("🔄 Host syncing to:", globalPollId);
+                    currentPollId = globalPollId;
+                    loadPoll();
+                }
             }
         });
 
