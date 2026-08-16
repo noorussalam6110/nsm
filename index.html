@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
-        /* ---------- RESET ---------- */
+        /* ---------- RESET & FULLSCREEN BASE ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -17,25 +17,34 @@
             font-family: 'Anek Malayalam', 'Segoe UI', sans-serif;
         }
 
+        html,
         body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            /* No scroll at all for body */
             background: #08080f;
-            min-height: 100vh;
-            padding: 20px;
+        }
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            padding: 16px;
         }
 
-        /* ---------- MAIN CARD (Glassmorphism + Glow) ---------- */
+        /* ---------- MAIN CARD (Fits 100% height) ---------- */
         .main-card {
-            max-width: 1100px;
+            max-width: 1300px;
             width: 100%;
+            height: 100%;
+            max-height: 900px;
+            /* Prevents overflow on very tall screens */
             background: rgba(18, 18, 40, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-radius: 48px;
-            padding: 32px;
+            border-radius: 40px;
+            padding: 24px 32px;
             box-shadow:
                 0 40px 100px rgba(0, 0, 0, 0.8),
                 inset 0 0 0 1px rgba(255, 215, 0, 0.08);
@@ -43,9 +52,11 @@
             transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Animated gradient orbs for premium feel */
+        /* Animated gradient orbs */
         .main-card::before,
         .main-card::after {
             content: '';
@@ -79,7 +90,6 @@
                 transform: translate(30px, 20px) scale(1.2);
             }
         }
-
         .main-card>* {
             position: relative;
             z-index: 1;
@@ -88,10 +98,7 @@
         /* Glowing border when Host is active */
         body.host-active .main-card {
             border-color: #ffd700;
-            box-shadow:
-                0 0 80px rgba(255, 215, 0, 0.12),
-                0 40px 100px rgba(0, 0, 0, 0.9),
-                inset 0 0 0 1px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 80px rgba(255, 215, 0, 0.12), 0 40px 100px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 215, 0, 0.2);
             animation: cardPulse 4s ease-in-out infinite;
         }
         @keyframes cardPulse {
@@ -104,24 +111,21 @@
             }
         }
 
-        /* ---------- APP TITLE (Double-click entry) ---------- */
+        /* ---------- APP TITLE (Double-click) ---------- */
         .app-title {
             text-align: center;
             color: #ffd700;
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 900;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
             text-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
             cursor: default;
             user-select: none;
             letter-spacing: 2px;
-            transition: 0.3s;
-        }
-        .app-title:hover {
-            text-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
+            flex-shrink: 0;
         }
         .app-title small {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             color: rgba(255, 255, 255, 0.25);
             font-weight: 400;
             display: block;
@@ -131,24 +135,24 @@
         /* ---------- MODE SWITCHER ---------- */
         .mode-switcher {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
         .mode-btn {
-            padding: 12px 28px;
+            padding: 8px 24px;
             border: 1.5px solid rgba(255, 215, 0, 0.3);
             background: rgba(255, 215, 0, 0.04);
             color: #aaa;
             border-radius: 60px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: 0.3s ease;
-            max-width: 250px;
+            max-width: 220px;
             flex: 1;
             backdrop-filter: blur(8px);
-            letter-spacing: 0.5px;
         }
         .mode-btn.active {
             background: #ffd700;
@@ -162,19 +166,23 @@
         }
 
         /* ================================================================
-           HOST VIEW – PREMIUM DASHBOARD (MINIMAL)
+           HOST VIEW – FULL SCREEN, NO SCROLL, GIANT BARS
            ================================================================ */
         #hostView {
             display: none;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            /* flex override */
+            animation: hostFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
         #hostView.active-view {
-            display: block;
-            animation: hostFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
         }
         @keyframes hostFadeIn {
             0% {
                 opacity: 0;
-                transform: scale(0.97) translateY(20px);
+                transform: scale(0.97) translateY(10px);
             }
             100% {
                 opacity: 1;
@@ -187,12 +195,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 22px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
             padding: 0 4px;
         }
         .host-header h2 {
             color: rgba(255, 215, 0, 0.9);
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
             letter-spacing: 2px;
@@ -200,24 +209,24 @@
         .live-badge {
             background: #ff1a4a;
             color: #fff;
-            padding: 8px 28px;
+            padding: 6px 22px;
             border-radius: 60px;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 800;
             letter-spacing: 2px;
             animation: blinkLive 1.4s infinite;
-            box-shadow: 0 0 50px rgba(255, 26, 74, 0.4);
+            box-shadow: 0 0 40px rgba(255, 26, 74, 0.4);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .live-badge::before {
             content: '';
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             background: #fff;
             border-radius: 50%;
             animation: blinkDot 1.4s infinite;
@@ -226,11 +235,11 @@
             0%,
             100% {
                 opacity: 1;
-                box-shadow: 0 0 40px rgba(255, 26, 74, 0.4);
+                box-shadow: 0 0 30px rgba(255, 26, 74, 0.4);
             }
             50% {
                 opacity: 0.85;
-                box-shadow: 0 0 80px rgba(255, 26, 74, 0.7);
+                box-shadow: 0 0 60px rgba(255, 26, 74, 0.7);
             }
         }
         @keyframes blinkDot {
@@ -245,68 +254,75 @@
             }
         }
 
-        /* Question – ultra clean "Q1" */
+        /* Question – small, clean "Q1" */
         #questionHost {
-            background: rgba(10, 10, 30, 0.6);
+            background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
-            padding: 14px 24px;
-            border-radius: 20px;
+            padding: 8px 20px;
+            border-radius: 16px;
             color: #ffd700;
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 28px;
+            margin-bottom: 16px;
             border-left: 6px solid #ffd700;
-            min-height: 64px;
+            min-height: 50px;
             letter-spacing: 1px;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.3s;
+            flex-shrink: 0;
         }
 
-        /* Options – only labels & bars */
+        /* Options Grid – TAKES REMAINING SPACE (GIANT BARS) */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 28px;
+            gap: 18px;
+            flex: 1;
+            min-height: 0;
+            margin-bottom: 14px;
         }
         .option-item {
-            background: rgba(20, 20, 48, 0.6);
+            background: rgba(20, 20, 48, 0.5);
             backdrop-filter: blur(4px);
-            padding: 18px 24px;
-            border-radius: 24px;
+            padding: 14px 20px;
+            border-radius: 22px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             transition: 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .option-item:hover {
             border-color: rgba(255, 215, 0, 0.15);
             transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
         .option-label {
             font-weight: 800;
             color: #ffd700;
-            font-size: 2rem;
+            font-size: 1.8rem;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            flex-shrink: 0;
             letter-spacing: 1px;
         }
 
-        /* Premium Glowing Bars */
+        /* Premium Glowing Bars - FILLS THE SPACE */
         .bar-bg {
             width: 100%;
-            height: 42px;
+            height: 100%;
+            min-height: 32px;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 30px;
             overflow: hidden;
             box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.8);
             position: relative;
             border: 1px solid rgba(255, 215, 0, 0.06);
+            flex: 1;
         }
         .bar-fill {
             height: 100%;
@@ -318,10 +334,10 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 22px;
+            padding-right: 18px;
             color: #0a0a12;
             font-weight: 900;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
             position: relative;
@@ -336,19 +352,20 @@
             }
         }
 
-        /* Status */
+        /* Status & Stats – Fixed at bottom */
         #hostStatus {
             color: rgba(255, 255, 255, 0.5);
             text-align: center;
-            margin-top: 12px;
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             font-weight: 600;
             transition: 0.3s;
-            padding: 12px;
+            padding: 6px 12px;
             border-radius: 60px;
             letter-spacing: 0.5px;
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(4px);
+            flex-shrink: 0;
+            margin-bottom: 6px;
         }
         #hostStatus.flash-green {
             color: #0f0;
@@ -366,34 +383,33 @@
             }
         }
 
-        /* Stats – premium dark cards */
         .host-stats {
             display: flex;
             justify-content: space-between;
             color: rgba(255, 255, 255, 0.7);
-            padding: 20px 12px;
+            padding: 10px 8px;
             border-top: 1px solid rgba(255, 255, 255, 0.04);
-            margin-top: 22px;
             font-weight: 600;
-            font-size: 1.4rem;
+            font-size: 1.1rem;
+            flex-shrink: 0;
         }
         .host-stats span {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
             background: rgba(0, 0, 0, 0.3);
-            padding: 12px 28px;
+            padding: 8px 20px;
             border-radius: 60px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(4px);
         }
         .host-stats .num {
             color: #ffd700;
-            font-size: 3rem;
+            font-size: 2.4rem;
             font-weight: 900;
             display: inline-block;
             transition: 0.2s;
-            min-width: 50px;
+            min-width: 40px;
             text-align: center;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
         }
@@ -417,17 +433,17 @@
         /* ---------- ADMIN TOGGLE (Floating Gear) ---------- */
         .admin-toggle {
             position: fixed;
-            top: 24px;
-            right: 24px;
+            top: 20px;
+            right: 20px;
             z-index: 9999;
             background: rgba(255, 215, 0, 0.06);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 215, 0, 0.15);
             color: #ffd700;
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             cursor: pointer;
             transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: none;
@@ -447,19 +463,19 @@
         /* ---------- ADMIN PANEL (Glassmorphism) ---------- */
         .admin-panel {
             position: fixed;
-            top: 80px;
-            right: 24px;
+            top: 72px;
+            right: 20px;
             z-index: 9998;
-            background: rgba(12, 12, 30, 0.9);
+            background: rgba(12, 12, 30, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: 24px;
-            padding: 24px 28px;
-            min-width: 300px;
+            border-radius: 20px;
+            padding: 20px 24px;
+            min-width: 280px;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
             display: none;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
         .admin-panel.open {
             display: flex;
@@ -467,18 +483,18 @@
         .admin-panel label {
             color: #ffd700;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             opacity: 0.7;
         }
         .admin-panel input {
-            padding: 12px 18px;
+            padding: 10px 16px;
             border-radius: 40px;
             border: 1px solid rgba(255, 255, 255, 0.06);
             background: rgba(0, 0, 0, 0.3);
             color: #fff;
-            font-size: 1rem;
+            font-size: 0.95rem;
             outline: none;
             width: 100%;
             transition: 0.3s;
@@ -489,19 +505,19 @@
         }
         .admin-panel .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         .admin-panel .btn-group button {
             flex: 1;
-            padding: 10px 16px;
+            padding: 8px 14px;
             border: none;
             border-radius: 40px;
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s ease;
-            font-size: 0.9rem;
-            min-width: 70px;
+            font-size: 0.8rem;
+            min-width: 60px;
             letter-spacing: 0.5px;
         }
         .admin-panel .btn-load {
@@ -538,12 +554,12 @@
         }
         .admin-panel .close-panel {
             position: absolute;
-            top: 12px;
-            right: 16px;
+            top: 10px;
+            right: 14px;
             background: none;
             border: none;
             color: rgba(255, 255, 255, 0.3);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: 0.3s;
         }
@@ -552,10 +568,12 @@
         }
 
         /* ================================================================
-           AUDIENCE VIEW (Mobile-First, premium)
+           AUDIENCE VIEW (Mobile-First, Scrollable)
            ================================================================ */
         #audienceView {
             display: block;
+            overflow-y: auto;
+            flex: 1;
         }
         #audienceView.active-view {
             display: block;
@@ -563,22 +581,21 @@
         #questionAud {
             background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
-            padding: 18px;
-            border-radius: 20px;
+            padding: 14px;
+            border-radius: 18px;
             color: #ffd700;
-            font-size: 2.4rem;
+            font-size: 2rem;
             font-weight: 800;
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             border-left: 4px solid #ffd700;
-            min-height: 60px;
+            min-height: 50px;
             letter-spacing: 1px;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.3s;
         }
         .options-grid-aud {
             display: grid;
@@ -589,7 +606,7 @@
             background: rgba(20, 20, 48, 0.6);
             backdrop-filter: blur(4px);
             padding: 22px 12px;
-            border-radius: 20px;
+            border-radius: 18px;
             border: 1.5px solid rgba(255, 255, 255, 0.04);
             color: #fff;
             font-size: 1.2rem;
@@ -614,7 +631,7 @@
         .opt-btn .label {
             color: #ffd700;
             display: block;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             margin-bottom: 4px;
             opacity: 0.7;
@@ -622,22 +639,22 @@
         #audStatus {
             color: rgba(255, 255, 255, 0.5);
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.95rem;
+            margin-top: 18px;
+            font-size: 0.9rem;
             font-weight: 500;
         }
         .aud-footer {
             text-align: center;
-            margin-top: 12px;
+            margin-top: 10px;
             color: rgba(255, 255, 255, 0.15);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
         }
         .sync-hint {
             text-align: center;
             color: rgba(255, 255, 255, 0.2);
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-            padding: 8px 16px;
+            font-size: 0.75rem;
+            margin-bottom: 14px;
+            padding: 6px 16px;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 40px;
             border: 1px solid rgba(255, 255, 255, 0.02);
@@ -648,184 +665,190 @@
         }
 
         /* ================================================================
-           PROJECTOR OPTIMIZATION (1024px+)
+           RESPONSIVE: PROJECTOR (1024px+) – even bigger bars
            ================================================================ */
         @media (min-width: 1024px) {
-            body {
-                padding: 30px;
-            }
             .main-card {
-                max-width: 1200px;
-                padding: 44px 56px;
-                border-radius: 56px;
+                max-height: 1000px;
+                padding: 30px 44px;
+                border-radius: 48px;
             }
             .app-title {
-                font-size: 2.4rem;
+                font-size: 2rem;
             }
             .app-title small {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
             }
             .host-header h2 {
-                font-size: 2.4rem;
+                font-size: 2rem;
             }
             .live-badge {
-                font-size: 1.6rem;
-                padding: 12px 38px;
-                gap: 14px;
-                box-shadow: 0 0 60px rgba(255, 26, 74, 0.4);
+                font-size: 1.3rem;
+                padding: 8px 32px;
+                gap: 12px;
             }
             .live-badge::before {
-                width: 16px;
-                height: 16px;
+                width: 14px;
+                height: 14px;
             }
             #questionHost {
-                font-size: 3.4rem;
-                padding: 18px 32px;
-                min-height: 76px;
+                font-size: 3rem;
+                padding: 10px 28px;
+                min-height: 60px;
                 border-left-width: 8px;
-                margin-bottom: 32px;
-                border-radius: 24px;
+                margin-bottom: 18px;
             }
             .options-grid-host {
-                gap: 32px;
+                gap: 24px;
             }
             .option-item {
-                padding: 24px 32px;
-                border-radius: 28px;
+                padding: 18px 28px;
+                border-radius: 26px;
             }
             .option-label {
-                font-size: 2.6rem;
-                margin-bottom: 10px;
-            }
-            .bar-bg {
-                height: 56px;
-                border-radius: 40px;
+                font-size: 2.2rem;
+                margin-bottom: 8px;
             }
             .bar-fill {
-                font-size: 1.6rem;
-                padding-right: 32px;
-                border-radius: 40px;
+                font-size: 1.5rem;
+                padding-right: 28px;
             }
             .host-stats {
-                font-size: 1.8rem;
-                padding: 24px 20px;
-                margin-top: 28px;
+                font-size: 1.4rem;
+                padding: 12px 10px;
             }
             .host-stats span {
-                padding: 16px 44px;
-                gap: 20px;
+                padding: 10px 32px;
+                gap: 16px;
             }
             .host-stats .num {
-                font-size: 3.8rem;
-                min-width: 70px;
+                font-size: 3rem;
+                min-width: 60px;
             }
             #hostStatus {
-                font-size: 1.8rem;
-                padding: 18px;
-                margin-top: 18px;
+                font-size: 1.4rem;
+                padding: 8px 16px;
             }
             .admin-toggle {
-                width: 56px;
-                height: 56px;
+                width: 52px;
+                height: 52px;
                 font-size: 1.8rem;
-                top: 28px;
-                right: 28px;
+                top: 24px;
+                right: 24px;
             }
             .admin-panel {
-                top: 96px;
-                right: 28px;
-                padding: 28px 32px;
-                min-width: 340px;
+                top: 84px;
+                right: 24px;
+                padding: 24px 28px;
+                min-width: 320px;
             }
         }
 
         /* Mobile adjustments */
         @media (max-width: 600px) {
+            .main-card {
+                padding: 16px;
+                max-height: none;
+                border-radius: 28px;
+            }
             .options-grid-aud {
-                gap: 14px;
+                gap: 12px;
             }
             .opt-btn {
-                padding: 28px 12px;
-                font-size: 1.5rem;
-                border-radius: 20px;
+                padding: 24px 10px;
+                font-size: 1.4rem;
+                border-radius: 16px;
             }
             .opt-btn .label {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             #questionAud {
-                font-size: 2rem;
-                padding: 16px;
-                min-height: 56px;
+                font-size: 1.8rem;
+                padding: 14px;
+                min-height: 48px;
             }
             .host-stats {
                 flex-direction: column;
                 align-items: center;
-                gap: 12px;
-                font-size: 1.2rem;
+                gap: 10px;
+                font-size: 1rem;
             }
             .host-stats span {
                 width: 100%;
                 justify-content: center;
-                padding: 12px 20px;
+                padding: 8px 16px;
             }
             .host-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 8px;
             }
             .host-header h2 {
-                font-size: 1.4rem;
+                font-size: 1.2rem;
             }
             #questionHost {
-                font-size: 2.2rem;
-                padding: 12px 18px;
-                min-height: 54px;
+                font-size: 1.8rem;
+                padding: 8px 16px;
+                min-height: 44px;
                 border-left-width: 4px;
-                margin-bottom: 20px;
+                margin-bottom: 14px;
             }
             .options-grid-host {
                 grid-template-columns: 1fr;
-                gap: 14px;
+                gap: 12px;
             }
             .option-item {
-                padding: 16px 20px;
+                padding: 12px 16px;
             }
             .option-label {
-                font-size: 1.8rem;
-                margin-bottom: 6px;
+                font-size: 1.6rem;
+                margin-bottom: 4px;
             }
             .bar-bg {
-                height: 34px;
+                min-height: 24px;
             }
             .bar-fill {
-                font-size: 1rem;
-                padding-right: 14px;
+                font-size: 0.9rem;
+                padding-right: 12px;
             }
             .host-stats .num {
-                font-size: 2rem;
-                min-width: 40px;
+                font-size: 1.8rem;
+                min-width: 36px;
             }
             .admin-toggle {
-                width: 44px;
-                height: 44px;
-                font-size: 1.4rem;
-                top: 12px;
-                right: 12px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                top: 10px;
+                right: 10px;
             }
             .admin-panel {
-                top: 64px;
-                right: 12px;
-                left: 12px;
+                top: 56px;
+                right: 10px;
+                left: 10px;
                 min-width: auto;
-                padding: 20px;
+                padding: 16px;
             }
             .live-badge {
-                font-size: 0.9rem;
-                padding: 6px 18px;
+                font-size: 0.8rem;
+                padding: 4px 14px;
             }
             .live-badge::before {
-                width: 10px;
-                height: 10px;
+                width: 8px;
+                height: 8px;
+            }
+            #hostStatus {
+                font-size: 0.9rem;
+                padding: 4px 10px;
+            }
+            body {
+                padding: 8px;
+                overflow-y: auto;
+                /* Allow mobile scroll only if needed */
+            }
+            .main-card {
+                height: auto;
+                max-height: none;
             }
         }
     </style>
@@ -833,17 +856,19 @@
 <body>
 
     <div class="main-card" id="mainCard">
+        <!-- App Title (Double-click for Host) -->
         <div class="app-title" id="appTitle">
             🎤 KBC Audience Poll
             <small>🔒 Double-click Title to access Host Dashboard</small>
         </div>
 
+        <!-- Mode Switcher -->
         <div class="mode-switcher">
             <button class="mode-btn active" id="audienceModeBtn" onclick="switchMode('audience')">📱 Audience View</button>
         </div>
 
         <!-- ============================================================
-        HOST VIEW – PREMIUM DASHBOARD (ONLY Qn + A/B/C/D + BARS)
+        HOST VIEW – FULL SCREEN, NO SCROLL, GIANT BARS
         ============================================================ -->
         <div id="hostView">
             <div class="host-header">
@@ -900,7 +925,7 @@
     </div>
 
     <!-- ============================================================
-    FLOATING ADMIN PANEL
+    FLOATING ADMIN PANEL (Hidden behind Gear)
     ============================================================ -->
     <button class="admin-toggle" id="adminToggle" title="Toggle Admin Controls">⚙️</button>
     <div class="admin-panel" id="adminPanel">
@@ -1284,7 +1309,7 @@
             }
         });
 
-        console.log("✅ KBC Premium Dashboard Ready!");
+        console.log("✅ KBC Premium Dashboard (No Scroll, Giant Bars) Ready!");
     </script>
 </body>
 </html>
