@@ -243,30 +243,29 @@
         }
 
         /* ============================================================
-           VERTICAL BAR CHART — MAIN GRID
+           HORIZONTAL BAR CHART — KBC STYLE (INSTANT UPDATE)
            ============================================================ */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 18px;
+            gap: 16px;
             flex: 1;
             min-height: 0;
             margin-bottom: 6px;
+            align-content: stretch;
         }
 
-        /* ---------- each bar container ---------- */
         .option-item {
             background: rgba(20, 20, 48, 0.4);
             backdrop-filter: blur(4px);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 215, 0, 0.06);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            padding: 14px 14px 10px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+            padding: 12px 14px 10px 14px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            transition: border-color 0.4s, box-shadow 0.4s;
+            justify-content: center;
+            transition: border-color 0.3s, box-shadow 0.3s;
             position: relative;
             overflow: hidden;
             min-height: 0;
@@ -276,9 +275,9 @@
             content: '';
             position: absolute;
             inset: 0;
-            border-radius: 24px;
+            border-radius: 20px;
             padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), transparent 60%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 60%);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
@@ -286,82 +285,113 @@
         }
 
         .option-item.highlight {
-            border-color: rgba(255, 215, 0, 0.3);
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.06), 0 8px 32px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.08), 0 4px 24px rgba(0, 0, 0, 0.5);
         }
 
-        /* ---------- the bar wrapper ---------- */
-        .bar-wrapper {
-            flex: 1;
-            width: 100%;
+        .option-header {
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            min-height: 80px;
-            position: relative;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            flex-shrink: 0;
         }
 
-        /* ---------- the bar background track ---------- */
-        .bar-track {
+        .option-label {
+            font-weight: 900;
+            color: #fff;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .option-label .vote-count {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0 10px;
+            border-radius: 30px;
+        }
+
+        .option-percent {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            min-width: 54px;
+            text-align: center;
+        }
+
+        /* bar track */
+        .bar-bg {
             width: 100%;
             height: 100%;
-            min-height: 80px;
-            max-height: 220px;
-            background: rgba(0, 0, 0, 0.45);
-            border-radius: 16px 16px 8px 8px;
+            min-height: 32px;
+            max-height: 48px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 40px;
             overflow: hidden;
+            box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             position: relative;
-            box-shadow: inset 0 4px 30px rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            flex-shrink: 0;
         }
 
-        /* ---------- the fill bar (height = %) ---------- */
+        /* ---------- INDIVIDUAL KBC COLORS (NO ANIMATION) ---------- */
         .bar-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 0%;
-            background: linear-gradient(180deg, #ffe066, #f7971e);
-            background-size: 100% 200%;
-            border-radius: 16px 16px 6px 6px;
-            transition: height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            height: 100%;
+            width: 0%;
+            border-radius: 40px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.15);
-            will-change: height;
+            justify-content: flex-end;
+            padding-right: 14px;
+            color: #fff;
+            font-weight: 900;
+            font-size: 0.9rem;
+            transition: none;
+            /* INSTANT */
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
         }
 
-        /* glowing shimmer on bar */
-        .bar-fill::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 40%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.25), transparent);
-            border-radius: 16px 16px 50% 50% / 16px 16px 20% 20%;
-            pointer-events: none;
-        }
-
-        /* bar shine sweep */
-        .bar-fill::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(105deg,
-                    transparent 35%,
-                    rgba(255, 255, 255, 0.10) 50%,
-                    transparent 65%);
+        /* Option A - RED */
+        .bar-fill-a {
+            background: linear-gradient(90deg, #c0392b, #e74c3c, #ff6b6b);
             background-size: 200% 100%;
-            animation: shineSweep 3.6s ease-in-out infinite;
-            border-radius: 16px 16px 6px 6px;
-            pointer-events: none;
+            animation: shimmerBar 3s linear infinite;
         }
-        @keyframes shineSweep {
+        /* Option B - BLUE */
+        .bar-fill-b {
+            background: linear-gradient(90deg, #2471a3, #3498db, #5dade2);
+            background-size: 200% 100%;
+            animation: shimmerBar 3s linear infinite;
+        }
+        /* Option C - YELLOW */
+        .bar-fill-c {
+            background: linear-gradient(90deg, #b7950b, #f1c40f, #f7dc6f);
+            background-size: 200% 100%;
+            animation: shimmerBar 3s linear infinite;
+            color: #1a1a1a;
+            text-shadow: 0 1px 4px rgba(255, 255, 255, 0.4);
+        }
+        /* Option D - GREEN */
+        .bar-fill-d {
+            background: linear-gradient(90deg, #1e8449, #2ecc71, #58d68d);
+            background-size: 200% 100%;
+            animation: shimmerBar 3s linear infinite;
+        }
+
+        @keyframes shimmerBar {
             0% {
                 background-position: 200% 0;
             }
@@ -370,72 +400,26 @@
             }
         }
 
-        /* ---------- bar text (percentage + count) ---------- */
-        .bar-text {
+        .bar-fill .bar-text {
             position: relative;
             z-index: 2;
-            color: #0a0a12;
-            font-weight: 900;
-            font-size: 1.6rem;
-            text-shadow: 0 1px 8px rgba(255, 215, 0, 0.3);
-            line-height: 1.2;
-            text-align: center;
-            padding: 0 4px;
-            pointer-events: none;
-            transition: font-size 0.3s;
-        }
-        .bar-text .count-small {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: rgba(10, 10, 18, 0.6);
-            text-shadow: none;
-            margin-top: -2px;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
         }
 
-        /* ---------- option label (A, B, C, D) ---------- */
-        .option-label {
-            font-weight: 900;
-            color: #ffd700;
-            font-size: 1.6rem;
-            letter-spacing: 1px;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
-            margin-top: 8px;
-            flex-shrink: 0;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2px 18px;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 215, 0, 0.08);
-            backdrop-filter: blur(4px);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .option-label .vote-count {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: rgba(255, 215, 0, 0.5);
-            background: rgba(0, 0, 0, 0.2);
-            padding: 0 10px;
-            border-radius: 30px;
-            -webkit-text-fill-color: rgba(255, 215, 0, 0.5);
-        }
-
-        /* ---------- when no votes ---------- */
+        /* empty state */
         .bar-fill.empty {
-            background: rgba(255, 255, 255, 0.02);
-            box-shadow: none;
-        }
-        .bar-fill.empty::before,
-        .bar-fill.empty::after {
-            display: none;
+            background: rgba(255, 255, 255, 0.03) !important;
+            animation: none !important;
+            box-shadow: none !important;
+            justify-content: center;
+            padding-right: 0;
+            color: rgba(255, 255, 255, 0.1);
+            text-shadow: none;
         }
         .bar-fill.empty .bar-text {
             color: rgba(255, 255, 255, 0.08);
-            font-size: 0.9rem;
-        }
-        .bar-fill.empty .bar-text .count-small {
-            color: rgba(255, 255, 255, 0.04);
+            font-size: 0.75rem;
         }
 
         /* ---------- STATUS ---------- */
@@ -540,34 +524,33 @@
                 margin-bottom: 12px;
             }
             .options-grid-host {
-                gap: 22px;
+                gap: 20px;
             }
             .option-item {
-                padding: 18px 18px 12px 18px;
-                border-radius: 28px;
-            }
-            .bar-track {
-                min-height: 100px;
-                max-height: 260px;
-                border-radius: 20px 20px 10px 10px;
-            }
-            .bar-fill {
-                border-radius: 20px 20px 8px 8px;
-            }
-            .bar-text {
-                font-size: 2rem;
-            }
-            .bar-text .count-small {
-                font-size: 0.8rem;
+                padding: 16px 20px 14px 20px;
+                border-radius: 24px;
             }
             .option-label {
-                font-size: 1.9rem;
-                padding: 4px 24px;
-                margin-top: 10px;
+                font-size: 1.8rem;
             }
             .option-label .vote-count {
                 font-size: 0.9rem;
-                padding: 0 14px;
+            }
+            .option-percent {
+                font-size: 1.6rem;
+                min-width: 64px;
+            }
+            .bar-bg {
+                min-height: 40px;
+                max-height: 56px;
+                border-radius: 40px;
+            }
+            .bar-fill {
+                font-size: 1.1rem;
+                padding-right: 20px;
+            }
+            .bar-fill .bar-text {
+                font-size: 1.0rem;
             }
             .host-stats {
                 font-size: 0.9rem;
@@ -627,33 +610,32 @@
                 gap: 8px;
             }
             .option-item {
-                padding: 8px 8px 6px 8px;
+                padding: 8px 10px 6px 10px;
                 border-radius: 16px;
-            }
-            .bar-track {
-                min-height: 50px;
-                max-height: 100px;
-                border-radius: 10px 10px 6px 6px;
-            }
-            .bar-fill {
-                border-radius: 10px 10px 4px 4px;
-            }
-            .bar-text {
-                font-size: 1.0rem;
-            }
-            .bar-text .count-small {
-                font-size: 0.5rem;
-                margin-top: -2px;
             }
             .option-label {
                 font-size: 1.1rem;
-                padding: 1px 12px;
-                margin-top: 5px;
-                gap: 4px;
             }
             .option-label .vote-count {
                 font-size: 0.6rem;
                 padding: 0 6px;
+            }
+            .option-percent {
+                font-size: 0.85rem;
+                min-width: 40px;
+                padding: 0 8px;
+            }
+            .bar-bg {
+                min-height: 22px;
+                max-height: 32px;
+                border-radius: 30px;
+            }
+            .bar-fill {
+                font-size: 0.7rem;
+                padding-right: 8px;
+            }
+            .bar-fill .bar-text {
+                font-size: 0.6rem;
             }
             .host-stats {
                 flex-direction: column;
@@ -689,40 +671,36 @@
             .options-grid-host {
                 gap: 6px;
             }
-            .bar-track {
-                min-height: 40px;
-                max-height: 80px;
-            }
-            .bar-text {
-                font-size: 0.8rem;
+            .option-item {
+                padding: 6px 6px 4px 6px;
             }
             .option-label {
-                font-size: 0.95rem;
-                padding: 1px 10px;
-                margin-top: 4px;
+                font-size: 0.9rem;
+            }
+            .option-percent {
+                font-size: 0.7rem;
+                min-width: 32px;
+                padding: 0 4px;
+            }
+            .bar-bg {
+                min-height: 18px;
+                max-height: 26px;
+            }
+            .bar-fill {
+                font-size: 0.5rem;
+                padding-right: 4px;
+            }
+            .bar-fill .bar-text {
+                font-size: 0.5rem;
             }
             .event-heading h1 {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             #questionHost {
-                font-size: 1.3rem;
-                padding: 4px 10px;
-                min-height: 30px;
+                font-size: 1.2rem;
+                padding: 4px 8px;
+                min-height: 28px;
             }
-        }
-
-        /* small extra polish for bar heights when very short */
-        .bar-track .bar-fill .bar-text {
-            transition: opacity 0.4s;
-        }
-        .bar-fill[style*="height: 0%"] .bar-text {
-            opacity: 0;
-        }
-        .bar-fill[style*="height: 0%"] .bar-text .count-small {
-            opacity: 0;
-        }
-        .bar-fill .bar-text {
-            opacity: 1;
         }
     </style>
 </head>
@@ -739,85 +717,61 @@
             <div class="live-badge"> LIVE </div>
         </div>
 
-        <!-- ============================================================
-        QUESTION NUMBER
-        ============================================================ -->
+        <!-- QUESTION NUMBER -->
         <div id="questionHost">
             <span id="qNumberDisplay">Q1</span>
             <span class="poll-status" id="pollStatus"></span>
         </div>
 
-        <!-- ============================================================
-        VERTICAL BAR GRID
-        ============================================================ -->
+        <!-- HORIZONTAL BAR GRID (KBC COLORS) -->
         <div class="options-grid-host" id="optionsContainerHost">
-            <!-- A -->
+            <!-- A - RED -->
             <div class="option-item" id="optItem0">
-                <div class="bar-wrapper">
-                    <div class="bar-track">
-                        <div class="bar-fill empty" id="bar0" style="height:0%;">
-                            <span class="bar-text">
-                                0%
-                                <span class="count-small">0 votes</span>
-                            </span>
-                        </div>
+                <div class="option-header">
+                    <span class="option-label">A <span class="vote-count" id="voteCount0">0</span></span>
+                    <span class="option-percent" id="pct0">0%</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill bar-fill-a empty" id="bar0" style="width:0%;">
+                        <span class="bar-text" id="barText0">0 votes</span>
                     </div>
                 </div>
-                <span class="option-label">
-                    A
-                    <span class="vote-count" id="voteCount0">0</span>
-                </span>
             </div>
-            <!-- B -->
+            <!-- B - BLUE -->
             <div class="option-item" id="optItem1">
-                <div class="bar-wrapper">
-                    <div class="bar-track">
-                        <div class="bar-fill empty" id="bar1" style="height:0%;">
-                            <span class="bar-text">
-                                0%
-                                <span class="count-small">0 votes</span>
-                            </span>
-                        </div>
+                <div class="option-header">
+                    <span class="option-label">B <span class="vote-count" id="voteCount1">0</span></span>
+                    <span class="option-percent" id="pct1">0%</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill bar-fill-b empty" id="bar1" style="width:0%;">
+                        <span class="bar-text" id="barText1">0 votes</span>
                     </div>
                 </div>
-                <span class="option-label">
-                    B
-                    <span class="vote-count" id="voteCount1">0</span>
-                </span>
             </div>
-            <!-- C -->
+            <!-- C - YELLOW -->
             <div class="option-item" id="optItem2">
-                <div class="bar-wrapper">
-                    <div class="bar-track">
-                        <div class="bar-fill empty" id="bar2" style="height:0%;">
-                            <span class="bar-text">
-                                0%
-                                <span class="count-small">0 votes</span>
-                            </span>
-                        </div>
+                <div class="option-header">
+                    <span class="option-label">C <span class="vote-count" id="voteCount2">0</span></span>
+                    <span class="option-percent" id="pct2">0%</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill bar-fill-c empty" id="bar2" style="width:0%;">
+                        <span class="bar-text" id="barText2">0 votes</span>
                     </div>
                 </div>
-                <span class="option-label">
-                    C
-                    <span class="vote-count" id="voteCount2">0</span>
-                </span>
             </div>
-            <!-- D -->
+            <!-- D - GREEN -->
             <div class="option-item" id="optItem3">
-                <div class="bar-wrapper">
-                    <div class="bar-track">
-                        <div class="bar-fill empty" id="bar3" style="height:0%;">
-                            <span class="bar-text">
-                                0%
-                                <span class="count-small">0 votes</span>
-                            </span>
-                        </div>
+                <div class="option-header">
+                    <span class="option-label">D <span class="vote-count" id="voteCount3">0</span></span>
+                    <span class="option-percent" id="pct3">0%</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill bar-fill-d empty" id="bar3" style="width:0%;">
+                        <span class="bar-text" id="barText3">0 votes</span>
                     </div>
                 </div>
-                <span class="option-label">
-                    D
-                    <span class="vote-count" id="voteCount3">0</span>
-                </span>
             </div>
         </div>
 
@@ -859,6 +813,18 @@
             document.getElementById('bar1'),
             document.getElementById('bar2'),
             document.getElementById('bar3')
+        ];
+        const barTexts = [
+            document.getElementById('barText0'),
+            document.getElementById('barText1'),
+            document.getElementById('barText2'),
+            document.getElementById('barText3')
+        ];
+        const pctLabels = [
+            document.getElementById('pct0'),
+            document.getElementById('pct1'),
+            document.getElementById('pct2'),
+            document.getElementById('pct3')
         ];
         const voteCountLabels = [
             document.getElementById('voteCount0'),
@@ -961,46 +927,41 @@
                     voteCountLabels[i].innerText = c;
                 });
 
-                // Determine max for proportional height
                 const maxVotes = Math.max(...counts, 1);
                 const hasVotes = total > 0;
 
-                // Update each bar
+                // Update each bar (INSTANT width change, no transition)
                 bars.forEach((bar, idx) => {
                     const count = counts[idx];
                     let percent = hasVotes ? (count / maxVotes) * 100 : 0;
-                    // If total votes > 0 but this option has 0, show a tiny sliver for visibility
                     if (hasVotes && count === 0) percent = 2;
 
-                    // Clamp
                     percent = Math.min(100, Math.max(0, percent));
 
-                    // Update height
-                    bar.style.height = percent + '%';
+                    // Instant snap
+                    bar.style.width = percent + '%';
 
-                    // Update text
-                    const textSpan = bar.querySelector('.bar-text');
-                    const smallSpan = textSpan.querySelector('.count-small');
+                    // Percentage label
+                    const pctDisplay = hasVotes ? Math.round((count / total) * 100) : 0;
+                    pctLabels[idx].innerText = pctDisplay + '%';
+
+                    // Bar text
                     if (hasVotes && count > 0) {
-                        const pct = Math.round((count / total) * 100);
-                        textSpan.childNodes[0].textContent = pct + '%';
-                        smallSpan.textContent = count + ' vote' + (count > 1 ? 's' : '');
+                        barTexts[idx].innerText = count + ' vote' + (count > 1 ? 's' : '');
                     } else if (hasVotes && count === 0) {
-                        textSpan.childNodes[0].textContent = '0%';
-                        smallSpan.textContent = '0 votes';
+                        barTexts[idx].innerText = '0 votes';
                     } else {
-                        textSpan.childNodes[0].textContent = '—';
-                        smallSpan.textContent = '0 votes';
+                        barTexts[idx].innerText = '0 votes';
                     }
 
-                    // Toggle "empty" class for styling
+                    // Toggle empty class
                     if (!hasVotes || count === 0) {
                         bar.classList.add('empty');
                     } else {
                         bar.classList.remove('empty');
                     }
 
-                    // Highlight the leading option (optional)
+                    // Highlight leader
                     optItems.forEach(item => item.classList.remove('highlight'));
                     if (hasVotes) {
                         const maxIdx = counts.indexOf(Math.max(...counts));
@@ -1050,7 +1011,7 @@
             console.warn("Config listener error:", err);
         });
 
-        console.log("✅ Host Dashboard Ready! (Vertical Bar Chart)");
+        console.log("✅ Host Dashboard Ready! (KBC Style - Horizontal Bars with Colors)");
     </script>
 </body>
 </html>
