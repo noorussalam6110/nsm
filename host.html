@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Host Dashboard - Quiz Grand Finale</title>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800;900&display=swap" rel="stylesheet" />
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
+    </script>
     <style>
         * {
             margin: 0;
@@ -102,7 +105,7 @@
         /* ---------- EVENT HEADING ---------- */
         .event-heading {
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             flex-shrink: 0;
         }
         .event-heading h1 {
@@ -133,7 +136,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             flex-shrink: 0;
             padding: 6px 4px 0 4px;
             border-top: 1px solid rgba(255, 215, 0, 0.08);
@@ -194,7 +197,7 @@
             }
         }
 
-        /* ---------- QUESTION NUMBER (FIXED) ---------- */
+        /* ---------- QUESTION NUMBER ---------- */
         #questionHost {
             background: rgba(10, 10, 30, 0.5);
             backdrop-filter: blur(4px);
@@ -204,7 +207,7 @@
             font-size: 3rem;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border-left: 8px solid #ffd700;
             min-height: 56px;
             letter-spacing: 2px;
@@ -239,74 +242,200 @@
             -webkit-text-fill-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* ---------- GRID WITH A/B/C/D LABELS ---------- */
+        /* ============================================================
+           VERTICAL BAR CHART — MAIN GRID
+           ============================================================ */
         .options-grid-host {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 18px;
             flex: 1;
             min-height: 0;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
+
+        /* ---------- each bar container ---------- */
         .option-item {
-            background: rgba(20, 20, 48, 0.5);
+            background: rgba(20, 20, 48, 0.4);
             backdrop-filter: blur(4px);
-            padding: 12px 18px;
             border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.06);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            padding: 14px 14px 10px 14px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-        }
-        .option-label {
-            font-weight: 800;
-            color: #ffd700;
-            font-size: 1.4rem;
-            display: block;
-            margin-bottom: 4px;
-            flex-shrink: 0;
-            letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
-        }
-        .bar-bg {
-            width: 100%;
-            height: 100%;
-            min-height: 36px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 40px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.8);
-            position: relative;
-            border: 1px solid rgba(255, 215, 0, 0.06);
-            flex: 1;
-        }
-        .bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #f7971e, #ffd200, #f7971e);
-            background-size: 200% 100%;
-            animation: shimmerBar 2.8s linear infinite;
-            border-radius: 40px;
-            display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 20px;
-            color: #0a0a12;
-            font-weight: 900;
-            font-size: 1.4rem;
-            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+            transition: border-color 0.4s, box-shadow 0.4s;
             position: relative;
             overflow: hidden;
+            min-height: 0;
         }
-        @keyframes shimmerBar {
+
+        .option-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), transparent 60%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .option-item.highlight {
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.06), 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ---------- the bar wrapper ---------- */
+        .bar-wrapper {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 80px;
+            position: relative;
+        }
+
+        /* ---------- the bar background track ---------- */
+        .bar-track {
+            width: 100%;
+            height: 100%;
+            min-height: 80px;
+            max-height: 220px;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 16px 16px 8px 8px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 4px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* ---------- the fill bar (height = %) ---------- */
+        .bar-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(180deg, #ffe066, #f7971e);
+            background-size: 100% 200%;
+            border-radius: 16px 16px 6px 6px;
+            transition: height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.15);
+            will-change: height;
+        }
+
+        /* glowing shimmer on bar */
+        .bar-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.25), transparent);
+            border-radius: 16px 16px 50% 50% / 16px 16px 20% 20%;
+            pointer-events: none;
+        }
+
+        /* bar shine sweep */
+        .bar-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg,
+                    transparent 35%,
+                    rgba(255, 255, 255, 0.10) 50%,
+                    transparent 65%);
+            background-size: 200% 100%;
+            animation: shineSweep 3.6s ease-in-out infinite;
+            border-radius: 16px 16px 6px 6px;
+            pointer-events: none;
+        }
+        @keyframes shineSweep {
             0% {
                 background-position: 200% 0;
             }
             100% {
                 background-position: -200% 0;
             }
+        }
+
+        /* ---------- bar text (percentage + count) ---------- */
+        .bar-text {
+            position: relative;
+            z-index: 2;
+            color: #0a0a12;
+            font-weight: 900;
+            font-size: 1.6rem;
+            text-shadow: 0 1px 8px rgba(255, 215, 0, 0.3);
+            line-height: 1.2;
+            text-align: center;
+            padding: 0 4px;
+            pointer-events: none;
+            transition: font-size 0.3s;
+        }
+        .bar-text .count-small {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: rgba(10, 10, 18, 0.6);
+            text-shadow: none;
+            margin-top: -2px;
+        }
+
+        /* ---------- option label (A, B, C, D) ---------- */
+        .option-label {
+            font-weight: 900;
+            color: #ffd700;
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
+            margin-top: 8px;
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 215, 0, 0.08);
+            backdrop-filter: blur(4px);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .option-label .vote-count {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 215, 0, 0.5);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0 10px;
+            border-radius: 30px;
+            -webkit-text-fill-color: rgba(255, 215, 0, 0.5);
+        }
+
+        /* ---------- when no votes ---------- */
+        .bar-fill.empty {
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: none;
+        }
+        .bar-fill.empty::before,
+        .bar-fill.empty::after {
+            display: none;
+        }
+        .bar-fill.empty .bar-text {
+            color: rgba(255, 255, 255, 0.08);
+            font-size: 0.9rem;
+        }
+        .bar-fill.empty .bar-text .count-small {
+            color: rgba(255, 255, 255, 0.04);
         }
 
         /* ---------- STATUS ---------- */
@@ -340,7 +469,7 @@
             }
         }
 
-        /* ---------- STATS (SMALLER) ---------- */
+        /* ---------- STATS ---------- */
         .host-stats {
             display: flex;
             justify-content: space-between;
@@ -388,6 +517,9 @@
             }
         }
 
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
         @media (min-width: 1024px) {
             .main-card {
                 max-height: 1000px;
@@ -405,22 +537,37 @@
                 font-size: 3.4rem;
                 padding: 10px 32px;
                 min-height: 64px;
-                margin-bottom: 14px;
+                margin-bottom: 12px;
             }
             .options-grid-host {
                 gap: 22px;
             }
             .option-item {
-                padding: 16px 24px;
+                padding: 18px 18px 12px 18px;
                 border-radius: 28px;
             }
-            .option-label {
-                font-size: 1.8rem;
-                margin-bottom: 6px;
+            .bar-track {
+                min-height: 100px;
+                max-height: 260px;
+                border-radius: 20px 20px 10px 10px;
             }
             .bar-fill {
-                font-size: 1.6rem;
-                padding-right: 26px;
+                border-radius: 20px 20px 8px 8px;
+            }
+            .bar-text {
+                font-size: 2rem;
+            }
+            .bar-text .count-small {
+                font-size: 0.8rem;
+            }
+            .option-label {
+                font-size: 1.9rem;
+                padding: 4px 24px;
+                margin-top: 10px;
+            }
+            .option-label .vote-count {
+                font-size: 0.9rem;
+                padding: 0 14px;
             }
             .host-stats {
                 font-size: 0.9rem;
@@ -447,11 +594,11 @@
                 border-radius: 28px;
             }
             .event-heading h1 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
             .event-heading .sub-line {
-                font-size: 0.6rem;
-                letter-spacing: 4px;
+                font-size: 0.55rem;
+                letter-spacing: 3px;
             }
             .host-header {
                 flex-direction: column;
@@ -459,57 +606,123 @@
                 gap: 4px;
                 border-top: none;
                 padding-top: 0;
+                margin-bottom: 4px;
+            }
+            .host-header h2 {
+                font-size: 1rem;
+            }
+            .live-badge {
+                font-size: 0.7rem;
+                padding: 2px 14px;
             }
             #questionHost {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
                 padding: 6px 14px;
-                min-height: 40px;
+                min-height: 36px;
                 border-left-width: 4px;
-                margin-bottom: 8px;
+                margin-bottom: 6px;
             }
             .options-grid-host {
-                grid-template-columns: 1fr;
-                gap: 10px;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
             }
             .option-item {
-                padding: 10px 14px;
+                padding: 8px 8px 6px 8px;
+                border-radius: 16px;
             }
-            .option-label {
-                font-size: 1.2rem;
-                margin-bottom: 2px;
+            .bar-track {
+                min-height: 50px;
+                max-height: 100px;
+                border-radius: 10px 10px 6px 6px;
             }
             .bar-fill {
-                font-size: 0.9rem;
-                padding-right: 12px;
+                border-radius: 10px 10px 4px 4px;
+            }
+            .bar-text {
+                font-size: 1.0rem;
+            }
+            .bar-text .count-small {
+                font-size: 0.5rem;
+                margin-top: -2px;
+            }
+            .option-label {
+                font-size: 1.1rem;
+                padding: 1px 12px;
+                margin-top: 5px;
+                gap: 4px;
+            }
+            .option-label .vote-count {
+                font-size: 0.6rem;
+                padding: 0 6px;
             }
             .host-stats {
                 flex-direction: column;
                 align-items: center;
-                gap: 6px;
-                font-size: 0.75rem;
+                gap: 4px;
+                font-size: 0.7rem;
                 padding: 4px 0;
             }
             .host-stats span {
                 width: 100%;
                 justify-content: center;
-                padding: 4px 12px;
-                gap: 6px;
+                padding: 3px 10px;
+                gap: 4px;
             }
             .host-stats .num {
-                font-size: 1.4rem;
-                min-width: 28px;
+                font-size: 1.2rem;
+                min-width: 24px;
             }
             #hostStatus {
-                font-size: 0.85rem;
-                padding: 4px 8px;
+                font-size: 0.75rem;
+                padding: 3px 8px;
             }
             body {
-                padding: 8px;
+                padding: 6px;
             }
             .main-card {
                 height: auto;
                 max-height: none;
             }
+        }
+
+        @media (max-width: 420px) {
+            .options-grid-host {
+                gap: 6px;
+            }
+            .bar-track {
+                min-height: 40px;
+                max-height: 80px;
+            }
+            .bar-text {
+                font-size: 0.8rem;
+            }
+            .option-label {
+                font-size: 0.95rem;
+                padding: 1px 10px;
+                margin-top: 4px;
+            }
+            .event-heading h1 {
+                font-size: 1.2rem;
+            }
+            #questionHost {
+                font-size: 1.3rem;
+                padding: 4px 10px;
+                min-height: 30px;
+            }
+        }
+
+        /* small extra polish for bar heights when very short */
+        .bar-track .bar-fill .bar-text {
+            transition: opacity 0.4s;
+        }
+        .bar-fill[style*="height: 0%"] .bar-text {
+            opacity: 0;
+        }
+        .bar-fill[style*="height: 0%"] .bar-text .count-small {
+            opacity: 0;
+        }
+        .bar-fill .bar-text {
+            opacity: 1;
         }
     </style>
 </head>
@@ -527,29 +740,84 @@
         </div>
 
         <!-- ============================================================
-        QUESTION NUMBER (FIXED LOADING)
+        QUESTION NUMBER
         ============================================================ -->
         <div id="questionHost">
             <span id="qNumberDisplay">Q1</span>
             <span class="poll-status" id="pollStatus"></span>
         </div>
 
+        <!-- ============================================================
+        VERTICAL BAR GRID
+        ============================================================ -->
         <div class="options-grid-host" id="optionsContainerHost">
-            <div class="option-item">
-                <span class="option-label">A.</span>
-                <div class="bar-bg"><div class="bar-fill" id="bar0">0%</div></div>
+            <!-- A -->
+            <div class="option-item" id="optItem0">
+                <div class="bar-wrapper">
+                    <div class="bar-track">
+                        <div class="bar-fill empty" id="bar0" style="height:0%;">
+                            <span class="bar-text">
+                                0%
+                                <span class="count-small">0 votes</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <span class="option-label">
+                    A
+                    <span class="vote-count" id="voteCount0">0</span>
+                </span>
             </div>
-            <div class="option-item">
-                <span class="option-label">B.</span>
-                <div class="bar-bg"><div class="bar-fill" id="bar1">0%</div></div>
+            <!-- B -->
+            <div class="option-item" id="optItem1">
+                <div class="bar-wrapper">
+                    <div class="bar-track">
+                        <div class="bar-fill empty" id="bar1" style="height:0%;">
+                            <span class="bar-text">
+                                0%
+                                <span class="count-small">0 votes</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <span class="option-label">
+                    B
+                    <span class="vote-count" id="voteCount1">0</span>
+                </span>
             </div>
-            <div class="option-item">
-                <span class="option-label">C.</span>
-                <div class="bar-bg"><div class="bar-fill" id="bar2">0%</div></div>
+            <!-- C -->
+            <div class="option-item" id="optItem2">
+                <div class="bar-wrapper">
+                    <div class="bar-track">
+                        <div class="bar-fill empty" id="bar2" style="height:0%;">
+                            <span class="bar-text">
+                                0%
+                                <span class="count-small">0 votes</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <span class="option-label">
+                    C
+                    <span class="vote-count" id="voteCount2">0</span>
+                </span>
             </div>
-            <div class="option-item">
-                <span class="option-label">D.</span>
-                <div class="bar-bg"><div class="bar-fill" id="bar3">0%</div></div>
+            <!-- D -->
+            <div class="option-item" id="optItem3">
+                <div class="bar-wrapper">
+                    <div class="bar-track">
+                        <div class="bar-fill empty" id="bar3" style="height:0%;">
+                            <span class="bar-text">
+                                0%
+                                <span class="count-small">0 votes</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <span class="option-label">
+                    D
+                    <span class="vote-count" id="voteCount3">0</span>
+                </span>
             </div>
         </div>
 
@@ -592,6 +860,18 @@
             document.getElementById('bar2'),
             document.getElementById('bar3')
         ];
+        const voteCountLabels = [
+            document.getElementById('voteCount0'),
+            document.getElementById('voteCount1'),
+            document.getElementById('voteCount2'),
+            document.getElementById('voteCount3')
+        ];
+        const optItems = [
+            document.getElementById('optItem0'),
+            document.getElementById('optItem1'),
+            document.getElementById('optItem2'),
+            document.getElementById('optItem3')
+        ];
         const totalSpan = document.getElementById('totalVotes');
         const onlineSpan = document.getElementById('onlineCount');
         const hostStatus = document.getElementById('hostStatus');
@@ -633,16 +913,13 @@
 
         // ---------- LOAD POLL ----------
         function loadPoll() {
-            // Show loading state immediately
             updateQuestionDisplay(currentPollId, true);
 
-            // Update global config
             db.collection('config').doc('app').set({
                 currentPollId: currentPollId,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).catch(err => console.error("Error updating global config:", err));
 
-            // Detach old listeners
             if (unsubscribeVotes) { unsubscribeVotes();
                 unsubscribeVotes = null; }
             if (unsubscribePoll) { unsubscribePoll();
@@ -653,15 +930,10 @@
 
         // ---------- HOST LISTENER ----------
         function setupHostListener(pollId) {
-            // Listen to the poll document to check if it exists
             const pollRef = db.collection('polls').doc(pollId);
             unsubscribePoll = pollRef.onSnapshot((doc) => {
                 const exists = doc.exists;
                 updateQuestionDisplay(pollId, false, exists);
-                if (exists) {
-                    // If poll exists, we also get the options (though we don't display them directly)
-                    // We just need to know the poll exists for the status
-                }
             }, (err) => {
                 console.error("Poll listener error:", err);
                 updateQuestionDisplay(pollId, false, false);
@@ -669,7 +941,6 @@
                 pollStatus.style.color = 'rgba(255, 50, 50, 0.6)';
             });
 
-            // Listen to votes
             const votesRef = db.collection('polls').doc(pollId).collection('votes');
             unsubscribeVotes = votesRef.onSnapshot((snapshot) => {
                 const counts = [0, 0, 0, 0];
@@ -685,15 +956,61 @@
                     users.add(doc.id);
                 });
 
-                let maxVotes = Math.max(...counts, 1);
-                bars.forEach((bar, idx) => {
-                    let percentage = (counts[idx] / maxVotes) * 100;
-                    if (total === 0) percentage = 0;
-                    bar.style.width = percentage + '%';
-                    bar.innerText = counts[idx] > 0 ? counts[idx] + ' (' + Math.round((counts[idx] / total) *
-                        100) + '%)' : '0%';
+                // Update vote count labels
+                counts.forEach((c, i) => {
+                    voteCountLabels[i].innerText = c;
                 });
 
+                // Determine max for proportional height
+                const maxVotes = Math.max(...counts, 1);
+                const hasVotes = total > 0;
+
+                // Update each bar
+                bars.forEach((bar, idx) => {
+                    const count = counts[idx];
+                    let percent = hasVotes ? (count / maxVotes) * 100 : 0;
+                    // If total votes > 0 but this option has 0, show a tiny sliver for visibility
+                    if (hasVotes && count === 0) percent = 2;
+
+                    // Clamp
+                    percent = Math.min(100, Math.max(0, percent));
+
+                    // Update height
+                    bar.style.height = percent + '%';
+
+                    // Update text
+                    const textSpan = bar.querySelector('.bar-text');
+                    const smallSpan = textSpan.querySelector('.count-small');
+                    if (hasVotes && count > 0) {
+                        const pct = Math.round((count / total) * 100);
+                        textSpan.childNodes[0].textContent = pct + '%';
+                        smallSpan.textContent = count + ' vote' + (count > 1 ? 's' : '');
+                    } else if (hasVotes && count === 0) {
+                        textSpan.childNodes[0].textContent = '0%';
+                        smallSpan.textContent = '0 votes';
+                    } else {
+                        textSpan.childNodes[0].textContent = '—';
+                        smallSpan.textContent = '0 votes';
+                    }
+
+                    // Toggle "empty" class for styling
+                    if (!hasVotes || count === 0) {
+                        bar.classList.add('empty');
+                    } else {
+                        bar.classList.remove('empty');
+                    }
+
+                    // Highlight the leading option (optional)
+                    optItems.forEach(item => item.classList.remove('highlight'));
+                    if (hasVotes) {
+                        const maxIdx = counts.indexOf(Math.max(...counts));
+                        if (maxIdx >= 0 && counts[maxIdx] > 0) {
+                            optItems[maxIdx].classList.add('highlight');
+                        }
+                    }
+                });
+
+                // Total votes
                 if (total !== prevTotal) {
                     totalSpan.innerText = total;
                     totalSpan.classList.remove('pop');
@@ -733,7 +1050,7 @@
             console.warn("Config listener error:", err);
         });
 
-        console.log("✅ Host Dashboard Ready! (Fixed Question Loading)");
+        console.log("✅ Host Dashboard Ready! (Vertical Bar Chart)");
     </script>
 </body>
 </html>
