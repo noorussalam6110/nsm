@@ -687,11 +687,38 @@ body.light-mode .prayer-item .p-time{color:#0a1a3f}
   padding:30px 40px;
   min-height:0;
   overflow:hidden;
-  background:radial-gradient(circle at 30% 20%,rgba(212,175,55,.06),transparent 45%),linear-gradient(155deg,#071433 0%,#050e2b 50%,#03081c 100%);
+  background:
+    linear-gradient(135deg,rgba(5,14,43,.78),rgba(3,8,28,.85)),
+    url('https://images.unsplash.com/photo-1542816417-0983c9c9ad53');
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
   position:relative;
 }
-.nsm-login-side::before{content:'';position:absolute;width:400px;height:400px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(212,175,55,.14),transparent 65%);border-radius:50%;filter:blur(60px);animation:orbFloat1 12s ease-in-out infinite;pointer-events:none}
-.nsm-login-side::after{content:'';position:absolute;width:350px;height:350px;bottom:-120px;left:-80px;background:radial-gradient(circle,rgba(34,211,238,.12),transparent 65%);border-radius:50%;filter:blur(60px);animation:orbFloat2 14s ease-in-out infinite;pointer-events:none}
+.nsm-login-side::before{
+  content:'';
+  position:absolute;
+  width:400px;height:400px;
+  top:-120px;right:-100px;
+  background:radial-gradient(circle,rgba(212,175,55,.20),transparent 65%);
+  border-radius:50%;
+  filter:blur(60px);
+  animation:orbFloat1 12s ease-in-out infinite;
+  pointer-events:none;
+  z-index:1;                 /* ← Photo-യ്ക്ക് മുകളിൽ */
+}
+.nsm-login-side::after{
+  content:'';
+  position:absolute;
+  width:350px;height:350px;
+  bottom:-120px;left:-80px;
+  background:radial-gradient(circle,rgba(34,211,238,.18),transparent 65%);
+  border-radius:50%;
+  filter:blur(60px);
+  animation:orbFloat2 14s ease-in-out infinite;
+  pointer-events:none;
+  z-index:1;                 /* ← Photo-യ്ക്ക് മുകളിൽ */
+}
 @keyframes orbFloat1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,40px) scale(1.1)}}
 @keyframes orbFloat2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
 .nsm-card{
