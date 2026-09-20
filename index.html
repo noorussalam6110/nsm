@@ -33,42 +33,21 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Anek Malayalam',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
 
 /* ============================================================ */
-/* 🌐 BASE + SCROLL — FIXED                                     */
+/* 🌐 BASE + SCROLL SYSTEM                                      */
 /* ============================================================ */
-html{
-  overflow-x:hidden;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  scroll-behavior:smooth;
-}
+html{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;}
 body{
   background:linear-gradient(155deg,var(--b950),var(--b900) 22%,var(--b800) 45%,var(--b700) 68%,var(--b600));
-  background-attachment:fixed;
-  min-height:100vh;
-  color:var(--txt);
-  overflow-x:hidden;
-  overflow-y:auto;
-  position:relative;
-  transition:background .4s;
+  background-attachment:fixed;min-height:100vh;color:var(--txt);
+  overflow-x:hidden;overflow-y:auto;position:relative;transition:background .4s;
   -webkit-overflow-scrolling:touch;
 }
 body.login-active{
-  overflow:hidden!important;
-  height:100vh!important;
-  max-height:100vh!important;
-  height:100dvh!important;
-  max-height:100dvh!important;
-  position:fixed!important;
-  width:100%;
-  top:0;
-  left:0;
-  overscroll-behavior:none;
+  overflow:hidden!important;height:100vh!important;max-height:100vh!important;
+  height:100dvh!important;max-height:100dvh!important;
+  position:fixed!important;width:100%;top:0;left:0;overscroll-behavior:none;
 }
-body:not(.login-active){
-  overflow-y:auto!important;
-  height:auto!important;
-  position:relative!important;
-}
+body:not(.login-active){overflow-y:auto!important;height:auto!important;position:relative!important;}
 
 body::before{content:'';position:fixed;inset:-30%;z-index:0;pointer-events:none;background:radial-gradient(38% 34% at 15% 18%,rgba(59,139,255,.30),transparent 62%),radial-gradient(34% 30% at 85% 12%,rgba(34,211,238,.20),transparent 60%);animation:auroraFloat 26s ease-in-out infinite alternate}
 @keyframes auroraFloat{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(2.5%,-2%,0) scale(1.06)}100%{transform:translate3d(-2%,2.5%,0) scale(1.02)}}
@@ -143,7 +122,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .lb-empty i{font-size:2rem;color:#fbbf24;opacity:.4;display:block;margin-bottom:8px}
 
 /* ============================================================ */
-/* 💰 PALATHULLI HERO                                           */
+/* 💰 PALATHULLI                                                */
 /* ============================================================ */
 .palathulli-hero{position:relative;overflow:hidden;border-radius:28px;margin-bottom:20px;padding:26px 24px;background:linear-gradient(125deg,rgba(30,107,224,.42),rgba(21,71,168,.55) 45%,rgba(10,26,63,.85));border:1.6px solid rgba(125,179,255,.36)}
 .pala-inner{position:relative;z-index:2}
@@ -314,7 +293,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .profile-photo-wrapper .photo-edit-btn{position:absolute;bottom:0;right:0;background:linear-gradient(100deg,var(--b500),var(--cyan));border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#03132e;border:3px solid var(--b800);cursor:pointer;font-size:.95rem}
 
 /* ============================================================ */
-/* 🎨 NSM LOGIN — Premium Blue + Gold Edition                   */
+/* 🎨 NSM LOGIN                                                 */
 /* ============================================================ */
 .nsm-login-wrapper{
   height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;
@@ -374,9 +353,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 @keyframes orbFloat1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,40px) scale(1.1)}}
 @keyframes orbFloat2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
 
-/* ============================================================ */
-/* 🎴 LOGIN CARD                                                */
-/* ============================================================ */
+/* LOGIN CARD */
 .nsm-card{
   position:relative!important;z-index:2!important;
   width:100%!important;max-width:380px!important;
@@ -395,13 +372,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .nsm-card::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);animation:cardShineSweep 6s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes cardShineSweep{0%,100%{left:-100%;}50%{left:100%;}}
 
-/* Card Header */
 .nsm-card-header{text-align:center;margin-bottom:16px}
 .nsm-card-logo{width:72px!important;height:72px!important;margin:0 auto 10px!important;position:relative;}
 .nsm-card-logo img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,.6)) drop-shadow(0 0 30px rgba(212,175,55,.7))!important;animation:logoFloatGlass 4s ease-in-out infinite;}
 @keyframes logoFloatGlass{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.03);}}
 
-/* ✅ UPDATED Card Titles */
 .nsm-card-title{
   font-size:1.08rem!important;
   font-weight:900!important;
@@ -420,7 +395,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
   text-shadow:0 1px 4px rgba(0,0,0,.6);
 }
 
-/* Tabs */
 .nsm-tabs{display:flex!important;gap:6px!important;background:rgba(255,255,255,.12)!important;backdrop-filter:blur(14px)!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:14px!important;padding:4px!important;margin-bottom:16px!important;}
 .nsm-tab{flex:1;padding:10px 8px;border:none;border-radius:10px;background:transparent;color:rgba(255,255,255,.75)!important;font-family:inherit;font-weight:800!important;font-size:.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
 .nsm-tab i{font-size:.85rem}
@@ -428,7 +402,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .nsm-tab.active{background:linear-gradient(100deg,#0a1a3f,#1547a8)!important;color:#ffd966!important;box-shadow:0 6px 18px -6px rgba(10,26,63,.7),inset 0 1px 0 rgba(255,215,120,.25)!important;transform:translateY(-1px);pointer-events:none;}
 .nsm-tab.active i{color:#fbbf24!important;}
 
-/* Form */
 .nsm-form{display:flex;flex-direction:column;gap:12px}
 .nsm-field{display:flex;flex-direction:column;gap:7px}
 .nsm-label{font-size:.78rem!important;font-weight:800!important;letter-spacing:.3px;color:#fff!important;text-shadow:0 1px 4px rgba(0,0,0,.6);}
@@ -448,7 +421,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .nsm-forgot a{font-size:.75rem;color:#ffd966!important;font-weight:700;text-decoration:none;transition:color .2s;text-shadow:0 1px 3px rgba(0,0,0,.5);}
 .nsm-forgot a:hover{color:#fff!important;text-decoration:underline}
 
-/* Buttons */
 .nsm-btn-primary{width:100%;border:none;padding:13px 22px;border-radius:14px;font-family:inherit;font-weight:900;font-size:.95rem;letter-spacing:.8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;background:linear-gradient(100deg,#1547a8 0%,#2b7cf0 40%,#22d3ee 75%,#3b8bff 100%)!important;background-size:220% 100%!important;animation:btnBlueFlow 6s ease infinite;box-shadow:0 16px 34px -14px rgba(34,211,238,.95),0 0 0 1px rgba(212,175,55,.55) inset!important;position:relative;overflow:hidden;transition:all .3s cubic-bezier(.34,1.56,.64,1)!important;}
 @keyframes btnBlueFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 .nsm-btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent 30%,rgba(255,215,120,.4) 50%,transparent 70%);transition:left .75s ease}
@@ -469,78 +441,246 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .nsm-copyright{position:relative;z-index:2;margin-top:16px;font-size:.7rem;color:rgba(255,255,255,.7)!important;letter-spacing:.8px;text-align:center;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.7);}
 
 /* ============================================================ */
-/* 📱 MOBILE RESPONSIVE — NAVBAR HIDDEN                         */
+/* 📱 MOBILE — FIXED (Photo height കുറച്ച് Access Portal visible) */
 /* ============================================================ */
 @media(max-width:900px){
-  /* ✅ Hide navbar completely on mobile */
-  .nsm-navbar{
-    display:none !important;
+  /* ✅ Navbar hidden */
+  .nsm-navbar{display:none !important;}
+  
+  /* ✅ Login wrapper full height */
+  .nsm-login-wrapper{
+    height:100vh !important;
+    height:100dvh !important;
+    max-height:100vh !important;
+    max-height:100dvh !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
   }
   
-  /* Body layout */
+  /* ✅ Body — column layout, no overflow */
   .nsm-body{
-    grid-template-columns:1fr;
+    display:flex !important;
+    flex-direction:column !important;
+    grid-template-columns:1fr !important;
     flex:1 !important;
-    height:100% !important;
+    height:auto !important;
     min-height:0 !important;
+    overflow:hidden !important;
+    gap:0 !important;
   }
   
-  /* Hero */
+  /* ✅ HERO — Small banner (max 150px) */
   .nsm-hero{
-    padding:38px 28px;
-    min-height:250px;
+    flex:0 0 auto !important;
+    min-height:0 !important;
+    max-height:150px !important;
+    height:150px !important;
+    padding:16px 20px !important;
     border-radius:0 !important;
+    margin:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    text-align:center !important;
+    overflow:hidden !important;
   }
-  .nsm-hero-title{font-size:1.55rem}
-  .nsm-hero-sub{font-size:.88rem;margin-bottom:18px}
-  .nsm-hero-chips span{font-size:.66rem;padding:6px 11px}
-  .nsm-hero-deco{font-size:8rem;bottom:-30px;right:-20px}
+  .nsm-hero-content{
+    max-width:100% !important;
+    margin:0 auto !important;
+    text-align:center !important;
+  }
+  .nsm-hero-quote-mark{display:none !important;}
+  .nsm-hero-title{
+    font-size:1.05rem !important;
+    line-height:1.25 !important;
+    margin:0 0 6px !important;
+  }
+  .nsm-hero-highlight{font-size:1.05rem !important;}
+  .nsm-hero-sub{display:none !important;}
   
-  /* Login side */
-  .nsm-login-side{padding:32px 20px 40px}
-  .nsm-card{padding:28px 22px 22px;border-radius:22px;max-width:100%}
+  /* ✅ Quality/Values/Excellence chips — HIDDEN */
+  .nsm-hero-chips{display:none !important;}
+  
+  .nsm-hero-deco{
+    font-size:5rem !important;
+    bottom:-15px !important;
+    right:-10px !important;
+  }
+  
+  /* ✅ Login side — Full remaining space, scrollable */
+  .nsm-login-side{
+    flex:1 1 auto !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:16px 16px 24px !important;
+  }
+  .nsm-login-side::before,
+  .nsm-login-side::after{display:none !important;}
+  
+  /* ✅ Card — Compact, all buttons visible */
+  .nsm-card{
+    width:100% !important;
+    max-width:100% !important;
+    padding:20px 18px 18px !important;
+    border-radius:20px !important;
+    margin:0 !important;
+    transform:none !important;
+  }
+  .nsm-card::after{display:none !important;}
+  
+  .nsm-card-header{margin-bottom:12px !important;}
+  .nsm-card-logo{width:60px !important;height:60px !important;margin-bottom:8px !important;}
+  .nsm-card-title{font-size:1rem !important;letter-spacing:1px !important;}
+  .nsm-card-sub{font-size:.66rem !important;letter-spacing:2.5px !important;}
+  
+  .nsm-tabs{padding:3px !important;margin-bottom:12px !important;}
+  .nsm-tab{padding:9px 6px !important;font-size:.72rem !important;min-height:36px !important;}
+  
+  .nsm-form{gap:11px !important;}
+  .nsm-input-wrap{min-height:46px !important;padding:0 12px !important;border-radius:12px !important;}
+  .nsm-input{padding:11px 0 !important;font-size:16px !important;}
+  .nsm-input::placeholder{font-size:13px !important;}
+  
+  .nsm-hint{font-size:.64rem !important;}
+  
+  .nsm-btn-primary{
+    padding:13px 18px !important;
+    font-size:.88rem !important;
+    min-height:48px !important;
+    border-radius:13px !important;
+  }
+  
+  .nsm-divider{margin:2px 0 !important;}
+  .nsm-divider span{font-size:.64rem !important;}
+  
+  .nsm-btn-secondary{
+    padding:12px 16px !important;
+    font-size:.82rem !important;
+    min-height:46px !important;
+    border-radius:13px !important;
+  }
+  
+  .nsm-card-footer{margin-top:14px !important;padding-top:12px !important;}
+  .nsm-footer-chips span{font-size:.56rem !important;padding:4px 10px !important;}
+  
+  .nsm-copyright{margin-top:10px !important;font-size:.6rem !important;}
 }
 
-/* Small phones */
+/* 📱 Small phones (≤520px) */
 @media(max-width:520px){
-  .nsm-hero{padding:32px 20px;min-height:220px}
-  .nsm-hero-title{font-size:1.28rem;line-height:1.3}
-  .nsm-hero-sub{font-size:.78rem}
-  .nsm-hero-quote-mark{font-size:1.8rem;margin-bottom:8px}
-  .nsm-hero-chips{gap:6px}
-  .nsm-hero-chips span{font-size:.6rem;padding:5px 9px;letter-spacing:.2px}
-  .nsm-card-logo{width:64px;height:64px}
-  .nsm-card-title{font-size:.98rem}
-  .nsm-card-sub{font-size:.64rem;letter-spacing:2.4px}
-  .nsm-tab{font-size:.68rem;padding:9px 6px}
-  .nsm-tab span{display:none}
-  .nsm-tab i{font-size:.95rem}
-  .nsm-input{padding:13px 0;font-size:.9rem}
-  .nsm-label{font-size:.72rem}
-  .nsm-btn-primary{padding:14px 18px;font-size:.88rem}
-  .nsm-btn-secondary{padding:13px 18px;font-size:.82rem}
-  .nsm-copyright{font-size:.62rem}
+  .nsm-hero{
+    height:120px !important;
+    max-height:120px !important;
+    padding:14px 16px !important;
+  }
+  .nsm-hero-title{font-size:.92rem !important;line-height:1.2 !important;}
+  .nsm-hero-highlight{font-size:.92rem !important;}
+  .nsm-hero-deco{display:none !important;}
+  
+  .nsm-login-side{padding:14px 14px 20px !important;}
+  
+  .nsm-card{padding:18px 16px 16px !important;border-radius:18px !important;}
+  .nsm-card-logo{width:54px !important;height:54px !important;margin-bottom:6px !important;}
+  .nsm-card-title{font-size:.94rem !important;letter-spacing:.8px !important;}
+  .nsm-card-sub{font-size:.6rem !important;letter-spacing:2px !important;}
+  .nsm-card-header{margin-bottom:10px !important;}
+  
+  .nsm-tabs{padding:3px !important;margin-bottom:10px !important;}
+  .nsm-tab{padding:8px 5px !important;font-size:.68rem !important;min-height:34px !important;}
+  
+  .nsm-form{gap:10px !important;}
+  .nsm-input-wrap{min-height:44px !important;padding:0 12px !important;}
+  .nsm-input{padding:11px 0 !important;font-size:16px !important;}
+  .nsm-input::placeholder{font-size:13px !important;}
+  
+  .nsm-hint{font-size:.6rem !important;}
+  
+  .nsm-btn-primary{
+    padding:12px 16px !important;
+    font-size:.84rem !important;
+    min-height:46px !important;
+  }
+  
+  .nsm-btn-secondary{
+    padding:11px 14px !important;
+    font-size:.78rem !important;
+    min-height:44px !important;
+  }
+  
+  .nsm-card-footer{margin-top:12px !important;padding-top:10px !important;}
+  .nsm-footer-chips span{font-size:.54rem !important;padding:3px 8px !important;}
+  
+  .nsm-copyright{margin-top:8px !important;font-size:.56rem !important;}
 }
 
-/* Very small phones */
+/* 📱 Very small phones (≤400px) */
 @media(max-width:400px){
-  .nsm-hero{padding:24px 16px;min-height:200px}
-  .nsm-hero-title{font-size:1.1rem}
-  .nsm-hero-highlight{font-size:1.1rem}
-  .nsm-hero-sub{font-size:.72rem}
-  .nsm-card{padding:22px 16px 18px;border-radius:20px}
-  .nsm-card-logo{width:54px;height:54px;margin-bottom:8px}
-  .nsm-card-title{font-size:.9rem;letter-spacing:.8px}
-  .nsm-card-sub{font-size:.58rem;letter-spacing:2px}
-  .nsm-tab{padding:8px 4px;font-size:.62rem;min-height:38px}
-  .nsm-tab span{font-size:.62rem}
-  .nsm-tab i{font-size:.75rem}
-  .nsm-input-wrap{min-height:48px;padding:0 12px}
-  .nsm-input{font-size:.92rem;padding:12px 0}
-  .nsm-input#studentId{font-size:.92rem}
-  .nsm-btn-primary{padding:14px;font-size:.86rem;min-height:50px}
-  .nsm-btn-secondary{padding:13px;font-size:.8rem;min-height:48px}
-  .nsm-card-header{margin-bottom:12px}
+  .nsm-hero{
+    height:100px !important;
+    max-height:100px !important;
+    padding:10px 12px !important;
+  }
+  .nsm-hero-title{font-size:.82rem !important;}
+  .nsm-hero-highlight{font-size:.82rem !important;}
+  
+  .nsm-login-side{padding:12px 12px 16px !important;}
+  .nsm-card{padding:16px 14px 14px !important;border-radius:16px !important;}
+  .nsm-card-logo{width:48px !important;height:48px !important;margin-bottom:4px !important;}
+  .nsm-card-title{font-size:.86rem !important;letter-spacing:.5px !important;}
+  .nsm-card-sub{font-size:.54rem !important;letter-spacing:1.5px !important;}
+  .nsm-card-header{margin-bottom:8px !important;}
+  
+  .nsm-tabs{margin-bottom:8px !important;}
+  .nsm-tab{padding:7px 4px !important;min-height:32px !important;}
+  .nsm-tab span{display:none !important;}
+  .nsm-tab i{font-size:.85rem !important;}
+  
+  .nsm-form{gap:8px !important;}
+  .nsm-input-wrap{min-height:42px !important;padding:0 10px !important;}
+  .nsm-input{padding:10px 0 !important;font-size:16px !important;}
+  
+  .nsm-btn-primary{padding:11px 14px !important;font-size:.8rem !important;min-height:44px !important;}
+  .nsm-btn-secondary{padding:10px 12px !important;font-size:.76rem !important;min-height:42px !important;}
+  
+  .nsm-card-footer{margin-top:10px !important;padding-top:8px !important;}
+  .nsm-footer-chips{display:none !important;}
+  .nsm-copyright{margin-top:6px !important;font-size:.52rem !important;}
+}
+
+/* 📱 Landscape mobile */
+@media(max-width:900px) and (orientation:landscape) and (max-height:500px){
+  .nsm-hero{
+    height:70px !important;
+    max-height:70px !important;
+    padding:8px 12px !important;
+  }
+  .nsm-hero-title{font-size:.76rem !important;}
+  .nsm-hero-quote-mark{display:none !important;}
+  .nsm-hero-chips{display:none !important;}
+  
+  .nsm-login-side{padding:8px 12px !important;}
+  .nsm-card{padding:12px 14px !important;border-radius:14px !important;}
+  .nsm-card-logo{width:38px !important;height:38px !important;margin-bottom:4px !important;}
+  .nsm-card-title{font-size:.78rem !important;}
+  .nsm-card-sub{font-size:.52rem !important;letter-spacing:1.5px !important;}
+  .nsm-card-header{margin-bottom:8px !important;}
+  .nsm-tabs{margin-bottom:8px !important;padding:2px !important;}
+  .nsm-tab{padding:6px 4px !important;min-height:30px !important;font-size:.62rem !important;}
+  .nsm-tab span{display:none !important;}
+  .nsm-form{gap:6px !important;}
+  .nsm-input-wrap{min-height:36px !important;padding:0 10px !important;}
+  .nsm-input{padding:8px 0 !important;font-size:14px !important;}
+  .nsm-btn-primary{padding:9px 14px !important;min-height:38px !important;font-size:.75rem !important;}
+  .nsm-btn-secondary{padding:8px 12px !important;min-height:36px !important;font-size:.7rem !important;}
+  .nsm-card-footer{display:none !important;}
+  .nsm-copyright{margin-top:6px !important;font-size:.54rem !important;}
 }
 
 /* iOS input zoom fix */
@@ -847,7 +987,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 /* ============================================================ */
 .notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:16px}
 .note-card{background:linear-gradient(150deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1.6px solid rgba(255,255,255,.15);border-radius:16px;padding:14px;border-left:4px solid #6d88ad;transition:.22s}
-.note-card:hover{border-color:rgba(34,211,238,.55);transform:translateY(-3px)}
 .note-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
 .note-card-title{font-size:.9rem;font-weight:800;color:#fff;line-height:1.25;flex:1;word-break:break-word}
 .note-subject-tag{font-size:.6rem;font-weight:800;padding:3px 9px;border-radius:20px;text-transform:uppercase;background:rgba(140,190,255,.15);color:#67e8f9}
@@ -855,7 +994,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .note-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:.68rem;color:#6d88ad;border-top:1px solid rgba(140,190,255,.1);padding-top:8px}
 .note-actions{display:flex;gap:6px}
 .note-action-btn{width:28px;height:28px;border-radius:8px;border:1px solid rgba(140,190,255,.2);background:rgba(120,180,255,.08);color:#9db8dd;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center}
-.note-action-btn.danger:hover{background:rgba(239,68,68,.3);color:#fca5a5}
 .notes-empty{text-align:center;padding:40px 20px;color:#9db8dd;grid-column:1/-1}
 .notes-empty i{font-size:3rem;color:#22d3ee;opacity:.4;display:block;margin-bottom:12px}
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px;margin-top:12px}
@@ -893,7 +1031,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .vis-toggle input:checked + .vis-switch::after{left:18px}
 .vis-toggle.off .vis-name{color:#9db8dd;opacity:.7}
 
-/* Theme toggle */
 .theme-toggle{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(120,180,255,.09);border:1px solid var(--stroke);cursor:pointer;color:var(--b200);font-size:1.05rem;transition:.22s}
 .theme-toggle:hover{background:rgba(59,139,255,.25);color:#fff;transform:rotate(15deg)}
 
@@ -916,7 +1053,6 @@ body.light-mode .pala-title-ml{background:linear-gradient(100deg,#0a1a3f,#2563eb
 body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);-webkit-background-clip:text;background-clip:text}
 </style>
 </head>
-<body>
 
 <!-- SPLASH SCREEN -->
 <div id="splashScreen" style="position:fixed;inset:0;z-index:99998;background:linear-gradient(155deg,#03081c,#050e2b 30%,#071433);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity .4s ease;">
