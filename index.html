@@ -37,7 +37,6 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Anek Malayalam',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
 html{overflow-x:hidden;}
 body{background:linear-gradient(155deg,var(--b950),var(--b900) 22%,var(--b800) 45%,var(--b700) 68%,var(--b600));background-attachment:fixed;min-height:100vh;color:var(--txt);overflow-x:hidden;overflow-y:auto;position:relative;transition:background .4s}
-body.login-active{overflow:hidden!important;height:100vh!important;max-height:100vh!important;height:100dvh!important;max-height:100dvh!important;}
 body.login-active{
   overflow:hidden!important;
   height:100vh!important;
@@ -801,13 +800,6 @@ body.light-mode .prayer-item .p-time{color:#0a1a3f}
     overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
     overscroll-behavior:none;
-  }
-  body.login-active{
-    overflow:hidden!important;
-    height:100vh!important;
-    max-height:100vh!important;
-    height:100dvh!important;
-    max-height:100dvh!important;
   }
   /* Login page-ൽ scroll disable */
   body.login-active{overflow:hidden!important;height:100vh!important;max-height:100vh!important}
@@ -3096,15 +3088,6 @@ const loginSection=document.getElementById('loginSection'),dashboardSection=docu
 })();
 
 // Login-ൽ നിന്ന് dashboard-ലേക്ക് പോകുമ്പോൾ scroll enable
-function enableBodyScroll(){
-  document.body.classList.remove('login-active');
-  document.body.style.overflow='';
-  document.documentElement.style.overflow='';
-}
-function disableBodyScroll(){
-  document.body.classList.add('login-active');
-}
-disableBodyScroll();
 const loadingOverlay=document.getElementById('loadingOverlay'),modal=document.getElementById('globalModal');
 const modalTitleSpan=document.getElementById('modalTitle'),modalBodyDiv=document.getElementById('modalContentBody');
 
@@ -3259,7 +3242,6 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
       document.getElementById('adminSettingsTab').style.display='none';
       localStorage.setItem('noor_last_id',raw);
       showToast('🔐 Admin Panel','success');
-      enableBodyScroll();  // ← Admin login-ൽ scroll enable
       showLoading(false);return;
     }
     var r=await supabaseClient.from('students').select('*').eq('studentid',raw).single();
@@ -3281,7 +3263,6 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
     await initNewFeatures();
     enableBodyScroll();  // ✅ Scroll enable
     showToast('Welcome '+currentUser.name+' ✨','success');
-    enableBodyScroll();
   }catch(err){console.error('Login error:',err);showToast('❌ '+(err.message||'Error'),'error');}
   showLoading(false);
 });
@@ -3290,7 +3271,6 @@ document.getElementById('adminLogoutBtn').addEventListener('click',logout);
 function logout(){
   if(adminImpersonating){returnToAdmin();return;}
   currentUser=null;isAdminMode=false;currentAdminClass='';
-  disableBodyScroll();  // ← Logout-ൽ തിരിച്ചു scroll lock
   localStorage.removeItem('noor_session');
   dashboardSection.style.display='none';adminSection.style.display='none';loginSection.style.display='flex';
   document.getElementById('aiFab').classList.remove('show');document.getElementById('aiPanel').classList.remove('open');
