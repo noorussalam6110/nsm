@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Noorussalam">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
-<title>NOORUSSALAM MADRASA | Student Portal v22.2</title>
+<title>NOORUSSALAM MADRASA | Student Portal v22.3</title>
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800&display=swap"></noscript>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -52,7 +52,6 @@ body{
   transition:background .4s;
   -webkit-overflow-scrolling:touch;
 }
-/* Login-active: only THEN lock scroll */
 body.login-active{
   overflow:hidden!important;
   height:100vh!important;
@@ -65,7 +64,6 @@ body.login-active{
   left:0;
   overscroll-behavior:none;
 }
-/* Dashboard / admin: normal scroll */
 body:not(.login-active){
   overflow-y:auto!important;
   height:auto!important;
@@ -81,7 +79,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--b400),var(--b600));border-radius:8px}
 
 /* ============================================================ */
-/* 🎨 MODALS / GLASS / BUTTONS                                  */
+/* ❓ HELP MODAL                                                 */
 /* ============================================================ */
 .help-modal{display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(16px);z-index:9999;align-items:center;justify-content:center;padding:18px}
 .help-modal.active{display:flex}
@@ -92,6 +90,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .video-wrapper{position:relative;padding-bottom:56.25%;height:0;border-radius:18px;overflow:hidden;background:#000}
 .video-wrapper iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 
+/* ============================================================ */
+/* 🎓 DASHBOARD HEADER                                          */
+/* ============================================================ */
 .dashboard-header-glow{background:linear-gradient(120deg,rgba(24,87,196,.30),rgba(10,26,63,.72));backdrop-filter:blur(20px);border-radius:24px;padding:16px 22px;margin-bottom:18px;border:1px solid var(--stroke);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px}
 .avatar-neon{width:62px;height:62px;border-radius:20px;overflow:hidden;flex-shrink:0;background:linear-gradient(140deg,var(--b500),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;cursor:pointer;transition:.22s}
 .avatar-neon:hover{transform:scale(1.05)}
@@ -104,7 +105,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .icon-btn:hover{background:rgba(59,139,255,.25);color:#fff}
 .btn-exit{background:linear-gradient(100deg,#b91c1c,#ef4444);border:none;color:#fff;font-weight:700;padding:11px 20px;border-radius:14px;font-size:.85rem;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px}
 
-/* Leaderboard */
+/* ============================================================ */
+/* 🏆 LEADERBOARD                                               */
+/* ============================================================ */
 .leaderboard-section{margin-bottom:20px;padding:18px 0 12px;background:linear-gradient(135deg,rgba(251,191,36,.10),rgba(30,107,224,.12));border:1.6px solid rgba(251,191,36,.35);border-radius:24px;position:relative;overflow:hidden}
 .leaderboard-header{display:flex;justify-content:space-between;align-items:center;padding:0 20px 14px;flex-wrap:wrap;gap:8px}
 .leaderboard-header .lb-title{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1rem;color:#fff}
@@ -139,7 +142,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .lb-empty{text-align:center;padding:22px 20px;color:#9db8dd;font-size:.82rem}
 .lb-empty i{font-size:2rem;color:#fbbf24;opacity:.4;display:block;margin-bottom:8px}
 
-/* Palathulli Hero */
+/* ============================================================ */
+/* 💰 PALATHULLI HERO                                           */
+/* ============================================================ */
 .palathulli-hero{position:relative;overflow:hidden;border-radius:28px;margin-bottom:20px;padding:26px 24px;background:linear-gradient(125deg,rgba(30,107,224,.42),rgba(21,71,168,.55) 45%,rgba(10,26,63,.85));border:1.6px solid rgba(125,179,255,.36)}
 .pala-inner{position:relative;z-index:2}
 .pala-label{display:inline-flex;align-items:center;gap:9px;font-size:.72rem;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;color:var(--cyan-soft);background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.32);padding:6px 15px;border-radius:30px}
@@ -155,7 +160,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .pala-drop-deco{position:absolute;right:22px;top:50%;transform:translateY(-50%);font-size:5.4rem;opacity:.11;color:var(--cyan-soft);pointer-events:none;z-index:1}
 .pala-minhint{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;background:rgba(251,191,36,.15);color:#fcd34d;border:1px solid rgba(251,191,36,.35);padding:5px 12px;border-radius:30px;margin-top:10px}
 
-/* Stats grid */
+/* ============================================================ */
+/* 📊 STATS GRID                                                */
+/* ============================================================ */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:22px}
 .stat-card-neon{background:linear-gradient(150deg,rgba(255,255,255,.11),rgba(255,255,255,.03));backdrop-filter:blur(18px);border-radius:20px;padding:18px;border:1px solid rgba(255,255,255,.14);transition:.25s}
 .stat-card-neon:hover{transform:translateY(-5px);border-color:rgba(140,190,255,.4)}
@@ -169,6 +176,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .progress-bar.bg-success{background:linear-gradient(90deg,#10b981,#34d399)!important}
 .badge-rank{display:inline-block;padding:5px 14px;border-radius:30px;font-weight:800;font-size:.72rem;background:linear-gradient(100deg,var(--b500),var(--cyan));color:#03132e}
 
+/* ============================================================ */
+/* 🎯 QUICK ACTIONS                                             */
+/* ============================================================ */
 .section-title{display:flex;align-items:center;gap:11px;font-weight:800;font-size:1.06rem;color:#fff;margin:22px 0 14px}
 .section-title i{color:var(--cyan)}
 .action-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:0 0 22px}
@@ -196,6 +206,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .action-ico.c-creations{background:linear-gradient(145deg,#ec4899,#f472b6)}
 .action-tile h6{color:#fff;font-size:.8rem;font-weight:700;margin:0}
 
+/* ============================================================ */
+/* 📡 ACTIVITY TIMELINE                                         */
+/* ============================================================ */
 .activity-timeline{background:linear-gradient(150deg,rgba(255,255,255,.10),rgba(255,255,255,.03));backdrop-filter:blur(18px);border-radius:20px;padding:18px;border:1px solid rgba(255,255,255,.14);height:100%}
 .activity-timeline h5{font-size:.98rem;font-weight:800;display:flex;align-items:center;gap:9px;color:#fff;margin-bottom:14px}
 .activity-timeline h5 i{color:var(--cyan)}
@@ -204,6 +217,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .feed-dot{width:8px;height:8px;border-radius:50%;background:var(--b400);margin-top:7px;flex-shrink:0}
 .event-card{background:linear-gradient(120deg,rgba(59,139,255,.12),rgba(120,180,255,.04));border:1px solid var(--stroke);border-radius:15px;padding:12px 14px;margin-bottom:9px;border-left:3px solid var(--cyan)}
 
+/* ============================================================ */
+/* 🎛️ ADMIN                                                     */
+/* ============================================================ */
 .class-selector-panel{background:linear-gradient(135deg,rgba(30,107,224,.20),rgba(10,26,63,.7));border:1.6px solid rgba(125,179,255,.35);border-radius:26px;padding:26px;margin-bottom:22px;text-align:center}
 .class-selector-panel h3{color:#fff;font-weight:800;font-size:1.28rem;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:11px}
 .class-selector-panel p{color:var(--txt-dim);font-size:.85rem;margin-bottom:18px}
@@ -213,8 +229,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .no-class-message{background:rgba(120,180,255,.03);border:2px dashed rgba(140,190,255,.18);border-radius:26px;padding:56px 20px;text-align:center;color:var(--txt-dim)}
 .no-class-message i{font-size:3.4rem;opacity:.4;display:block;margin-bottom:14px;color:var(--b400)}
 .no-class-message h4{color:#fff;font-size:1.16rem;margin-bottom:8px;font-weight:700}
-
-/* Admin tabs */
 .admin-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .admin-tab{padding:9px 15px;border:none;border-radius:40px;background:rgba(120,180,255,.08);color:var(--txt-dim);font-weight:700;font-size:.72rem;cursor:pointer;font-family:inherit;transition:.22s}
 .admin-tab.active{background:linear-gradient(100deg,var(--b500),var(--b600));color:#fff}
@@ -229,7 +243,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .admin-toolbar label{font-weight:700;font-size:.78rem;color:var(--txt-dim)}
 .admin-toolbar input,.admin-toolbar select{padding:9px 15px;border:1.5px solid var(--stroke);border-radius:40px;font-size:.84rem;outline:none;background:rgba(8,20,48,.65);color:#fff;min-width:130px;font-family:inherit}
 .admin-toolbar select option{background:#0a1a3f}
-
 .btn-load,.btn-update,.btn-pdf,.btn-cancel{border:none;font-family:inherit;font-weight:800;cursor:pointer;transition:.22s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
 .btn-load{padding:9px 19px;border-radius:40px;background:linear-gradient(100deg,var(--b500),var(--b600));color:#fff;font-size:.79rem}
 .btn-update{padding:12px 28px;border-radius:60px;background:linear-gradient(100deg,var(--cyan),var(--b450));color:#03132e;font-size:.88rem}
@@ -238,7 +251,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .btn-sm{padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;border:none;cursor:pointer;transition:.2s}
 .btn-sm.approve{background:linear-gradient(100deg,#059669,#34d399);color:#fff}
 .btn-sm.reject{background:linear-gradient(100deg,#b91c1c,#f87171);color:#fff}
-
 .existing-badge{display:inline-block;padding:3px 11px;border-radius:30px;font-size:.55rem;font-weight:800;background:rgba(52,211,153,.18);color:#6ee7b7;border:1px solid rgba(52,211,153,.3)}
 .existing-badge.pending{background:rgba(251,191,36,.16);color:#fcd34d}
 .balance-positive{color:#6ee7b7;font-weight:800}
@@ -251,6 +263,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .admin-summary .stat .num.green{color:#6ee7b7}
 .admin-summary .stat .num.orange{color:#fcd34d}
 .admin-summary .stat .label{font-size:.55rem;text-transform:uppercase;color:var(--txt-dim);margin-top:3px;letter-spacing:1px}
+
+/* ============================================================ */
+/* 🪟 MODALS / GLASS / BUTTONS                                  */
+/* ============================================================ */
 .modal-glass{background:linear-gradient(160deg,rgba(24,87,196,.26),rgba(5,14,43,.97));backdrop-filter:blur(26px);border:1px solid var(--stroke-2);border-radius:26px}
 .modal-form-input{width:100%;background:rgba(8,20,48,.7);border:1.5px solid var(--stroke);border-radius:14px;padding:11px 15px;color:#fff;font-family:inherit;font-size:.9rem;outline:none}
 .modal-form-input:focus{border-color:var(--b400)}
@@ -274,7 +290,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .homework-item.overdue{border-left-color:#f87171}
 .library-item{background:rgba(120,180,255,.05);border:1px solid var(--stroke);border-radius:14px;padding:14px;margin-bottom:10px;border-left:3px solid var(--b400);text-decoration:none;display:block;transition:.22s}
 .library-item:hover{background:rgba(59,139,255,.16);transform:translateX(5px)}
-
 .photo-container{width:170px;height:170px;margin:15px auto;border-radius:50%;overflow:hidden;border:4px solid var(--b400);background:#0a1a3f}
 .photo-container img{width:100%;height:100%;object-fit:cover}
 .upload-btn{background:linear-gradient(100deg,var(--b500),var(--cyan));color:#03132e;border:none;padding:11px 22px;border-radius:50px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:9px;font-family:inherit}
@@ -299,7 +314,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .profile-photo-wrapper .photo-edit-btn{position:absolute;bottom:0;right:0;background:linear-gradient(100deg,var(--b500),var(--cyan));border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#03132e;border:3px solid var(--b800);cursor:pointer;font-size:.95rem}
 
 /* ============================================================ */
-/* 🎨 NSM SPLIT-SCREEN LOGIN — Premium Blue + Gold Edition      */
+/* 🎨 NSM LOGIN — Premium Blue + Gold Edition                   */
 /* ============================================================ */
 .nsm-login-wrapper{
   height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;
@@ -359,7 +374,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 @keyframes orbFloat1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,40px) scale(1.1)}}
 @keyframes orbFloat2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
 
-/* LOGIN CARD */
+/* ============================================================ */
+/* 🎴 LOGIN CARD                                                */
+/* ============================================================ */
 .nsm-card{
   position:relative!important;z-index:2!important;
   width:100%!important;max-width:380px!important;
@@ -377,18 +394,41 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 @keyframes cardGoldenFlow{0%{background-position:250% 0;}100%{background-position:-250% 0;}}
 .nsm-card::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);animation:cardShineSweep 6s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes cardShineSweep{0%,100%{left:-100%;}50%{left:100%;}}
+
+/* Card Header */
 .nsm-card-header{text-align:center;margin-bottom:16px}
 .nsm-card-logo{width:72px!important;height:72px!important;margin:0 auto 10px!important;position:relative;}
 .nsm-card-logo img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,.6)) drop-shadow(0 0 30px rgba(212,175,55,.7))!important;animation:logoFloatGlass 4s ease-in-out infinite;}
 @keyframes logoFloatGlass{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.03);}}
-.nsm-card-title{font-size:1.35rem!important;font-weight:900!important;margin:0 0 4px;letter-spacing:.8px!important;color:#fff!important;text-shadow:0 2px 8px rgba(0,0,0,.8),0 0 20px rgba(212,175,55,.5)!important;}
-.nsm-card-sub{font-size:.78rem!important;color:rgba(255,255,255,.85)!important;margin:0;font-weight:700!important;letter-spacing:2px!important;text-shadow:0 1px 4px rgba(0,0,0,.6);}
+
+/* ✅ UPDATED Card Titles */
+.nsm-card-title{
+  font-size:1.08rem!important;
+  font-weight:900!important;
+  margin:0 0 4px;
+  letter-spacing:1.2px!important;
+  color:#fff!important;
+  text-shadow:0 2px 8px rgba(0,0,0,.8),0 0 20px rgba(212,175,55,.5)!important;
+  line-height:1.2;
+}
+.nsm-card-sub{
+  font-size:.7rem!important;
+  color:#ffd966!important;
+  margin:0;
+  font-weight:800!important;
+  letter-spacing:3px!important;
+  text-shadow:0 1px 4px rgba(0,0,0,.6);
+}
+
+/* Tabs */
 .nsm-tabs{display:flex!important;gap:6px!important;background:rgba(255,255,255,.12)!important;backdrop-filter:blur(14px)!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:14px!important;padding:4px!important;margin-bottom:16px!important;}
 .nsm-tab{flex:1;padding:10px 8px;border:none;border-radius:10px;background:transparent;color:rgba(255,255,255,.75)!important;font-family:inherit;font-weight:800!important;font-size:.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
 .nsm-tab i{font-size:.85rem}
 .nsm-tab:hover:not(.active){background:rgba(255,255,255,.15)!important;color:#fff!important;}
 .nsm-tab.active{background:linear-gradient(100deg,#0a1a3f,#1547a8)!important;color:#ffd966!important;box-shadow:0 6px 18px -6px rgba(10,26,63,.7),inset 0 1px 0 rgba(255,215,120,.25)!important;transform:translateY(-1px);pointer-events:none;}
 .nsm-tab.active i{color:#fbbf24!important;}
+
+/* Form */
 .nsm-form{display:flex;flex-direction:column;gap:12px}
 .nsm-field{display:flex;flex-direction:column;gap:7px}
 .nsm-label{font-size:.78rem!important;font-weight:800!important;letter-spacing:.3px;color:#fff!important;text-shadow:0 1px 4px rgba(0,0,0,.6);}
@@ -407,6 +447,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .nsm-forgot{text-align:right;margin-top:-6px}
 .nsm-forgot a{font-size:.75rem;color:#ffd966!important;font-weight:700;text-decoration:none;transition:color .2s;text-shadow:0 1px 3px rgba(0,0,0,.5);}
 .nsm-forgot a:hover{color:#fff!important;text-decoration:underline}
+
+/* Buttons */
 .nsm-btn-primary{width:100%;border:none;padding:13px 22px;border-radius:14px;font-family:inherit;font-weight:900;font-size:.95rem;letter-spacing:.8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;background:linear-gradient(100deg,#1547a8 0%,#2b7cf0 40%,#22d3ee 75%,#3b8bff 100%)!important;background-size:220% 100%!important;animation:btnBlueFlow 6s ease infinite;box-shadow:0 16px 34px -14px rgba(34,211,238,.95),0 0 0 1px rgba(212,175,55,.55) inset!important;position:relative;overflow:hidden;transition:all .3s cubic-bezier(.34,1.56,.64,1)!important;}
 @keyframes btnBlueFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 .nsm-btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent 30%,rgba(255,215,120,.4) 50%,transparent 70%);transition:left .75s ease}
@@ -427,26 +469,40 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .nsm-copyright{position:relative;z-index:2;margin-top:16px;font-size:.7rem;color:rgba(255,255,255,.7)!important;letter-spacing:.8px;text-align:center;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.7);}
 
 /* ============================================================ */
-/* 📱 MOBILE RESPONSIVE — FIXED                                 */
+/* 📱 MOBILE RESPONSIVE — NAVBAR HIDDEN                         */
 /* ============================================================ */
 @media(max-width:900px){
-  .nsm-body{grid-template-columns:1fr;min-height:auto}
-  .nsm-hero{padding:44px 32px;min-height:280px}
+  /* ✅ Hide navbar completely on mobile */
+  .nsm-navbar{
+    display:none !important;
+  }
+  
+  /* Body layout */
+  .nsm-body{
+    grid-template-columns:1fr;
+    flex:1 !important;
+    height:100% !important;
+    min-height:0 !important;
+  }
+  
+  /* Hero */
+  .nsm-hero{
+    padding:38px 28px;
+    min-height:250px;
+    border-radius:0 !important;
+  }
   .nsm-hero-title{font-size:1.55rem}
   .nsm-hero-sub{font-size:.88rem;margin-bottom:18px}
   .nsm-hero-chips span{font-size:.66rem;padding:6px 11px}
   .nsm-hero-deco{font-size:8rem;bottom:-30px;right:-20px}
+  
+  /* Login side */
   .nsm-login-side{padding:32px 20px 40px}
   .nsm-card{padding:28px 22px 22px;border-radius:22px;max-width:100%}
 }
+
+/* Small phones */
 @media(max-width:520px){
-  .nsm-nav-inner{padding:12px 16px}
-  .nsm-nav-logo{width:42px;height:42px}
-  .nsm-nav-text h1{font-size:.9rem}
-  .nsm-nav-text p{font-size:.6rem;letter-spacing:.8px}
-  .nsm-nav-link{padding:7px 11px;font-size:.72rem}
-  .nsm-nav-link span{display:none}
-  .nsm-nav-link i{font-size:1rem;margin:0}
   .nsm-hero{padding:32px 20px;min-height:220px}
   .nsm-hero-title{font-size:1.28rem;line-height:1.3}
   .nsm-hero-sub{font-size:.78rem}
@@ -454,8 +510,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
   .nsm-hero-chips{gap:6px}
   .nsm-hero-chips span{font-size:.6rem;padding:5px 9px;letter-spacing:.2px}
   .nsm-card-logo{width:64px;height:64px}
-  .nsm-card-title{font-size:1.12rem}
-  .nsm-card-sub{font-size:.72rem}
+  .nsm-card-title{font-size:.98rem}
+  .nsm-card-sub{font-size:.64rem;letter-spacing:2.4px}
   .nsm-tab{font-size:.68rem;padding:9px 6px}
   .nsm-tab span{display:none}
   .nsm-tab i{font-size:.95rem}
@@ -465,19 +521,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
   .nsm-btn-secondary{padding:13px 18px;font-size:.82rem}
   .nsm-copyright{font-size:.62rem}
 }
+
+/* Very small phones */
 @media(max-width:400px){
-  .nsm-nav-text h1{font-size:.85rem}
-  .nsm-nav-text p{display:none}
-  .nsm-nav-logo{width:34px;height:34px}
-  .nsm-nav-link{width:34px;height:34px}
-  .nsm-hero{padding:20px 14px}
-  .nsm-hero-title{font-size:1.02rem}
-  .nsm-hero-highlight{font-size:1.02rem}
-  .nsm-hero-sub{font-size:.68rem}
-  .nsm-card{padding:20px 15px 16px;border-radius:20px}
-  .nsm-card-logo{width:52px;height:52px}
-  .nsm-card-title{font-size:1rem}
-  .nsm-card-sub{font-size:.66rem}
+  .nsm-hero{padding:24px 16px;min-height:200px}
+  .nsm-hero-title{font-size:1.1rem}
+  .nsm-hero-highlight{font-size:1.1rem}
+  .nsm-hero-sub{font-size:.72rem}
+  .nsm-card{padding:22px 16px 18px;border-radius:20px}
+  .nsm-card-logo{width:54px;height:54px;margin-bottom:8px}
+  .nsm-card-title{font-size:.9rem;letter-spacing:.8px}
+  .nsm-card-sub{font-size:.58rem;letter-spacing:2px}
   .nsm-tab{padding:8px 4px;font-size:.62rem;min-height:38px}
   .nsm-tab span{font-size:.62rem}
   .nsm-tab i{font-size:.75rem}
@@ -486,9 +540,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
   .nsm-input#studentId{font-size:.92rem}
   .nsm-btn-primary{padding:14px;font-size:.86rem;min-height:50px}
   .nsm-btn-secondary{padding:13px;font-size:.8rem;min-height:48px}
+  .nsm-card-header{margin-bottom:12px}
 }
 
-/* iOS Input Zoom Fix */
+/* iOS input zoom fix */
 @supports(-webkit-touch-callout:none){
   @media(max-width:768px){
     .nsm-input,.nsm-input#studentId{font-size:16px!important}
@@ -496,18 +551,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
   }
 }
 
-/* Touch Device */
+/* Touch devices */
 @media(hover:none) and (pointer:coarse){
   .nsm-btn-primary:active{transform:scale(.97);transition:transform .12s ease}
   .nsm-btn-secondary:active{transform:scale(.97);background:rgba(212,175,55,.12);transition:transform .12s ease}
   .nsm-tab:active:not(.active){transform:scale(.96);background:rgba(212,175,55,.15)}
-  .nsm-nav-link:active{transform:scale(.94);background:rgba(212,175,55,.18)}
   .nsm-eye:active{transform:scale(.9)}
   .nsm-forgot a:active{opacity:.7}
 }
 
 /* ============================================================ */
-/* 📱 DASHBOARD — MOBILE                                        */
+/* 📱 DASHBOARD MOBILE                                          */
 /* ============================================================ */
 @media(max-width:768px){
   .container{padding:12px}
@@ -534,36 +588,24 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
   .daily-hub{grid-template-columns:1fr}
   .hub-card{padding:16px;border-radius:18px}
   .prayer-next{font-size:1.6rem}
-  .exam-cd-num{font-size:2rem}
+  .exam-cd-num{font-size:1.8rem}
+  .exam-cd-unit{font-size:.72rem}
+  .prayer-list{gap:4px}
+  .prayer-item .p-time{font-size:.7rem}
 }
 
-/* Light Mode */
-body.light-mode{--b950:#f0f5ff;--b900:#eaf1ff;--b850:#e0e9ff;--b800:#d0defa;--b700:#a8c5f0;--b600:#3b82f6;--b500:#2563eb;--b450:#3b82f6;--b400:#2563eb;--b300:#1e5fa8;--b200:#1a4d8a;--cyan:#0891b2;--cyan-soft:#06b6d4;--stroke:rgba(59,130,246,.28);--stroke-2:rgba(59,130,246,.45);--txt:#0a1a3f;--txt-dim:#4a5f8a;background:linear-gradient(155deg,#f5f8ff,#eaf1ff 22%,#d0defa 45%,#a8c5f0 68%,#3b82f6)}
-body.light-mode::before{background:radial-gradient(38% 34% at 15% 18%,rgba(59,130,246,.20),transparent 62%),radial-gradient(34% 30% at 85% 12%,rgba(6,182,212,.15),transparent 60%)}
-body.light-mode .dashboard-header-glow{background:linear-gradient(120deg,rgba(255,255,255,.85),rgba(224,233,255,.9));border-color:rgba(59,130,246,.3)}
-body.light-mode .stat-card-neon,body.light-mode .action-tile,body.light-mode .activity-timeline,body.light-mode .chart-card{background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(240,245,255,.7));border-color:rgba(59,130,246,.2)}
-body.light-mode .action-tile h6,body.light-mode #studentFullName,body.light-mode .section-title,body.light-mode .activity-timeline h5,body.light-mode .chart-card h5{color:#0a1a3f}
-body.light-mode .modal-glass{background:linear-gradient(160deg,rgba(240,245,255,.98),rgba(255,255,255,.99))}
-body.light-mode .modal-glass h3,body.light-mode .modal-glass h4,body.light-mode .modal-glass h5,body.light-mode .modal-glass strong{color:#0a1a3f!important}
-body.light-mode .text-white{color:#0a1a3f!important}
-body.light-mode .text-white-50{color:#4a5f8a!important}
-body.light-mode .modal-form-input{background:rgba(255,255,255,.85);color:#0a1a3f;border-color:rgba(59,130,246,.35)}
-body.light-mode .modal-form-input option{background:#fff;color:#0a1a3f}
-body.light-mode .palathulli-hero{background:linear-gradient(125deg,rgba(59,130,246,.35),rgba(255,255,255,.6))}
-body.light-mode .pala-title-ml{background:linear-gradient(100deg,#0a1a3f,#2563eb);-webkit-background-clip:text;background-clip:text}
-body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);-webkit-background-clip:text;background-clip:text}
-
-.theme-toggle{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(120,180,255,.09);border:1px solid var(--stroke);cursor:pointer;color:var(--b200);font-size:1.05rem;transition:.22s}
-.theme-toggle:hover{background:rgba(59,139,255,.25);color:#fff;transform:rotate(15deg)}
-
-/* Charts */
+/* ============================================================ */
+/* 📊 CHARTS                                                    */
+/* ============================================================ */
 .charts-section{margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .chart-card{background:linear-gradient(150deg,rgba(255,255,255,.11),rgba(255,255,255,.03));backdrop-filter:blur(18px);border-radius:20px;padding:18px;border:1px solid rgba(255,255,255,.14)}
 .chart-card h5{font-size:.94rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:9px;margin-bottom:14px}
 .chart-card h5 i{color:var(--cyan)}
 .chart-wrapper{position:relative;height:220px}
 
-/* Daily Hub */
+/* ============================================================ */
+/* 🕌 DAILY HUB                                                 */
+/* ============================================================ */
 .daily-hub{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:22px}
 .hub-card{position:relative;overflow:hidden;background:linear-gradient(150deg,rgba(255,255,255,.11),rgba(255,255,255,.03));backdrop-filter:blur(18px);border-radius:22px;padding:20px;border:1.4px solid rgba(255,255,255,.16);transition:.25s}
 .hub-card:hover{transform:translateY(-4px);border-color:rgba(140,190,255,.4)}
@@ -601,7 +643,9 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .exam-cd-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:12px}
 .exam-cd-fill{height:100%;border-radius:6px;transition:width .7s;background:linear-gradient(90deg,#ef4444,#fbbf24)}
 
-/* Notices */
+/* ============================================================ */
+/* 📌 NOTICES                                                   */
+/* ============================================================ */
 .notice-board-list{display:flex;flex-direction:column;gap:10px}
 .notice-item{padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(120,180,255,.08),rgba(120,180,255,.02));border:1px solid rgba(140,190,255,.18);border-left:4px solid #3b8bff;transition:.22s;position:relative}
 .notice-item.priority-high{border-left-color:#fbbf24;background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,191,36,.02))}
@@ -618,7 +662,9 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .notice-empty{text-align:center;padding:40px 20px;color:#9db8dd}
 .notice-empty i{font-size:3rem;color:#fbbf24;opacity:.3;display:block;margin-bottom:12px}
 
-/* AI Panel */
+/* ============================================================ */
+/* 🤖 AI PANEL                                                  */
+/* ============================================================ */
 .ai-fab{position:fixed;bottom:22px;right:20px;z-index:9000;width:64px!important;height:64px!important;border-radius:50%;border:2px solid rgba(255,255,255,.3)!important;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:1.55rem!important;color:#03132e;background:linear-gradient(135deg,#22d3ee,#3b8bff,#8b5cf6)!important;background-size:200% 200%!important;animation:fabPulseGold 3s ease infinite!important;box-shadow:0 20px 50px -14px rgba(34,211,238,1)!important;transition:.25s}
 .ai-fab.show{display:flex}
 @keyframes fabPulseGold{0%,100%{background-position:0% 50%;box-shadow:0 20px 50px -14px rgba(34,211,238,1),0 0 0 0 rgba(34,211,238,.5);}50%{background-position:100% 50%;box-shadow:0 20px 50px -14px rgba(139,92,246,1),0 0 0 14px rgba(34,211,238,0);}}
@@ -644,13 +690,8 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,#3b8bff,#22d3ee)!important;color:#03132e!important;font-weight:700!important;border-bottom-right-radius:6px!important;box-shadow:0 8px 24px -8px rgba(34,211,238,.85)!important;}
 .ai-msg.bot .ai-copy-btn{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(200,220,255,.75);cursor:pointer;opacity:0;transition:.2s;padding:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;}
 .ai-msg.bot:hover .ai-copy-btn{opacity:1;}
-.ai-msg.bot .ai-copy-btn:hover{background:rgba(34,211,238,.3);color:#fff;}
 .ai-msg.typing{background:linear-gradient(150deg,rgba(120,180,255,.18),rgba(120,180,255,.06))!important;border:1px solid rgba(34,211,238,.3)!important;padding-left:46px!important;min-height:50px!important;display:flex;gap:5px;align-items:center;}
-.ai-msg.typing::before{content:'🤖';position:absolute;left:10px;top:10px;width:28px;height:28px;border-radius:50%;background:linear-gradient(140deg,#22d3ee,#3b8bff);display:flex;align-items:center;justify-content:center;font-size:.85rem;animation:aiTypingPulse 1.4s infinite;}
-@keyframes aiTypingPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
 .ai-msg.typing .dot{width:9px!important;height:9px!important;border-radius:50%;background:linear-gradient(140deg,#22d3ee,#3b8bff)!important;box-shadow:0 0 8px rgba(34,211,238,.7);animation:typingBounce 1.4s infinite ease-in-out both;}
-.ai-msg.typing .dot:nth-child(1){animation-delay:-0.32s;}
-.ai-msg.typing .dot:nth-child(2){animation-delay:-0.16s;}
 @keyframes typingBounce{0%,80%,100%{transform:scale(0.55);opacity:.35;}40%{transform:scale(1);opacity:1;}}
 .ai-quick{display:flex;gap:7px;padding:8px 14px 12px!important;flex-wrap:wrap;background:linear-gradient(180deg,transparent,rgba(5,14,43,.4))!important;}
 .ai-chip{background:linear-gradient(135deg,rgba(120,180,255,.14),rgba(120,180,255,.05))!important;border:1px solid rgba(140,190,255,.28)!important;color:#c9dfff!important;font-size:.74rem!important;font-weight:700;padding:9px 16px!important;border-radius:22px!important;cursor:pointer;font-family:inherit;transition:all .25s;}
@@ -662,12 +703,13 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .ai-send:hover:not(:disabled){transform:scale(1.08) rotate(-8deg);}
 .ai-send:disabled,.ai-input:disabled{opacity:.55;cursor:not-allowed;}
 .ai-mic-btn{width:44px!important;height:44px!important;border-radius:14px!important;border:1px solid rgba(140,190,255,.25)!important;cursor:pointer;flex-shrink:0;background:linear-gradient(140deg,rgba(120,180,255,.18),rgba(120,180,255,.06))!important;color:#7db3ff!important;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.2s;}
-.ai-mic-btn:hover{background:linear-gradient(140deg,rgba(34,211,238,.3),rgba(59,139,255,.25))!important;color:#fff!important;transform:scale(1.06);}
 .ai-mic-btn.listening{background:linear-gradient(140deg,#ef4444,#f87171)!important;color:#fff!important;animation:pulseMic 1.2s infinite!important;}
 @keyframes pulseMic{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0)}}
 @media(max-width:480px){.ai-fab{width:56px;height:56px;font-size:1.3rem;bottom:16px;right:14px}.ai-panel{bottom:82px;right:10px;left:10px;width:auto}}
 
-/* Creations */
+/* ============================================================ */
+/* 🎨 CREATIONS                                                 */
+/* ============================================================ */
 .creations-overlay{position:fixed;inset:0;background:linear-gradient(155deg,rgba(3,8,28,.98),rgba(7,20,51,.99));backdrop-filter:blur(20px);z-index:1400;display:none;overflow-y:auto;padding:16px}
 .creations-overlay.open{display:block}
 .creations-container{max-width:1380px;margin:0 auto;padding-bottom:80px}
@@ -710,18 +752,13 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .creation-mode-tabs{display:flex;gap:8px;margin-bottom:18px;background:rgba(8,20,48,.55);padding:6px;border-radius:16px;border:1px solid var(--stroke);}
 .creation-mode-tab{flex:1;padding:12px 14px;border-radius:12px;border:none;background:transparent;color:#9db8dd;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:.22s;}
 .creation-mode-tab.active{background:linear-gradient(100deg,#ec4899,#f472b6);color:#fff;box-shadow:0 8px 20px -8px rgba(236,72,153,.9);}
-.creation-mode-tab:hover:not(.active){background:rgba(59,139,255,.15);color:#fff;}
-.creation-text-wrap{position:relative;margin-bottom:10px;}
 .creation-textarea{width:100%;min-height:280px;background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:2px dashed rgba(244,114,182,.4);border-radius:20px;padding:20px;color:#fff;font-family:'Anek Malayalam',serif;font-size:1rem;line-height:1.75;outline:none;resize:vertical;transition:.22s;}
 .creation-textarea:focus{border-color:rgba(244,114,182,.85);background:rgba(8,20,48,.7);box-shadow:0 0 0 4px rgba(236,72,153,.15);}
-.creation-textarea::placeholder{color:rgba(169,205,255,.4);}
 .creation-text-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:.72rem;color:#9db8dd;flex-wrap:wrap;gap:8px;}
 .creation-text-meta .ct-warn{color:#fbbf24;font-weight:800;}
 .creation-text-meta .ct-ok{color:#6ee7b7;font-weight:800;}
 .creation-thumb.text-thumb{display:flex;align-items:center;justify-content:center;padding:24px 18px;background:linear-gradient(140deg,rgba(139,92,246,.22),rgba(236,72,153,.14),rgba(10,26,63,.9));position:relative;overflow:hidden;}
-.creation-thumb.text-thumb::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(244,114,182,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(244,114,182,.07) 1px,transparent 1px);background-size:22px 22px;}
 .text-preview-quote{position:relative;z-index:2;color:#fff;font-family:'Anek Malayalam',serif;font-size:.86rem;line-height:1.55;text-align:center;font-style:italic;max-height:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;}
-.text-preview-quote::before{content:'"';position:absolute;top:-30px;left:-8px;font-size:4rem;color:rgba(244,114,182,.45);font-family:Georgia,serif;line-height:1;}
 .text-badge-type{position:absolute;bottom:10px;right:10px;font-size:.6rem;font-weight:800;padding:4px 10px;border-radius:20px;background:rgba(139,92,246,.9);color:#fff;backdrop-filter:blur(6px);z-index:3;letter-spacing:.5px;text-transform:uppercase;}
 .cl-text-content{background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(140,190,255,.15);border-radius:18px;padding:24px 26px;font-family:'Anek Malayalam',serif;font-size:1rem;line-height:1.9;color:#eaf2ff;white-space:pre-wrap;word-break:break-word;max-height:55vh;overflow-y:auto;margin-bottom:14px;}
 .creation-lightbox{position:fixed;inset:0;background:rgba(3,8,28,.96);backdrop-filter:blur(20px);z-index:1600;display:none;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
@@ -763,9 +800,9 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .creation-cat-chip.pdf-chip{background:rgba(239,68,68,.9);color:#fff}
 .cip-desc-hint{display:flex;align-items:center;gap:8px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);border-radius:12px;padding:10px 14px;margin-top:10px;font-size:.74rem;color:#67e8f9;}
 
-/* Public Feed */
-.public-gallery-btn{background:linear-gradient(100deg,rgba(236,72,153,.15),rgba(34,211,238,.12));border:1.4px solid rgba(236,72,153,.4);padding:12px 20px;border-radius:16px;color:#f9a8d4;font-weight:700;font-size:.9rem;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:12px;font-family:inherit;transition:.22s}
-.public-gallery-btn:hover{background:linear-gradient(100deg,rgba(236,72,153,.3),rgba(34,211,238,.25));color:#fff;transform:translateY(-1px)}
+/* ============================================================ */
+/* 🌐 PUBLIC FEED                                               */
+/* ============================================================ */
 .public-feed-overlay{position:fixed;inset:0;background:linear-gradient(155deg,#03081c,#050e2b 30%,#071433);z-index:3000;display:none;flex-direction:column}
 .public-feed-overlay.open{display:flex}
 .pf-header{position:sticky;top:0;z-index:10;background:rgba(5,14,43,.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(140,190,255,.18);padding:12px 16px}
@@ -775,26 +812,22 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .pf-title h2{color:#fff;font-size:1.05rem;font-weight:800;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pf-title p{color:#9db8dd;font-size:.7rem;margin:2px 0 0;text-transform:uppercase;letter-spacing:.8px}
 .pf-header-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
-.pf-login-btn{background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#03132e;border:none;padding:9px 16px;border-radius:30px;font-weight:800;font-size:.78rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:.22s}
-.pf-login-btn:hover{transform:translateY(-1px)}
+.pf-login-btn{background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#03132e;border:none;padding:9px 16px;border-radius:30px;font-weight:800;font-size:.78rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
 .pf-close-btn{background:rgba(255,255,255,.10);border:1px solid rgba(140,190,255,.3);color:#fff;width:40px;height:40px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .pf-feed{flex:1;overflow-y:auto;padding:16px;padding-bottom:80px}
 .pf-feed-inner{max-width:680px;margin:0 auto}
 .pf-card{background:linear-gradient(155deg,rgba(255,255,255,.10),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.14);border-radius:22px;margin-bottom:18px;overflow:hidden;transition:.25s}
-.pf-card:hover{border-color:rgba(236,72,153,.4);transform:translateY(-2px)}
 .pf-card-header{display:flex;align-items:center;padding:14px 16px;gap:12px}
 .pf-author-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(140deg,#1e6be0,#22d3ee);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:1.05rem;overflow:hidden;flex-shrink:0}
 .pf-author-avatar img{width:100%;height:100%;object-fit:cover}
 .pf-author-info{flex:1;min-width:0}
 .pf-author-name{color:#fff;font-weight:800;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pf-post-meta{color:#9db8dd;font-size:.72rem;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-post-meta{color:#9db8dd;font-size:.72rem;margin-top:3px}
 .pf-cat-chip{display:inline-block;background:rgba(236,72,153,.18);color:#f9a8d4;padding:2px 8px;border-radius:20px;font-size:.66rem;font-weight:800;margin-left:4px}
 .pf-card-media{width:100%;background:#0a1a3f;overflow:hidden;cursor:pointer}
 .pf-card-media img{width:100%;display:block;max-height:600px;object-fit:cover}
 .pf-pdf-preview{padding:44px 20px;text-align:center;background:linear-gradient(140deg,rgba(239,68,68,.12),rgba(10,26,63,.9));cursor:pointer}
 .pf-pdf-preview i{font-size:3.2rem;color:#f87171;display:block;margin-bottom:8px}
-.pf-pdf-preview .pf-pdf-label{color:#fff;font-weight:800;font-size:.9rem;margin-bottom:4px}
-.pf-pdf-preview .pf-pdf-sub{color:#9db8dd;font-size:.72rem}
 .pf-card-body{padding:14px 16px 16px}
 .pf-card-title{color:#fff;font-size:1.05rem;font-weight:800;margin:0 0 8px;line-height:1.3;word-break:break-word}
 .pf-card-desc{color:#c9dfff;font-size:.86rem;line-height:1.55;margin:0 0 12px;word-break:break-word;white-space:pre-wrap;max-height:120px;overflow:hidden}
@@ -802,25 +835,19 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .pf-action-btn{flex:1;background:transparent;border:none;color:#9db8dd;font-weight:800;padding:10px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-size:.82rem;font-family:inherit;transition:.2s}
 .pf-action-btn:hover{background:rgba(120,180,255,.10);color:#fff}
 .pf-action-btn.liked{color:#f472b6}
-.pf-action-btn.liked i{color:#ec4899}
 .pf-feed-loading,.pf-feed-empty{text-align:center;padding:60px 20px;color:#9db8dd;font-size:.9rem}
 .pf-feed-empty i{font-size:3.5rem;color:#f472b6;opacity:.4;display:block;margin-bottom:14px}
-.pf-feed-empty h3{color:#fff;font-weight:800;margin:0 0 6px;font-size:1.1rem}
 .pf-cta-banner{background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(236,72,153,.10));border:1.6px solid rgba(34,211,238,.3);border-radius:18px;padding:18px;margin-bottom:18px;text-align:center}
 .pf-cta-banner p{color:#fff;font-size:.88rem;margin:0 0 12px;font-weight:700}
 .pf-cta-btn{background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#03132e;border:none;padding:10px 24px;border-radius:30px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
 @media(max-width:600px){.pf-title h2{font-size:.9rem}.pf-title p{display:none}.pf-card{border-radius:16px;margin-bottom:12px}.pf-feed{padding:10px}.pf-close-btn{width:36px;height:36px}.pf-login-btn{padding:8px 12px;font-size:.72rem}}
 
-/* Notes */
+/* ============================================================ */
+/* 📝 NOTES / BADGES                                            */
+/* ============================================================ */
 .notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:16px}
 .note-card{background:linear-gradient(150deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1.6px solid rgba(255,255,255,.15);border-radius:16px;padding:14px;border-left:4px solid #6d88ad;transition:.22s}
 .note-card:hover{border-color:rgba(34,211,238,.55);transform:translateY(-3px)}
-.note-card[data-subject="Maths"]{border-left-color:#10b981}
-.note-card[data-subject="English"]{border-left-color:#f59e0b}
-.note-card[data-subject="Arabic"]{border-left-color:#ec4899}
-.note-card[data-subject="Science"]{border-left-color:#06b6d4}
-.note-card[data-subject="Malayalam"]{border-left-color:#8b5cf6}
-.note-card[data-subject="Notes"]{border-left-color:#3b82f6}
 .note-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
 .note-card-title{font-size:.9rem;font-weight:800;color:#fff;line-height:1.25;flex:1;word-break:break-word}
 .note-subject-tag{font-size:.6rem;font-weight:800;padding:3px 9px;border-radius:20px;text-transform:uppercase;background:rgba(140,190,255,.15);color:#67e8f9}
@@ -828,15 +855,11 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .note-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:.68rem;color:#6d88ad;border-top:1px solid rgba(140,190,255,.1);padding-top:8px}
 .note-actions{display:flex;gap:6px}
 .note-action-btn{width:28px;height:28px;border-radius:8px;border:1px solid rgba(140,190,255,.2);background:rgba(120,180,255,.08);color:#9db8dd;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center}
-.note-action-btn:hover{background:rgba(59,139,255,.25);color:#fff}
 .note-action-btn.danger:hover{background:rgba(239,68,68,.3);color:#fca5a5}
 .notes-empty{text-align:center;padding:40px 20px;color:#9db8dd;grid-column:1/-1}
 .notes-empty i{font-size:3rem;color:#22d3ee;opacity:.4;display:block;margin-bottom:12px}
-
-/* Badges */
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px;margin-top:12px}
 .badge-card{background:linear-gradient(150deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:1.6px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 8px;text-align:center;transition:.25s;cursor:pointer}
-.badge-card:hover{transform:translateY(-4px);border-color:rgba(251,191,36,.6)}
 .badge-card.locked{opacity:.38;filter:grayscale(1)}
 .badge-card.unlocked{border-color:rgba(251,191,36,.5);background:linear-gradient(150deg,rgba(251,191,36,.15),rgba(59,130,246,.08))}
 .badge-card .badge-emoji{font-size:2.2rem;display:block;margin-bottom:6px;line-height:1}
@@ -844,7 +867,9 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .badge-card .badge-desc{font-size:.62rem;color:#9db8dd;margin-top:3px}
 .badge-count-pill{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(100deg,#fbbf24,#f59e0b);color:#03132e;padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:800;margin-top:8px}
 
-/* Marks Entry */
+/* ============================================================ */
+/* 🎯 MARK ENTRY / VISIBILITY                                   */
+/* ============================================================ */
 .class-subjects-info{padding:12px 16px;background:rgba(59,139,255,.10);border-radius:14px;margin-bottom:12px;border:1px solid rgba(59,139,255,.28)}
 .exam-selector-panel{background:linear-gradient(135deg,rgba(30,107,224,.22),rgba(34,211,238,.10));border:1.6px solid rgba(34,211,238,.42);border-radius:20px;padding:16px;margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
 .exam-selector-panel label{color:#fff;font-weight:800;font-size:.92rem;display:flex;align-items:center;gap:8px}
@@ -854,16 +879,11 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .marks-entry-table th{padding:10px 12px;text-align:left;font-weight:800;font-size:.62rem;text-transform:uppercase;color:var(--b300);background:rgba(59,139,255,.10);border-bottom:1.5px solid var(--stroke)}
 .marks-entry-table td{padding:8px 12px;border-bottom:1px solid rgba(140,190,255,.05)}
 .marks-entry-table input.mk-inp{width:74px;padding:7px 8px;border:1.5px solid var(--stroke);border-radius:30px;font-size:.85rem;outline:none;background:rgba(8,20,48,.75);color:#fff;text-align:center;font-weight:700;font-family:inherit}
-
-/* Admin View Banner */
 .admin-view-banner{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9998;background:linear-gradient(100deg,#fbbf24,#f59e0b);color:#03132e;padding:10px 16px;border-radius:50px;font-weight:800;font-size:.8rem;box-shadow:0 14px 34px -10px rgba(251,191,36,.9);display:none;align-items:center;gap:10px;max-width:94vw;flex-wrap:wrap;justify-content:center}
 .admin-view-banner.show{display:flex}
 .admin-view-banner button{background:#03132e;color:#fff;border:none;padding:7px 14px;border-radius:30px;font-weight:800;font-size:.72rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px}
-
-/* Visibility toggles */
 .visibility-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
 .vis-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(59,139,255,.08);padding:8px 12px;border-radius:12px;border:1px solid var(--stroke);cursor:pointer;user-select:none}
-.vis-toggle:hover{background:rgba(59,139,255,.16)}
 .vis-toggle .vis-name{font-size:.75rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px}
 .vis-toggle .vis-name i{color:#67e8f9;font-size:.85rem;width:14px}
 .vis-toggle input{display:none}
@@ -873,22 +893,32 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 .vis-toggle input:checked + .vis-switch::after{left:18px}
 .vis-toggle.off .vis-name{color:#9db8dd;opacity:.7}
 
-/* Fix for charts inside mobile */
-@media(max-width:768px){
-  .charts-section{grid-template-columns:1fr;gap:12px}
-  .chart-wrapper{height:180px}
-  .exam-cd-num{font-size:1.8rem}
-  .exam-cd-unit{font-size:.72rem}
-  .prayer-list{gap:4px}
-  .prayer-item .p-time{font-size:.7rem}
-}
+/* Theme toggle */
+.theme-toggle{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(120,180,255,.09);border:1px solid var(--stroke);cursor:pointer;color:var(--b200);font-size:1.05rem;transition:.22s}
+.theme-toggle:hover{background:rgba(59,139,255,.25);color:#fff;transform:rotate(15deg)}
+
+/* ============================================================ */
+/* ☀️ LIGHT MODE                                                */
+/* ============================================================ */
+body.light-mode{--b950:#f0f5ff;--b900:#eaf1ff;--b850:#e0e9ff;--b800:#d0defa;--b700:#a8c5f0;--b600:#3b82f6;--b500:#2563eb;--b450:#3b82f6;--b400:#2563eb;--b300:#1e5fa8;--b200:#1a4d8a;--cyan:#0891b2;--cyan-soft:#06b6d4;--stroke:rgba(59,130,246,.28);--stroke-2:rgba(59,130,246,.45);--txt:#0a1a3f;--txt-dim:#4a5f8a;background:linear-gradient(155deg,#f5f8ff,#eaf1ff 22%,#d0defa 45%,#a8c5f0 68%,#3b82f6)}
+body.light-mode::before{background:radial-gradient(38% 34% at 15% 18%,rgba(59,130,246,.20),transparent 62%),radial-gradient(34% 30% at 85% 12%,rgba(6,182,212,.15),transparent 60%)}
+body.light-mode .dashboard-header-glow{background:linear-gradient(120deg,rgba(255,255,255,.85),rgba(224,233,255,.9));border-color:rgba(59,130,246,.3)}
+body.light-mode .stat-card-neon,body.light-mode .action-tile,body.light-mode .activity-timeline,body.light-mode .chart-card{background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(240,245,255,.7));border-color:rgba(59,130,246,.2)}
+body.light-mode .action-tile h6,body.light-mode #studentFullName,body.light-mode .section-title,body.light-mode .activity-timeline h5,body.light-mode .chart-card h5{color:#0a1a3f}
+body.light-mode .modal-glass{background:linear-gradient(160deg,rgba(240,245,255,.98),rgba(255,255,255,.99))}
+body.light-mode .modal-glass h3,body.light-mode .modal-glass h4,body.light-mode .modal-glass h5,body.light-mode .modal-glass strong{color:#0a1a3f!important}
+body.light-mode .text-white{color:#0a1a3f!important}
+body.light-mode .text-white-50{color:#4a5f8a!important}
+body.light-mode .modal-form-input{background:rgba(255,255,255,.85);color:#0a1a3f;border-color:rgba(59,130,246,.35)}
+body.light-mode .modal-form-input option{background:#fff;color:#0a1a3f}
+body.light-mode .palathulli-hero{background:linear-gradient(125deg,rgba(59,130,246,.35),rgba(255,255,255,.6))}
+body.light-mode .pala-title-ml{background:linear-gradient(100deg,#0a1a3f,#2563eb);-webkit-background-clip:text;background-clip:text}
+body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);-webkit-background-clip:text;background-clip:text}
 </style>
 </head>
 <body>
 
-<!-- ============================================================ -->
-<!-- 🚀 SPLASH SCREEN                                             -->
-<!-- ============================================================ -->
+<!-- SPLASH SCREEN -->
 <div id="splashScreen" style="position:fixed;inset:0;z-index:99998;background:linear-gradient(155deg,#03081c,#050e2b 30%,#071433);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity .4s ease;">
   <div style="width:90px;height:90px;border-radius:24px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 50px -15px rgba(59,139,255,.9);">
     <img src="https://i.postimg.cc/DznFT7L9/IMG-3167.png" style="width:70px;height:70px;object-fit:contain;" alt="NSM">
@@ -905,16 +935,14 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
   @keyframes splashBar{0%{transform:translateX(-100%);}100%{transform:translateX(400%);}}
 </style>
 
-<!-- ============================================================ -->
-<!-- 🌀 LOADING OVERLAY                                           -->
-<!-- ============================================================ -->
+<!-- LOADING OVERLAY -->
 <div id="loadingOverlay" style="position:fixed;inset:0;background:rgba(3,8,28,.9);backdrop-filter:blur(12px);z-index:9999;display:none;justify-content:center;align-items:center;flex-direction:column;gap:1rem;">
   <div class="spinner-border" style="width:3.6rem;height:3.6rem;color:#3b8bff;border-width:.28rem;" role="status"></div>
   <p style="color:#d6e6ff;font-weight:700;">Loading...</p>
 </div>
 
 <!-- ============================================================ -->
-<!-- 🔐 LOGIN SECTION — Split-Screen Premium Edition              -->
+<!-- 🔐 LOGIN SECTION — Navbar Hidden on Mobile                   -->
 <!-- ============================================================ -->
 <div id="loginSection" class="nsm-login-wrapper">
   <header class="nsm-navbar">
@@ -965,8 +993,9 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
           <div class="nsm-card-logo">
             <img src="https://i.postimg.cc/DznFT7L9/IMG-3167.png" alt="NSM">
           </div>
-          <h3 class="nsm-card-title">STUDENT PORTAL 3.0</h3>
-          <p class="nsm-card-sub">WELCOME</p>
+          <!-- ✅ UPDATED: NOORUSSALAM MADRASA + STUDENT PORTAL 3.0 -->
+          <h3 class="nsm-card-title">NOORUSSALAM MADRASA</h3>
+          <p class="nsm-card-sub">STUDENT PORTAL 3.0</p>
         </div>
 
         <div class="nsm-tabs">
@@ -1019,15 +1048,13 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
       </div>
 
       <div class="nsm-copyright">
-        v22.2 Ultimate+ Edition © Suhail Kerala
+        v22.3 Ultimate+ Edition © Suhail Kerala
       </div>
     </div>
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- ❓ HELP MODAL                                                -->
-<!-- ============================================================ -->
+<!-- HELP MODAL -->
 <div class="help-modal" id="helpModal">
   <div class="help-modal-box">
     <div class="help-modal-header">
@@ -1040,9 +1067,7 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 🔍 FIND STUDENT ID MODAL                                     -->
-<!-- ============================================================ -->
+<!-- FIND ID MODAL -->
 <div id="findStudentIdModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1061;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:450px;width:100%;">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1070,9 +1095,7 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 👁️ ADMIN VIEW BANNER                                         -->
-<!-- ============================================================ -->
+<!-- ADMIN VIEW BANNER -->
 <div class="admin-view-banner" id="adminViewBanner"></div>
 
 <!-- ============================================================ -->
@@ -1080,8 +1103,6 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 <!-- ============================================================ -->
 <div id="dashboardSection" style="display:none;">
 <div class="container">
-
-  <!-- HEADER -->
   <div class="dashboard-header-glow">
     <div class="d-flex align-items-center gap-3">
       <div class="avatar-neon" id="avatarInitials" onclick="showProfileCard()">
@@ -1104,25 +1125,14 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     </div>
   </div>
 
-  <!-- LEADERBOARD -->
   <div class="leaderboard-section" id="leaderboardSection">
     <div class="leaderboard-header">
-      <div>
-        <div class="lb-title"><i class="fas fa-crown"></i><span>Top Winners</span></div>
-        <div class="lb-subtitle">🏆 Tap for details</div>
-      </div>
-      <div class="lb-legend">
-        <span>🥇 <b>5</b> pts</span>
-        <span>🥈 <b>3</b> pts</span>
-        <span>🥉 <b>1</b> pt</span>
-      </div>
+      <div><div class="lb-title"><i class="fas fa-crown"></i><span>Top Winners</span></div><div class="lb-subtitle">🏆 Tap for details</div></div>
+      <div class="lb-legend"><span>🥇 <b>5</b> pts</span><span>🥈 <b>3</b> pts</span><span>🥉 <b>1</b> pt</span></div>
     </div>
-    <div class="leaderboard-scroll" id="leaderboardScroll">
-      <div class="lb-loading"><div class="spinner-sm"></div><span>Loading...</span></div>
-    </div>
+    <div class="leaderboard-scroll" id="leaderboardScroll"><div class="lb-loading"><div class="spinner-sm"></div><span>Loading...</span></div></div>
   </div>
 
-  <!-- DAILY HUB -->
   <div class="daily-hub" id="dailyHub">
     <div class="hub-card prayer" id="prayerCard">
       <div class="hub-head">
@@ -1156,7 +1166,7 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     <div class="hub-card exam" id="examCard">
       <div class="hub-head">
         <div class="hub-ico"><i class="fas fa-hourglass-half"></i></div>
-        <div><div class="hub-title">പരീക്ഷ കൗണ്ട്ഡൗൺ</div><div class="hub-sub">Exam Countdown</div></div>
+        <div><div class="hub-title">പരീക്ഷ കൗണ്ട്‌ഡൗൺ</div><div class="hub-sub">Exam Countdown</div></div>
       </div>
       <div id="examCountdownContent">
         <div class="text-white-50 text-center" style="padding:20px;"><div class="spinner-sm"></div></div>
@@ -1164,7 +1174,6 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     </div>
   </div>
 
-  <!-- PALATHULLI HERO -->
   <div class="palathulli-hero" id="palathulliSection">
     <div class="pala-inner">
       <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
@@ -1187,87 +1196,28 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     <i class="fas fa-piggy-bank pala-drop-deco"></i>
   </div>
 
-  <!-- STATS GRID -->
   <div class="stats-grid" id="statsGridSection">
-    <div class="stat-card-neon">
-      <div class="d-flex justify-content-between align-items-start">
-        <div>
-          <span class="stat-value-xl" id="overallGradeDisplay">—</span>
-          <div class="stat-label">Academic Grade</div>
-        </div>
-        <div class="stat-ico"><i class="fas fa-graduation-cap"></i></div>
-      </div>
-      <div class="grade-bar"><div id="gradeLineFill" class="grade-bar-fill" style="width:0%;"></div></div>
-      <div class="d-flex justify-content-between mt-2">
-        <small class="text-white-50" style="font-size:.68rem;">Performance</small>
-        <small class="text-white-50" style="font-size:.68rem;" id="gradePercentLabel">0%</small>
-      </div>
-    </div>
-    <div class="stat-card-neon">
-      <div class="d-flex justify-content-between align-items-start">
-        <div>
-          <span class="stat-value-xl" id="attendanceRateLabel">—</span>
-          <div class="stat-label">Attendance</div>
-        </div>
-        <div class="stat-ico"><i class="fas fa-calendar-check"></i></div>
-      </div>
-      <div class="progress mt-3" style="height:7px;">
-        <div id="attendanceProgressFill" class="progress-bar bg-success" style="width:0%"></div>
-      </div>
-      <div class="mt-2"><small class="text-white-50" style="font-size:.68rem;" id="attendanceTrend">No data</small></div>
-    </div>
-    <div class="stat-card-neon">
-      <div class="d-flex justify-content-between align-items-start">
-        <div>
-          <span class="stat-value-xl" id="rankNumber">—</span>
-          <div class="stat-label">Class Rank</div>
-        </div>
-        <div class="stat-ico"><i class="fas fa-trophy"></i></div>
-      </div>
-      <div class="mt-3"><span id="rankBadge" class="badge-rank">No data</span></div>
-    </div>
-    <div class="stat-card-neon">
-      <div class="d-flex justify-content-between align-items-start">
-        <div>
-          <span class="stat-value-xl" id="moralValuesDisplay">—</span>
-          <div class="stat-label">Moral Values</div>
-        </div>
-        <div class="stat-ico"><i class="fas fa-hand-holding-heart"></i></div>
-      </div>
-      <div class="mt-3"><small class="text-white-50" style="font-size:.68rem;" id="moralValuesSub">N/A</small></div>
-    </div>
+    <div class="stat-card-neon"><div class="d-flex justify-content-between align-items-start"><div><span class="stat-value-xl" id="overallGradeDisplay">—</span><div class="stat-label">Academic Grade</div></div><div class="stat-ico"><i class="fas fa-graduation-cap"></i></div></div><div class="grade-bar"><div id="gradeLineFill" class="grade-bar-fill" style="width:0%;"></div></div><div class="d-flex justify-content-between mt-2"><small class="text-white-50" style="font-size:.68rem;">Performance</small><small class="text-white-50" style="font-size:.68rem;" id="gradePercentLabel">0%</small></div></div>
+    <div class="stat-card-neon"><div class="d-flex justify-content-between align-items-start"><div><span class="stat-value-xl" id="attendanceRateLabel">—</span><div class="stat-label">Attendance</div></div><div class="stat-ico"><i class="fas fa-calendar-check"></i></div></div><div class="progress mt-3" style="height:7px;"><div id="attendanceProgressFill" class="progress-bar bg-success" style="width:0%"></div></div><div class="mt-2"><small class="text-white-50" style="font-size:.68rem;" id="attendanceTrend">No data</small></div></div>
+    <div class="stat-card-neon"><div class="d-flex justify-content-between align-items-start"><div><span class="stat-value-xl" id="rankNumber">—</span><div class="stat-label">Class Rank</div></div><div class="stat-ico"><i class="fas fa-trophy"></i></div></div><div class="mt-3"><span id="rankBadge" class="badge-rank">No data</span></div></div>
+    <div class="stat-card-neon"><div class="d-flex justify-content-between align-items-start"><div><span class="stat-value-xl" id="moralValuesDisplay">—</span><div class="stat-label">Moral Values</div></div><div class="stat-ico"><i class="fas fa-hand-holding-heart"></i></div></div><div class="mt-3"><small class="text-white-50" style="font-size:.68rem;" id="moralValuesSub">N/A</small></div></div>
   </div>
 
-  <!-- MADRASA RANK CARD -->
   <div class="stat-card-neon" style="margin-bottom:20px;padding:22px;" id="madrasaRankCard">
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
       <div style="flex:1;min-width:200px;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
           <div style="width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(140deg,#fbbf24,#f59e0b);color:#03132e;font-size:1.3rem;"><i class="fas fa-crown"></i></div>
-          <div>
-            <div style="font-weight:800;font-size:1rem;color:#fff;" id="overallRankTitleText">Overall Madrasa Rank</div>
-            <div style="font-size:.72rem;color:#9db8dd;">All classes • Total marks based</div>
-          </div>
+          <div><div style="font-weight:800;font-size:1rem;color:#fff;" id="overallRankTitleText">Overall Madrasa Rank</div><div style="font-size:.72rem;color:#9db8dd;">All classes • Total marks based</div></div>
         </div>
         <div style="font-size:2.4rem;font-weight:900;background:linear-gradient(100deg,#fbbf24,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent;" id="madrasaRankDisplay">—</div>
-        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;background:rgba(59,139,255,.10);padding:8px 14px;border-radius:30px;border:1px solid rgba(125,179,255,.25);width:fit-content;">
-          <i class="fas fa-users" style="color:#22d3ee;"></i>
-          <span style="font-size:.82rem;color:#9db8dd;">Total Students:</span>
-          <strong id="totalMadrasaStudents" style="color:#fff;font-size:1.15rem;font-weight:900;">0</strong>
-        </div>
-        <div style="font-size:.82rem;color:#67e8f9;margin-top:8px;">
-          <i class="fas fa-star"></i> Total Marks: <strong id="totalMarksDisplay">0</strong>
-        </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;background:rgba(59,139,255,.10);padding:8px 14px;border-radius:30px;border:1px solid rgba(125,179,255,.25);width:fit-content;"><i class="fas fa-users" style="color:#22d3ee;"></i><span style="font-size:.82rem;color:#9db8dd;">Total Students:</span><strong id="totalMadrasaStudents" style="color:#fff;font-size:1.15rem;font-weight:900;">0</strong></div>
+        <div style="font-size:.82rem;color:#67e8f9;margin-top:8px;"><i class="fas fa-star"></i> Total Marks: <strong id="totalMarksDisplay">0</strong></div>
       </div>
-      <div style="min-width:160px;text-align:right;">
-        <div style="font-size:.72rem;color:#9db8dd;text-transform:uppercase;">Extra-Curricular</div>
-        <div style="font-size:1.6rem;font-weight:900;color:#22d3ee;margin-top:4px;" id="extraTotalDisplay">0</div>
-        <div style="font-size:.7rem;color:#9db8dd;">marks earned</div>
-      </div>
+      <div style="min-width:160px;text-align:right;"><div style="font-size:.72rem;color:#9db8dd;text-transform:uppercase;">Extra-Curricular</div><div style="font-size:1.6rem;font-weight:900;color:#22d3ee;margin-top:4px;" id="extraTotalDisplay">0</div><div style="font-size:.7rem;color:#9db8dd;">marks earned</div></div>
     </div>
   </div>
 
-  <!-- CHARTS -->
   <div class="charts-section" id="chartsSection">
     <div class="chart-card">
       <h5><i class="fas fa-chart-line"></i> Attendance Trend</h5>
@@ -1279,7 +1229,6 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     </div>
   </div>
 
-  <!-- QUICK ACTIONS -->
   <div class="section-title" id="quickActionsTitle"><i class="fas fa-bolt"></i> Quick Actions</div>
   <div class="action-grid" id="quickActionsGrid">
     <div class="action-tile" data-action="results" onclick="showResultsModal()"><div class="action-ico c-results"><i class="fas fa-chart-simple"></i></div><h6>റിസൾട്ട്</h6></div>
@@ -1305,44 +1254,25 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     <div class="action-tile" data-action="topper" onclick="showTopperPoster()" id="topperPosterTile" style="display:none;"><div class="action-ico c-results"><i class="fas fa-trophy"></i></div><h6>ടോപ്പർ</h6></div>
   </div>
 
-  <!-- FEED + EVENTS -->
   <div class="row g-3" id="feedEventsRow">
-    <div class="col-lg-6">
-      <div class="activity-timeline">
-        <h5><i class="fas fa-wave-square"></i> Live Feed</h5>
-        <ul class="list-unstyled mb-0" id="activityFeedList"><li class="text-white-50 text-center py-3">Loading...</li></ul>
-      </div>
-    </div>
-    <div class="col-lg-6">
-      <div class="activity-timeline">
-        <h5><i class="fas fa-calendar-day"></i> Upcoming Events</h5>
-        <div id="calendarEventsList"></div>
-      </div>
-    </div>
+    <div class="col-lg-6"><div class="activity-timeline"><h5><i class="fas fa-wave-square"></i> Live Feed</h5><ul class="list-unstyled mb-0" id="activityFeedList"><li class="text-white-50 text-center py-3">Loading...</li></ul></div></div>
+    <div class="col-lg-6"><div class="activity-timeline"><h5><i class="fas fa-calendar-day"></i> Upcoming Events</h5><div id="calendarEventsList"></div></div></div>
   </div>
 
-  <!-- MONTHLY PROGRESS -->
-  <div class="activity-timeline mt-3" id="monthlyProgressSection">
-    <h5><i class="fas fa-chart-line"></i> <span id="monthlyTitleText">Monthly Progress</span></h5>
-    <div id="monthlyProgressList" style="font-size:.85rem;"><div class="text-center text-white-50 py-3">Loading...</div></div>
-  </div>
-
-  <div class="text-center text-white-50 mt-5 pb-4" style="font-size:.72rem;opacity:.6;">Noorussalam Madrasa • v22.2 Ultimate+ Edition</div>
+  <div class="activity-timeline mt-3" id="monthlyProgressSection"><h5><i class="fas fa-chart-line"></i> <span id="monthlyTitleText">Monthly Progress</span></h5><div id="monthlyProgressList" style="font-size:.85rem;"><div class="text-center text-white-50 py-3">Loading...</div></div></div>
+  <div class="text-center text-white-50 mt-5 pb-4" style="font-size:.72rem;opacity:.6;">Noorussalam Madrasa • v22.3 Ultimate+ Edition</div>
 </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- 🛡️ ADMIN SECTION                                             -->
+<!-- 🛡️ ADMIN SECTION (with tabs from previous)                   -->
 <!-- ============================================================ -->
 <div id="adminSection" style="display:none;">
 <div class="container">
   <div class="dashboard-header-glow">
     <div class="d-flex align-items-center gap-3">
       <div class="avatar-neon"><i class="fas fa-user-shield"></i></div>
-      <div>
-        <h2 class="text-white mb-0 fw-bold" style="font-size:1.14rem;">Admin Panel</h2>
-        <div class="header-meta"><span><i class="fas fa-lock me-1"></i>Restricted Access</span></div>
-      </div>
+      <div><h2 class="text-white mb-0 fw-bold" style="font-size:1.14rem;">Admin Panel</h2><div class="header-meta"><span><i class="fas fa-lock me-1"></i>Restricted Access</span></div></div>
     </div>
     <div class="hdr-actions">
       <button class="btn-load" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> Settings</button>
@@ -1361,9 +1291,7 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
       <option value="7">📚 Class 7</option><option value="8">📚 Class 8</option><option value="9">📚 Class 9</option>
       <option value="10">📚 Class 10</option>
     </select>
-    <div id="selectedClassBadge" style="display:none;">
-      <div class="class-info-badge"><i class="fas fa-check-circle"></i> <span id="classBadgeNumber">-</span> • <span id="classBadgeStudents">0</span> Students</div>
-    </div>
+    <div id="selectedClassBadge" style="display:none;"><div class="class-info-badge"><i class="fas fa-check-circle"></i> <span id="classBadgeNumber">-</span> • <span id="classBadgeStudents">0</span> Students</div></div>
   </div>
 
   <div id="adminMainContent" style="display:none;">
@@ -1389,54 +1317,27 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
       <button class="admin-tab" data-tab="feed" onclick="switchAdminTab('feed')">📢 Feed</button>
     </div>
 
-    <!-- Admin tabs content -->
     <div id="adminPaymentsTab" class="admin-tab-content">
-      <div class="admin-toolbar">
-        <label>Date</label>
-        <input type="date" id="adminDate" />
-        <button class="btn-load" onclick="loadPaymentsForDate()"><i class="fas fa-sync-alt"></i> Load</button>
-        <input type="text" id="adminSearch" placeholder="🔍 Search" oninput="applyPaymentsFilters()" />
-        <button class="btn-pdf" onclick="downloadPaymentsPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
-      </div>
+      <div class="admin-toolbar"><label>Date</label><input type="date" id="adminDate" /><button class="btn-load" onclick="loadPaymentsForDate()"><i class="fas fa-sync-alt"></i> Load</button><input type="text" id="adminSearch" placeholder="🔍 Search" oninput="applyPaymentsFilters()" /><button class="btn-pdf" onclick="downloadPaymentsPDF()"><i class="fas fa-file-pdf"></i> PDF</button></div>
       <div class="admin-table-wrap" id="adminTableWrap"></div>
-      <div class="d-flex gap-3 justify-content-end mt-3">
-        <button class="btn-cancel" onclick="clearAdminForm()">Clear</button>
-        <button class="btn-update" id="adminUpdateBtn" onclick="bulkUpdate()"><i class="fas fa-save"></i> Update</button>
-      </div>
+      <div class="d-flex gap-3 justify-content-end mt-3"><button class="btn-cancel" onclick="clearAdminForm()">Clear</button><button class="btn-update" id="adminUpdateBtn" onclick="bulkUpdate()"><i class="fas fa-save"></i> Update</button></div>
     </div>
 
     <div id="adminStudentsTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadStudentsForAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openStudentForm()"><i class="fas fa-plus"></i> Add</button>
-        <input type="text" id="studentSearchAdmin" placeholder="🔍 Search" oninput="filterStudentsAdmin()" />
-        <button class="btn-pdf" onclick="downloadStudentsPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadStudentsForAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openStudentForm()"><i class="fas fa-plus"></i> Add</button><input type="text" id="studentSearchAdmin" placeholder="🔍 Search" oninput="filterStudentsAdmin()" /><button class="btn-pdf" onclick="downloadStudentsPDF()"><i class="fas fa-file-pdf"></i> PDF</button></div>
       <div class="admin-table-wrap" id="adminStudentsWrap"></div>
     </div>
 
     <div id="adminMarksTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <label>Exam</label>
-        <select id="marksExamName"><option value="">-- Select --</option></select>
-        <button class="btn-load" onclick="loadMarksEntry()"><i class="fas fa-sync-alt"></i> Load</button>
-        <button class="btn-pdf" onclick="downloadClassMarksPDF()"><i class="fas fa-file-pdf"></i> Class Marks PDF</button>
-      </div>
+      <div class="admin-toolbar"><label>Exam</label><select id="marksExamName"><option value="">-- Select --</option></select><button class="btn-load" onclick="loadMarksEntry()"><i class="fas fa-sync-alt"></i> Load</button><button class="btn-pdf" onclick="downloadClassMarksPDF()"><i class="fas fa-file-pdf"></i> Class Marks PDF</button></div>
       <div id="marksWrap"></div>
-      <div class="d-flex gap-3 justify-content-end mt-3">
-        <button class="btn-update" id="marksSaveBtn" onclick="saveMarksBulk()"><i class="fas fa-save"></i> Save Marks</button>
-      </div>
+      <div class="d-flex gap-3 justify-content-end mt-3"><button class="btn-update" id="marksSaveBtn" onclick="saveMarksBulk()"><i class="fas fa-save"></i> Save Marks</button></div>
     </div>
 
     <div id="adminGradesTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadGradesForAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="autoCalculateRanks()"><i class="fas fa-wand-magic-sparkles"></i> Auto Rank</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadGradesForAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="autoCalculateRanks()"><i class="fas fa-wand-magic-sparkles"></i> Auto Rank</button></div>
       <div class="admin-table-wrap" id="gradesWrap"></div>
-      <div class="d-flex gap-3 justify-content-end mt-3">
-        <button class="btn-update" id="gradesUpdateBtn" onclick="bulkUpdateGrades()"><i class="fas fa-save"></i> Save</button>
-      </div>
+      <div class="d-flex gap-3 justify-content-end mt-3"><button class="btn-update" id="gradesUpdateBtn" onclick="bulkUpdateGrades()"><i class="fas fa-save"></i> Save</button></div>
     </div>
 
     <div id="adminMoralValuesTab" class="admin-tab-content" style="display:none;">
@@ -1445,61 +1346,29 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     </div>
 
     <div id="adminExtracurricularTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <label>Month</label>
-        <input type="month" id="extraMonth" />
-        <button class="btn-load" onclick="loadExtraAdmin()"><i class="fas fa-sync-alt"></i> Load</button>
-        <button class="btn-update" onclick="findBestStudent()"><i class="fas fa-crown"></i> Best Student</button>
-      </div>
+      <div class="admin-toolbar"><label>Month</label><input type="month" id="extraMonth" /><button class="btn-load" onclick="loadExtraAdmin()"><i class="fas fa-sync-alt"></i> Load</button><button class="btn-update" onclick="findBestStudent()"><i class="fas fa-crown"></i> Best Student</button></div>
       <div class="admin-table-wrap" id="extraWrap"></div>
-      <div class="d-flex gap-3 justify-content-end mt-3">
-        <button class="btn-update" id="extraSaveBtn" onclick="saveExtraBulk()"><i class="fas fa-save"></i> Save All</button>
-      </div>
+      <div class="d-flex gap-3 justify-content-end mt-3"><button class="btn-update" id="extraSaveBtn" onclick="saveExtraBulk()"><i class="fas fa-save"></i> Save All</button></div>
     </div>
 
     <div id="adminCompetitionsTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadCompetitionsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openCompetitionForm()"><i class="fas fa-plus"></i> Add</button>
-        <button class="btn-update" onclick="openBulkCompetitionForm()" style="background:linear-gradient(100deg,#fbbf24,#f59e0b);color:#03132e;"><i class="fas fa-layer-group"></i> Bulk Add</button>
-        <input type="text" id="competitionsSearch" placeholder="🔍 Search" oninput="filterCompetitionsAdmin()" />
-        <button class="btn-pdf" onclick="downloadCompetitionsPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadCompetitionsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openCompetitionForm()"><i class="fas fa-plus"></i> Add</button><button class="btn-update" onclick="openBulkCompetitionForm()" style="background:linear-gradient(100deg,#fbbf24,#f59e0b);color:#03132e;"><i class="fas fa-layer-group"></i> Bulk Add</button><input type="text" id="competitionsSearch" placeholder="🔍 Search" oninput="filterCompetitionsAdmin()" /><button class="btn-pdf" onclick="downloadCompetitionsPDF()"><i class="fas fa-file-pdf"></i> PDF</button></div>
       <div class="admin-table-wrap" id="competitionsAdminWrap"></div>
     </div>
 
     <div id="adminCreationsTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadCreationsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <input type="text" id="adminCreationsSearch" placeholder="🔍 Search" oninput="filterCreationsAdmin()">
-        <select id="adminCreationsStatus" class="modal-form-input" style="width:auto;padding:9px 15px;" onchange="filterCreationsAdmin()">
-          <option value="all">All</option>
-          <option value="pending">⏳ Pending</option>
-          <option value="approved">✅ Approved</option>
-        </select>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadCreationsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><input type="text" id="adminCreationsSearch" placeholder="🔍 Search" oninput="filterCreationsAdmin()"><select id="adminCreationsStatus" class="modal-form-input" style="width:auto;padding:9px 15px;" onchange="filterCreationsAdmin()"><option value="all">All</option><option value="pending">⏳ Pending</option><option value="approved">✅ Approved</option></select></div>
       <div class="admin-table-wrap" id="adminCreationsWrap"></div>
     </div>
 
     <div id="adminAttendanceTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <label>Month</label>
-        <input type="month" id="attendanceMonth" />
-        <label>Total Days</label>
-        <input type="number" id="attendanceTotalDays" min="0" max="31" style="width:100px;" oninput="recalcAttendancePercentages()" />
-        <button class="btn-load" onclick="loadAttendanceForAdmin()"><i class="fas fa-sync-alt"></i> Load</button>
-      </div>
+      <div class="admin-toolbar"><label>Month</label><input type="month" id="attendanceMonth" /><label>Total Days</label><input type="number" id="attendanceTotalDays" min="0" max="31" style="width:100px;" oninput="recalcAttendancePercentages()" /><button class="btn-load" onclick="loadAttendanceForAdmin()"><i class="fas fa-sync-alt"></i> Load</button></div>
       <div class="admin-table-wrap" id="attendanceWrap"></div>
-      <div class="d-flex gap-3 justify-content-end mt-3">
-        <button class="btn-update" id="attendanceUpdateBtn" onclick="bulkUpdateAttendance()"><i class="fas fa-save"></i> Update</button>
-      </div>
+      <div class="d-flex gap-3 justify-content-end mt-3"><button class="btn-update" id="attendanceUpdateBtn" onclick="bulkUpdateAttendance()"><i class="fas fa-save"></i> Update</button></div>
     </div>
 
     <div id="adminBalancesTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadBalances()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-pdf" onclick="downloadBalancesPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadBalances()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-pdf" onclick="downloadBalancesPDF()"><i class="fas fa-file-pdf"></i> PDF</button></div>
       <div class="admin-table-wrap" id="balancesWrap"></div>
     </div>
 
@@ -1509,273 +1378,86 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     </div>
 
     <div id="adminSummaryTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <label>Date</label>
-        <input type="date" id="summaryDate" />
-        <button class="btn-load" onclick="loadDailySummary()"><i class="fas fa-chart-bar"></i> Load</button>
-      </div>
+      <div class="admin-toolbar"><label>Date</label><input type="date" id="summaryDate" /><button class="btn-load" onclick="loadDailySummary()"><i class="fas fa-chart-bar"></i> Load</button></div>
       <div id="summaryContent"></div>
     </div>
 
     <div id="adminTimetableTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadTimetableAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openTimetableForm()"><i class="fas fa-plus"></i> Add Period</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadTimetableAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openTimetableForm()"><i class="fas fa-plus"></i> Add Period</button></div>
       <div class="admin-table-wrap" id="timetableWrap"></div>
     </div>
 
     <div id="adminHomeworkTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadHomeworkAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openHomeworkForm()"><i class="fas fa-plus"></i> Add Homework</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadHomeworkAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openHomeworkForm()"><i class="fas fa-plus"></i> Add Homework</button></div>
       <div class="admin-table-wrap" id="homeworkWrap"></div>
     </div>
 
     <div id="adminNotificationsTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadNotificationsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openNotificationForm()"><i class="fas fa-plus"></i> Send Notification</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadNotificationsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openNotificationForm()"><i class="fas fa-plus"></i> Send Notification</button></div>
       <div class="admin-table-wrap" id="notificationsAdminWrap"></div>
     </div>
 
     <div id="adminLibraryTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadLibraryAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openLibraryForm()"><i class="fas fa-plus"></i> Add Material</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadLibraryAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openLibraryForm()"><i class="fas fa-plus"></i> Add Material</button></div>
       <div class="admin-table-wrap" id="libraryAdminWrap"></div>
     </div>
 
     <div id="adminEventsTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadAllEvents()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openEventForm()"><i class="fas fa-plus"></i> Add Event</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadAllEvents()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openEventForm()"><i class="fas fa-plus"></i> Add Event</button></div>
       <div class="admin-table-wrap" id="eventsWrap"></div>
     </div>
 
     <div id="adminNoticeTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadNoticeAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openNoticeForm()"><i class="fas fa-plus"></i> Add Notice</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadNoticeAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openNoticeForm()"><i class="fas fa-plus"></i> Add Notice</button></div>
       <div class="admin-table-wrap" id="noticeAdminWrap"></div>
     </div>
 
     <div id="adminFeedTab" class="admin-tab-content" style="display:none;">
-      <div class="admin-toolbar">
-        <button class="btn-load" onclick="loadAllActivities()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="btn-update" onclick="openActivityForm()"><i class="fas fa-plus"></i> Add</button>
-      </div>
+      <div class="admin-toolbar"><button class="btn-load" onclick="loadAllActivities()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openActivityForm()"><i class="fas fa-plus"></i> Add</button></div>
       <div class="admin-table-wrap" id="feedWrap"></div>
     </div>
   </div>
 
-  <div id="noClassMsg" class="no-class-message">
-    <i class="fas fa-hand-point-up"></i>
-    <h4>മുകളിൽ ക്ലാസ് തിരഞ്ഞെടുക്കുക</h4>
-    <p>Class select ചെയ്താൽ manage ചെയ്യാം</p>
-  </div>
+  <div id="noClassMsg" class="no-class-message"><i class="fas fa-hand-point-up"></i><h4>മുകളിൽ ക്ലാസ് തിരഞ്ഞെടുക്കുക</h4><p>Class select ചെയ്താൽ manage ചെയ്യാം</p></div>
 
-  <!-- ADMIN SETTINGS TAB -->
   <div id="adminSettingsTab" class="admin-tab-content" style="display:none;margin-top:24px;">
     <div style="padding:20px;background:rgba(120,180,255,.03);border-radius:20px;max-width:920px;margin:0 auto;border:1px solid var(--stroke);">
-      <div class="d-flex justify-content-between mb-4 flex-wrap gap-2">
-        <h4 class="text-white mb-0" style="font-size:1.1rem;"><i class="fas fa-cog" style="color:#22d3ee"></i> Settings</h4>
-        <button class="btn-cancel" style="padding:8px 18px;font-size:.8rem;" onclick="closeSettingsTab()"><i class="fas fa-arrow-left"></i> Back</button>
-      </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">🔑 Admin Password</h5>
-        <input type="text" id="newAdminPassword" class="modal-form-input mb-2" placeholder="New password" />
-        <small class="text-white-50">Current: <span id="currentAdminPwd">MADRASA2026</span></small>
-        <button class="btn-update mt-3" onclick="changeAdminPassword()"><i class="fas fa-key"></i> Change</button>
-      </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">👨‍🏫 Swadar Muallim Name</h5>
-        <input type="text" id="settingsSwadarName" class="modal-form-input" />
-        <button class="btn-update mt-3" onclick="saveSwadarName()">Save</button>
-      </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">📚 Class-wise Teachers</h5>
-        <p class="text-white-50 small mb-2">Format: <code style="color:#7db3ff;">class: teacher_name</code></p>
-        <textarea id="settingsClassTeachers" class="modal-form-input" style="min-height:180px;font-family:monospace;font-size:.85rem;"></textarea>
-        <button class="btn-update mt-3" onclick="saveClassTeachers()">Save</button>
-      </div>
-
+      <div class="d-flex justify-content-between mb-4 flex-wrap gap-2"><h4 class="text-white mb-0" style="font-size:1.1rem;"><i class="fas fa-cog" style="color:#22d3ee"></i> Settings</h4><button class="btn-cancel" style="padding:8px 18px;font-size:.8rem;" onclick="closeSettingsTab()"><i class="fas fa-arrow-left"></i> Back</button></div>
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">🔑 Admin Password</h5><input type="text" id="newAdminPassword" class="modal-form-input mb-2" placeholder="New password" /><small class="text-white-50">Current: <span id="currentAdminPwd">MADRASA2026</span></small><button class="btn-update mt-3" onclick="changeAdminPassword()"><i class="fas fa-key"></i> Change</button></div>
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">👨‍🏫 Swadar Muallim Name</h5><input type="text" id="settingsSwadarName" class="modal-form-input" /><button class="btn-update mt-3" onclick="saveSwadarName()">Save</button></div>
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">📚 Class-wise Teachers</h5><p class="text-white-50 small mb-2">Format: <code style="color:#7db3ff;">class: teacher_name</code></p><textarea id="settingsClassTeachers" class="modal-form-input" style="min-height:180px;font-family:monospace;font-size:.85rem;"></textarea><button class="btn-update mt-3" onclick="saveClassTeachers()">Save</button></div>
       <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
         <h5 class="text-white mb-3" style="font-size:.95rem;">📚 Class + Exam-wise Subjects</h5>
-        <div style="background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.22);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:.74rem;color:#67e8f9;line-height:1.7;">
-          <i class="fas fa-lightbulb"></i> <b>എങ്ങനെ ഉപയോഗിക്കാം:</b><br>
-          1️⃣ Class തിരഞ്ഞെടുക്കുക<br>
-          2️⃣ 📝 Exams list-ൽ നിന്ന് exams auto-ആയി ഇവിടെ വരും<br>
-          3️⃣ ഓരോ പരീക്ഷയ്ക്കും വിഷയങ്ങൾ comma-ൽ നൽകുക (ഉദാ: <code style="color:#c9dfff;">Arabic,Malayalam,Maths</code>)<br>
-          4️⃣ <b>Default</b> row = എല്ലാ പരീക്ഷകൾക്കും common subjects
-        </div>
-        <div class="row g-2 mb-3">
-          <div class="col-md-6">
-            <label class="text-white-50 small">🎓 Class</label>
-            <select id="settingsSubjectClassSelect" class="modal-form-input" onchange="renderClassExamSubjectsUI()"></select>
-          </div>
-          <div class="col-md-6">
-            <label class="text-white-50 small">📋 Bulk Copy (optional)</label>
-            <div class="d-flex gap-2">
-              <select id="settingsSubjectCopyFrom" class="modal-form-input" style="flex:1;">
-                <option value="">Copy from class...</option>
-              </select>
-              <button type="button" class="btn-load" onclick="copyClassSubjectsFrom()" style="padding:9px 14px;"><i class="fas fa-copy"></i></button>
-            </div>
-          </div>
-        </div>
-        <div id="settingsSubjectExamsArea" style="background:rgba(8,20,48,.5);padding:14px;border-radius:14px;border:1px solid var(--stroke);min-height:100px;">
-          <div class="text-white-50 text-center" style="padding:20px;font-size:.82rem;">Class തിരഞ്ഞെടുക്കുക...</div>
-        </div>
-        <div class="d-flex gap-2 mt-3 flex-wrap">
-          <button class="btn-update" onclick="saveClassSubjectsUI()"><i class="fas fa-save"></i> Save Subjects</button>
-          <button class="btn-load" onclick="previewSubjectMatrix()"><i class="fas fa-eye"></i> Preview Matrix</button>
-        </div>
+        <div style="background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.22);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:.74rem;color:#67e8f9;line-height:1.7;"><i class="fas fa-lightbulb"></i> <b>എങ്ങനെ ഉപയോഗിക്കാം:</b><br>1️⃣ Class തിരഞ്ഞെടുക്കുക<br>2️⃣ 📝 Exams list-ൽ നിന്ന് exams auto-ആയി ഇവിടെ വരും<br>3️⃣ ഓരോ പരീക്ഷയ്ക്കും വിഷയങ്ങൾ comma-ൽ നൽകുക<br>4️⃣ <b>Default</b> row = എല്ലാ പരീക്ഷകൾക്കും common subjects</div>
+        <div class="row g-2 mb-3"><div class="col-md-6"><label class="text-white-50 small">🎓 Class</label><select id="settingsSubjectClassSelect" class="modal-form-input" onchange="renderClassExamSubjectsUI()"></select></div><div class="col-md-6"><label class="text-white-50 small">📋 Bulk Copy (optional)</label><div class="d-flex gap-2"><select id="settingsSubjectCopyFrom" class="modal-form-input" style="flex:1;"><option value="">Copy from class...</option></select><button type="button" class="btn-load" onclick="copyClassSubjectsFrom()" style="padding:9px 14px;"><i class="fas fa-copy"></i></button></div></div></div>
+        <div id="settingsSubjectExamsArea" style="background:rgba(8,20,48,.5);padding:14px;border-radius:14px;border:1px solid var(--stroke);min-height:100px;"><div class="text-white-50 text-center" style="padding:20px;font-size:.82rem;">Class തിരഞ്ഞെടുക്കുക...</div></div>
+        <div class="d-flex gap-2 mt-3 flex-wrap"><button class="btn-update" onclick="saveClassSubjectsUI()"><i class="fas fa-save"></i> Save Subjects</button><button class="btn-load" onclick="previewSubjectMatrix()"><i class="fas fa-eye"></i> Preview Matrix</button></div>
         <textarea id="settingsClassSubjects" style="display:none;"></textarea>
       </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">📝 Exams (comma separated)</h5>
-        <input type="text" id="settingsExams" class="modal-form-input" />
-        <button class="btn-update mt-3" onclick="saveSetting('examsList','settingsExams')">Save</button>
-      </div>
-
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">📝 Exams (comma separated)</h5><input type="text" id="settingsExams" class="modal-form-input" /><button class="btn-update mt-3" onclick="saveSetting('examsList','settingsExams')">Save</button></div>
       <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
         <h5 class="text-white mb-3" style="font-size:.95rem;">🌟 Moral Traits</h5>
-        <label class="text-white-50 small d-block mb-1">🌐 Default (എല്ലാ ക്ലാസ്സുകൾക്കും)</label>
+        <label class="text-white-50 small d-block mb-1">🌐 Default</label>
         <input type="text" id="settingsTraits" class="modal-form-input mb-2" placeholder="Discipline,Respect,Honesty,Punctuality,Cleanliness">
         <button class="btn-update mb-3" onclick="saveSetting('traitsList','settingsTraits')"><i class="fas fa-save"></i> Save Default</button>
         <hr style="border-color:rgba(140,190,255,.12);margin:14px 0;">
-        <label class="text-white-50 small d-block mb-1">🎯 Per-Class Override (optional)</label>
-        <p class="text-white-50 small mb-2" style="line-height:1.7;">
-          Format: <code style="color:#7db3ff;background:rgba(8,20,48,.6);padding:2px 6px;border-radius:6px;">class: trait1,trait2</code><br>
-          <span style="color:#67e8f9;">ഒരു ക്ലാസ്സിനു override നൽകിയാൽ, ആ ക്ലാസ്സിന് default മാറി ഇത് ഉപയോഗിക്കും.</span>
-        </p>
-        <textarea id="settingsClassTraits" class="modal-form-input" style="min-height:140px;font-family:monospace;font-size:.82rem;" placeholder="1: Discipline,Respect,Honesty&#10;5: Discipline,Respect,Punctuality,Cleanliness"></textarea>
+        <label class="text-white-50 small d-block mb-1">🎯 Per-Class Override</label>
+        <textarea id="settingsClassTraits" class="modal-form-input" style="min-height:140px;font-family:monospace;font-size:.82rem;"></textarea>
         <button class="btn-update mt-3" onclick="saveClassTraits()"><i class="fas fa-save"></i> Save Class Traits</button>
       </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">💰 Minimum Withdrawal</h5>
-        <input type="number" id="settingsMinWithdraw" class="modal-form-input" />
-        <button class="btn-update mt-3" onclick="saveSetting('minWithdraw','settingsMinWithdraw')">Save</button>
-      </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">📝 Custom Headings</h5>
-        <label class="text-white-50 small d-block mb-1">Extra-Curricular Title</label>
-        <input type="text" id="settingsHeadingExtra" class="modal-form-input mb-2">
-        <label class="text-white-50 small d-block mb-1">Overall Rank Title</label>
-        <input type="text" id="settingsHeadingOverallRank" class="modal-form-input mb-2">
-        <label class="text-white-50 small d-block mb-1">Monthly Progress Title</label>
-        <input type="text" id="settingsHeadingMonthly" class="modal-form-input mb-2">
-        <button class="btn-update mt-2" onclick="saveHeadings()"><i class="fas fa-save"></i> Save Headings</button>
-      </div>
-
-      <div class="mb-4" style="background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(251,191,36,.04));padding:16px;border-radius:16px;border:1px solid rgba(239,68,68,.25);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">⏰ Exam Countdown Setting</h5>
-        <label class="text-white-50 small d-block mb-1">Exam Name</label>
-        <input type="text" id="settingsExamName" class="modal-form-input mb-2" placeholder="e.g., Annual Exam 2026">
-        <label class="text-white-50 small d-block mb-1">Exam Date</label>
-        <input type="date" id="settingsExamDate" class="modal-form-input mb-2">
-        <div class="d-flex gap-2 mt-2">
-          <button class="btn-update" onclick="saveExamCountdown()"><i class="fas fa-save"></i> Save</button>
-          <button class="btn-cancel" onclick="clearExamCountdown()"><i class="fas fa-trash"></i> Clear</button>
-        </div>
-      </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">📊 Per-Class Extra-Curricular Categories</h5>
-        <p class="text-white-50 small mb-2">Format: <code style="color:#7db3ff;">class: cat1,cat2,cat3</code></p>
-        <textarea id="settingsClassExtraCategories" class="modal-form-input" style="min-height:180px;font-family:monospace;font-size:.85rem;"></textarea>
-        <button class="btn-update mt-3" onclick="saveClassExtraCategories()"><i class="fas fa-save"></i> Save Categories</button>
-      </div>
-
-      <div class="mb-4" style="background:linear-gradient(135deg,rgba(251,191,36,.06),rgba(120,180,255,.04));padding:16px;border-radius:16px;border:1px solid rgba(251,191,36,.25);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">⏰ Result Publish Time</h5>
-        <input type="datetime-local" id="settingsResultTime" class="modal-form-input" />
-        <small class="text-white-50 d-block mt-2">Current: <span id="currentResultTime">Not set</span></small>
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn-update" onclick="saveResultPublishTime()"><i class="fas fa-clock"></i> Set</button>
-          <button class="btn-cancel" onclick="clearResultPublishTime()"><i class="fas fa-trash"></i> Clear</button>
-        </div>
-      </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">✍️ Digital Signatures</h5>
-        <label class="text-white-50 small d-block mb-1">Swadar Muallim Signature</label>
-        <input type="file" id="swadarSignUpload" accept="image/*" class="modal-form-input mb-2" style="padding:.55rem;">
-        <div id="swadarSignPreview" class="mb-3"></div>
-        <div class="d-flex gap-2 mb-3">
-          <button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="uploadSignature('swadar')">Save</button>
-          <button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearSignature('swadar')">Clear</button>
-        </div>
-        <label class="text-white-50 small d-block mb-1">Class Teacher Signatures</label>
-        <div class="row g-2">
-          <div class="col-md-4">
-            <select id="classSignSelect" class="modal-form-input">
-              <option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option>
-              <option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option>
-              <option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option>
-              <option value="10">Class 10</option>
-            </select>
-          </div>
-          <div class="col-md-8"><input type="file" id="classSignUpload" accept="image/*" class="modal-form-input" style="padding:.55rem;"></div>
-        </div>
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="uploadClassSignature()">Save</button>
-          <button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearClassSignature()">Clear This Class</button>
-        </div>
-      </div>
-
-      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);">
-        <h5 class="text-white mb-3" style="font-size:.95rem;">🖼️ Background Images</h5>
-        <label class="text-white-50 small d-block mb-1">ID Card Background URL</label>
-        <input type="url" id="settingsIdBgUrl" class="modal-form-input mb-2" placeholder="https://...">
-        <div class="d-flex gap-2 mb-3">
-          <button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="saveBgUrl('id')">Save</button>
-          <button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearBgUrl('id')">Clear</button>
-        </div>
-        <label class="text-white-50 small d-block mb-1">Topper Poster Background URL</label>
-        <input type="url" id="settingsTopperBgUrl" class="modal-form-input mb-2" placeholder="https://...">
-        <div class="d-flex gap-2">
-          <button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="saveBgUrl('topper')">Save</button>
-          <button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearBgUrl('topper')">Clear</button>
-        </div>
-      </div>
-
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">💰 Minimum Withdrawal</h5><input type="number" id="settingsMinWithdraw" class="modal-form-input" /><button class="btn-update mt-3" onclick="saveSetting('minWithdraw','settingsMinWithdraw')">Save</button></div>
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">📝 Custom Headings</h5><label class="text-white-50 small d-block mb-1">Extra-Curricular Title</label><input type="text" id="settingsHeadingExtra" class="modal-form-input mb-2"><label class="text-white-50 small d-block mb-1">Overall Rank Title</label><input type="text" id="settingsHeadingOverallRank" class="modal-form-input mb-2"><label class="text-white-50 small d-block mb-1">Monthly Progress Title</label><input type="text" id="settingsHeadingMonthly" class="modal-form-input mb-2"><button class="btn-update mt-2" onclick="saveHeadings()"><i class="fas fa-save"></i> Save Headings</button></div>
+      <div class="mb-4" style="background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(251,191,36,.04));padding:16px;border-radius:16px;border:1px solid rgba(239,68,68,.25);"><h5 class="text-white mb-3" style="font-size:.95rem;">⏰ Exam Countdown Setting</h5><label class="text-white-50 small d-block mb-1">Exam Name</label><input type="text" id="settingsExamName" class="modal-form-input mb-2" placeholder="e.g., Annual Exam 2026"><label class="text-white-50 small d-block mb-1">Exam Date</label><input type="date" id="settingsExamDate" class="modal-form-input mb-2"><div class="d-flex gap-2 mt-2"><button class="btn-update" onclick="saveExamCountdown()"><i class="fas fa-save"></i> Save</button><button class="btn-cancel" onclick="clearExamCountdown()"><i class="fas fa-trash"></i> Clear</button></div></div>
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">📊 Per-Class Extra-Curricular Categories</h5><textarea id="settingsClassExtraCategories" class="modal-form-input" style="min-height:180px;font-family:monospace;font-size:.85rem;"></textarea><button class="btn-update mt-3" onclick="saveClassExtraCategories()"><i class="fas fa-save"></i> Save Categories</button></div>
+      <div class="mb-4" style="background:linear-gradient(135deg,rgba(251,191,36,.06),rgba(120,180,255,.04));padding:16px;border-radius:16px;border:1px solid rgba(251,191,36,.25);"><h5 class="text-white mb-3" style="font-size:.95rem;">⏰ Result Publish Time</h5><input type="datetime-local" id="settingsResultTime" class="modal-form-input" /><small class="text-white-50 d-block mt-2">Current: <span id="currentResultTime">Not set</span></small><div class="d-flex gap-2 mt-3"><button class="btn-update" onclick="saveResultPublishTime()"><i class="fas fa-clock"></i> Set</button><button class="btn-cancel" onclick="clearResultPublishTime()"><i class="fas fa-trash"></i> Clear</button></div></div>
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">✍️ Digital Signatures</h5><label class="text-white-50 small d-block mb-1">Swadar Muallim Signature</label><input type="file" id="swadarSignUpload" accept="image/*" class="modal-form-input mb-2" style="padding:.55rem;"><div id="swadarSignPreview" class="mb-3"></div><div class="d-flex gap-2 mb-3"><button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="uploadSignature('swadar')">Save</button><button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearSignature('swadar')">Clear</button></div><label class="text-white-50 small d-block mb-1">Class Teacher Signatures</label><div class="row g-2"><div class="col-md-4"><select id="classSignSelect" class="modal-form-input"><option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option></select></div><div class="col-md-8"><input type="file" id="classSignUpload" accept="image/*" class="modal-form-input" style="padding:.55rem;"></div></div><div class="d-flex gap-2 mt-3"><button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="uploadClassSignature()">Save</button><button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearClassSignature()">Clear This Class</button></div></div>
+      <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">🖼️ Background Images</h5><label class="text-white-50 small d-block mb-1">ID Card Background URL</label><input type="url" id="settingsIdBgUrl" class="modal-form-input mb-2" placeholder="https://..."><div class="d-flex gap-2 mb-3"><button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="saveBgUrl('id')">Save</button><button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearBgUrl('id')">Clear</button></div><label class="text-white-50 small d-block mb-1">Topper Poster Background URL</label><input type="url" id="settingsTopperBgUrl" class="modal-form-input mb-2" placeholder="https://..."><div class="d-flex gap-2"><button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="saveBgUrl('topper')">Save</button><button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearBgUrl('topper')">Clear</button></div></div>
       <div class="mb-4" style="background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(120,180,255,.04));padding:16px;border-radius:16px;border:1.5px solid rgba(251,191,36,.35);">
         <h5 class="text-white mb-2" style="font-size:.95rem;">🎛️ Student Portal Visibility</h5>
-        <p class="text-white-50 small mb-3" style="font-size:.72rem;">Student login-ൽ ഏതൊക്കെ section കാണിക്കണം എന്ന് control ചെയ്യാം.</p>
-        <div style="background:rgba(8,20,48,.5);padding:14px;border-radius:14px;border:1px solid var(--stroke);margin-bottom:12px;">
-          <div style="font-weight:800;color:#67e8f9;font-size:.82rem;margin-bottom:10px;"><i class="fas fa-layer-group"></i> Main Sections</div>
-          <div class="visibility-grid" id="visSectionsGrid"></div>
-        </div>
-        <div style="background:rgba(8,20,48,.5);padding:14px;border-radius:14px;border:1px solid var(--stroke);margin-bottom:12px;">
-          <div style="font-weight:800;color:#fbbf24;font-size:.82rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
-            <span><i class="fas fa-bolt"></i> Quick Actions</span>
-            <span style="display:flex;gap:6px;flex-wrap:wrap;">
-              <button type="button" class="btn-load" style="padding:4px 10px;font-size:.68rem;" onclick="toggleAllQuickActions(true)">All ON</button>
-              <button type="button" class="btn-cancel" style="padding:4px 10px;font-size:.68rem;" onclick="toggleAllQuickActions(false)">All OFF</button>
-            </span>
-          </div>
-          <div class="visibility-grid" id="visActionsGrid"></div>
-        </div>
-        <div class="d-flex gap-2 flex-wrap mt-2">
-          <button class="btn-update" onclick="saveStudentPortalVisibility()"><i class="fas fa-save"></i> Save</button>
-          <button class="btn-cancel" onclick="resetStudentPortalVisibility()"><i class="fas fa-rotate-left"></i> Reset</button>
-          <button class="btn-load" onclick="applyStudentPortalVisibility(true)"><i class="fas fa-eye"></i> Preview</button>
-        </div>
+        <div style="background:rgba(8,20,48,.5);padding:14px;border-radius:14px;border:1px solid var(--stroke);margin-bottom:12px;"><div style="font-weight:800;color:#67e8f9;font-size:.82rem;margin-bottom:10px;"><i class="fas fa-layer-group"></i> Main Sections</div><div class="visibility-grid" id="visSectionsGrid"></div></div>
+        <div style="background:rgba(8,20,48,.5);padding:14px;border-radius:14px;border:1px solid var(--stroke);margin-bottom:12px;"><div style="font-weight:800;color:#fbbf24;font-size:.82rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;"><span><i class="fas fa-bolt"></i> Quick Actions</span><span style="display:flex;gap:6px;flex-wrap:wrap;"><button type="button" class="btn-load" style="padding:4px 10px;font-size:.68rem;" onclick="toggleAllQuickActions(true)">All ON</button><button type="button" class="btn-cancel" style="padding:4px 10px;font-size:.68rem;" onclick="toggleAllQuickActions(false)">All OFF</button></span></div><div class="visibility-grid" id="visActionsGrid"></div></div>
+        <div class="d-flex gap-2 flex-wrap mt-2"><button class="btn-update" onclick="saveStudentPortalVisibility()"><i class="fas fa-save"></i> Save</button><button class="btn-cancel" onclick="resetStudentPortalVisibility()"><i class="fas fa-rotate-left"></i> Reset</button><button class="btn-load" onclick="applyStudentPortalVisibility(true)"><i class="fas fa-eye"></i> Preview</button></div>
       </div>
-
       <h5 class="text-white mt-4 mb-3" style="font-size:.95rem;"><i class="fas fa-database" style="color:#22d3ee"></i> Database Stats</h5>
       <div id="dbStatsContent"></div>
       <button class="btn-load mt-3" onclick="loadDBStats()"><i class="fas fa-sync-alt"></i> Refresh</button>
@@ -1789,56 +1471,25 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 <!-- ============================================================ -->
 <div id="passbookModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1200;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:760px;width:100%;max-height:90vh;overflow-y:auto;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;"><i class="fas fa-piggy-bank me-2" style="color:#22d3ee"></i>പലതുള്ളി പാസ്ബുക്ക്</h3>
-      <button onclick="closePassbook()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <div class="text-white"><strong>Balance: ₹<span id="modalPassbookBalance">0.00</span></strong></div>
-      <button class="btn-update" style="padding:9px 20px;font-size:.8rem;" onclick="downloadPassbookPDF()"><i class="fas fa-file-pdf"></i> Download</button>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-dark table-sm align-middle" style="background:transparent;">
-        <thead><tr><th>Date</th><th>Debit</th><th>Credit</th><th>Balance</th><th>Status</th></tr></thead>
-        <tbody id="passbookTableBody"></tbody>
-      </table>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;"><i class="fas fa-piggy-bank me-2" style="color:#22d3ee"></i>പലതുള്ളി പാസ്ബുക്ക്</h3><button onclick="closePassbook()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="text-white"><strong>Balance: ₹<span id="modalPassbookBalance">0.00</span></strong></div><button class="btn-update" style="padding:9px 20px;font-size:.8rem;" onclick="downloadPassbookPDF()"><i class="fas fa-file-pdf"></i> Download</button></div>
+    <div class="table-responsive"><table class="table table-dark table-sm align-middle" style="background:transparent;"><thead><tr><th>Date</th><th>Debit</th><th>Credit</th><th>Balance</th><th>Status</th></tr></thead><tbody id="passbookTableBody"></tbody></table></div>
   </div>
 </div>
 
 <div id="studentWithdrawalModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1201;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:600px;width:100%;max-height:90vh;overflow-y:auto;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;">💰 പിൻവലിക്കൽ</h3>
-      <button onclick="closeStudentWithdrawalModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="mb-3" style="font-size:.88rem;">
-      <div class="text-white">ബാലൻസ്: ₹<span id="swBalance">0.00</span></div>
-      <small style="color:#fcd34d;display:block;margin-top:4px;"><i class="fas fa-shield-halved"></i> Minimum ₹<span id="swMinAmount">100</span></small>
-      <small style="color:#6ee7b7;display:block;margin-top:2px;"><i class="fas fa-arrow-up"></i> Max: ₹<span id="swMaxAmount">0.00</span></small>
-    </div>
-    <form id="studentWithdrawForm">
-      <div class="mb-3"><label class="text-white-50 small">തുക *</label><input type="number" id="swAmount" class="modal-form-input" min="1" required /></div>
-      <div class="mb-3"><label class="text-white-50 small">കാരണം *</label><textarea id="swReason" class="modal-form-input" required style="min-height:80px;"></textarea></div>
-      <button type="submit" class="btn-gradient text-white" id="swSubmitBtn">Submit</button>
-    </form>
-    <hr style="border-color:rgba(140,190,255,.12);margin:20px 0;">
-    <h5 class="text-white mb-3" style="font-size:.95rem;">മുൻ അപേക്ഷകൾ</h5>
-    <div class="table-responsive">
-      <table class="table table-dark table-sm">
-        <thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Status</th></tr></thead>
-        <tbody id="studentWithdrawalsTableBody"><tr><td colspan="4" class="text-center text-white-50">No requests</td></tr></tbody>
-      </table>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;">💰 പിൻവലിക്കൽ</h3><button onclick="closeStudentWithdrawalModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
+    <div class="mb-3" style="font-size:.88rem;"><div class="text-white">ബാലൻസ്: ₹<span id="swBalance">0.00</span></div><small style="color:#fcd34d;display:block;margin-top:4px;"><i class="fas fa-shield-halved"></i> Minimum ₹<span id="swMinAmount">100</span></small><small style="color:#6ee7b7;display:block;margin-top:2px;"><i class="fas fa-arrow-up"></i> Max: ₹<span id="swMaxAmount">0.00</span></small></div>
+    <form id="studentWithdrawForm"><div class="mb-3"><label class="text-white-50 small">തുക *</label><input type="number" id="swAmount" class="modal-form-input" min="1" required /></div><div class="mb-3"><label class="text-white-50 small">കാരണം *</label><textarea id="swReason" class="modal-form-input" required style="min-height:80px;"></textarea></div><button type="submit" class="btn-gradient text-white" id="swSubmitBtn">Submit</button></form>
+    <hr style="border-color:rgba(140,190,255,.12);margin:20px 0;"><h5 class="text-white mb-3" style="font-size:.95rem;">മുൻ അപേക്ഷകൾ</h5>
+    <div class="table-responsive"><table class="table table-dark table-sm"><thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Status</th></tr></thead><tbody id="studentWithdrawalsTableBody"><tr><td colspan="4" class="text-center text-white-50">No requests</td></tr></tbody></table></div>
   </div>
 </div>
 
 <div id="notificationsModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1300;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:600px;width:100%;max-height:90vh;overflow-y:auto;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;">🔔 Notifications</h3>
-      <button onclick="closeNotificationsModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;">🔔 Notifications</h3><button onclick="closeNotificationsModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
     <div id="notificationsList"></div>
   </div>
 </div>
@@ -1855,49 +1506,21 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 
 <div id="forgotModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1060;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:420px;width:100%;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.05rem;">🔑 Forgot Password</h3>
-      <button id="closeForgotModalBtn" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
-    <div id="forgotStep1">
-      <input type="text" id="forgotStudentId" class="modal-form-input mb-3" placeholder="Student ID" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');">
-      <button id="forgotSubmitBtn" class="btn-gradient text-white">Find</button>
-    </div>
-    <div id="forgotStep2" style="display:none;">
-      <div id="forgotResult2"></div>
-      <button id="forgotCloseBtn" class="btn-cancel mt-3 w-100">Close</button>
-    </div>
-    <div id="forgotLoading" style="display:none;text-align:center;padding:22px;">
-      <div class="spinner-border" style="color:#3b8bff;"></div>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.05rem;">🔑 Forgot Password</h3><button id="closeForgotModalBtn" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
+    <div id="forgotStep1"><input type="text" id="forgotStudentId" class="modal-form-input mb-3" placeholder="Student ID" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');"><button id="forgotSubmitBtn" class="btn-gradient text-white">Find</button></div>
+    <div id="forgotStep2" style="display:none;"><div id="forgotResult2"></div><button id="forgotCloseBtn" class="btn-cancel mt-3 w-100">Close</button></div>
+    <div id="forgotLoading" style="display:none;text-align:center;padding:22px;"><div class="spinner-border" style="color:#3b8bff;"></div></div>
   </div>
 </div>
 
 <div id="editProfileModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1070;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:500px;width:100%;max-height:94vh;overflow-y:auto;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.05rem;">✏️ Edit Profile</h3>
-      <button onclick="closeEditProfile()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.05rem;">✏️ Edit Profile</h3><button onclick="closeEditProfile()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
     <form id="editProfileForm">
-      <div class="text-center mb-3">
-        <div class="profile-photo-wrapper mx-auto">
-          <div class="avatar-neon" id="editPhotoPreview" style="width:110px;height:110px;border-radius:50%;"></div>
-          <div class="photo-edit-btn" onclick="openProfilePhotoPicker()"><i class="fas fa-camera"></i></div>
-        </div>
-      </div>
+      <div class="text-center mb-3"><div class="profile-photo-wrapper mx-auto"><div class="avatar-neon" id="editPhotoPreview" style="width:110px;height:110px;border-radius:50%;"></div><div class="photo-edit-btn" onclick="openProfilePhotoPicker()"><i class="fas fa-camera"></i></div></div></div>
       <div class="mb-3"><label class="text-white-50 small">Full Name *</label><input type="text" id="editName" class="modal-form-input" required></div>
       <div class="mb-3"><label class="text-white-50 small">Father's Name</label><input type="text" id="editFatherName" class="modal-form-input"></div>
-      <div class="row g-2">
-        <div class="col-6 mb-3"><label class="text-white-50 small">DOB</label><input type="date" id="editDob" class="modal-form-input"></div>
-        <div class="col-6 mb-3">
-          <label class="text-white-50 small">Blood Group</label>
-          <select id="editBloodGroup" class="modal-form-input">
-            <option value="">—</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
-          </select>
-        </div>
-      </div>
+      <div class="row g-2"><div class="col-6 mb-3"><label class="text-white-50 small">DOB</label><input type="date" id="editDob" class="modal-form-input"></div><div class="col-6 mb-3"><label class="text-white-50 small">Blood Group</label><select id="editBloodGroup" class="modal-form-input"><option value="">—</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div></div>
       <div class="mb-3"><label class="text-white-50 small">Email</label><input type="email" id="editEmail" class="modal-form-input"></div>
       <div class="mb-3"><label class="text-white-50 small">Phone</label><input type="tel" id="editPhone" class="modal-form-input"></div>
       <div class="mb-3"><label class="text-white-50 small">Address</label><textarea id="editAddress" class="modal-form-input" style="min-height:70px;"></textarea></div>
@@ -1909,73 +1532,41 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 
 <div id="topperModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.9);backdrop-filter:blur(14px);z-index:1051;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:800px;width:100%;max-height:94vh;overflow-y:auto;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;">🏆 Topper Poster</h3>
-      <button onclick="closeTopperModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="text-center">
-      <h4 id="topperNameDisplay" class="text-white">Student</h4>
-      <p id="topperClassRank" class="text-white-50"></p>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;">🏆 Topper Poster</h3><button onclick="closeTopperModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
+    <div class="text-center"><h4 id="topperNameDisplay" class="text-white">Student</h4><p id="topperClassRank" class="text-white-50"></p></div>
     <div class="photo-container"><img id="topperPhotoPreview" src="" alt="Photo"></div>
-    <div class="text-center">
-      <input type="file" id="topperPhotoUpload" accept="image/*" style="display:none">
-      <button class="upload-btn" onclick="openTopperCrop()"><i class="fas fa-crop-alt"></i> Upload Photo</button>
-    </div>
+    <div class="text-center"><input type="file" id="topperPhotoUpload" accept="image/*" style="display:none"><button class="upload-btn" onclick="openTopperCrop()"><i class="fas fa-crop-alt"></i> Upload Photo</button></div>
     <button class="preview-btn" onclick="previewTopperPoster()"><i class="fas fa-eye"></i> Preview Poster</button>
   </div>
 </div>
 
 <div id="topperCropModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.9);backdrop-filter:blur(14px);z-index:1060;align-items:center;justify-content:center;padding:16px;">
   <div class="modal-glass p-4" style="max-width:600px;width:100%;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.05rem;">✂️ Crop Photo</h3>
-      <button onclick="closeTopperCrop()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.05rem;">✂️ Crop Photo</h3><button onclick="closeTopperCrop()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
     <div class="crop-container"><img id="topperCropImage" alt=""></div>
-    <div class="crop-actions">
-      <button class="btn-cancel-crop" onclick="closeTopperCrop()">Cancel</button>
-      <button class="btn-crop-save" onclick="saveTopperCrop()">Save</button>
-    </div>
+    <div class="crop-actions"><button class="btn-cancel-crop" onclick="closeTopperCrop()">Cancel</button><button class="btn-crop-save" onclick="saveTopperCrop()">Save</button></div>
   </div>
 </div>
 
 <div id="posterPreviewOverlay" class="poster-preview-container">
   <div class="close-preview" onclick="closePosterPreview()">×</div>
   <canvas id="posterPreviewCanvas" class="certificate-canvas"></canvas>
-  <div class="poster-preview-buttons">
-    <button onclick="downloadTopperPoster('png')"><i class="fas fa-download"></i> PNG</button>
-    <button onclick="downloadTopperPoster('pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
-  </div>
+  <div class="poster-preview-buttons"><button onclick="downloadTopperPoster('png')"><i class="fas fa-download"></i> PNG</button><button onclick="downloadTopperPoster('pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div>
 </div>
 
-<div class="topper-loading" id="topperLoading">
-  <div class="spinner"></div>
-  <p id="topperLoadingText" style="color:#d6e6ff;">Generating...</p>
-</div>
+<div class="topper-loading" id="topperLoading"><div class="spinner"></div><p id="topperLoadingText" style="color:#d6e6ff;">Generating...</p></div>
 
 <input type="file" id="profilePhotoInput" accept="image/*" style="display:none">
 
-<!-- ============================================================ -->
-<!-- 🎨 CREATIONS OVERLAY                                         -->
-<!-- ============================================================ -->
+<!-- CREATIONS OVERLAY -->
 <div id="creationsOverlay" class="creations-overlay">
   <div class="creations-container">
     <div class="creations-header">
-      <div>
-        <h2><i class="fas fa-palette"></i> കലാസൃഷ്ടികളും രചനകളും</h2>
-        <p>വിദ്യാർത്ഥികളുടെ സൃഷ്ടികൾ 🌟</p>
-      </div>
-      <div class="creations-header-actions">
-        <button class="btn-upload-creation" onclick="openUploadCreationModal()"><i class="fas fa-plus"></i> പുതിയത്</button>
-        <button class="creations-close" onclick="closeCreationsGallery()"><i class="fas fa-times"></i></button>
-      </div>
+      <div><h2><i class="fas fa-palette"></i> കലാസൃഷ്ടികളും രചനകളും</h2><p>വിദ്യാർത്ഥികളുടെ സൃഷ്ടികൾ 🌟</p></div>
+      <div class="creations-header-actions"><button class="btn-upload-creation" onclick="openUploadCreationModal()"><i class="fas fa-plus"></i> പുതിയത്</button><button class="creations-close" onclick="closeCreationsGallery()"><i class="fas fa-times"></i></button></div>
     </div>
     <div class="creations-toolbar">
-      <div class="creations-search">
-        <i class="fas fa-search"></i>
-        <input type="text" id="creationsSearchInput" placeholder="🔍 തിരയുക..." oninput="filterCreationsGallery()">
-      </div>
+      <div class="creations-search"><i class="fas fa-search"></i><input type="text" id="creationsSearchInput" placeholder="🔍 തിരയുക..." oninput="filterCreationsGallery()"></div>
       <select id="creationsCategoryFilter" class="creations-filter-select" onchange="filterCreationsGallery()">
         <option value="">🌟 എല്ലാം</option>
         <option value="drawing">🎨 ചിത്രരചന</option>
@@ -1987,94 +1578,38 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
         <option value="calligraphy">🖋️ കാലിഗ്രഫി</option>
         <option value="other">🌟 മറ്റുള്ളവ</option>
       </select>
-      <label class="creations-my-toggle">
-        <input type="checkbox" id="creationsOnlyMine" onchange="filterCreationsGallery()">
-        <span>എന്റേത്</span>
-      </label>
+      <label class="creations-my-toggle"><input type="checkbox" id="creationsOnlyMine" onchange="filterCreationsGallery()"><span>എന്റേത്</span></label>
     </div>
-    <div class="creations-grid" id="creationsGrid">
-      <div class="creations-loading"><div class="spinner-sm"></div> Loading...</div>
-    </div>
+    <div class="creations-grid" id="creationsGrid"><div class="creations-loading"><div class="spinner-sm"></div> Loading...</div></div>
   </div>
 </div>
 
-<!-- UPLOAD CREATION MODAL -->
 <div id="uploadCreationModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.9);backdrop-filter:blur(16px);z-index:1500;align-items:center;justify-content:center;padding:16px;overflow-y:auto;">
   <div class="modal-glass p-4" style="max-width:600px;width:100%;max-height:94vh;overflow-y:auto;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;"><i class="fas fa-plus-circle" style="color:#f472b6;"></i> പുതിയ സൃഷ്ടി</h3>
-      <button onclick="closeUploadCreationModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;"><i class="fas fa-plus-circle" style="color:#f472b6;"></i> പുതിയ സൃഷ്ടി</h3><button onclick="closeUploadCreationModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
     <div class="creation-mode-tabs">
-      <button type="button" class="creation-mode-tab active" data-mode="upload" onclick="switchCreationMode('upload')">
-        <i class="fas fa-cloud-upload-alt"></i> ഫയൽ അപ്‌ലോഡ്
-      </button>
-      <button type="button" class="creation-mode-tab" data-mode="text" onclick="switchCreationMode('text')">
-        <i class="fas fa-pen-fancy"></i> ടൈപ്പ് ചെയ്ത് എഴുതുക
-      </button>
+      <button type="button" class="creation-mode-tab active" data-mode="upload" onclick="switchCreationMode('upload')"><i class="fas fa-cloud-upload-alt"></i> ഫയൽ അപ്‌ലോഡ്</button>
+      <button type="button" class="creation-mode-tab" data-mode="text" onclick="switchCreationMode('text')"><i class="fas fa-pen-fancy"></i> ടൈപ്പ് ചെയ്ത് എഴുതുക</button>
     </div>
     <form id="uploadCreationForm" onsubmit="submitCreation(event)">
       <div id="creationUploadArea">
         <div class="creation-image-picker" id="creationImagePicker" onclick="document.getElementById('creationImageInput').click()">
-          <div class="cip-placeholder" id="cipPlaceholder">
-            <i class="fas fa-camera"></i>
-            <div class="cip-title">ഫോട്ടോ / PDF തിരഞ്ഞെടുക്കുക</div>
-            <div class="cip-sub">Camera / Gallery / Files</div>
-          </div>
+          <div class="cip-placeholder" id="cipPlaceholder"><i class="fas fa-camera"></i><div class="cip-title">ഫോട്ടോ / PDF തിരഞ്ഞെടുക്കുക</div><div class="cip-sub">Camera / Gallery / Files</div></div>
           <img id="cipPreview" style="display:none;" alt="preview">
         </div>
         <input type="file" id="creationImageInput" accept="image/*,application/pdf" style="display:none" onchange="handleCreationImagePick(event)">
       </div>
-      <div id="creationTextArea" style="display:none;">
-        <div class="creation-text-wrap">
-          <textarea id="creationTextContent" class="creation-textarea" placeholder="നിങ്ങളുടെ കവിത, കഥ, രചന, ചിന്തകൾ... ഇവിടെ എഴുതൂ ✍️" maxlength="5000" oninput="updateCreationTextMeta()"></textarea>
-          <div class="creation-text-meta">
-            <span><i class="fas fa-info-circle"></i> കുറഞ്ഞത് 20 അക്ഷരം</span>
-            <span id="creationTextCount"><span class="ct-warn">0</span> / 5000</span>
-          </div>
-        </div>
-      </div>
+      <div id="creationTextArea" style="display:none;"><div class="creation-text-wrap"><textarea id="creationTextContent" class="creation-textarea" placeholder="നിങ്ങളുടെ കവിത, കഥ, രചന, ചിന്തകൾ... ഇവിടെ എഴുതൂ ✍️" maxlength="5000" oninput="updateCreationTextMeta()"></textarea><div class="creation-text-meta"><span><i class="fas fa-info-circle"></i> കുറഞ്ഞത് 20 അക്ഷരം</span><span id="creationTextCount"><span class="ct-warn">0</span> / 5000</span></div></div></div>
       <div class="row g-2 mt-2">
-        <div class="col-12">
-          <label class="text-white-50 small">ശീർഷകം *</label>
-          <input type="text" id="creationTitle" class="modal-form-input" placeholder="e.g., എന്റെ ഗ്രാമം" required maxlength="80">
-        </div>
-        <div class="col-12">
-          <label class="text-white-50 small">വിഭാഗം *</label>
-          <select id="creationCategory" class="modal-form-input" required>
-            <option value="drawing">🎨 ചിത്രരചന</option>
-            <option value="writing">✍️ രചന</option>
-            <option value="poem">📝 കവിത</option>
-            <option value="story">📖 കഥ</option>
-            <option value="craft">🔨 കരകൗശലം</option>
-            <option value="photography">📷 ഫോട്ടോഗ്രഫി</option>
-            <option value="calligraphy">🖋️ കാലിഗ്രഫി</option>
-            <option value="other">🌟 മറ്റുള്ളവ</option>
-          </select>
-        </div>
-        <div class="col-12" id="creationDescRow">
-          <label class="text-white-50 small">
-            <i class="fas fa-comment-dots" style="color:#67e8f9;"></i>
-            വിവരണം <span style="color:#6d88ad;">(ഓപ്ഷണൽ)</span>
-          </label>
-          <textarea id="creationDescription" class="modal-form-input" style="min-height:80px;" maxlength="400" placeholder="ഈ സൃഷ്ടിയെക്കുറിച്ച് ഒരു ചെറിയ വിവരണം..."></textarea>
-          <div class="cip-desc-hint">
-            <i class="fas fa-lightbulb"></i>
-            <span>ഫോട്ടോ/PDF-നൊപ്പം വിവരണം നൽകിയാൽ കാഴ്ചക്കാർക്ക് കൂടുതൽ മനസ്സിലാകും</span>
-          </div>
-        </div>
+        <div class="col-12"><label class="text-white-50 small">ശീർഷകം *</label><input type="text" id="creationTitle" class="modal-form-input" placeholder="e.g., എന്റെ ഗ്രാമം" required maxlength="80"></div>
+        <div class="col-12"><label class="text-white-50 small">വിഭാഗം *</label><select id="creationCategory" class="modal-form-input" required><option value="drawing">🎨 ചിത്രരചന</option><option value="writing">✍️ രചന</option><option value="poem">📝 കവിത</option><option value="story">📖 കഥ</option><option value="craft">🔨 കരകൗശലം</option><option value="photography">📷 ഫോട്ടോഗ്രഫി</option><option value="calligraphy">🖋️ കാലിഗ്രഫി</option><option value="other">🌟 മറ്റുള്ളവ</option></select></div>
+        <div class="col-12" id="creationDescRow"><label class="text-white-50 small"><i class="fas fa-comment-dots" style="color:#67e8f9;"></i> വിവരണം <span style="color:#6d88ad;">(ഓപ്ഷണൽ)</span></label><textarea id="creationDescription" class="modal-form-input" style="min-height:80px;" maxlength="400" placeholder="ഈ സൃഷ്ടിയെക്കുറിച്ച് ഒരു ചെറിയ വിവരണം..."></textarea><div class="cip-desc-hint"><i class="fas fa-lightbulb"></i> <span>ഫോട്ടോ/PDF-നൊപ്പം വിവരണം നൽകിയാൽ കാഴ്ചക്കാർക്ക് കൂടുതൽ മനസ്സിലാകും</span></div></div>
       </div>
-      <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn-update flex-grow-1" id="creationSubmitBtn">
-          <i class="fas fa-upload"></i> പോസ്റ്റ് ചെയ്യുക
-        </button>
-        <button type="button" class="btn-cancel" onclick="closeUploadCreationModal()">Cancel</button>
-      </div>
+      <div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1" id="creationSubmitBtn"><i class="fas fa-upload"></i> പോസ്റ്റ് ചെയ്യുക</button><button type="button" class="btn-cancel" onclick="closeUploadCreationModal()">Cancel</button></div>
     </form>
   </div>
 </div>
 
-<!-- CREATION LIGHTBOX -->
 <div id="creationLightbox" class="creation-lightbox" onclick="if(event.target===this)closeCreationLightbox()">
   <div class="cl-content">
     <button class="cl-close" onclick="closeCreationLightbox()"><i class="fas fa-times"></i></button>
@@ -2084,100 +1619,55 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
       <h3 id="clTitle"></h3>
       <div class="cl-meta"><span id="clAuthor"></span><span id="clCategory"></span><span id="clDate"></span></div>
       <p id="clDescription"></p>
-      <div class="cl-actions">
-        <button class="cl-like-btn" id="clLikeBtn" onclick="toggleCreationLike()"><i class="fas fa-heart"></i> <span id="clLikeCount">0</span></button>
-        <a id="clDownloadBtn" class="cl-download-btn" target="_blank" style="display:none;"><i class="fas fa-download"></i> Download PDF</a>
-        <button class="cl-delete-btn" id="clDeleteBtn" style="display:none;" onclick="deleteCreation()"><i class="fas fa-trash"></i> Delete</button>
-      </div>
+      <div class="cl-actions"><button class="cl-like-btn" id="clLikeBtn" onclick="toggleCreationLike()"><i class="fas fa-heart"></i> <span id="clLikeCount">0</span></button><a id="clDownloadBtn" class="cl-download-btn" target="_blank" style="display:none;"><i class="fas fa-download"></i> Download PDF</a><button class="cl-delete-btn" id="clDeleteBtn" style="display:none;" onclick="deleteCreation()"><i class="fas fa-trash"></i> Delete</button></div>
       <div class="cl-comments">
         <h4><i class="fas fa-comments"></i> കമന്റുകൾ <span id="clCommentCount">0</span></h4>
         <div id="clCommentsList" class="cl-comments-list"></div>
-        <form class="cl-comment-form" onsubmit="submitComment(event)">
-          <input type="text" id="clCommentInput" class="cl-comment-input" placeholder="ഒരു കമന്റ് എഴുതൂ..." maxlength="300" required autocomplete="off">
-          <button type="submit" class="cl-comment-send" id="clCommentSendBtn"><i class="fas fa-paper-plane"></i></button>
-        </form>
+        <form class="cl-comment-form" onsubmit="submitComment(event)"><input type="text" id="clCommentInput" class="cl-comment-input" placeholder="ഒരു കമന്റ് എഴുതൂ..." maxlength="300" required autocomplete="off"><button type="submit" class="cl-comment-send" id="clCommentSendBtn"><i class="fas fa-paper-plane"></i></button></form>
       </div>
     </div>
   </div>
 </div>
 
-<!-- NOTES MODAL -->
 <div id="notesModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1250;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:820px;width:100%;max-height:90vh;overflow-y:auto;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;"><i class="fas fa-sticky-note me-2" style="color:#06b6d4"></i>എന്റെ കുറിപ്പുകൾ</h3>
-      <button onclick="closeNotesModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;"><i class="fas fa-sticky-note me-2" style="color:#06b6d4"></i>എന്റെ കുറിപ്പുകൾ</h3><button onclick="closeNotesModal()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
     <button class="btn-update mb-3 w-100" onclick="openNoteEditor()"><i class="fas fa-plus"></i> പുതിയ കുറിപ്പ്</button>
     <div id="notesList" class="notes-grid"></div>
   </div>
 </div>
 
-<!-- NOTICE BOARD MODAL -->
 <div id="noticeBoardModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1255;align-items:center;justify-content:center;padding:18px;">
   <div class="modal-glass p-4" style="max-width:720px;width:100%;max-height:90vh;overflow-y:auto;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;"><i class="fas fa-bullhorn me-2" style="color:#c084fc"></i>നോട്ടീസ് ബോർഡ്</h3>
-      <button onclick="closeNoticeBoard()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="text-white fw-bold mb-0" style="font-size:1.1rem;"><i class="fas fa-bullhorn me-2" style="color:#c084fc"></i>നോട്ടീസ് ബോർഡ്</h3><button onclick="closeNoticeBoard()" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button></div>
     <div id="noticeBoardContent"><div class="text-center py-3 text-white-50"><div class="spinner-sm"></div></div></div>
   </div>
 </div>
 
-<!-- AI CHAT -->
 <button class="ai-fab" id="aiFab" onclick="toggleAIChat()"><i class="fas fa-robot"></i></button>
 <div class="ai-panel" id="aiPanel">
   <div class="ai-head">
     <div class="ai-head-left">
       <div class="ai-avatar"><i class="fas fa-robot"></i></div>
-      <div>
-        <h6>NSM Assistant</h6>
-        <small><span class="ai-dot"></span> Online • <b style="color:#67e8f9;">Gemini 2.0</b></small>
-        <div class="ai-student-name"><i class="fas fa-user-graduate"></i> <span id="aiStudentNameText">Student</span></div>
-      </div>
+      <div><h6>NSM Assistant</h6><small><span class="ai-dot"></span> Online • <b style="color:#67e8f9;">Gemini 2.0</b></small><div class="ai-student-name"><i class="fas fa-user-graduate"></i> <span id="aiStudentNameText">Student</span></div></div>
     </div>
-    <div class="ai-head-actions" style="display:flex;gap:6px;">
-      <button class="ai-head-btn" onclick="clearAIChat()" title="New chat"><i class="fas fa-rotate-right"></i></button>
-      <button class="ai-head-btn danger" onclick="toggleAIChat()" title="Close"><i class="fas fa-times"></i></button>
-    </div>
+    <div class="ai-head-actions" style="display:flex;gap:6px;"><button class="ai-head-btn" onclick="clearAIChat()" title="New chat"><i class="fas fa-rotate-right"></i></button><button class="ai-head-btn danger" onclick="toggleAIChat()" title="Close"><i class="fas fa-times"></i></button></div>
   </div>
-  <div class="ai-body" id="aiBody">
-    <div class="ai-msg bot" id="aiWelcomeMsg">അസ്സലാമു അലൈക്കും! 👋<br><br>ഞാൻ <b>NSM AI Assistant</b>.</div>
-  </div>
-  <div class="ai-quick">
-    <button class="ai-chip" onclick="aiQuick('എന്റെ സമ്പാദ്യം എത്ര?')">💰 സമ്പാദ്യം</button>
-    <button class="ai-chip" onclick="aiQuick('എന്റെ ഹാജർ')">📆 ഹാജർ</button>
-    <button class="ai-chip" onclick="aiQuick('എന്റെ റിസൾട്ട്')">📊 റിസൾട്ട്</button>
-  </div>
-  <div class="ai-foot">
-    <input type="text" class="ai-input" id="aiInput" placeholder="എന്തെങ്കിലും ചോദിക്കൂ..." onkeydown="if(event.key==='Enter')sendAIMessage()" autocomplete="off">
-    <button class="ai-mic-btn" id="aiMicBtn" onclick="toggleVoiceInput()" title="Voice input"><i class="fas fa-microphone"></i></button>
-    <button class="ai-send" onclick="sendAIMessage()" title="Send"><i class="fas fa-paper-plane"></i></button>
-  </div>
+  <div class="ai-body" id="aiBody"><div class="ai-msg bot" id="aiWelcomeMsg">അസ്സലാമു അലൈക്കും! 👋<br><br>ഞാൻ <b>NSM AI Assistant</b>.</div></div>
+  <div class="ai-quick"><button class="ai-chip" onclick="aiQuick('എന്റെ സമ്പാദ്യം എത്ര?')">💰 സമ്പാദ്യം</button><button class="ai-chip" onclick="aiQuick('എന്റെ ഹാജർ')">📆 ഹാജർ</button><button class="ai-chip" onclick="aiQuick('എന്റെ റിസൾട്ട്')">📊 റിസൾട്ട്</button></div>
+  <div class="ai-foot"><input type="text" class="ai-input" id="aiInput" placeholder="എന്തെങ്കിലും ചോദിക്കൂ..." onkeydown="if(event.key==='Enter')sendAIMessage()" autocomplete="off"><button class="ai-mic-btn" id="aiMicBtn" onclick="toggleVoiceInput()" title="Voice input"><i class="fas fa-microphone"></i></button><button class="ai-send" onclick="sendAIMessage()" title="Send"><i class="fas fa-paper-plane"></i></button></div>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- PUBLIC CREATIONS FEED -->
 <div id="publicFeedOverlay" class="public-feed-overlay">
   <div class="pf-header">
     <div class="pf-header-inner">
-      <div class="pf-title">
-        <img src="https://i.postimg.cc/DznFT7L9/IMG-3167.png" class="pf-logo" alt="Logo">
-        <div>
-          <h2>കലാസൃഷ്ടികളും രചനകളും</h2>
-          <p>Noorussalam Madrasa • Public Gallery</p>
-        </div>
-      </div>
-      <div class="pf-header-actions">
-        <button class="pf-login-btn" onclick="loginFromFeed()"><i class="fas fa-sign-in-alt"></i> Login</button>
-        <button class="pf-close-btn" onclick="closePublicCreationsFeed()"><i class="fas fa-times"></i></button>
-      </div>
+      <div class="pf-title"><img src="https://i.postimg.cc/DznFT7L9/IMG-3167.png" class="pf-logo" alt="Logo"><div><h2>കലാസൃഷ്ടികളും രചനകളും</h2><p>Noorussalam Madrasa • Public Gallery</p></div></div>
+      <div class="pf-header-actions"><button class="pf-login-btn" onclick="loginFromFeed()"><i class="fas fa-sign-in-alt"></i> Login</button><button class="pf-close-btn" onclick="closePublicCreationsFeed()"><i class="fas fa-times"></i></button></div>
     </div>
   </div>
-  <div class="pf-feed" id="publicFeedScroll">
-    <div class="pf-feed-inner" id="publicFeedContainer"></div>
-  </div>
+  <div class="pf-feed" id="publicFeedScroll"><div class="pf-feed-inner" id="publicFeedContainer"></div></div>
 </div>
 <script>
 /* ============================================================ */
@@ -2235,9 +1725,7 @@ function nsmSwitchTab(tab){
   document.querySelectorAll('.nsm-tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===tab);});
 }
 
-/* ============================================================ */
-/* 📱 MOBILE TOUCH PREVENTION                                   */
-/* ============================================================ */
+/* Mobile touch prevent double-tap zoom */
 (function(){
   var isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   if(isMobile){
@@ -2350,7 +1838,7 @@ const modalTitleSpan=document.getElementById('modalTitle'),
       modalBodyDiv=document.getElementById('modalContentBody');
 
 /* ============================================================ */
-/* 🔒 SCROLL SYSTEM — FIXED (Single, Clean Implementation)      */
+/* 🔒 SCROLL SYSTEM — FIXED                                      */
 /* ============================================================ */
 function enableBodyScroll(){
   document.body.classList.remove('login-active');
@@ -2369,10 +1857,9 @@ function enableBodyScroll(){
 
 function disableBodyScroll(){
   document.body.classList.add('login-active');
-  console.log('🔒 Body scroll disabled (login screen)');
+  console.log('🔒 Body scroll disabled');
 }
 
-// Page load-ൽ login screen lock
 disableBodyScroll();
 
 /* ============================================================ */
@@ -2751,7 +2238,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
       document.getElementById('adminSettingsTab').style.display='none';
       localStorage.setItem('noor_last_id',raw);
       showToast('🔐 Admin Panel','success');
-      enableBodyScroll();  /* ✅ SCROLL ENABLE */
+      enableBodyScroll();
       showLoading(false);
       return;
     }
@@ -2790,7 +2277,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
     subscribeNotifications();
     showAIAssistant();
     await initNewFeatures();
-    enableBodyScroll();  /* ✅ SCROLL ENABLE */
+    enableBodyScroll();
     showToast('Welcome '+currentUser.name+' ✨','success');
   }catch(err){
     console.error('Login error:',err);
@@ -2815,7 +2302,7 @@ function logout(){
   if(window._lbInterval){clearInterval(window._lbInterval);window._lbInterval=null;}
   stopLeaderboardAutoScroll();
   if(studentIdInput)studentIdInput.value=localStorage.getItem('noor_last_id')||'';
-  disableBodyScroll();  /* ✅ RE-LOCK FOR LOGIN */
+  disableBodyScroll();
   showToast('Logged out','info');
 }
 
@@ -2847,7 +2334,7 @@ async function restoreSession(){
       subscribeNotifications();
       showAIAssistant();
       await initNewFeatures();
-      enableBodyScroll();  /* ✅ SCROLL ENABLE */
+      enableBodyScroll();
     }catch(e){
       console.error('restoreSession error:',e);
       currentUser=null;
@@ -4242,7 +3729,7 @@ function shareReportViaWhatsApp(){
   showToast('📤 Opening WhatsApp...','success');
 }
 
-console.log('✅ PART 3 loaded — Main JavaScript ready');
+console.log('✅ PART 3 loaded — Core JavaScript ready');
 </script>
 <script>
 /* ============================================================ */
@@ -4257,16 +3744,10 @@ async function selectAdminClass(cls){
   mc.style.display='block';ncm.style.display='none';bd.style.display='block';
   if(cls==='all'){
     document.getElementById('classBadgeNumber').textContent='All Classes';
-    try{
-      var s=await supabaseClient.from('students').select('studentid');
-      document.getElementById('classBadgeStudents').textContent=(s.data||[]).length;
-    }catch(e){}
+    try{var s=await supabaseClient.from('students').select('studentid');document.getElementById('classBadgeStudents').textContent=(s.data||[]).length;}catch(e){}
   }else{
     document.getElementById('classBadgeNumber').textContent='Class '+cls;
-    try{
-      var s2=await supabaseClient.from('students').select('studentid').eq('class',cls);
-      document.getElementById('classBadgeStudents').textContent=(s2.data||[]).length;
-    }catch(e){}
+    try{var s2=await supabaseClient.from('students').select('studentid').eq('class',cls);document.getElementById('classBadgeStudents').textContent=(s2.data||[]).length;}catch(e){}
   }
   document.getElementById('adminSettingsTab').style.display='none';
   switchAdminTab(document.querySelector('.admin-tab.active')?document.querySelector('.admin-tab.active').dataset.tab:'payments');
@@ -4310,30 +3791,15 @@ function switchAdminTab(tab){
   };
   var el=document.getElementById(map[tab]);
   if(el)el.style.display='block';
-  if(tab==='payments'){
-    var di=document.getElementById('adminDate');
-    if(!di.value)di.value=new Date().toISOString().split('T')[0];
-    loadPaymentsForDate();
-  }
+  if(tab==='payments'){var di=document.getElementById('adminDate');if(!di.value)di.value=new Date().toISOString().split('T')[0];loadPaymentsForDate();}
   if(tab==='students')loadStudentsForAdmin();
   if(tab==='withdrawals')loadAllWithdrawals();
   if(tab==='balances')loadBalances();
-  if(tab==='summary'){
-    document.getElementById('summaryDate').value=new Date().toISOString().split('T')[0];
-    loadDailySummary();
-  }
-  if(tab==='attendance'){
-    var n=new Date();
-    document.getElementById('attendanceMonth').value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');
-    loadAttendanceForAdmin();
-  }
+  if(tab==='summary'){document.getElementById('summaryDate').value=new Date().toISOString().split('T')[0];loadDailySummary();}
+  if(tab==='attendance'){var n=new Date();document.getElementById('attendanceMonth').value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');loadAttendanceForAdmin();}
   if(tab==='grades')loadGradesForAdmin();
   if(tab==='moralvalues')loadMoralValuesAdmin();
-  if(tab==='extracurricular'){
-    var n2=new Date();
-    document.getElementById('extraMonth').value=n2.getFullYear()+'-'+String(n2.getMonth()+1).padStart(2,'0');
-    loadExtraAdmin();
-  }
+  if(tab==='extracurricular'){var n2=new Date();document.getElementById('extraMonth').value=n2.getFullYear()+'-'+String(n2.getMonth()+1).padStart(2,'0');loadExtraAdmin();}
   if(tab==='competitions')loadCompetitionsAdmin();
   if(tab==='creations')loadCreationsAdmin();
   if(tab==='timetable')loadTimetableAdmin();
@@ -4475,7 +3941,7 @@ async function bulkUpdateGrades(){
 
 async function autoCalculateRanks(){
   if(!currentAdminClass||currentAdminClass==='all'){showToast('Specific class select ചെയ്യുക','error');return;}
-  if(!confirm('Recalculate ranks? (percentage-based, all exams combined)'))return;
+  if(!confirm('Recalculate ranks?'))return;
   try{
     var sr=await supabaseClient.from('students').select('studentid,name').eq('class',currentAdminClass);
     var students=sr.data||[];
@@ -4551,9 +4017,7 @@ async function loadMoralValuesAdmin(){
     h+='</tbody></table>';
     h+='<div class="d-flex gap-3 justify-content-end mt-3 flex-wrap"><span style="color:#9db8dd;font-size:.75rem;display:flex;align-items:center;gap:6px;"><i class="fas fa-info-circle" style="color:#67e8f9;"></i> Overall auto-calculate ആകും</span><button class="btn-update" id="mvSaveBtn" onclick="saveMoralValuesBulk()"><i class="fas fa-save"></i> Save All</button></div>';
     wrap.innerHTML=h;
-    wrap.querySelectorAll('.mv-trait-sel').forEach(function(sel){
-      sel.addEventListener('change',function(){recalcMoralOverall(this.dataset.sid);});
-    });
+    wrap.querySelectorAll('.mv-trait-sel').forEach(function(sel){sel.addEventListener('change',function(){recalcMoralOverall(this.dataset.sid);});});
   }catch(e){wrap.innerHTML='<div class="empty-state">Error: '+escapeHtml(e.message)+'</div>';}
 }
 
@@ -4719,9 +4183,7 @@ async function findBestStudent(){
     var er=await supabaseClient.from('extracurricular_grades').select('studentid,marks').eq('month_year',month).in('studentid',ids);
     var totals={};
     students.forEach(function(s){totals[s.studentid]=0;});
-    (er.data||[]).forEach(function(r){
-      if(totals[r.studentid]!==undefined)totals[r.studentid]+=Number(r.marks)||0;
-    });
+    (er.data||[]).forEach(function(r){if(totals[r.studentid]!==undefined)totals[r.studentid]+=Number(r.marks)||0;});
     var best=Object.keys(totals).reduce(function(a,b){return totals[a]>totals[b]?a:b;});
     var bestName=students.find(function(s){return s.studentid===best;}).name;
     await supabaseClient.from('students').update({isbeststudent:false}).eq('class',currentAdminClass);
@@ -4750,10 +4212,7 @@ async function loadCompetitionsAdmin(){
       (sr.data||[]).forEach(function(s){smap[s.studentid]={name:s.name||'',class:s.class||''};});
     }
     competitionsData=comps.map(function(c){
-      return Object.assign({},c,{
-        studentname:smap[c.studentid]?smap[c.studentid].name:'',
-        studentclass:smap[c.studentid]?smap[c.studentid].class:''
-      });
+      return Object.assign({},c,{studentname:smap[c.studentid]?smap[c.studentid].name:'',studentclass:smap[c.studentid]?smap[c.studentid].class:''});
     });
     filterCompetitionsAdmin();
   }catch(e){wrap.innerHTML='<div class="empty-state">Error</div>';}
@@ -4976,7 +4435,7 @@ function renderCreationsAdmin(list){
     if(ft==='text'){
       var p=(c.text_content||'').trim();
       if(p.length>60)p=p.substring(0,60)+'…';
-      pv='<div style="width:60px;height:60px;background:linear-gradient(140deg,rgba(139,92,246,.25),rgba(236,72,153,.15));border:1px solid rgba(139,92,246,.4);border-radius:8px;padding:6px;font-size:.6rem;color:#fff;overflow:hidden;line-height:1.3;cursor:pointer;" onclick="editCreationAdmin('+c.id+')" title="'+escapeHtml(c.text_content||'')+'">'+escapeHtml(p)+'</div>';
+      pv='<div style="width:60px;height:60px;background:linear-gradient(140deg,rgba(139,92,246,.25),rgba(236,72,153,.15));border:1px solid rgba(139,92,246,.4);border-radius:8px;padding:6px;font-size:.6rem;color:#fff;overflow:hidden;line-height:1.3;cursor:pointer;" onclick="editCreationAdmin('+c.id+')">'+escapeHtml(p)+'</div>';
     }else if(ft==='pdf'){
       pv='<a href="'+url+'" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:8px;font-size:1.5rem;color:#f87171;">📄</a>';
     }else{
@@ -4985,7 +4444,7 @@ function renderCreationsAdmin(list){
     var typeLabel=ft==='text'?'✍️ Text':ft==='pdf'?'📄 PDF':'🖼️ Img';
     h+='<tr><td>'+(i+1)+'</td><td>'+pv+'</td><td><strong>'+escapeHtml(c.title)+'</strong></td><td>'+escapeHtml(c.studentName||c.studentid)+'</td><td>'+escapeHtml(c.studentClass||'')+'</td><td>'+typeLabel+'</td><td style="color:#f472b6;font-weight:800;">❤️ '+(c.likes||0)+'</td><td>'+(c.approved?'<span style="color:#6ee7b7;font-weight:800;font-size:.7rem;">✅</span>':'<span style="color:#fcd34d;font-weight:800;font-size:.7rem;">⏳</span>')+'</td><td>'+formatDate(c.created_at)+'</td><td>';
     if(!c.approved)h+='<button class="btn-sm approve" onclick="approveCreationAdmin('+c.id+')">✅</button> ';
-    if(ft==='text')h+='<button class="btn-sm" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;padding:5px 10px;" onclick="editCreationAdmin('+c.id+')" title="View">👁️</button> ';
+    if(ft==='text')h+='<button class="btn-sm" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;padding:5px 10px;" onclick="editCreationAdmin('+c.id+')">👁️</button> ';
     h+='<button class="btn-sm reject" onclick="deleteCreationAdmin('+c.id+')">🗑️</button></td></tr>';
   });
   h+='</tbody></table>';
@@ -5270,10 +4729,7 @@ async function loadAllWithdrawals(){
     if(ids.length===0){wrap.innerHTML='<div class="empty-state">No students</div>';return;}
     var r=await supabaseClient.from('withdrawals').select('*,students(name,class)').in('studentid',ids).order('date',{ascending:false});
     allWithdrawals=(r.data||[]).map(function(x){
-      return Object.assign({},x,{
-        studentname:x.students?x.students.name:'',
-        studentclass:x.students?x.students.class:''
-      });
+      return Object.assign({},x,{studentname:x.students?x.students.name:'',studentclass:x.students?x.students.class:''});
     });
     renderAllWithdrawals();
   }catch(e){wrap.innerHTML='<div class="empty-state">Error</div>';}
@@ -5308,10 +4764,8 @@ async function approveWithdrawal(id){
   try{
     var req=allWithdrawals.find(function(x){return x.id===id;});
     await supabaseClient.from('payments').insert({
-      studentid:req.studentid,
-      date:new Date().toISOString().split('T')[0],
-      debit:0,credit:req.amount,approved:true,
-      reason:'Palathulli Withdrawal',type:'fee'
+      studentid:req.studentid,date:new Date().toISOString().split('T')[0],
+      debit:0,credit:req.amount,approved:true,reason:'Palathulli Withdrawal',type:'fee'
     });
     await supabaseClient.from('withdrawals').update({status:'approved'}).eq('id',id);
     showToast('✅','success');
@@ -5343,9 +4797,7 @@ async function loadBalances(){
     }catch(e){
       var ids=r.data.map(function(x){return x.studentid;});
       var p=await supabaseClient.from('payments').select('studentid,credit,debit,approved').in('studentid',ids);
-      (p.data||[]).forEach(function(x){
-        if(x.approved===true)bm[x.studentid]=(bm[x.studentid]||0)+(x.debit||0)-(x.credit||0);
-      });
+      (p.data||[]).forEach(function(x){if(x.approved===true)bm[x.studentid]=(bm[x.studentid]||0)+(x.debit||0)-(x.credit||0);});
     }
     balancesData=r.data.map(function(x){
       return{studentId:x.studentid,name:x.name||'',class:x.class,balance:bm[x.studentid]||0};
@@ -5372,8 +4824,7 @@ async function downloadBalancesPDF(){
   var doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
   doc.setFontSize(15);doc.text('Balances — Class '+currentAdminClass,40,45);
   doc.autoTable({
-    startY:75,
-    head:[['#','Student','Class','Balance']],
+    startY:75,head:[['#','Student','Class','Balance']],
     body:balancesData.map(function(b,i){return[i+1,b.name,b.class||'','Rs.'+b.balance];}),
     styles:{fontSize:9},headStyles:{fillColor:[30,107,224]}
   });
@@ -5478,9 +4929,7 @@ async function loadDailySummary(){
     if(ids.length===0){wrap.innerHTML='<div class="empty-state">No students</div>';return;}
     var r=await supabaseClient.from('payments').select('credit,debit,approved').eq('date',date).in('studentid',ids);
     var td=0,tc=0;
-    (r.data||[]).forEach(function(x){
-      if(x.approved===true){td+=(x.debit||0);tc+=(x.credit||0);}
-    });
+    (r.data||[]).forEach(function(x){if(x.approved===true){td+=(x.debit||0);tc+=(x.credit||0);}});
     wrap.innerHTML='<div class="admin-summary"><div class="stat"><div class="num blue">₹'+td.toLocaleString()+'</div><div class="label">Debit</div></div><div class="stat"><div class="num green">₹'+tc.toLocaleString()+'</div><div class="label">Credit</div></div><div class="stat"><div class="num orange">₹'+(tc-td).toLocaleString()+'</div><div class="label">Net</div></div></div>';
   }catch(e){wrap.innerHTML='<div class="empty-state">Error</div>';}
 }
@@ -5515,8 +4964,7 @@ async function saveTimetable(e){
   e.preventDefault();
   try{
     await supabaseClient.from('timetable').insert({
-      class:currentAdminClass,
-      day:document.getElementById('tt_day').value,
+      class:currentAdminClass,day:document.getElementById('tt_day').value,
       period:parseInt(document.getElementById('tt_period').value),
       subject:document.getElementById('tt_subject').value.trim()
     });
@@ -5560,8 +5008,7 @@ async function saveHomework(e){
   e.preventDefault();
   try{
     await supabaseClient.from('homework').insert({
-      class:currentAdminClass,
-      subject:document.getElementById('hw_subject').value,
+      class:currentAdminClass,subject:document.getElementById('hw_subject').value,
       title:document.getElementById('hw_title').value.trim(),
       description:document.getElementById('hw_desc').value.trim(),
       due_date:document.getElementById('hw_due').value||null
@@ -6334,11 +5781,11 @@ async function submitCreation(e){
         await supabaseClient.from('activities').insert({
           studentid:currentUser.studentId,
           activity:'✍️ പുതിയ രചന — '+title,
-          description:currentUser.name+' wrote a text post (pending approval)',
+          description:currentUser.name+' wrote a text post',
           timestamp:new Date().toISOString()
         });
       }catch(ae){}
-      showToast('✅ രചന അയച്ചു! Admin approval കാത്തിരിക്കുന്നു','success');
+      showToast('✅ രചന അയച്ചു!','success');
       if(typeof confetti!=='undefined')confetti({particleCount:100,spread:70,origin:{y:.6}});
       closeUploadCreationModal();
       if(document.getElementById('creationsOverlay').classList.contains('open'))loadCreationsGallery();
@@ -6367,11 +5814,11 @@ async function submitCreation(e){
       await supabaseClient.from('activities').insert({
         studentid:currentUser.studentId,
         activity:(creationFileType==='pdf'?'📄':'🎨')+' പുതിയ സൃഷ്ടി — '+title,
-        description:currentUser.name+' uploaded (pending approval)',
+        description:currentUser.name+' uploaded',
         timestamp:new Date().toISOString()
       });
     }catch(ae){}
-    showToast('✅ Uploaded! Admin approval കാത്തിരിക്കുന്നു','success');
+    showToast('✅ Uploaded!','success');
     if(typeof confetti!=='undefined')confetti({particleCount:100,spread:70,origin:{y:.6}});
     closeUploadCreationModal();
     if(document.getElementById('creationsOverlay').classList.contains('open'))loadCreationsGallery();
@@ -6478,10 +5925,7 @@ async function loadCreationComments(creationId){
       (sr.data||[]).forEach(function(s){smap[s.studentid]={name:s.name,photo:s.photo};});
     }
     currentCreationComments=arr.map(function(c){
-      return Object.assign({},c,{
-        authorName:smap[c.studentid]?smap[c.studentid].name:'Student',
-        authorPhoto:smap[c.studentid]?smap[c.studentid].photo:''
-      });
+      return Object.assign({},c,{authorName:smap[c.studentid]?smap[c.studentid].name:'Student',authorPhoto:smap[c.studentid]?smap[c.studentid].photo:''});
     });
     ce.textContent=currentCreationComments.length;
     if(currentCreationComments.length===0){
@@ -6575,8 +6019,7 @@ function downloadPaymentsPDF(){
   doc.setFontSize(15);doc.text('Palathulli — Class '+currentAdminClass,40,45);
   doc.setFontSize(10);doc.text('Date: '+date,40,65);
   doc.autoTable({
-    startY:85,
-    head:[['#','Student','Class','Debit','Credit','Status']],
+    startY:85,head:[['#','Student','Class','Debit','Credit','Status']],
     body:filteredPayments.map(function(i,idx){return[idx+1,i.name,i.class||'',i.debit,i.credit,i.exists?(i.approved?'YES':'PENDING'):'—'];}),
     styles:{fontSize:9},headStyles:{fillColor:[30,107,224]}
   });
@@ -6589,8 +6032,7 @@ function downloadStudentsPDF(){
   var doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
   doc.setFontSize(15);doc.text('Students — Class '+currentAdminClass,40,45);
   doc.autoTable({
-    startY:75,
-    head:[['#','ID','Name','Class','Roll']],
+    startY:75,head:[['#','ID','Name','Class','Roll']],
     body:filteredStudentsAdmin.map(function(s,i){return[i+1,s.studentid,s.name||'',s.class||'',s.roll||''];}),
     styles:{fontSize:9},headStyles:{fillColor:[30,107,224]}
   });
@@ -6759,10 +6201,7 @@ async function renderCharts(){
     var byExam={};
     (mr.data||[]).forEach(function(m){
       if(!byExam[m.exam_name])byExam[m.exam_name]={o:0,t:0};
-      if(Number(m.max_marks)>0){
-        byExam[m.exam_name].o+=Number(m.obtained_marks)||0;
-        byExam[m.exam_name].t+=Number(m.max_marks);
-      }
+      if(Number(m.max_marks)>0){byExam[m.exam_name].o+=Number(m.obtained_marks)||0;byExam[m.exam_name].t+=Number(m.max_marks);}
     });
     var exLabels=Object.keys(byExam);
     var exVals=exLabels.map(function(k){var e=byExam[k];return e.t>0?Math.round(e.o/e.t*100):0;});
@@ -7252,7 +6691,7 @@ async function saveNoticeAdmin(e,id){
 }
 
 /* ============================================================ */
-/* 📅 DAILY HUB LOAD                                            */
+/* 🏠 DAILY HUB LOAD                                            */
 /* ============================================================ */
 async function loadDailyHub(){
   if(!currentUser)return;
@@ -7324,7 +6763,7 @@ function showBlockedScreen(student){
   document.getElementById('aiFab').classList.remove('show');
   var existing=document.getElementById('blockedScreen');
   if(existing)existing.remove();
-  var html='<div id="blockedScreen" style="position:fixed;inset:0;background:linear-gradient(155deg,#03081c,#050e2b 30%,#071433);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;"><div style="max-width:480px;width:100%;background:linear-gradient(160deg,rgba(239,68,68,.18),rgba(5,14,43,.98));border:2px solid rgba(239,68,68,.5);border-radius:28px;padding:36px 26px 30px;text-align:center;box-shadow:0 40px 100px -30px rgba(0,0,0,.95),0 0 80px -20px rgba(239,68,68,.5);"><div style="width:90px;height:90px;margin:0 auto 16px;border-radius:50%;background:linear-gradient(140deg,#b91c1c,#ef4444);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px -10px rgba(239,68,68,.9);animation:pulseBlock 2s infinite;"><i class="fas fa-lock" style="font-size:2.3rem;color:#fff;"></i></div><h1 style="color:#fff;font-size:1.6rem;font-weight:900;margin:0 0 6px;">🚫 Account Blocked</h1><p style="color:#fca5a5;font-size:.9rem;margin:0 0 22px;font-weight:700;">നിങ്ങളുടെ അക്കൗണ്ട് താൽക്കാലികമായി ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</p><div style="background:rgba(8,20,48,.7);border:1px solid rgba(140,190,255,.2);border-radius:16px;padding:16px;text-align:left;margin-bottom:16px;"><div style="font-size:.7rem;color:#9db8dd;text-transform:uppercase;font-weight:800;letter-spacing:1px;margin-bottom:8px;"><i class="fas fa-user"></i> Student Details</div><div style="color:#fff;font-weight:800;font-size:1rem;">'+escapeHtml(student.name||'Student')+'</div><div style="color:#9db8dd;font-size:.78rem;margin-top:3px;">'+escapeHtml(student.studentid)+' • Class '+escapeHtml(student.class||'—')+'</div></div><div style="background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(251,191,36,.08));border:1.6px solid rgba(239,68,68,.4);border-radius:16px;padding:16px;text-align:left;margin-bottom:20px;"><div style="font-size:.7rem;color:#fca5a5;text-transform:uppercase;font-weight:800;letter-spacing:1px;margin-bottom:8px;"><i class="fas fa-circle-exclamation"></i> കാരണം</div><div style="color:#fff;font-size:.9rem;line-height:1.6;white-space:pre-wrap;">'+escapeHtml(reason)+'</div>'+(blockedDate?'<div style="color:#9db8dd;font-size:.7rem;margin-top:10px;"><i class="far fa-clock"></i> '+blockedDate+'</div>':'')+'</div><div style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);border-radius:14px;padding:12px 16px;margin-bottom:22px;text-align:left;"><div style="font-size:.78rem;color:#67e8f9;line-height:1.6;"><i class="fas fa-info-circle"></i> <b>എന്ത് ചെയ്യണം?</b><br>മദ്രസ ഓഫീസിൽ ബന്ധപ്പെട്ട് ഈ പ്രശ്നം പരിഹരിക്കുക.</div></div><button onclick="closeBlockedScreen()" style="background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#03132e;border:none;padding:14px 32px;border-radius:50px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:9px;width:100%;justify-content:center;"><i class="fas fa-arrow-left"></i> Back to Login</button><div style="margin-top:18px;font-size:.68rem;color:#6d88ad;">Noorussalam Madrasa • v22.2</div></div></div><style>@keyframes pulseBlock{0%,100%{box-shadow:0 12px 30px -10px rgba(239,68,68,.9),0 0 0 0 rgba(239,68,68,.5);}50%{box-shadow:0 12px 30px -10px rgba(239,68,68,.9),0 0 0 20px rgba(239,68,68,0);}}</style>';
+  var html='<div id="blockedScreen" style="position:fixed;inset:0;background:linear-gradient(155deg,#03081c,#050e2b 30%,#071433);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;"><div style="max-width:480px;width:100%;background:linear-gradient(160deg,rgba(239,68,68,.18),rgba(5,14,43,.98));border:2px solid rgba(239,68,68,.5);border-radius:28px;padding:36px 26px 30px;text-align:center;box-shadow:0 40px 100px -30px rgba(0,0,0,.95),0 0 80px -20px rgba(239,68,68,.5);"><div style="width:90px;height:90px;margin:0 auto 16px;border-radius:50%;background:linear-gradient(140deg,#b91c1c,#ef4444);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px -10px rgba(239,68,68,.9);animation:pulseBlock 2s infinite;"><i class="fas fa-lock" style="font-size:2.3rem;color:#fff;"></i></div><h1 style="color:#fff;font-size:1.6rem;font-weight:900;margin:0 0 6px;">🚫 Account Blocked</h1><p style="color:#fca5a5;font-size:.9rem;margin:0 0 22px;font-weight:700;">നിങ്ങളുടെ അക്കൗണ്ട് താൽക്കാലികമായി ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</p><div style="background:rgba(8,20,48,.7);border:1px solid rgba(140,190,255,.2);border-radius:16px;padding:16px;text-align:left;margin-bottom:16px;"><div style="font-size:.7rem;color:#9db8dd;text-transform:uppercase;font-weight:800;letter-spacing:1px;margin-bottom:8px;"><i class="fas fa-user"></i> Student Details</div><div style="color:#fff;font-weight:800;font-size:1rem;">'+escapeHtml(student.name||'Student')+'</div><div style="color:#9db8dd;font-size:.78rem;margin-top:3px;">'+escapeHtml(student.studentid)+' • Class '+escapeHtml(student.class||'—')+'</div></div><div style="background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(251,191,36,.08));border:1.6px solid rgba(239,68,68,.4);border-radius:16px;padding:16px;text-align:left;margin-bottom:20px;"><div style="font-size:.7rem;color:#fca5a5;text-transform:uppercase;font-weight:800;letter-spacing:1px;margin-bottom:8px;"><i class="fas fa-circle-exclamation"></i> കാരണം</div><div style="color:#fff;font-size:.9rem;line-height:1.6;white-space:pre-wrap;">'+escapeHtml(reason)+'</div>'+(blockedDate?'<div style="color:#9db8dd;font-size:.7rem;margin-top:10px;"><i class="far fa-clock"></i> '+blockedDate+'</div>':'')+'</div><div style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);border-radius:14px;padding:12px 16px;margin-bottom:22px;text-align:left;"><div style="font-size:.78rem;color:#67e8f9;line-height:1.6;"><i class="fas fa-info-circle"></i> <b>എന്ത് ചെയ്യണം?</b><br>മദ്രസ ഓഫീസിൽ ബന്ധപ്പെട്ട് ഈ പ്രശ്നം പരിഹരിക്കുക.</div></div><button onclick="closeBlockedScreen()" style="background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#03132e;border:none;padding:14px 32px;border-radius:50px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:9px;width:100%;justify-content:center;"><i class="fas fa-arrow-left"></i> Back to Login</button><div style="margin-top:18px;font-size:.68rem;color:#6d88ad;">Noorussalam Madrasa • v22.3</div></div></div><style>@keyframes pulseBlock{0%,100%{box-shadow:0 12px 30px -10px rgba(239,68,68,.9),0 0 0 0 rgba(239,68,68,.5);}50%{box-shadow:0 12px 30px -10px rgba(239,68,68,.9),0 0 0 20px rgba(239,68,68,0);}}</style>';
   document.body.insertAdjacentHTML('beforeend',html);
   disableBodyScroll();
 }
@@ -7571,8 +7010,9 @@ async function initApp(){
   await restoreSession();
   var splash=document.getElementById('splashScreen');
   if(splash){splash.style.opacity='0';setTimeout(function(){splash.remove();},250);}
-  console.log('%c✅ Noorussalam Madrasa v22.2 Ultimate+ Edition','color:#22d3ee;font-weight:bold;font-size:14px;');
+  console.log('%c✅ Noorussalam Madrasa v22.3 Ultimate+ Edition','color:#22d3ee;font-weight:bold;font-size:14px;');
   console.log('%c🔓 Scroll system: FIXED','color:#6ee7b7;font-weight:bold;');
+  console.log('%c📱 Mobile navbar: HIDDEN','color:#fbbf24;font-weight:bold;');
 }
 
 document.addEventListener('visibilitychange',function(){
@@ -7617,7 +7057,7 @@ else{handleShortcutNavigation();}
 </script>
 
 <!-- ============================================================ -->
-<!-- 🔒 CLOSE SYSTEM (Event Delegation)                          -->
+<!-- 🔒 CLOSE SYSTEM                                              -->
 <!-- ============================================================ -->
 <script>
 (function(){
@@ -7640,9 +7080,7 @@ else{handleShortcutNavigation();}
   function init(){
     MODAL_IDS.forEach(function(id){
       var el=document.getElementById(id);
-      if(el){
-        el.addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
-      }
+      if(el){el.addEventListener('click',function(e){if(e.target===this)this.style.display='none';});}
     });
     var lb=document.getElementById('creationLightbox');
     if(lb){lb.addEventListener('click',function(e){if(e.target===this)window.closeCreationLightbox();});}
@@ -7727,10 +7165,7 @@ window.addEventListener('beforeinstallprompt',(e)=>{
 });
 if(installBtn){
   installBtn.addEventListener('click',async()=>{
-    if(!deferredPrompt){
-      alert('ബ്രൗസർ മെനുവിൽ നിന്ന് "Add to Home Screen" തിരഞ്ഞെടുക്കുക');
-      return;
-    }
+    if(!deferredPrompt){alert('ബ്രൗസർ മെനുവിൽ നിന്ന് "Add to Home Screen" തിരഞ്ഞെടുക്കുക');return;}
     deferredPrompt.prompt();
     const{outcome}=await deferredPrompt.userChoice;
     console.log('Install outcome:',outcome);
