@@ -35,8 +35,16 @@
 <style>
 :root{--b950:#03081c;--b900:#050e2b;--b850:#071433;--b800:#0a1a3f;--b700:#0f2a63;--b600:#1547a8;--b500:#1e6be0;--b450:#2b7cf0;--b400:#3b8bff;--b300:#7db3ff;--b200:#a9cdff;--cyan:#22d3ee;--cyan-soft:#67e8f9;--stroke:rgba(140,190,255,.18);--stroke-2:rgba(140,190,255,.30);--txt:#eaf2ff;--txt-dim:#9db8dd}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Anek Malayalam',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+html{overflow-x:hidden;}
 body{background:linear-gradient(155deg,var(--b950),var(--b900) 22%,var(--b800) 45%,var(--b700) 68%,var(--b600));background-attachment:fixed;min-height:100vh;color:var(--txt);overflow-x:hidden;overflow-y:auto;position:relative;transition:background .4s}
-body.login-active{overflow:hidden!important;height:100vh!important;max-height:100vh!important}
+body.login-active{overflow:hidden!important;height:100vh!important;max-height:100vh!important;height:100dvh!important;max-height:100dvh!important;}
+body.login-active{
+  overflow:hidden!important;
+  height:100vh!important;
+  max-height:100vh!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+}
 body::before{content:'';position:fixed;inset:-30%;z-index:0;pointer-events:none;background:radial-gradient(38% 34% at 15% 18%,rgba(59,139,255,.30),transparent 62%),radial-gradient(34% 30% at 85% 12%,rgba(34,211,238,.20),transparent 60%);animation:auroraFloat 26s ease-in-out infinite alternate}
 @keyframes auroraFloat{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(2.5%,-2%,0) scale(1.06)}100%{transform:translate3d(-2%,2.5%,0) scale(1.02)}}
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.28;background-image:linear-gradient(rgba(140,190,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(140,190,255,.045) 1px,transparent 1px);background-size:52px 52px;-webkit-mask-image:radial-gradient(circle at 50% 35%,#000 0%,transparent 78%);mask-image:radial-gradient(circle at 50% 35%,#000 0%,transparent 78%)}
@@ -789,8 +797,18 @@ body.light-mode .prayer-item .p-time{color:#0a1a3f}
 @media(max-width:520px){.nsm-nav-inner{padding:12px 16px}.nsm-nav-logo{width:42px;height:42px}.nsm-nav-text h1{font-size:.9rem}.nsm-nav-text p{font-size:.6rem;letter-spacing:.8px}.nsm-nav-link{padding:7px 11px;font-size:.72rem}.nsm-nav-link span{display:none}.nsm-nav-link i{font-size:1rem;margin:0}.nsm-hero{padding:32px 20px;min-height:220px}.nsm-hero-title{font-size:1.28rem;line-height:1.3}.nsm-hero-sub{font-size:.78rem}.nsm-hero-quote-mark{font-size:1.8rem;margin-bottom:8px}.nsm-hero-chips{gap:6px}.nsm-hero-chips span{font-size:.6rem;padding:5px 9px;letter-spacing:.2px}.nsm-card-logo{width:64px;height:64px}.nsm-card-title{font-size:1.12rem}.nsm-card-sub{font-size:.72rem}.nsm-tab{font-size:.68rem;padding:9px 6px}.nsm-tab span{display:none}.nsm-tab i{font-size:.95rem}.nsm-input{padding:13px 0;font-size:.9rem}.nsm-label{font-size:.72rem}.nsm-btn-primary{padding:14px 18px;font-size:.88rem}.nsm-btn-secondary{padding:13px 18px;font-size:.82rem}.nsm-copyright{font-size:.62rem}}
 .nsm-tab.active{pointer-events:none}
 @media(max-width:768px){
-@media(max-width:768px){
-  html,body{overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:none;touch-action:manipulation;user-select:none}
+  html,body{
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:none;
+  }
+  body.login-active{
+    overflow:hidden!important;
+    height:100vh!important;
+    max-height:100vh!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+  }
   /* Login page-ൽ scroll disable */
   body.login-active{overflow:hidden!important;height:100vh!important;max-height:100vh!important}
   input,textarea{user-select:text}
@@ -3079,13 +3097,14 @@ const loginSection=document.getElementById('loginSection'),dashboardSection=docu
 
 // Login-ൽ നിന്ന് dashboard-ലേക്ക് പോകുമ്പോൾ scroll enable
 function enableBodyScroll(){
-  document.body.style.overflowY = '';
-  document.documentElement.style.overflowY = '';
+  document.body.classList.remove('login-active');
+  document.body.style.overflow='';
+  document.documentElement.style.overflow='';
 }
 function disableBodyScroll(){
-  document.body.style.overflowY = 'hidden';
-  document.documentElement.style.overflowY = 'hidden';
+  document.body.classList.add('login-active');
 }
+disableBodyScroll();
 const loadingOverlay=document.getElementById('loadingOverlay'),modal=document.getElementById('globalModal');
 const modalTitleSpan=document.getElementById('modalTitle'),modalBodyDiv=document.getElementById('modalContentBody');
 
@@ -3094,25 +3113,16 @@ function openHelpModal(){document.getElementById('helpModal').classList.add('act
 function closeHelpModal(){document.getElementById('helpModal').classList.remove('active');}
 document.getElementById('helpModal').addEventListener('click',function(e){if(e.target===this)closeHelpModal();});
 function showLoading(s){loadingOverlay.style.display=s?'flex':'none';}
+/* ===== Login Screen Scroll Lock (Clean) ===== */
 function enableBodyScroll(){
-  document.body.style.overflow='auto';
-  document.body.style.height='auto';
-  document.body.style.maxHeight='none';
-  document.body.style.position='relative';
-  document.documentElement.style.overflow='auto';
-  document.documentElement.style.height='auto';
+  document.body.classList.remove('login-active');
+  document.body.style.overflow='';
+  document.documentElement.style.overflow='';
 }
 function disableBodyScroll(){
-  document.body.style.overflow='hidden';
-  document.body.style.height='100vh';
-  document.body.style.maxHeight='100vh';
-  document.body.style.position='fixed';
-  document.body.style.width='100%';
-  document.body.style.top='0';
-  document.documentElement.style.overflow='hidden';
-  document.documentElement.style.height='100vh';
+  document.body.classList.add('login-active');
 }
-disableBodyScroll();  // Page load-ൽ scroll lock
+disableBodyScroll();
 function enableBodyScroll(){document.body.style.overflowY='';document.documentElement.style.overflowY='';}
 function disableBodyScroll(){document.body.style.overflowY='hidden';document.documentElement.style.overflowY='hidden';}
 disableBodyScroll(); // Page load-ൽ scroll lock
