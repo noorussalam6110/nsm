@@ -345,8 +345,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .nsm-login-side{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:20px 30px;min-height:0;overflow:hidden;
-  background:linear-gradient(135deg,rgba(5,14,43,.78),rgba(3,8,28,.85)),url('https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=1600&q=80');
-  background-size:cover;background-position:center;position:relative;
+
+  /* Cleaner dark abstract background */
+  background:
+    linear-gradient(135deg, rgba(5,14,43,.72), rgba(3,8,28,.88)),
+    url('https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=1600&q=80');
+
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  position:relative;
 }
 .nsm-login-side::before{content:'';position:absolute;width:400px;height:400px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(212,175,55,.20),transparent 65%);border-radius:50%;filter:blur(60px);animation:orbFloat1 12s ease-in-out infinite;pointer-events:none;z-index:1;}
 .nsm-login-side::after{content:'';position:absolute;width:350px;height:350px;bottom:-120px;left:-80px;background:radial-gradient(circle,rgba(34,211,238,.18),transparent 65%);border-radius:50%;filter:blur(60px);animation:orbFloat2 14s ease-in-out infinite;pointer-events:none;z-index:1;}
@@ -1177,6 +1185,126 @@ body.light-mode .modal-form-input option{background:#fff;color:#0a1a3f}
 body.light-mode .palathulli-hero{background:linear-gradient(125deg,rgba(59,130,246,.35),rgba(255,255,255,.6))}
 body.light-mode .pala-title-ml{background:linear-gradient(100deg,#0a1a3f,#2563eb);-webkit-background-clip:text;background-clip:text}
 body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);-webkit-background-clip:text;background-clip:text}
+/* ============================================================ */
+/* ⚪ DIVIDER — Hero & Login Side (White Glowing Line)          */
+/* ============================================================ */
+
+/* 🖥️ Desktop — Vertical white line (hero-യുടെ വലതുവശത്ത്) */
+@media(min-width:901px){
+  .nsm-hero::after{
+    content:'';
+    position:absolute;
+    top:6%;
+    bottom:6%;
+    right:0;
+    width:3px;
+    background:linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(255,255,255,.85) 12%,
+      #ffffff 50%,
+      rgba(255,255,255,.85) 88%,
+      transparent 100%
+    );
+    box-shadow:
+      0 0 18px rgba(255,255,255,.7),
+      0 0 40px rgba(212,175,55,.5),
+      0 0 70px rgba(212,175,55,.25);
+    border-radius:3px;
+    z-index:20;
+    pointer-events:none;
+    animation:dividerGlow 3.5s ease-in-out infinite;
+  }
+}
+
+/* 📱 Mobile — Horizontal white line (hero-യുടെ താഴെ) */
+@media(max-width:900px){
+  .nsm-hero::after{
+    content:'';
+    position:absolute;
+    left:6%;
+    right:6%;
+    bottom:6px;
+    height:2.5px;
+    background:linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,255,255,.85) 12%,
+      #ffffff 50%,
+      rgba(255,255,255,.85) 88%,
+      transparent 100%
+    );
+    box-shadow:
+      0 0 14px rgba(255,255,255,.7),
+      0 0 30px rgba(212,175,55,.45);
+    border-radius:3px;
+    z-index:20;
+    pointer-events:none;
+    animation:dividerGlow 3.5s ease-in-out infinite;
+  }
+}
+
+/* ✨ Subtle glow animation */
+@keyframes dividerGlow{
+  0%,100%{
+    opacity:.85;
+    filter:brightness(1);
+  }
+  50%{
+    opacity:1;
+    filter:brightness(1.35);
+  }
+}
+/* ============================================================ */
+/* 📢 TICKER — Scrolling Notification Bar                       */
+/* ============================================================ */
+.nsm-ticker{position:relative;overflow:hidden;background:linear-gradient(90deg,#050e2b,#0f2a63 45%,#050e2b);border-bottom:2px solid rgba(212,175,55,.5);box-shadow:0 4px 20px -6px rgba(0,0,0,.8),0 0 30px -15px rgba(251,191,36,.5);flex-shrink:0;z-index:15;height:44px;display:none;align-items:center;}
+.nsm-ticker::before{content:'📢';position:absolute;left:0;top:0;bottom:0;width:52px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#03132e;font-size:1.15rem;z-index:3;border-right:2px solid rgba(255,255,255,.25);box-shadow:4px 0 12px rgba(0,0,0,.5);}
+.nsm-ticker-track{display:flex;white-space:nowrap;animation:tickerScroll 40s linear infinite;padding-left:60px;padding-right:20px;font-weight:700;font-size:.86rem;color:#eaf2ff;}
+.nsm-ticker-track:hover{animation-play-state:paused;}
+.nsm-ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 40px;cursor:pointer;transition:color .25s;}
+.nsm-ticker-item:hover{color:#ffd966;}
+.nsm-ticker-item i{color:#fbbf24;font-size:.9rem;}
+.nsm-ticker-item.urgent i{color:#f87171;animation:pulseUrgent 1.2s infinite;}
+@keyframes pulseUrgent{0%,100%{opacity:1;}50%{opacity:.4;}}
+.nsm-ticker-dot{color:rgba(212,175,55,.6);font-size:1.4rem;padding:0 6px;}
+@keyframes tickerScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+@media(max-width:900px){
+  .nsm-ticker{height:40px;border-top:2px solid rgba(212,175,55,.5);border-bottom:none;}
+  .nsm-ticker::before{width:46px;font-size:1rem;}
+  .nsm-ticker-track{padding-left:54px;font-size:.76rem;}
+  .nsm-ticker-item{padding:0 24px;}
+}
+
+/* ============================================================ */
+/* 🌐 SOCIAL MEDIA FOOTER                                       */
+/* ============================================================ */
+.nsm-social-footer{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:16px;position:relative;z-index:2;}
+.nsm-social-btn{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.05rem;text-decoration:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;box-shadow:0 6px 18px -8px rgba(0,0,0,.7);}
+.nsm-social-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.4),transparent);transition:left .6s ease;}
+.nsm-social-btn:hover::after{left:100%;}
+.nsm-social-btn:hover{transform:translateY(-4px) scale(1.1);box-shadow:0 12px 26px -8px currentColor;}
+.nsm-social-btn.instagram{background:linear-gradient(135deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888);}
+.nsm-social-btn.facebook{background:linear-gradient(135deg,#1877f2,#0b5ed7);}
+.nsm-social-btn.youtube{background:linear-gradient(135deg,#ff0000,#c00);}
+.nsm-social-btn.whatsapp{background:linear-gradient(135deg,#25d366,#128c7e);}
+
+@media(max-width:900px){
+  .nsm-social-footer{gap:10px;margin-top:12px;}
+  .nsm-social-btn{width:38px;height:38px;font-size:.95rem;}
+}
+@media(max-width:520px){
+  .nsm-social-footer{gap:8px;margin-top:10px;}
+  .nsm-social-btn{width:34px;height:34px;font-size:.85rem;}
+}
+
+/* ============================================================ */
+/* 🔔 NOTIFICATION BELL BADGE (Login Navbar)                    */
+/* ============================================================ */
+.nsm-nav-link.notif-link{position:relative;}
+.nsm-nav-link .nsm-nav-badge{position:absolute;top:-4px;right:-4px;background:linear-gradient(100deg,#ef4444,#f87171);color:#fff;border-radius:50%;font-size:.6rem;min-width:20px;height:20px;display:none;align-items:center;justify-content:center;font-weight:800;border:2px solid #050e2b;padding:0 5px;box-shadow:0 4px 12px -3px rgba(239,68,68,.9);}
+.nsm-nav-link .nsm-nav-badge.show{display:flex;}
 </style>
 </head>
 
@@ -1212,23 +1340,32 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
       <div class="nsm-nav-brand">
         <img src="https://i.postimg.cc/DznFT7L9/IMG-3167.png" alt="NSM" class="nsm-nav-logo">
         <div class="nsm-nav-text">
-          <h1>Noorussalam Madrasa</h1>
-          <p>Kambippalam • Kerala</p>
+          <h1>NOORUSSALAM MADRASA</h1>
+          <p>KAMBIPPALAM-KERALA ESTATE</p>
         </div>
       </div>
       <nav class="nsm-nav-links">
         <button class="nsm-nav-link" onclick="openHelpModal()">
-          <i class="fas fa-circle-question"></i> <span>Help</span>
+         <i class="fas fa-circle-question"></i> <span>Help</span>
         </button>
-        <a href="gallery.html" class="nsm-nav-link">
-          <i class="fas fa-palette"></i> <span>Gallery</span>
-        </a>
-        <a href="contact.html" class="nsm-nav-link">
+        <button class="nsm-nav-link notif-link" onclick="openGuestNotifications()" title="Notifications">
+         <i class="fas fa-bell"></i> <span>Alerts</span>
+         <span class="nsm-nav-badge" id="loginNotifBadge">0</span>
+        </button>
+         <a href="gallery.html" class="nsm-nav-link">
+           <i class="fas fa-palette"></i> <span>Gallery</span>
+         </a>
+         <a href="contact.html" class="nsm-nav-link">
           <i class="fas fa-phone"></i> <span>Contact</span>
         </a>
       </nav>
     </div>
   </header>
+
+  <!-- 📢 TICKER -->
+  <div class="nsm-ticker" id="nsmTicker">
+    <div class="nsm-ticker-track" id="nsmTickerTrack"></div>
+  </div>
 
   <div class="nsm-body">
     <div class="nsm-hero">
@@ -1241,9 +1378,9 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
           <span class="nsm-hero-highlight">തുറക്കൂ...</span>
         </h2>
         <div class="nsm-hero-chips">
-          <span><i class="fas fa-star"></i> Quality</span>
-          <span><i class="fas fa-mosque"></i> Values</span>
-          <span><i class="fas fa-graduation-cap"></i> Excellence</span>
+          <span> Quality</span>
+          <span> Values</span>
+          <span> Excellence</span>
         </div>
       </div>
       <div class="nsm-hero-deco"><i class="fas fa-mosque"></i></div>
@@ -1296,16 +1433,39 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
 
           <button type="button" class="nsm-btn-secondary" onclick="openPublicCreationsFeed()">
             <i class="fas fa-images"></i>
-            <span>View Public Gallery</span>
-          </button>
+           <span>View Public Gallery</span>
+        </button>
+
+        <button type="button" class="nsm-btn-secondary" onclick="window.location.href='index.html'">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+          
         </form>
 
+        <div class="nsm-card-footer">
         <div class="nsm-card-footer">
           <div class="nsm-footer-chips">
             <span><i class="fas fa-shield-halved"></i> Secure</span>
             <span><i class="fas fa-bolt"></i> Fast</span>
             <span><i class="fas fa-sparkles"></i> AI Powered</span>
           </div>
+        </div>
+
+        <!-- 🌐 SOCIAL MEDIA LINKS -->
+        <div class="nsm-social-footer">
+          <a href="https://www.instagram.com/noorussalammadrasa" target="_blank" rel="noopener" class="nsm-social-btn instagram" title="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="https://www.facebook.com/noorussalammadrasa" target="_blank" rel="noopener" class="nsm-social-btn facebook" title="Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.youtube.com/@noorussalammadrasa" target="_blank" rel="noopener" class="nsm-social-btn youtube" title="YouTube">
+            <i class="fab fa-youtube"></i>
+          </a>
+          <a href="https://wa.me/917034678818" target="_blank" rel="noopener" class="nsm-social-btn whatsapp" title="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
         </div>
       </div>
 
@@ -1412,13 +1572,14 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     <div class="hub-card islamic" id="islamicCard">
       <div class="hub-head">
         <div class="hub-ico"><i class="fas fa-book-quran"></i></div>
-        <div><div class="hub-title">ഒരു ദിനം, ഒരറിവ്</div><div class="hub-sub" id="hijriDate">—</div></div>
+        <div><div class="hub-title">ഒരു ദിനം, പല അറിവുകൾ</div><div class="hub-sub" id="hijriDate">—</div></div>
       </div>
       <div class="islamic-tabs">
         <button class="islamic-tab active" onclick="switchIslamicTab('verse',this)">📖 Quran</button>
         <button class="islamic-tab" onclick="switchIslamicTab('hadith',this)">🕌 Hadith</button>
         <button class="islamic-tab" onclick="switchIslamicTab('dua',this)">🤲 Dua</button>
         <button class="islamic-tab" onclick="switchIslamicTab('name',this)">✨ 99 Names</button>
+        <button class="islamic-tab" onclick="switchIslamicTab('history',this)">📜 ചരിത്രം</button>
       </div>
       <div class="islamic-content-area" id="islamicContent">
         <div class="text-white-50 text-center" style="padding:20px;"><div class="spinner-sm"></div></div>
@@ -1906,7 +2067,7 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
   </div>
 </div>
 
-<button class="ai-fab" id="aiFab" onclick="toggleAIChat()"><i class="fas fa-robot"></i></button>
+<button class="ai-fab show" id="aiFab" onclick="toggleAIChat()"><i class="fas fa-robot"></i></button>
 <div class="ai-panel" id="aiPanel">
   <div class="ai-head">
     <div class="ai-head-left">
@@ -1915,7 +2076,7 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
     </div>
     <div class="ai-head-actions" style="display:flex;gap:6px;"><button class="ai-head-btn" onclick="clearAIChat()" title="New chat"><i class="fas fa-rotate-right"></i></button><button class="ai-head-btn danger" onclick="toggleAIChat()" title="Close"><i class="fas fa-times"></i></button></div>
   </div>
-  <div class="ai-body" id="aiBody"><div class="ai-msg bot" id="aiWelcomeMsg">അസ്സലാമു അലൈക്കും! 👋<br><br>ഞാൻ <b>NSM AI Assistant</b>.</div></div>
+  <div class="ai-body" id="aiBody"><div class="ai-msg bot" id="aiWelcomeMsg">അസ്സലാമു അലൈക്കും! 👋<br><br>ഞാൻ <b>NSM Assistant</b>.<br><br>🏛️ <b>നൂറുസ്സലാം മദ്രസ</b>-യെക്കുറിച്ച് എന്തും ചോദിക്കാം!<br><br>ഉദാ: "മദ്രസ എവിടെ?", "സ്ഥാപകർ ആരാണ്?", "സമയം എന്താണ്?"</div></div>
   <div class="ai-quick"><button class="ai-chip" onclick="aiQuick('എന്റെ സമ്പാദ്യം എത്ര?')">💰 സമ്പാദ്യം</button><button class="ai-chip" onclick="aiQuick('എന്റെ ഹാജർ')">📆 ഹാജർ</button><button class="ai-chip" onclick="aiQuick('എന്റെ റിസൾട്ട്')">📊 റിസൾട്ട്</button></div>
   <div class="ai-foot"><input type="text" class="ai-input" id="aiInput" placeholder="എന്തെങ്കിലും ചോദിക്കൂ..." onkeydown="if(event.key==='Enter')sendAIMessage()" autocomplete="off"><button class="ai-mic-btn" id="aiMicBtn" onclick="toggleVoiceInput()" title="Voice input"><i class="fas fa-microphone"></i></button><button class="ai-send" onclick="sendAIMessage()" title="Send"><i class="fas fa-paper-plane"></i></button></div>
 </div>
@@ -2558,16 +2719,21 @@ function logout(){
   dashboardSection.style.display='none';
   adminSection.style.display='none';
   loginSection.style.display='flex';
-  document.getElementById('aiFab').classList.remove('show');
+  document.getElementById('aiFab').classList.add('show');
   document.getElementById('aiPanel').classList.remove('open');
+  aiOpen=false;aiGuestMode=true;aiHistory=[];
   if(notifChannel){supabaseClient.removeChannel(notifChannel);notifChannel=null;}
   if(window._lbInterval){clearInterval(window._lbInterval);window._lbInterval=null;}
   stopLeaderboardAutoScroll();
-  if(studentIdInput)studentIdInput.value=localStorage.getItem('noor_last_id')||'';
+    if(studentIdInput)studentIdInput.value=localStorage.getItem('noor_last_id')||'';
   disableBodyScroll();
+  /* 🔔 Refresh ticker + badge for guest */
+  setTimeout(function(){
+    if(typeof loadTickerMessages==='function')loadTickerMessages();
+    if(typeof checkUnreadNotifications==='function')checkUnreadNotifications();
+  },300);
   showToast('Logged out','info');
 }
-
 async function restoreSession(){
   var s=localStorage.getItem('noor_session');
   if(s&&supabaseClient){
@@ -2956,11 +3122,73 @@ function showAIAssistant(){
 
 var aiOpen=false,aiHistory=[];
 function toggleAIChat(){
-  if(!currentUser){showToast('Login first','error');return;}
+  if(!currentUser){aiGuestMode=true;}
   aiOpen=!aiOpen;
   document.getElementById('aiPanel').classList.toggle('open',aiOpen);
-}
 
+  var nameEl=document.getElementById('aiStudentNameText');
+  if(nameEl)nameEl.textContent=currentUser?currentUser.name:'Guest';
+
+  // Quick chips — user login vs guest
+  var qc=document.querySelector('.ai-quick');
+  if(qc){
+    if(currentUser){
+      qc.innerHTML='<button class="ai-chip" onclick="aiQuick(\'എന്റെ സമ്പാദ്യം എത്ര?\')">💰 സമ്പാദ്യം</button><button class="ai-chip" onclick="aiQuick(\'എന്റെ ഹാജർ\')">📆 ഹാജർ</button><button class="ai-chip" onclick="aiQuick(\'എന്റെ റിസൾട്ട്\')">📊 റിസൾട്ട്</button>';
+    } else {
+      qc.innerHTML='<button class="ai-chip" onclick="aiQuick(\'മദ്രസ എവിടെ?\')">📍 സ്ഥലം</button><button class="ai-chip" onclick="aiQuick(\'സമയം പറയൂ?\')">🕐 സമയം</button><button class="ai-chip" onclick="aiQuick(\'എങ്ങനെ ലോഗിൻ ചെയ്യാം?\')">🔐 Login</button>';
+    }
+  }
+}
+var aiGuestMode=false;
+
+const MADRASA_INFO={
+  name:'NOORUSSALAM MADRASA',
+  nameMl:'നൂറുസ്സലാം മദ്രസ',
+  location:'Kambippalam, Kerala Estate',
+  locationMl:'കമ്പിപ്പാലം, കേരള എസ്റ്റേറ്റ്',
+  founders:'പട്ട മുഹമ്മദ്, തോട്ടുങ്ങൽ മുഹമ്മദ് കുട്ടി, പട്ടാണി ഇസ്മായിൽ മുസ്ലിയാർ',
+  timings:'ശനി മുതൽ വ്യാഴം വരെ: രാവിലെ 6:00 - 10:00',
+  contact:'+91 70346 78818',
+  classesInfo:'Class 1 മുതൽ Class 10 വരെ',
+  about:'ഗുണനിലവാരമുള്ള വിദ്യാഭ്യാസവും മൂല്യബോധവും നൽകുന്ന മദ്രസ'
+};
+
+function madrasaGuestAnswer(q){
+  var t=(q||"").toLowerCase().trim();
+  if(!t)return null;
+  if(/^(hi|hello|hai|hey|salam|assalam|ഹലോ|സലാം|ഹായ്|അസ്സലാം)[\s!.]*$/.test(t)){
+    return 'വ അലൈക്കും സലാം! 👋<br><br>ഞാൻ <b>NSM Assistant</b> 😊<br>നൂറുസ്സലാം മദ്‌റസയെക്കുറിച്ച് എന്തും ചോദിക്കാം! 🏛️';
+  }
+  if(/(founder|സ്ഥാപക|ഉസ്താദ്|ustad|history|ചരിത്രം|ആരാണ്)/.test(t)){
+    return '🏛️ <b>സ്ഥാപകർ</b><br>പട്ട മുഹമ്മദ്, തോട്ടുങ്ങൽ മുഹമ്മദ് കുട്ടി, പട്ടാണി ഇസ്മായിൽ മുസ്ലിയാർ അവർ!<br>രാവും പകലും കഷ്ടപ്പെട്ടവരാണ് ❤️';
+  }
+  if(/(location|where|എവിടെ|സ്ഥലം|address|വിലാസം)/.test(t)){
+    return '📍 കമ്പിപ്പാലം, കരുവാരകുണ്ട്, മലപ്പുറം ജില്ല<br>കല്ലൻപുഴയുടെ തീരത്ത്, കിടിലൻ സ്ഥലം! 🌄';
+  }
+  if(/(timing|time|സമയം|hours|class time)/.test(t)){
+    return '🕐 <b>മദ്‌റസ സമയം</b><br>ശനി-വ്യാഴം, രാവിലെ 6:00 AM - 9:30 AM';
+  }
+  if(/(contact|phone|ഫോൺ|നമ്പർ|call)/.test(t)){
+    return '📞 <b>ബന്ധപ്പെടാൻ</b><br>+91 70346 78818<br>📧 noorussalam6110@gmail.com';
+  }
+  if(/(ustad|ഉസ്താദ്|teacher|ടീച്ചർ|ഫാക്കൽറ്റി)/.test(t)){
+    return '👨‍🏫 <b>ഉസ്താദുമാർ</b><br>• സുഹൈൽ പി (സ്വദർ)<br>• ഫിറോസ് ഫൈസി<br>• ദാരിമി ഉസ്താദ്<br>• ഫൈറൂസുദ്ദീൻ അസ്ലമി<br>• ഹാഫിസ് ഹാഷിം ബിഷർ<br>എല്ലാം കിടു ടീം! 💪';
+  }
+  if(/(login|ലോഗിൻ|sign in|portal|password)/.test(t)){
+    return '🔐 <b>Login</b><br>Student ID നൽകി "Access Portal" ക്ലിക്ക് ചെയ്യൂ!<br>💡 ID മറന്നാൽ: <b>+91 70346 78818</b>';
+  }
+  if(/(mark|റിസൾട്ട്|result|grade|balance|സമ്പാദ്യം|attendance|ഹാജർ)/.test(t)){
+    return '🔐 അത് ഞാൻ പറയില്ല 😄<br><br>Login ചെയ്താൽ റിസൾട്ട്, ഹാജർ, സമ്പാദ്യം എല്ലാം കാണാം!';
+  }
+  if(/(madrasa|മദ്‌റസ|noorussalam|നൂറു|about|വിവരം)/.test(t)){
+    return '🏛️ <b>നൂറുസ്സലാം മദ്‌റസ</b><br>സ്ഥാപിതം 1989 • 35+ വർഷം<br>800+ പൂർവ്വവിദ്യാർത്ഥികൾ<br>Class 1-10 • സമസ്ത Reg 6110';
+  }
+  if(/(help|സഹായം|എന്ത് ചെയ്യാം)/.test(t)){
+    return '🤖 ഞാൻ പറയാം:<br>• 🏛️ മദ്‌റസ വിവരം<br>• 📍 സ്ഥലം<br>• 🏛️ സ്ഥാപകർ<br>• 👨‍🏫 ഉസ്താദുമാർ<br>• 🕐 സമയം<br>• 📞 ഫോൺ';
+  }
+  // ✅ Better fallback — guide them
+  return '🤔 ക്ഷമിക്കണം, എനിക്കത് കൃത്യമായി മനസ്സിലായില്ല 😅<br><br>💡 ഇത് പരീക്ഷിച്ചു നോക്കൂ:<br>• "മദ്‌റസ എവിടെ?"<br>• "സ്ഥാപകർ ആരാണ്?"<br>• "ഉസ്താദുമാർ ആരൊക്കെ?"<br>• "സമയം എന്താണ്?"';
+}
 function aiQuick(t){document.getElementById('aiInput').value=t;sendAIMessage();}
 
 function aiAddMsg(t,w){
@@ -2991,7 +3219,7 @@ function clearAIChat(){
   if(_aiSending)return;
   var b=document.getElementById('aiBody');if(!b)return;
   b.innerHTML='';aiHistory=[];
-  var welcome=currentUser?'അസ്സലാമു അലൈക്കും <b>'+escapeHtml(currentUser.name||'')+'</b>! 👋<br><br>ഞാൻ <b>NSM AI Assistant</b>.<br><br>എന്തെങ്കിലും ചോദിക്കൂ 👇':'അസ്സലാമു അലൈക്കും! 👋<br><br>ഞാൻ <b>NSM AI Assistant</b>.';
+  var welcome=currentUser?'അസ്സലാമു അലൈക്കും <b>'+escapeHtml(currentUser.name||'')+'</b>! 👋<br><br>ഞാൻ <b>NSM Assistant</b>.<br><br>എന്തെങ്കിലും ചോദിക്കൂ 👇':'അസ്സലാമു അലൈക്കും! 👋<br><br>ഞാൻ <b>NSM Assistant</b>.<br><br>🏛️ <b>നൂറുസ്സലാം മദ്രസ</b>-യെക്കുറിച്ച് എന്തും ചോദിക്കാം!';
   var d=document.createElement('div');d.className='ai-msg bot';d.id='aiWelcomeMsg';
   var now=new Date();
   d.setAttribute('data-time',String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
@@ -3026,7 +3254,6 @@ function showTypingIndicator(){
 function removeTypingIndicator(){var el=document.getElementById('aiTypingIndicator');if(el&&el.parentNode)el.parentNode.removeChild(el);}
 
 async function sendAIMessage(){
-  if(!currentUser){showToast('Login first','error');return;}
   if(_aiSending)return;
   var input=document.getElementById('aiInput');
   var sendBtn=document.querySelector('.ai-send');
@@ -3034,6 +3261,8 @@ async function sendAIMessage(){
   input.value='';aiAddMsg(escapeHtml(q),'user');
   aiHistory.push({role:'user',text:q});
   _aiSending=true;input.disabled=true;if(sendBtn)sendBtn.disabled=true;
+
+  // Fast local reply for greetings
   var local=quickLocalAnswer(q);
   if(local){
     setTimeout(function(){
@@ -3042,37 +3271,89 @@ async function sendAIMessage(){
     },250);
     return;
   }
+
   showTypingIndicator();
   var answer=null;
+
+  // ✅ GUEST + STUDENT — both try Edge Function first
   try{
-    answer=await Promise.race([callGeminiAI(q),new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},15000);})]);
+    answer=await Promise.race([
+      callGeminiAI(q),
+      new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},20000);})
+    ]);
   }catch(e){answer=null;}
-  if(!answer)answer=await aiRespond(q);
+
+  // 🆕 Fallback: guest → local madrasa, student → local responder
+  if(!answer){
+    if(!currentUser){
+      answer=madrasaGuestAnswer(q);
+    }else{
+      answer=await aiRespond(q);
+    }
+  }
+
   removeTypingIndicator();
   aiAddMsg(answer,'bot');aiHistory.push({role:'bot',text:answer});
   _aiSending=false;input.disabled=false;if(sendBtn)sendBtn.disabled=false;input.focus();
 }
-
 async function callGeminiAI(userMessage){
-  if(!currentUser)return null;
   try{
+    // 🆕 GUEST — empty context
+    if(!currentUser){
+      var res=await fetch(GEMINI_EDGE_FN,{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+SUPABASE_ANON_KEY,
+          'apikey':SUPABASE_ANON_KEY
+        },
+        body:JSON.stringify({
+          message:userMessage,
+          context:{},               // ⬅️ empty = guest mode in Edge Function
+          history:aiHistory.slice(-4)
+        })
+      });
+      if(!res.ok)return null;
+      var data=await res.json();
+      if(data&&data.reply){
+        return escapeHtml(String(data.reply))
+          .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+          .replace(/\n/g,'<br>');
+      }
+      return null;
+    }
+
+    // 👨‍🎓 STUDENT — full context
     var balance=0;
     try{balance=await getStudentBalance(currentUser.studentId);}catch(e){}
     var context={
-      name:currentUser.name,class:currentUser.class,roll:currentUser.roll,studentId:currentUser.studentId,
-      grade:currentUser.overallGrade,rank:currentUser.rank,attendance:currentUser.attendance,
-      balance:Number(balance).toFixed(2),minWithdraw:MIN_WITHDRAW,moralGrade:currentUser.moralValuesGrade,
-      madrasaInfo:{},palathulliInfo:{minBalance:MIN_WITHDRAW}
+      name:currentUser.name,
+      class:currentUser.class,
+      roll:currentUser.roll,
+      studentId:currentUser.studentId,
+      grade:currentUser.overallGrade,
+      rank:currentUser.rank,
+      attendance:currentUser.attendance,
+      balance:Number(balance).toFixed(2),
+      minWithdraw:MIN_WITHDRAW,
+      moralGrade:currentUser.moralValuesGrade,
+      palathulliInfo:{minBalance:MIN_WITHDRAW}
     };
-    var res=await fetch(GEMINI_EDGE_FN,{
+    var res2=await fetch(GEMINI_EDGE_FN,{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON_KEY,'apikey':SUPABASE_ANON_KEY},
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+SUPABASE_ANON_KEY,
+        'apikey':SUPABASE_ANON_KEY
+      },
       body:JSON.stringify({message:userMessage,context:context,history:aiHistory.slice(-4)})
     });
-    if(!res.ok)return null;
-    var data=await res.json();
-    if(data&&data.reply){
-      return escapeHtml(String(data.reply)).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+    if(!res2.ok)return null;
+    var data2=await res2.json();
+    if(data2&&data2.reply){
+      return escapeHtml(String(data2.reply))
+        .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+        .replace(/\n/g,'<br>');
     }
     return null;
   }catch(e){return null;}
@@ -6695,7 +6976,7 @@ var ISLAMIC_VERSES=[
   {ar:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',ml:'തീർച്ചയായും അല്ലാഹു ക്ഷമാശീലരോടൊപ്പമുണ്ട്.',src:'Quran 2:153'},
   {ar:'وَقُل رَّبِّ زِدْنِي عِلْمًا',ml:'നീ പറയുക: എന്റെ രക്ഷിതാവേ, എനിക്ക് ജ്ഞാനം വർദ്ധിപ്പിക്കേണമേ.',src:'Quran 20:114'},
   {ar:'فَاذْكُرُونِي أَذْكُرْكُمْ',ml:'നിങ്ങൾ എന്നെ ഓർക്കുക, ഞാനും നിങ്ങളെ ഓർക്കാം.',src:'Quran 2:152'},
-  {ar:'وَاعْتَصِمُوا بِحَبْلِ اللَّهِ جَمِيعًا',ml:'നിങ്ങളെല്ലാവരും അല്ലാഹുവിന്റെ കയറിൽ മുറുകെ പിടിക്കുക.',src:'Quran 3:103'},
+  {ar:'وَاعْتَصِمُوا بِحَبْلِ اللَّهِ جَمِيعًا',ml:'നിങ്ങളെല്ലാവരും അല്ലാഹുവിൽ മുറുകെ പിടിക്കുക.',src:'Quran 3:103'},
   {ar:'إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا',ml:'നിശ്ചയമായും സത്യവിശ്വാസികൾക്ക് നിശ്ചിത സമയങ്ങളിൽ നമസ്കാരം നിർബന്ധമാണ്.',src:'Quran 4:103'}
 ];
 
@@ -6729,6 +7010,62 @@ var ALLAH_NAMES=[
   {ar:'الْعَلِيمُ',tr:'Al-Aleem',ml:'സർവ്വജ്ഞാനി'},
   {ar:'الْغَفُورُ',tr:'Al-Ghafoor',ml:'ഏറെ പൊറുക്കുന്നവൻ'}
 ];
+var ISLAMIC_HISTORY=[
+  {
+    title:'മക്കയിലെ ആദ്യ വെളിപ്പെടുത്തൽ',
+    ml:'ഹിറ ഗുഹയിൽ ധ്യാനനിമഗ്നനായിരുന്ന പ്രവാചകൻ മുഹമ്മദ് ﷺ-ന് ജിബ്രീൽ (അ) വഴി ആദ്യ വെളിപ്പെടുത്തൽ ലഭിച്ചു. "ഇഖ്‌റഅ്" (വായിക്കുക) എന്ന വാക്കോടെയാണ് ഖുർആൻ ആരംഭിച്ചത്. അന്ന് പ്രവാചകർക്ക് 40 വയസ്സായിരുന്നു.',
+    year:'610 CE • 27 റമദാൻ',
+    place:'മക്ക • ഹിറ ഗുഹ'
+  },
+  {
+    title:'ഹിജ്‌റ — മദീനയിലേക്കുള്ള യാത്ര',
+    ml:'മക്കയിലെ എതിർപ്പുകൾ കാരണം പ്രവാചകൻ ﷺ-ഉം അനുയായികളും മദീനയിലേക്ക് (അന്ന് യസ്‌രിബ്) കുടിയേറി. ഇതാണ് ഹിജ്‌റ. ഈ സംഭവം ഇസ്ലാമിക കലണ്ടറിന്റെ ആരംഭമായി കണക്കാക്കപ്പെടുന്നു. ഉമർ (റ) ഖലീഫയായിരുന്നപ്പോഴാണ് ഹിജ്‌റി വർഷം ഔദ്യോഗികമായി ആരംഭിച്ചത്.',
+    year:'622 CE • ഹിജ്‌റി 1',
+    place:'മക്ക → മദീന'
+  },
+  {
+    title:'ബദ്ർ യുദ്ധം — ചരിത്രത്തിലെ വഴിത്തിരിവ്',
+    ml:'ഹിജ്‌റി 2-ാം വർഷം റമദാൻ 17-ന് ബദ്ർ കിണറിന് സമീപം മുസ്‌ലിംകളും ഖുറൈശികളും തമ്മിൽ യുദ്ധം. 313 മുസ്‌ലിംകൾ 1000-ത്തോളം വരുന്ന ശത്രുസൈന്യത്തെ പരാജയപ്പെടുത്തി. ദൈവിക സഹായത്തോടെ നേടിയ ഈ വിജയം ഇസ്ലാമിനെ ശക്തിപ്പെടുത്തി.',
+    year:'624 CE • ഹിജ്‌റി 2',
+    place:'ബദ്ർ • മദീനയ്ക്ക് സമീപം'
+  },
+  {
+    title:'മക്ക വിജയം — ക്ഷമയുടെ നിറവേറ്റൽ',
+    ml:'ഹിജ്‌റി 8-ാം വർഷം പ്രവാചകൻ ﷺ 10,000 അനുയായികളുമായി മക്കയിലേക്ക് മടങ്ങി. ഒരു തുള്ളി രക്തം പോലും ചിന്താതെ മക്ക വിജയിച്ചു. ശത്രുക്കളോട് പോലും "ഇന്ന് നിങ്ങളോട് പകയില്ല" എന്ന് പറഞ്ഞ് സർവ്വരെയും മാപ്പാക്കി. ഇത് ചരിത്രത്തിലെ ഏറ്റവും മഹത്തായ വിജയമാണ്.',
+    year:'630 CE • ഹിജ്‌റി 8',
+    place:'മക്ക'
+  },
+  {
+    title:'ഖുർആൻ സമാഹരണം',
+    ml:'ഖലീഫ അബൂബക്കർ (റ)-ന്റെ കാലത്ത് യമാമ യുദ്ധത്തിൽ ഹാഫിസുകൾ വധിക്കപ്പെട്ടപ്പോൾ ഖുർആൻ നഷ്ടപ്പെടുമോ എന്ന ഭയത്താൽ സൈദ് ബിൻ ഥാബിത്ത് (റ)-ന്റെ നേതൃത്വത്തിൽ ഖുർആൻ ക്രോഡീകരിച്ചു. ഉസ്മാൻ (റ)-ന്റെ കാലത്ത് ഇത് ഒരു ലിപിയിൽ ഏകീകരിച്ചു.',
+    year:'633 CE • ഹിജ്‌റി 12',
+    place:'മദീന'
+  },
+  {
+    title:'ഉമറിന്റെ നീതി',
+    ml:'ഖലീഫ ഉമർ (റ) രാത്രികാലങ്ങളിൽ മദീനയിലെ വീഥികളിൽ കാവൽ നടന്നിരുന്നു. ഒരിക്കൽ ഒരു വൃദ്ധയുടെ കുടിലിൽ നിന്ന് കുട്ടികളുടെ കരച്ചിൽ കേട്ട് ചെന്നപ്പോൾ ഭക്ഷണമില്ലാതെയാണെന്ന് കണ്ടു. അദ്ദേഹം തന്നെ ഭക്ഷണം പാകം ചെയ്ത് കൊടുത്തു. ഭരണാധികാരിയുടെ നീതിയുടെ ഉത്തമ ഉദാഹരണം.',
+    year:'634-644 CE',
+    place:'മദീന'
+  },
+  {
+    title:'ഇസ്ലാമിക സ്വർണ്ണയുഗം',
+    ml:'അബ്ബാസിയ ഖിലാഫത്തിന്റെ കാലത്ത് (750-1258 CE) ബാഗ്ദാദ് ലോകത്തിന്റെ വിജ്ഞാന കേന്ദ്രമായി. ബൈത്തുൽ ഹിക്മ (വിജ്ഞാന ഭവനം) സ്ഥാപിക്കപ്പെട്ടു. ഗണിതം, വൈദ്യം, ജ്യോതിശാസ്ത്രം, രസതന്ത്രം തുടങ്ങിയ മേഖലകളിൽ മുസ്‌ലിം പണ്ഡിതന്മാർ വിപ്ലവം സൃഷ്ടിച്ചു.',
+    year:'750-1258 CE',
+    place:'ബാഗ്ദാദ്'
+  },
+  {
+    title:'കേരളത്തിലെ ഇസ്ലാമിക ആഗമനം',
+    ml:'ഹിജ്‌റി ഒന്നാം നൂറ്റാണ്ടിൽ മാലിക് ദീനാർ (റ)-ന്റെ നേതൃത്വത്തിൽ ഇസ്ലാം കേരളത്തിലെത്തി. കൊടുങ്ങല്ലൂരിൽ ആദ്യ പള്ളി (ചേരമാൻ ജുമാ മസ്ജിദ്) പണിതു. ഇന്ത്യയിലെ ഏറ്റവും പഴക്കമുള്ള പള്ളിയാണിത്. അറബ് വ്യാപാരികളിലൂടെയാണ് ഇസ്ലാം കേരളത്തിലേക്ക് വ്യാപിച്ചത്.',
+    year:'629 CE ഏകദേശം',
+    place:'കൊടുങ്ങല്ലൂർ • കേരളം'
+  },
+  {
+    title:'സമസ്തയുടെ പിറവി',
+    ml:'കേരളത്തിലെ സുന്നി മുസ്‌ലിം സമൂഹത്തിന്റെ വിദ്യാഭ്യാസ-സാമൂഹിക സംഘടനയായ സമസ്ത കേരള ഇസ്ലാം മത വിദ്യാഭ്യാസ ബോർഡ് 1926-ൽ രൂപീകൃതമായി. ഇതിലൂടെ ആയിരക്കണക്കിന് മദ്‌റസകൾ കേരളത്തിലുടനീളം സ്ഥാപിക്കപ്പെട്ടു. നമ്മുടെ നൂറുസ്സലാം മദ്‌റസയും ഇതിന്റെ ഭാഗമാണ് (Reg No. 6110).',
+    year:'1926 CE',
+    place:'കേരളം'
+  }
+];
 
 var _islamicTab='verse';
 
@@ -6754,6 +7091,22 @@ function renderIslamicContent(){
   }else if(_islamicTab==='name'){
     var n=ALLAH_NAMES[idx%ALLAH_NAMES.length];
     el.innerHTML='<div class="islamic-arabic" style="font-size:1.8rem;text-align:center;">'+n.ar+'</div><div style="text-align:center;font-size:1rem;font-weight:800;color:#fcd34d;margin-top:8px;">'+n.tr+'</div><div class="islamic-text" style="text-align:center;">'+n.ml+'</div><div class="islamic-source" style="text-align:center;">— Asma ul Husna</div>';
+  }else if(_islamicTab==='history'){
+    /* 📜 ചരിത്രം Tab */
+    var hs=ISLAMIC_HISTORY[idx%ISLAMIC_HISTORY.length];
+    var html='';
+    /* Header with year + place badges */
+    html+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">';
+    html+='<span style="font-size:.68rem;font-weight:800;padding:4px 10px;border-radius:20px;background:rgba(251,191,36,.18);color:#fcd34d;border:1px solid rgba(251,191,36,.35);">📅 '+hs.year+'</span>';
+    html+='<span style="font-size:.68rem;font-weight:800;padding:4px 10px;border-radius:20px;background:rgba(34,211,238,.15);color:#67e8f9;border:1px solid rgba(34,211,238,.3);">📍 '+hs.place+'</span>';
+    html+='</div>';
+    /* Title */
+    html+='<div style="font-size:1rem;font-weight:900;color:#fcd34d;margin:4px 0 10px;line-height:1.35;text-shadow:0 2px 8px rgba(0,0,0,.4);">📜 '+escapeHtml(hs.title)+'</div>';
+    /* Content */
+    html+='<div class="islamic-text" style="font-size:.88rem;line-height:1.7;color:#eaf2ff;">'+escapeHtml(hs.ml)+'</div>';
+    /* Source */
+    html+='<div class="islamic-source" style="margin-top:10px;">— ഇസ്ലാമിക ചരിത്രം</div>';
+    el.innerHTML=html;
   }
 }
 
@@ -7210,7 +7563,164 @@ document.addEventListener('keydown',function(e){
     if(pf&&pf.classList.contains('open'))closePublicCreationsFeed();
   }
 });
+/* ============================================================ */
+/* 📢 TICKER + 🔔 NOTIFICATIONS + APP BADGE                     */
+/* ============================================================ */
+var loginNotifChannel=null;
 
+async function loadTickerMessages(){
+  var ticker=document.getElementById('nsmTicker');
+  var track=document.getElementById('nsmTickerTrack');
+  if(!ticker||!track)return;
+  var messages=[];
+  try{
+    if(supabaseClient){
+      var r=await supabaseClient.from('notifications').select('title, message, type, created_at').eq('target_type','all').order('created_at',{ascending:false}).limit(10);
+      if(r.data&&r.data.length>0){
+        messages=r.data.map(function(n){return{text:n.title+(n.message?' — '+n.message:''),type:n.type||'general'};});
+      }
+    }
+  }catch(e){console.warn('Ticker DB error:',e);}
+  if(messages.length===0){
+    messages=[
+      {text:'നൂറുസ്സലാം മദ്‌റസയിലേക്ക് സ്വാഗതം! 🌟',type:'general'},
+      {text:'Student ID ഉപയോഗിച്ച് Portal-ൽ Login ചെയ്യൂ 🔐',type:'info'},
+      {text:'പലതുള്ളി സമ്പാദ്യ പദ്ധതി — Minimum ₹100 💰',type:'info'},
+      {text:'പുതിയ അറിയിപ്പുകൾക്കായി Alerts കാണുക 🔔',type:'general'}
+    ];
+  }
+  var items=messages.map(function(m){
+    var icon=m.type==='urgent'?'fa-circle-exclamation':m.type==='important'?'fa-bolt':'fa-bullhorn';
+    var cls=m.type==='urgent'?'urgent':'';
+    return '<span class="nsm-ticker-item '+cls+'" onclick="openGuestNotifications()"><i class="fas '+icon+'"></i><span>'+escapeHtml(m.text)+'</span></span><span class="nsm-ticker-dot">◆</span>';
+  }).join('');
+  track.innerHTML=items+items;
+  ticker.style.display='flex';
+}
+
+function positionTicker(){
+  var ticker=document.getElementById('nsmTicker');
+  var hero=document.querySelector('.nsm-hero');
+  var navbar=document.querySelector('.nsm-navbar');
+  if(!ticker||!hero)return;
+  var isMobile=window.innerWidth<=900;
+  if(isMobile){
+    if(hero.nextElementSibling!==ticker){hero.parentNode.insertBefore(ticker,hero.nextSibling);}
+  }else{
+    if(navbar&&navbar.nextElementSibling!==ticker){navbar.parentNode.insertBefore(ticker,navbar.nextSibling);}
+  }
+}
+
+async function updateAppBadge(count){
+  try{
+    if('setAppBadge' in navigator){
+      if(count>0)await navigator.setAppBadge(count);
+      else await navigator.clearAppBadge();
+    }
+  }catch(e){console.warn('Badge error:',e);}
+}
+
+async function askNotificationPermission(){
+  if(!('Notification' in window))return false;
+  if(Notification.permission==='granted')return true;
+  if(Notification.permission==='denied')return false;
+  try{
+    var perm=await Notification.requestPermission();
+    if(perm==='granted'){showToast('🔔 അറിയിപ്പുകൾ ഓൺ ആയി!','success');checkUnreadNotifications();return true;}
+  }catch(e){}
+  return false;
+}
+
+async function checkUnreadNotifications(){
+  if(!supabaseClient)return 0;
+  try{
+    var r=await supabaseClient.from('notifications').select('id, created_at').eq('target_type','all').order('created_at',{ascending:false}).limit(50);
+    if(r.error)return 0;
+    var lastRead=parseInt(localStorage.getItem('lastReadNotifTime')||'0');
+    var unread=(r.data||[]).filter(function(n){return new Date(n.created_at).getTime()>lastRead;});
+    await updateAppBadge(unread.length);
+    var lb=document.getElementById('loginNotifBadge');
+    if(lb){
+      if(unread.length>0){lb.textContent=unread.length>9?'9+':unread.length;lb.classList.add('show');}
+      else{lb.classList.remove('show');}
+    }
+    var b=document.getElementById('notifBadge');
+    if(b&&currentUser){
+      if(unread.length>0){b.textContent=unread.length>9?'9+':unread.length;b.style.display='flex';}
+      else{b.style.display='none';}
+    }
+    return unread.length;
+  }catch(e){console.warn('Check unread error:',e);return 0;}
+}
+
+async function openGuestNotifications(){
+  document.getElementById('notificationsModal').style.display='flex';
+  localStorage.setItem('lastReadNotifTime',Date.now().toString());
+  var lb=document.getElementById('loginNotifBadge');
+  if(lb)lb.classList.remove('show');
+  await updateAppBadge(0);
+  var list=document.getElementById('notificationsList');
+  list.innerHTML='<div class="text-center py-3 text-white-50">Loading...</div>';
+  if(!supabaseClient){list.innerHTML='<div class="text-center py-3 text-white-50">System loading...</div>';return;}
+  try{
+    var r=await supabaseClient.from('notifications').select('*').eq('target_type','all').order('created_at',{ascending:false}).limit(30);
+    if(!r.data||r.data.length===0){list.innerHTML='<div class="text-center py-4 text-white-50">🔕 No notifications</div>';return;}
+    list.innerHTML=r.data.map(function(n){
+      var c=n.type==='urgent'?'urgent':n.type==='important'?'important':'';
+      var i=n.type==='urgent'?'fa-exclamation-triangle':n.type==='important'?'fa-exclamation-circle':'fa-info-circle';
+      return '<div class="notif-item '+c+'"><div class="d-flex justify-content-between mb-2 flex-wrap gap-2"><strong class="text-white" style="font-size:.88rem;"><i class="fas '+i+' me-2"></i>'+escapeHtml(n.title)+'</strong><small class="text-white-50" style="font-size:.7rem;">'+formatDate(n.created_at)+'</small></div><p class="text-white-50 mb-0" style="font-size:.82rem;">'+escapeHtml(n.message)+'</p></div>';
+    }).join('');
+    if(!currentUser){
+      list.innerHTML+='<div style="margin-top:16px;padding:12px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);border-radius:14px;text-align:center;"><p style="color:#fff;font-size:.82rem;margin:0 0 10px;">🔐 Personal notifications കാണാൻ Login ചെയ്യുക</p><button class="pf-cta-btn" onclick="closeNotificationsModal()"><i class="fas fa-sign-in-alt"></i> Login</button></div>';
+    }
+  }catch(e){list.innerHTML='<div class="text-center py-3 text-white-50">Error</div>';}
+}
+
+function subscribePublicNotifications(){
+  if(!supabaseClient)return;
+  try{
+    loginNotifChannel=supabaseClient.channel('public_notifs_login').on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications'},function(payload){
+      var n=payload.new;
+      if(!n)return;
+      var tt=n.target_type||(n.target_class==='all'?'all':'class');
+      if(tt==='all'){
+        if(!currentUser){showToast('🔔 '+n.title,'info');}
+        if(Notification.permission==='granted'){
+          try{new Notification('🔔 '+n.title,{body:n.message||'',icon:'https://i.postimg.cc/DznFT7L9/IMG-3167.png',badge:'https://i.postimg.cc/DznFT7L9/IMG-3167.png'});}catch(e){}
+        }
+        checkUnreadNotifications();
+        loadTickerMessages();
+      }
+    }).subscribe();
+  }catch(e){console.warn('Subscribe error:',e);}
+}
+
+window.addEventListener('load',function(){
+  setTimeout(function(){loadTickerMessages();positionTicker();},1200);
+  setTimeout(function(){
+    if('Notification' in window&&Notification.permission==='default'){
+      var asked=localStorage.getItem('noor_push_asked');
+      if(!asked){
+        askNotificationPermission().then(function(){localStorage.setItem('noor_push_asked','true');});
+      }
+    }else if(Notification.permission==='granted'){
+      checkUnreadNotifications();
+    }
+  },5000);
+  setTimeout(function(){subscribePublicNotifications();checkUnreadNotifications();},2000);
+});
+window.addEventListener('resize',positionTicker);
+setInterval(function(){
+  if(!document.hidden){loadTickerMessages();checkUnreadNotifications();}
+},300000);
+document.addEventListener('visibilitychange',function(){
+  if(!document.hidden)checkUnreadNotifications();
+});
+
+/* ============================================================ */
+/* 🌐 EXPORTS (window)                                          */
+/* ============================================================ */
+Object.assign(window,{
 /* ============================================================ */
 /* 🌐 EXPORTS (window)                                          */
 /* ============================================================ */
@@ -7260,8 +7770,11 @@ Object.assign(window,{
   populateSubjectClassSelect,renderClassExamSubjectsUI,saveClassSubjectsUI,copyClassSubjectsFrom,
   parseClassTraits,stringifyClassTraits,getTraitsForClass,saveClassTraits,
   openBlockForm,confirmBlockStudent,unblockStudent,showBlockedScreen,closeBlockedScreen,
-  openPublicCreationsFeed,closePublicCreationsFeed,loginFromFeed,publicFeedLike,publicFeedShare,openPublicFeedDetail,loadPublicCreationsFeed,nsmSwitchTab,
-  enableBodyScroll,disableBodyScroll
+    openPublicCreationsFeed,closePublicCreationsFeed,loginFromFeed,publicFeedLike,publicFeedShare,openPublicFeedDetail,loadPublicCreationsFeed,nsmSwitchTab,
+  enableBodyScroll,disableBodyScroll,
+  /* 🆕 Ticker + Notifications */
+  loadTickerMessages,positionTicker,updateAppBadge,askNotificationPermission,
+  checkUnreadNotifications,openGuestNotifications,subscribePublicNotifications
 });
 
 /* ============================================================ */
