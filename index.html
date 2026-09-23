@@ -2107,6 +2107,220 @@ body.login-active .liquid-bg-mesh { display: none !important; }
     to   { opacity: 1; transform: scale(1); }
   }
 }
+
+/* ============================================================ */
+/* 🔧 FINAL FIXES v22.6 — Force Light + Navbar + Text Colors    */
+/* ============================================================ */
+
+/* 1️⃣ BOTTOM NAV — Only after login, and force FIXED */
+.mob-bottom-nav { display: none !important; position: fixed !important; }
+body.logged-in .mob-bottom-nav {
+  display: flex !important;
+  position: fixed !important;
+  left: 14px !important;
+  right: 14px !important;
+  bottom: 14px !important;
+  top: auto !important;
+  z-index: 99999 !important;
+  transform: none !important;
+}
+@media (min-width: 901px) {
+  body.logged-in .mob-bottom-nav { display: none !important; }
+}
+
+/* 2️⃣ FORCE LIGHT BACKGROUND ALWAYS */
+body:not(.login-active) {
+  background: linear-gradient(160deg, #f0f6ff 0%, #e4eeff 40%, #d4e4ff 100%) !important;
+  background-attachment: fixed !important;
+  color: #0f172a !important;
+}
+body:not(.login-active)::before,
+body:not(.login-active)::after { display: none !important; }
+
+body.light-mode {
+  --b950:#f0f5ff; --b900:#eaf1ff; --b850:#e0e9ff; --b800:#d0defa;
+  --b700:#a8c5f0; --b600:#3b82f6; --b500:#2563eb; --b450:#3b82f6;
+  --b400:#2563eb; --b300:#1e5fa8; --b200:#1a4d8a;
+  --cyan:#0891b2; --cyan-soft:#06b6d4;
+  --stroke:rgba(59,130,246,.28); --stroke-2:rgba(59,130,246,.45);
+  --txt:#0a1a3f; --txt-dim:#4a5f8a;
+}
+
+/* 3️⃣ UNIVERSAL DARK TEXT (on light backgrounds) */
+#dashboardSection .container h1,
+#dashboardSection .container h2,
+#dashboardSection .container h3,
+#dashboardSection .container h4,
+#dashboardSection .container h5,
+#dashboardSection .container h6,
+#dashboardSection .container strong,
+#dashboardSection .container b,
+#dashboardSection .container .text-white,
+#dashboardSection .container .section-title,
+#dashboardSection .container .hub-title,
+#dashboardSection .container .lb-title span,
+#dashboardSection .container #studentFullName,
+#dashboardSection .container #overallRankTitleText,
+#dashboardSection .container #totalMadrasaStudents,
+#dashboardSection .container #overallGradeDisplay,
+#dashboardSection .container #attendanceRateLabel,
+#dashboardSection .container #rankNumber,
+#dashboardSection .container #moralValuesDisplay,
+#dashboardSection .container .prayer-name,
+#dashboardSection .container .exam-cd-name,
+#dashboardSection .container .hub-card.islamic .hub-title,
+#dashboardSection .container .activity-timeline h5,
+#dashboardSection .container .chart-card h5,
+#dashboardSection .container .feed-item .text-white,
+#dashboardSection .container .event-card .text-white,
+#dashboardSection .container #monthlyProgressList .text-white {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* 4️⃣ DIM/SECONDARY TEXT */
+#dashboardSection .container .text-white-50,
+#dashboardSection .container .stat-label,
+#dashboardSection .container .hub-sub,
+#dashboardSection .container .lb-class,
+#dashboardSection .container .lb-subtitle,
+#dashboardSection .container .feed-item small,
+#dashboardSection .container .exam-cd-date,
+#dashboardSection .container .islamic-source {
+  color: #64748b !important;
+  -webkit-text-fill-color: #64748b !important;
+}
+
+/* 5️⃣ AMBER TEXT → DARK AMBER (readable on white) */
+.prayer-countdown,
+.exam-cd-name,
+.islamic-arabic,
+.creation-likes,
+.badge-rank,
+#extraTotalDisplay,
+#totalMarksDisplay {
+  color: #b45309 !important;
+  -webkit-text-fill-color: #b45309 !important;
+  background: none !important;
+}
+#madrasaRankDisplay,
+.exam-cd-num,
+.stat-value-xl {
+  background: linear-gradient(120deg, #b45309, #d97706) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+.prayer-next {
+  background: linear-gradient(100deg, #1e40af, #0891b2) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+.exam-cd-fill { background: linear-gradient(90deg, #dc2626, #b45309) !important; }
+
+/* 6️⃣ MADRASA RANK CARD — Explicit dark text */
+#madrasaRankCard {
+  background: #ffffff !important;
+  border: 1px solid rgba(180,200,230,.5) !important;
+}
+#madrasaRankCard * {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+#madrasaRankCard #madrasaRankDisplay {
+  background: linear-gradient(100deg, #b45309, #d97706) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+#madrasaRankCard #totalMadrasaStudents,
+#madrasaRankCard #totalMarksDisplay,
+#madrasaRankCard #extraTotalDisplay {
+  color: #b45309 !important;
+  -webkit-text-fill-color: #b45309 !important;
+}
+
+/* 7️⃣ AI PANEL — Complete Light Theme */
+.ai-panel {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(59,130,246,.3) !important;
+  box-shadow: 0 30px 70px -25px rgba(15,23,42,.45) !important;
+}
+.ai-head {
+  background: linear-gradient(120deg, #1e40af, #3b82f6) !important;
+  border-bottom: 1px solid rgba(59,130,246,.3) !important;
+}
+.ai-head h6, .ai-head h6 * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+.ai-head small, .ai-head small * { color: #dbeafe !important; -webkit-text-fill-color: #dbeafe !important; }
+.ai-head small b { color: #67e8f9 !important; -webkit-text-fill-color: #67e8f9 !important; }
+.ai-student-name {
+  background: rgba(255,255,255,.2) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: rgba(255,255,255,.3) !important;
+}
+.ai-student-name * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+.ai-avatar { background: linear-gradient(140deg, #dbeafe, #bfdbfe) !important; color: #1e40af !important; }
+.ai-head-btn {
+  background: rgba(255,255,255,.2) !important;
+  border-color: rgba(255,255,255,.3) !important;
+  color: #ffffff !important;
+}
+.ai-head-btn:hover { background: rgba(255,255,255,.3) !important; }
+.ai-body { background: #f8fafc !important; }
+.ai-msg.bot {
+  background: #ffffff !important;
+  border: 1px solid rgba(59,130,246,.2) !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+.ai-msg.bot * { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+.ai-msg.bot b, .ai-msg.bot strong { color: #1e40af !important; -webkit-text-fill-color: #1e40af !important; }
+.ai-msg.user {
+  background: linear-gradient(135deg, #3b82f6, #0891b2) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.ai-msg.user * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+.ai-msg.typing { background: #ffffff !important; border-color: rgba(34,211,238,.3) !important; }
+.ai-chip {
+  background: #eff6ff !important;
+  border: 1px solid rgba(59,130,246,.3) !important;
+  color: #1e40af !important;
+  -webkit-text-fill-color: #1e40af !important;
+}
+.ai-chip:hover {
+  background: #dbeafe !important;
+  border-color: #3b82f6 !important;
+  color: #1e3a8a !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+.ai-foot { background: #ffffff !important; border-top: 1px solid rgba(180,200,230,.4) !important; }
+.ai-input {
+  background: #f1f5f9 !important;
+  border: 1.5px solid rgba(100,116,139,.2) !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+.ai-input::placeholder { color: #94a3b8 !important; -webkit-text-fill-color: #94a3b8 !important; }
+.ai-input:focus { background: #ffffff !important; border-color: #3b82f6 !important; }
+.ai-send { background: linear-gradient(140deg, #3b82f6, #0891b2) !important; color: #ffffff !important; }
+.ai-mic-btn { background: #eff6ff !important; border-color: rgba(59,130,246,.3) !important; color: #1e40af !important; }
+.ai-msg.bot .ai-copy-btn {
+  background: rgba(15,23,42,.06) !important;
+  border-color: rgba(15,23,42,.12) !important;
+  color: #64748b !important;
+}
+
+/* 8️⃣ HIDE THEME TOGGLES */
+.theme-toggle, .liquid-theme-btn, #themeToggle, #liquidThemeBtn { display: none !important; }
+
+/* 9️⃣ DISABLE CONTAINER ANIMATION (so fixed nav doesn't break) */
+#dashboardSection > .container { animation: none !important; transform: none !important; }
 </style>
 </head>
 <body>
@@ -3574,6 +3788,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
     loginSection.style.display='none';
     adminSection.style.display='none';
     dashboardSection.style.display='block';
+    document.body.classList.add('logged-in');   /* 🔧 navbar show */
     updateDashboardUI();
     loadActivitiesAndCalendar();
     loadStudentBalance();
@@ -3612,6 +3827,7 @@ function logout(){
   if(adminImpersonating){returnToAdmin();return;}
   currentUser=null;isAdminMode=false;currentAdminClass='';
   localStorage.removeItem('noor_session');
+  document.body.classList.remove('logged-in');   /* 🔧 navbar hide */
   dashboardSection.style.display='none';
   adminSection.style.display='none';
   loginSection.style.display='flex';
@@ -3647,6 +3863,7 @@ async function restoreSession(){
       loginSection.style.display='none';
       adminSection.style.display='none';
       dashboardSection.style.display='block';
+      document.body.classList.add('logged-in');   /* 🔧 navbar show */
       updateDashboardUI();
       loadActivitiesAndCalendar();
       loadStudentBalance();
@@ -6071,6 +6288,7 @@ function returnToAdmin(){
   var b=document.getElementById('adminViewBanner');
   if(b)b.classList.remove('show');
   currentUser=null;
+  document.body.classList.remove('logged-in');   /* 🔧 navbar hide */
   dashboardSection.style.display='none';
   adminSection.style.display='block';
   isAdminMode=true;
@@ -7591,23 +7809,21 @@ async function downloadClassMarksPDF(){
 /* 🎨 THEME / PUSH / BADGES / CHARTS / VOICE / NOTES            */
 /* ============================================================ */
 function initTheme(){
-  // 🔒 Force Light theme always
   localStorage.setItem('noor_theme','light');
-  applyTheme('light');
+  document.body.classList.add('light-mode');
+  document.body.classList.remove('logged-in');
 }
 
 function toggleTheme(){
-  // 🔒 Theme toggle disabled — always light
   showToast('☀️ Light mode only','info');
 }
 
 function applyTheme(theme){
-  document.body.classList.toggle('light-mode',theme==='light');
+  document.body.classList.add('light-mode');
   var icon=document.getElementById('themeIcon');
-  if(icon)icon.className=theme==='light'?'fas fa-sun':'fas fa-moon';
+  if(icon)icon.className='fas fa-sun';
   if(typeof renderCharts==='function'&&currentUser)setTimeout(renderCharts,300);
 }
-
 async function requestPushPermission(){
   if(!('Notification' in window))return false;
   if(Notification.permission==='granted')return true;
@@ -9171,7 +9387,9 @@ else{handleShortcutNavigation();}
   function enforceBottomNav(){
     var nav = document.getElementById('mobBottomNav');
     if(!nav) return;
-    if(window.innerWidth <= 900){
+    var isLoggedIn = document.body.classList.contains('logged-in');
+    var isMobile = window.innerWidth <= 900;
+    if(isLoggedIn && isMobile){
       nav.style.display = 'flex';
       nav.style.position = 'fixed';
       nav.style.left = '14px';
@@ -9179,15 +9397,21 @@ else{handleShortcutNavigation();}
       nav.style.bottom = '14px';
       nav.style.top = 'auto';
       nav.style.zIndex = '99999';
+      nav.style.transform = 'none';
     } else {
       nav.style.display = 'none';
     }
   }
 
   document.addEventListener('DOMContentLoaded', enforceBottomNav);
-  setTimeout(enforceBottomNav, 500);
-  setTimeout(enforceBottomNav, 2000);
+  setTimeout(enforceBottomNav, 300);
+  setTimeout(enforceBottomNav, 1000);
+  setTimeout(enforceBottomNav, 2500);
   setTimeout(enforceBottomNav, 5000);
+
+  /* Watch for logged-in class changes */
+  var mo = new MutationObserver(enforceBottomNav);
+  mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   window.addEventListener('resize', enforceBottomNav);
   window.addEventListener('orientationchange', function(){
