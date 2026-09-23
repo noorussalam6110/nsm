@@ -1370,6 +1370,291 @@ body.light-mode .pala-amount{background:linear-gradient(100deg,#0a1a3f,#0891b2);
   }
   .ai-panel { bottom: 160px !important; }
 }
+/* ============================================================ */
+/* 🎨 MOBILE APP-LIKE ENHANCEMENTS (v22.5)                     */
+/* ============================================================ */
+@media(max-width:900px){
+
+  /* ============ 1️⃣ VIBRANT CARD BACKGROUNDS ============ */
+
+  /* Stat cards — colored accents per card */
+  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+  .stat-card-neon {
+    background: #fff !important;
+    border-radius: 20px !important;
+    padding: 18px 14px 16px !important;
+    border: none !important;
+    box-shadow: 0 8px 22px -12px rgba(21,71,168,.25), 0 1px 0 rgba(255,255,255,.9) inset !important;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card-neon:nth-child(1)::before { background: linear-gradient(90deg,#f59e0b,#fbbf24) !important; }
+  .stat-card-neon:nth-child(2)::before { background: linear-gradient(90deg,#10b981,#34d399) !important; }
+  .stat-card-neon:nth-child(3)::before { background: linear-gradient(90deg,#3b82f6,#22d3ee) !important; }
+  .stat-card-neon:nth-child(4)::before { background: linear-gradient(90deg,#ec4899,#f472b6) !important; }
+  .stat-card-neon::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; border-radius:20px 20px 0 0; }
+
+  /* Icon bubbles with matching tint */
+  .stat-card-neon:nth-child(1) .stat-ico { background: linear-gradient(140deg,#fef3c7,#fde68a) !important; color:#b45309 !important; }
+  .stat-card-neon:nth-child(2) .stat-ico { background: linear-gradient(140deg,#d1fae5,#a7f3d0) !important; color:#047857 !important; }
+  .stat-card-neon:nth-child(3) .stat-ico { background: linear-gradient(140deg,#dbeafe,#bfdbfe) !important; color:#1d4ed8 !important; }
+  .stat-card-neon:nth-child(4) .stat-ico { background: linear-gradient(140deg,#fce7f3,#fbcfe8) !important; color:#be185d !important; }
+
+  /* ============ 2️⃣ HUB CARDS — VIBRANT GRADIENTS ============ */
+  .hub-card {
+    border: none !important;
+    border-radius: 24px !important;
+    padding: 20px !important;
+    box-shadow: 0 12px 28px -16px rgba(0,0,0,.25) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  .hub-card.prayer {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    border: 1px solid rgba(16,185,129,.25) !important;
+  }
+  .hub-card.islamic {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+    border: 1px solid rgba(251,191,36,.3) !important;
+  }
+  .hub-card.exam {
+    background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%) !important;
+    border: 1px solid rgba(239,68,68,.28) !important;
+  }
+
+  .hub-title { color: #0a1a3f !important; font-weight: 900 !important; font-size: .95rem !important; }
+  .hub-sub { color: #64748b !important; font-weight: 700 !important; }
+
+  /* ============ 3️⃣ LEADERBOARD — VIBRANT RANKS ============ */
+  .leaderboard-section {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+    border: none !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 28px -16px rgba(251,191,36,.35) !important;
+  }
+  .leaderboard-header .lb-title span { color: #78350f !important; }
+  .leaderboard-header .lb-subtitle { color: #a16207 !important; }
+
+  /* ============ 4️⃣ PALATHULLI — RICH BLUE ============ */
+  .palathulli-hero {
+    background: linear-gradient(135deg, #1a4fc4 0%, #2563eb 50%, #3b82f6 100%) !important;
+    border-radius: 26px !important;
+    padding: 22px 20px !important;
+    box-shadow: 0 20px 45px -20px rgba(37,99,235,.65) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  .palathulli-hero::before {
+    content: ''; position: absolute;
+    top: -60%; right: -20%; width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(34,211,238,.4), transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .palathulli-hero::after {
+    content: ''; position: absolute;
+    bottom: -50%; left: -15%; width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(139,92,246,.35), transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* ============ 5️⃣ ACTIVITY FEED — CLEAN WHITE ============ */
+  .activity-timeline {
+    background: #fff !important;
+    border: none !important;
+    border-radius: 22px !important;
+    box-shadow: 0 8px 22px -14px rgba(0,0,0,.18) !important;
+  }
+
+  /* ============ 6️⃣ QUICK ACTIONS — Press feedback ============ */
+  .action-tile {
+    transition: transform .18s cubic-bezier(.34,1.56,.64,1), background .18s !important;
+  }
+  .action-tile:active {
+    transform: scale(.88) !important;
+    background: #eef4ff !important;
+  }
+  .action-ico { transition: transform .25s cubic-bezier(.34,1.56,.64,1) !important; }
+  .action-tile:active .action-ico { transform: scale(.85) rotate(-8deg) !important; }
+
+  /* ============ 7️⃣ PAGE ENTRANCE ============ */
+  #dashboardSection > .container {
+    animation: mobPageIn .5s cubic-bezier(.34,1.2,.64,1) both;
+  }
+  @keyframes mobPageIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Staggered tile reveal */
+  .action-tile { animation: tilePop .4s cubic-bezier(.34,1.56,.64,1) both; }
+  .action-tile:nth-child(1) { animation-delay: .02s; }
+  .action-tile:nth-child(2) { animation-delay: .04s; }
+  .action-tile:nth-child(3) { animation-delay: .06s; }
+  .action-tile:nth-child(4) { animation-delay: .08s; }
+  .action-tile:nth-child(5) { animation-delay: .10s; }
+  .action-tile:nth-child(6) { animation-delay: .12s; }
+  .action-tile:nth-child(7) { animation-delay: .14s; }
+  .action-tile:nth-child(8) { animation-delay: .16s; }
+  @keyframes tilePop {
+    from { opacity: 0; transform: scale(.7); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* ============ 8️⃣ BOTTOM NAV — Ultra-Enhanced ============ */
+  .mob-bottom-nav {
+    background: rgba(255,255,255,.96) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 1px solid rgba(200,215,240,.7) !important;
+    box-shadow:
+      0 -8px 30px -12px rgba(21,71,168,.18),
+      0 12px 40px -12px rgba(0,0,0,.22) !important;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+
+  /* Nav items — base */
+  .mob-nav-item {
+    position: relative;
+    transition: all .35s cubic-bezier(.34,1.56,.64,1) !important;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mob-nav-item i {
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+
+  /* Icon bounce when active */
+  .mob-nav-item.active i {
+    animation: navIconBounce .55s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+  @keyframes navIconBounce {
+    0%   { transform: scale(1) translateY(0); }
+    35%  { transform: scale(1.35) translateY(-3px); }
+    70%  { transform: scale(.92) translateY(1px); }
+    100% { transform: scale(1) translateY(0); }
+  }
+
+  /* Active state — premium look */
+  .mob-nav-item.active {
+    background: linear-gradient(135deg, #3b8bff 0%, #1a4fc4 100%) !important;
+    box-shadow:
+      0 10px 26px -10px rgba(43,124,240,.7),
+      inset 0 1px 0 rgba(255,255,255,.25) !important;
+    animation: navPillPulse .5s ease-out !important;
+  }
+  @keyframes navPillPulse {
+    0%   { transform: scale(.9); opacity: .6; }
+    60%  { transform: scale(1.04); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Ripple effect */
+  .mob-nav-item::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    background: radial-gradient(circle, rgba(59,139,255,.4), transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width .5s ease-out, height .5s ease-out, opacity .5s;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .mob-nav-item.ripple::after {
+    width: 200px; height: 200px;
+    opacity: 1;
+    transition: 0s;
+  }
+  .mob-nav-item.ripple-release::after {
+    width: 0; height: 0;
+    opacity: 0;
+    transition: width .5s ease-out, height .5s ease-out, opacity .5s;
+  }
+
+  /* ============ 9️⃣ AI PANEL — Keyboard-Safe Fix ============ */
+  .ai-panel {
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 12px !important;
+    top: auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: calc(100vh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    display: none;
+    z-index: 9500 !important;
+    transition: max-height .2s ease, bottom .2s ease !important;
+  }
+  .ai-panel.open {
+    display: flex !important;
+    flex-direction: column !important;
+    height: min(85vh, 640px) !important;
+    height: min(85dvh, 640px) !important;
+  }
+
+  .ai-body {
+    flex: 1 1 auto !important;
+    min-height: 120px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 14px 14px !important;
+    scroll-behavior: smooth;
+  }
+
+  .ai-foot {
+    flex-shrink: 0 !important;
+    padding: 10px 12px !important;
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .ai-input {
+    font-size: 16px !important; /* prevents iOS zoom */
+    min-height: 44px !important;
+    padding: 12px 18px !important;
+  }
+
+  /* When keyboard is up, JS moves panel here */
+  body.ai-keyboard-open .ai-panel.open {
+    bottom: auto !important;
+    top: auto !important;
+  }
+
+  /* ============ 🔟 INPUT FOCUS GLOW ============ */
+  .ai-input:focus {
+    border-color: #22d3ee !important;
+    background: #fff !important;
+    color: #0a1a3f !important;
+  }
+
+  /* ============ 1️⃣1️⃣ SCROLL SMOOTHNESS ============ */
+  #dashboardSection {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ============ 1️⃣2️⃣ MODAL ENHANCEMENTS ============ */
+  #globalModal > div,
+  #notificationsModal > div,
+  #passbookModal > div {
+    animation: modalSlideUp .4s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+  @keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(30px) scale(.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
+/* Small phones fine-tune */
+@media(max-width:400px){
+  .stat-value-xl { font-size: 1.6rem !important; }
+  .palathulli-hero { padding: 18px 16px !important; }
+  .hub-card { padding: 16px !important; }
+}
 </style>
 </head>
 <body>
@@ -8145,6 +8430,278 @@ else{handleShortcutNavigation();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
   else init();
 })();
+/* ============================================================ */
+/* 🎨 MOBILE APP-LIKE ENHANCEMENTS — JS                        */
+/* ============================================================ */
+
+/* -------- 1️⃣ AI Panel — Keyboard-Aware Positioning -------- */
+(function(){
+  var aiPanel = null;
+  var vv = window.visualViewport;
+
+  function getPanel(){ return document.getElementById('aiPanel'); }
+
+  function fixAIPanelPosition(){
+    aiPanel = aiPanel || getPanel();
+    if(!aiPanel || !aiPanel.classList.contains('open')) return;
+
+    var vh = vv ? vv.height : window.innerHeight;
+    var offsetTop = vv ? vv.offsetTop : 0;
+    var isMobile = window.innerWidth <= 900;
+
+    if(!isMobile) return;
+
+    // Reserve space for keyboard
+    var maxH = Math.max(260, vh - 30);
+
+    aiPanel.style.position = 'fixed';
+    aiPanel.style.left = '10px';
+    aiPanel.style.right = '10px';
+    aiPanel.style.width = 'auto';
+    aiPanel.style.top = offsetTop + 12 + 'px';
+    aiPanel.style.bottom = 'auto';
+    aiPanel.style.maxHeight = maxH + 'px';
+    aiPanel.style.height = Math.min(maxH, 640) + 'px';
+  }
+
+  function resetAIPanelPosition(){
+    aiPanel = aiPanel || getPanel();
+    if(!aiPanel) return;
+    var isMobile = window.innerWidth <= 900;
+    if(!isMobile) {
+      aiPanel.style.cssText = '';
+      return;
+    }
+    aiPanel.style.top = 'auto';
+    aiPanel.style.bottom = '12px';
+    aiPanel.style.height = '';
+    aiPanel.style.maxHeight = 'calc(100dvh - 24px)';
+  }
+
+  if(vv){
+    vv.addEventListener('resize', fixAIPanelPosition);
+    vv.addEventListener('scroll', fixAIPanelPosition);
+  }
+  window.addEventListener('resize', fixAIPanelPosition);
+  window.addEventListener('orientationchange', function(){
+    setTimeout(fixAIPanelPosition, 300);
+  });
+
+  // Detect keyboard via focus events
+  document.addEventListener('focusin', function(e){
+    if(e.target && (e.target.classList.contains('ai-input'))){
+      document.body.classList.add('ai-keyboard-open');
+      setTimeout(fixAIPanelPosition, 100);
+      setTimeout(fixAIPanelPosition, 400);
+      // Scroll last message into view
+      setTimeout(function(){
+        var body = document.getElementById('aiBody');
+        if(body) body.scrollTop = body.scrollHeight;
+      }, 250);
+    }
+  });
+  document.addEventListener('focusout', function(e){
+    if(e.target && e.target.classList.contains('ai-input')){
+      document.body.classList.remove('ai-keyboard-open');
+      setTimeout(resetAIPanelPosition, 200);
+    }
+  });
+
+  // Patch toggleAIChat to re-fix position
+  var _origToggle = window.toggleAIChat;
+  if(typeof _origToggle === 'function'){
+    window.toggleAIChat = function(){
+      _origToggle.apply(this, arguments);
+      setTimeout(function(){
+        var p = getPanel();
+        if(p && p.classList.contains('open')){
+          fixAIPanelPosition();
+        } else {
+          resetAIPanelPosition();
+        }
+      }, 60);
+    };
+  }
+
+  console.log('✅ AI Panel keyboard-fix loaded');
+})();
+
+/* -------- 2️⃣ Bottom Nav — Ripple + Haptic Feedback -------- */
+(function(){
+  function attachRipples(){
+    document.querySelectorAll('.mob-nav-item').forEach(function(item){
+      if(item._rippleAttached) return;
+      item._rippleAttached = true;
+
+      item.addEventListener('touchstart', function(e){
+        item.classList.remove('ripple-release');
+        item.classList.add('ripple');
+        // Haptic feedback (if supported)
+        if(navigator.vibrate) navigator.vibrate(8);
+      }, { passive: true });
+
+      item.addEventListener('touchend', function(){
+        item.classList.remove('ripple');
+        item.classList.add('ripple-release');
+        setTimeout(function(){ item.classList.remove('ripple-release'); }, 500);
+      });
+
+      item.addEventListener('touchcancel', function(){
+        item.classList.remove('ripple');
+      });
+    });
+  }
+
+  // Watch for nav items to appear
+  document.addEventListener('DOMContentLoaded', attachRipples);
+  setTimeout(attachRipples, 800);
+  setTimeout(attachRipples, 2500);
+
+  // Also observe mutations (in case nav is re-rendered)
+  var nav = document.getElementById('mobBottomNav');
+  if(nav){
+    var mo = new MutationObserver(function(){ attachRipples(); });
+    mo.observe(nav, { childList: true, subtree: true });
+  }
+  console.log('✅ Bottom Nav ripple loaded');
+})();
+
+/* -------- 3️⃣ Haptic Feedback for All Key Buttons -------- */
+(function(){
+  function haptic(ms){
+    try{ if(navigator.vibrate) navigator.vibrate(ms || 10); }catch(e){}
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target.closest(
+      '.action-tile, .mob-quick-card, .mob-wide-banner, .pala-btn, ' +
+      '.mob-nav-item, .btn-update, .btn-load, .nsm-btn-primary, ' +
+      '.pf-action-btn, .creation-card, .lb-card, .prayer-item'
+    );
+    if(t) haptic(8);
+  }, { passive: true });
+
+  console.log('✅ Haptic feedback loaded');
+})();
+
+/* -------- 4️⃣ Pull-to-Refresh Feel (Dashboard) -------- */
+(function(){
+  var startY = 0, currentY = 0, pulling = false;
+  var container = null;
+
+  document.addEventListener('touchstart', function(e){
+    container = e.target.closest('#dashboardSection');
+    if(!container) return;
+    if(window.scrollY > 5) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e){
+    if(!pulling || !container) return;
+    currentY = e.touches[0].clientY;
+    var diff = currentY - startY;
+    if(diff > 0 && window.scrollY <= 0){
+      var offset = Math.min(diff * 0.4, 60);
+      var ind = document.getElementById('pullIndicator');
+      if(!ind){
+        ind = document.createElement('div');
+        ind.id = 'pullIndicator';
+        ind.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-60px);z-index:8000;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b8bff,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 20px -6px rgba(59,139,255,.7);transition:transform .1s;';
+        ind.innerHTML = '<i class="fas fa-arrow-down" style="font-size:.9rem;"></i>';
+        document.body.appendChild(ind);
+      }
+      ind.style.transform = 'translateX(-50%) translateY(' + (offset - 20) + 'px) rotate(' + (offset * 3) + 'deg)';
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(){
+    if(!pulling) return;
+    pulling = false;
+    var ind = document.getElementById('pullIndicator');
+    if(ind){
+      var diff = currentY - startY;
+      if(diff > 120){
+        // Trigger refresh
+        ind.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:.9rem;"></i>';
+        if(currentUser && typeof refreshStudentAttendance === 'function'){
+          refreshStudentAttendance().then(function(){
+            if(typeof loadTopWinners === 'function') loadTopWinners();
+            if(typeof loadStudentBalance === 'function') loadStudentBalance();
+          }).finally(function(){
+            setTimeout(function(){
+              ind.style.transform = 'translateX(-50%) translateY(-60px)';
+              setTimeout(function(){ ind.remove(); }, 300);
+            }, 400);
+          });
+        } else {
+          ind.style.transform = 'translateX(-50%) translateY(-60px)';
+          setTimeout(function(){ ind.remove(); }, 300);
+        }
+      } else {
+        ind.style.transform = 'translateX(-50%) translateY(-60px)';
+        setTimeout(function(){ ind.remove(); }, 300);
+      }
+    }
+    startY = 0; currentY = 0;
+  });
+
+  console.log('✅ Pull-to-refresh loaded');
+})();
+
+/* -------- 5️⃣ Prevent iOS zoom on input focus -------- */
+(function(){
+  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    var ensureZoom = function(){
+      document.querySelectorAll('input, textarea, select').forEach(function(el){
+        if(!el.style.fontSize || parseFloat(el.style.fontSize) < 16){
+          el.style.fontSize = '16px';
+        }
+      });
+    };
+    document.addEventListener('DOMContentLoaded', ensureZoom);
+    setTimeout(ensureZoom, 1500);
+  }
+})();
+
+/* -------- 6️⃣ Card Entrance Animation on Scroll -------- */
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.style.opacity = '1';
+        en.target.style.transform = 'translateY(0)';
+        obs.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+
+  function registerCards(){
+    if(window.innerWidth > 900) return;
+    document.querySelectorAll(
+      '#dashboardSection .hub-card, ' +
+      '#dashboardSection .activity-timeline, ' +
+      '#dashboardSection .chart-card, ' +
+      '#dashboardSection .leaderboard-section, ' +
+      '#dashboardSection .stats-grid .stat-card-neon'
+    ).forEach(function(c){
+      if(c._animRegistered) return;
+      c._animRegistered = true;
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(20px)';
+      c.style.transition = 'opacity .55s cubic-bezier(.34,1.2,.64,1), transform .55s cubic-bezier(.34,1.2,.64,1)';
+      obs.observe(c);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(registerCards, 1200);
+  });
+  setTimeout(registerCards, 3000);
+})();
+
+console.log('✅ All mobile enhancements loaded — v22.5');
 </script>
 
 <!-- ============================================================ -->
