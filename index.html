@@ -2321,6 +2321,150 @@ body.light-mode {
 
 /* 9️⃣ DISABLE CONTAINER ANIMATION (so fixed nav doesn't break) */
 #dashboardSection > .container { animation: none !important; transform: none !important; }
+
+/* ============================================================ */
+/* 🔟 ALL MODALS — FORCE LIGHT THEME (regardless of body class)  */
+/* ============================================================ */
+
+/* Modal body backgrounds */
+.modal-glass {
+  background: #ffffff !important;
+  border: 1px solid rgba(180,200,230,.5) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 30px 80px -30px rgba(15,23,42,.5) !important;
+  color: #0f172a !important;
+}
+.modal-glass * { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+
+/* Modal headers (title bars) — keep blue gradient, white text */
+#globalModal > div > div:first-child,
+#notificationsModal .modal-glass > div:first-child,
+#passbookModal .modal-glass > div:first-child,
+#studentWithdrawalModal .modal-glass > div:first-child,
+#notesModal .modal-glass > div:first-child,
+#noticeBoardModal .modal-glass > div:first-child {
+  background: linear-gradient(160deg, #1e40af, #1e3a8a) !important;
+  border-bottom: 1px solid rgba(59,130,246,.3) !important;
+}
+#globalModal > div > div:first-child *,
+#notificationsModal .modal-glass > div:first-child *,
+#passbookModal .modal-glass > div:first-child *,
+#studentWithdrawalModal .modal-glass > div:first-child *,
+#notesModal .modal-glass > div:first-child *,
+#noticeBoardModal .modal-glass > div:first-child * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Modal form inputs */
+.modal-form-input {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  border: 1.5px solid rgba(100,116,139,.25) !important;
+}
+.modal-form-input::placeholder { color: #94a3b8 !important; -webkit-text-fill-color: #94a3b8 !important; }
+.modal-form-input:focus { background: #ffffff !important; border-color: #3b82f6 !important; }
+.modal-form-input option { background: #ffffff !important; color: #0f172a !important; }
+
+/* Secondary/muted text inside modals */
+.modal-glass .text-white-50,
+.modal-glass small,
+.modal-glass .lb-subtitle { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
+
+/* Attendance modal — total card */
+#globalModal .modal-glass [style*="rgba(34,211,238"] {
+  background: linear-gradient(135deg, #ecfeff, #cffafe) !important;
+  border-color: rgba(34,211,238,.4) !important;
+}
+
+/* Winner Details modal — main wrapper */
+#globalModal .modal-glass [style*="linear-gradient(135deg,rgba(251,191,36"] {
+  background: linear-gradient(135deg, #fefce8, #dbeafe) !important;
+  border-color: rgba(251,191,36,.5) !important;
+}
+#globalModal .modal-glass [style*="linear-gradient(135deg,rgba(251,191,36"] * {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* Winner Details — stat tiles */
+#globalModal .modal-glass [style*="linear-gradient(150deg,rgba(251,191,36,.20"],
+#globalModal .modal-glass [style*="background:rgba(120,180,255,.08)"] {
+  background: #f8fafc !important;
+  border-color: rgba(180,200,230,.5) !important;
+}
+#globalModal .modal-glass [style*="background:rgba(120,180,255,.08)"] * {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* Winner Details — competition cards (with names) */
+#globalModal .modal-glass [style*="linear-gradient(135deg,rgba(120,180,255,.08"],
+#globalModal .modal-glass [style*="border-left:3px solid"] {
+  background: #ffffff !important;
+  border-color: rgba(180,200,230,.4) !important;
+}
+#globalModal .modal-glass [style*="border-left:3px solid"] * {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* Winner Details — title text inside cards */
+#globalModal .modal-glass .fw-bold,
+#globalModal .modal-glass strong,
+#globalModal .modal-glass h4,
+#globalModal .modal-glass h5,
+#globalModal .modal-glass h6 { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+
+/* Winner Details — "Top Winner" small label */
+#globalModal .modal-glass [style*="text-transform:uppercase"] { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
+
+/* Winner Details — student name (was white) */
+#globalModal .modal-glass [style*="font-size:1.25rem"],
+#globalModal .modal-glass [style*="font-size:1.2rem"] { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+
+/* Winner Details — cyan ID line */
+#globalModal .modal-glass [style*="color:#67e8f9"] {
+  color: #0891b2 !important;
+  -webkit-text-fill-color: #0891b2 !important;
+}
+
+/* Winner Details — amber accents */
+#globalModal .modal-glass [style*="color:#fbbf24"],
+#globalModal .modal-glass [style*="color:#fcd34d"] {
+  color: #b45309 !important;
+  -webkit-text-fill-color: #b45309 !important;
+}
+
+/* "പരീക്ഷ കഴിഞ്ഞു" / "മൽസരങ്ങൾ" heading */
+#globalModal .modal-glass [style*="color:#fff"] { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+
+/* Attendance modal — month list items */
+#globalModal .modal-glass ul li { border-bottom-color: rgba(180,200,230,.4) !important; }
+#globalModal .modal-glass ul li .text-white { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+#globalModal .modal-glass ul li [style*="color:#22d3ee"] { color: #0891b2 !important; -webkit-text-fill-color: #0891b2 !important; }
+
+/* Notifications modal items */
+.notif-item { background: #f8fafc !important; border-left-color: #3b82f6 !important; }
+.notif-item * { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
+.notif-item small { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
+
+/* Passbook / withdrawal tables */
+.modal-glass .table-dark { --bs-table-bg: transparent !important; --bs-table-color: #0f172a !important; color: #0f172a !important; }
+.modal-glass .table-dark td,
+.modal-glass .table-dark th { color: #0f172a !important; border-color: rgba(180,200,230,.3) !important; }
+.modal-glass .table-dark thead th { color: #1e40af !important; }
+
+/* Passbook inline styled text */
+.modal-glass [style*="color:#6ee7b7"] { color: #059669 !important; -webkit-text-fill-color: #059669 !important; }
+.modal-glass [style*="color:#fca5a5"] { color: #dc2626 !important; -webkit-text-fill-color: #dc2626 !important; }
+.modal-glass [style*="color:#fcd34d"] { color: #b45309 !important; -webkit-text-fill-color: #b45309 !important; }
+
+/* Toast container — keep dark text on light */
+.toast-item { color: #ffffff !important; }
+.toast-item * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
 </style>
 </head>
 <body>
@@ -4192,26 +4336,24 @@ async function loadTopWinners(){
   }
 }
 
-function openWinnerDetails(studentId){
+async function openWinnerDetails(studentId){
   var data=(window._topWinnersData||[]).find(function(x){return x.studentid===studentId;});
   if(!data){showToast('Details ലഭ്യമല്ല','error');return;}
   modalTitleSpan.innerText="🏆 Winner Details";
-  var av=hasPhoto(data.photo)?'<img src="'+data.photo+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:2rem;font-weight:800;color:#fff;">'+escapeHtml((data.name||'S').charAt(0).toUpperCase())+'</span>';
+  var av=hasPhoto(data.photo)?'<img src="'+data.photo+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:2rem;font-weight:800;color:#ffffff;">'+escapeHtml((data.name||'S').charAt(0).toUpperCase())+'</span>';
   var rank=data.displayRank;
   var medal=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'#'+rank;
   var rankLabel=rank===1?'1st Place':rank===2?'2nd Place':rank===3?'3rd Place':'Rank #'+rank;
   var comps=data.competitions||[];
-  var html='<div style="display:flex;align-items:center;gap:16px;padding:18px;background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(30,107,224,.18));border:1.6px solid rgba(251,191,36,.4);border-radius:20px;margin-bottom:16px;flex-wrap:wrap;"><div style="width:90px;height:90px;border-radius:50%;overflow:hidden;background:linear-gradient(140deg,#1e6be0,#22d3ee);display:flex;align-items:center;justify-content:center;border:3px solid rgba(251,191,36,.6);flex-shrink:0;">'+av+'</div><div style="flex:1;min-width:180px;"><div style="font-size:.72rem;color:#9db8dd;text-transform:uppercase;font-weight:800;margin-bottom:4px;">Top Winner</div><div style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.25;word-break:break-word;">'+escapeHtml(data.name)+'</div><div style="font-size:.82rem;color:#67e8f9;font-weight:700;margin-top:4px;">Class '+escapeHtml(data.class||'—')+' • '+escapeHtml(data.studentid)+'</div></div><div style="text-align:center;min-width:110px;"><div style="font-size:2.2rem;">'+medal+'</div><div style="font-size:.78rem;color:#fcd34d;font-weight:800;margin-top:6px;">'+rankLabel+'</div></div></div>';
-  html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin-bottom:18px;"><div style="background:linear-gradient(150deg,rgba(251,191,36,.20),rgba(251,191,36,.06));border:1px solid rgba(251,191,36,.35);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#fbbf24;">'+data.points+'</div><div style="font-size:.66rem;color:#9db8dd;margin-top:5px;text-transform:uppercase;">Total</div></div><div style="background:rgba(120,180,255,.08);border:1px solid var(--stroke);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#fbbf24;">🥇 '+data.wins1+'</div><div style="font-size:.66rem;color:#9db8dd;margin-top:5px;">1st</div></div><div style="background:rgba(120,180,255,.08);border:1px solid var(--stroke);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#c0c0c0;">🥈 '+data.wins2+'</div><div style="font-size:.66rem;color:#9db8dd;margin-top:5px;">2nd</div></div><div style="background:rgba(120,180,255,.08);border:1px solid var(--stroke);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#cd7f32;">🥉 '+data.wins3+'</div><div style="font-size:.66rem;color:#9db8dd;margin-top:5px;">3rd</div></div><div style="background:rgba(120,180,255,.08);border:1px solid var(--stroke);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#22d3ee;">'+comps.length+'</div><div style="font-size:.66rem;color:#9db8dd;margin-top:5px;">Events</div></div></div>';
+  var html='<div style="display:flex;align-items:center;gap:16px;padding:18px;background:linear-gradient(135deg,#fef3c7,#dbeafe);border:1.6px solid #f59e0b;border-radius:20px;margin-bottom:16px;flex-wrap:wrap;"><div style="width:90px;height:90px;border-radius:50%;overflow:hidden;background:linear-gradient(140deg,#1e6be0,#22d3ee);display:flex;align-items:center;justify-content:center;border:3px solid #f59e0b;flex-shrink:0;">'+av+'</div><div style="flex:1;min-width:180px;"><div style="font-size:.72rem;color:#64748b;text-transform:uppercase;font-weight:800;margin-bottom:4px;">Top Winner</div><div style="font-size:1.25rem;font-weight:900;color:#0f172a;line-height:1.25;word-break:break-word;">'+escapeHtml(data.name)+'</div><div style="font-size:.82rem;color:#0891b2;font-weight:700;margin-top:4px;">Class '+escapeHtml(data.class||'—')+' • '+escapeHtml(data.studentid)+'</div></div><div style="text-align:center;min-width:110px;"><div style="font-size:2.2rem;">'+medal+'</div><div style="font-size:.78rem;color:#b45309;font-weight:800;margin-top:6px;">'+rankLabel+'</div></div></div>';    html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin-bottom:18px;"><div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#b45309;">'+data.points+'</div><div style="font-size:.66rem;color:#64748b;margin-top:5px;text-transform:uppercase;">Total</div></div><div style="background:#f8fafc;border:1px solid rgba(180,200,230,.5);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#b45309;">🥇 '+data.wins1+'</div><div style="font-size:.66rem;color:#64748b;margin-top:5px;">1st</div></div><div style="background:#f8fafc;border:1px solid rgba(180,200,230,.5);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#64748b;">🥈 '+data.wins2+'</div><div style="font-size:.66rem;color:#64748b;margin-top:5px;">2nd</div></div><div style="background:#f8fafc;border:1px solid rgba(180,200,230,.5);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#9a3412;">🥉 '+data.wins3+'</div><div style="font-size:.66rem;color:#64748b;margin-top:5px;">3rd</div></div><div style="background:#f8fafc;border:1px solid rgba(180,200,230,.5);border-radius:14px;padding:12px;text-align:center;"><div style="font-size:1.5rem;font-weight:900;color:#0891b2;">'+comps.length+'</div><div style="font-size:.66rem;color:#64748b;margin-top:5px;">Events</div></div></div>';
   if(comps.length>0){
-    html+='<div style="font-weight:800;color:#fff;font-size:.94rem;margin-bottom:10px;"><i class="fas fa-trophy" style="color:#fbbf24;"></i> മൽസരങ്ങൾ</div>';
+    html+='<div style="font-weight:800;color:#0f172a;font-size:.94rem;margin-bottom:10px;"><i class="fas fa-trophy" style="color:#b45309;"></i> മൽസരങ്ങൾ</div>';
     html+=comps.map(function(c){
       var posLabel=c.position===1?'🥇 1st':c.position===2?'🥈 2nd':c.position===3?'🥉 3rd':c.position?'#'+c.position:'—';
       var posColor=c.position===1?'#fbbf24':c.position===2?'#c0c0c0':c.position===3?'#cd7f32':'#7db3ff';
       var gc=(getGradeDetails(c.grade)||{}).color||'#7db3ff';
       var tl=c.target_class?(String(c.target_class)==='all'?'🌟 All Classes':String(c.target_class).split(',').length>1?'Classes '+String(c.target_class).split(',').join(', '):'Class '+c.target_class):'';
-      return'<div style="background:linear-gradient(135deg,rgba(120,180,255,.08),rgba(120,180,255,.02));border:1px solid rgba(140,190,255,.18);border-left:3px solid '+posColor+';border-radius:14px;padding:12px 14px;margin-bottom:9px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;"><div style="flex:1;min-width:160px;"><div style="font-weight:800;color:#fff;font-size:.92rem;">'+escapeHtml(c.name)+'</div><div style="font-size:.72rem;color:#9db8dd;margin-top:4px;"><span>📅 '+formatDate(c.date)+'</span> '+(c.category?'• 🏷️ '+escapeHtml(c.category):'')+' '+(tl?'• 👥 '+escapeHtml(tl):'')+'</div></div><div style="display:flex;align-items:center;gap:10px;"><div style="text-align:center;"><div style="font-size:.95rem;font-weight:900;color:'+posColor+';">'+posLabel+'</div>'+(c.grade?'<div style="font-size:.72rem;font-weight:800;color:'+gc+';">'+escapeHtml(c.grade)+'</div>':'')+'</div><div style="background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.4);border-radius:20px;padding:5px 11px;font-size:.78rem;font-weight:900;color:#fbbf24;">+'+c.points+'</div></div></div></div>';
-    }).join('');
+      return'<div style="background:#f8fafc;border:1px solid rgba(180,200,230,.5);border-left:3px solid '+posColor+';border-radius:14px;padding:12px 14px;margin-bottom:9px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;"><div style="flex:1;min-width:160px;"><div style="font-weight:800;color:#0f172a;font-size:.92rem;">'+escapeHtml(c.name)+'</div><div style="font-size:.72rem;color:#64748b;margin-top:4px;"><span>📅 '+formatDate(c.date)+'</span> '+(c.category?'• 🏷️ '+escapeHtml(c.category):'')+' '+(tl?'• 👥 '+escapeHtml(tl):'')+'</div></div><div style="display:flex;align-items:center;gap:10px;"><div style="text-align:center;"><div style="font-size:.95rem;font-weight:900;color:'+posColor+';">'+posLabel+'</div>'+(c.grade?'<div style="font-size:.72rem;font-weight:800;color:'+gc+';">'+escapeHtml(c.grade)+'</div>':'')+'</div><div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:20px;padding:5px 11px;font-size:.78rem;font-weight:900;color:#b45309;">+'+c.points+'</div></div></div></div>';    }).join('');
   }
   var tiedWith=(window._topWinnersData||[]).filter(function(x){return x.points===data.points&&x.studentid!==data.studentid;});
   if(tiedWith.length>0){
@@ -4779,8 +4921,7 @@ async function showAttendanceReport(){
       var tp=0,td=0;
       r.data.forEach(function(x){tp+=Number(x.present_days)||0;td+=Number(x.total_days)||0;});
       var pct=td>0?Math.round((tp/td)*100):0;
-      modalBodyDiv.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(30,107,224,.18));border:1.6px solid rgba(34,211,238,.4);border-radius:16px;padding:14px;margin-bottom:14px;"><div style="display:flex;justify-content:space-between;"><div><div style="font-size:.72rem;color:#9db8dd;">ആകെ ഹാജർ</div><div style="font-size:.85rem;color:#fff;font-weight:800;margin-top:4px;">'+tp+' / '+td+' days</div></div><div style="font-size:1.8rem;font-weight:900;color:#22d3ee;">'+pct+'%</div></div></div><ul class="list-unstyled mb-0">'+r.data.map(function(x){return'<li class="d-flex justify-content-between py-2" style="border-bottom:1px solid rgba(140,190,255,.08);"><span class="text-white"><i class="far fa-calendar-alt me-1" style="color:#22d3ee;"></i>'+formatMonthMalayalam(x.month_year)+'</span><span style="color:#22d3ee;font-weight:800;">'+x.percentage+'%</span></li>';}).join('')+'</ul>';
-    }else{
+      modalBodyDiv.innerHTML='<div style="background:linear-gradient(135deg,#ecfeff,#cffafe);border:1.6px solid rgba(34,211,238,.5);border-radius:16px;padding:14px;margin-bottom:14px;"><div style="display:flex;justify-content:space-between;"><div><div style="font-size:.72rem;color:#64748b;">ആകെ ഹാജർ</div><div style="font-size:.85rem;color:#0f172a;font-weight:800;margin-top:4px;">'+tp+' / '+td+' days</div></div><div style="font-size:1.8rem;font-weight:900;color:#0891b2;">'+pct+'%</div></div></div><ul class="list-unstyled mb-0">'+r.data.map(function(x){return'<li class="d-flex justify-content-between py-2" style="border-bottom:1px solid rgba(180,200,230,.4);"><span style="color:#0f172a;"><i class="far fa-calendar-alt me-1" style="color:#0891b2;"></i>'+formatMonthMalayalam(x.month_year)+'</span><span style="color:#0891b2;font-weight:800;">'+x.percentage+'%</span></li>';}).join('')+'</ul>';    }else{
       modalBodyDiv.innerHTML='<div class="text-center text-white-50 py-3">No records</div>';
     }
   }catch(e){modalBodyDiv.innerHTML='Error';}
