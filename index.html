@@ -409,8 +409,14 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 
 .nsm-form{display:flex;flex-direction:column;gap:12px}
 .nsm-field{display:flex;flex-direction:column;gap:7px}
-.nsm-label{font-size:.78rem!important;font-weight:800!important;letter-spacing:.3px;color:#fff!important;text-shadow:0 1px 4px rgba(0,0,0,.6);}
-.nsm-label span{color:#ef4444}
+.nsm-label{
+  font-size:.78rem!important;
+  font-weight:800!important;
+  letter-spacing:.3px;
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.95), 0 1px 2px rgba(0,0,0,.9);
+}.nsm-label span{color:#ef4444}
 .nsm-input-wrap{position:relative;display:flex;align-items:center;background:rgba(255,255,255,.15)!important;backdrop-filter:blur(14px)!important;border:1.5px solid rgba(255,255,255,.28)!important;border-radius:14px!important;padding:0 14px;transition:all .35s cubic-bezier(.34,1.56,.64,1)!important;box-shadow:inset 0 1px 2px rgba(255,255,255,.15),0 2px 8px -4px rgba(0,0,0,.4)!important;}
 .nsm-input-wrap:hover{background:rgba(255,255,255,.22)!important;border-color:rgba(212,175,55,.6)!important;}
 .nsm-input-wrap:focus-within{background:rgba(255,255,255,.28)!important;border-color:#ffd966!important;transform:translateY(-2px);box-shadow:0 0 0 4px rgba(212,175,55,.2),0 10px 30px -10px rgba(251,191,36,.7),inset 0 1px 2px rgba(255,255,255,.2)!important;}
@@ -420,7 +426,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .nsm-input#studentId{text-transform:uppercase;letter-spacing:2px;font-weight:800}
 .nsm-input#studentId::placeholder{text-transform:none;letter-spacing:0;font-weight:500}
 .nsm-eye{background:transparent;border:none;cursor:pointer;color:#4a5f8a;font-size:.9rem;padding:6px;opacity:.7;transition:all .2s}
-.nsm-hint{font-size:.68rem!important;color:rgba(255,255,255,.75)!important;display:flex;align-items:center;gap:5px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+.nsm-hint{
+  font-size:.68rem!important;
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-weight:700;
+  text-shadow:0 2px 5px rgba(0,0,0,.95), 0 1px 2px rgba(0,0,0,.9);
+  opacity:0.95;
+}
 .nsm-hint i{color:#ffd966!important;}
 .nsm-forgot{text-align:right;margin-top:-6px}
 .nsm-forgot a{font-size:.75rem;color:#ffd966!important;font-weight:700;text-decoration:none;transition:color .2s;text-shadow:0 1px 3px rgba(0,0,0,.5);}
@@ -2465,6 +2481,170 @@ body.light-mode {
 /* Toast container — keep dark text on light */
 .toast-item { color: #ffffff !important; }
 .toast-item * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+
+/* ============================================================ */
+/* 1️⃣1️⃣ AI PANEL — HIGHEST Z-INDEX + INPUT FIX                  */
+/* ============================================================ */
+
+/* AI FAB — above everything */
+.ai-fab,
+.ai-fab.show {
+  z-index: 9999999 !important;
+}
+
+/* AI Panel — above bottom nav (99999) and all modals */
+.ai-panel {
+  z-index: 9999998 !important;
+  pointer-events: auto !important;
+}
+.ai-panel.open {
+  z-index: 9999998 !important;
+  display: flex !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure ALL children are clickable */
+.ai-panel .ai-head,
+.ai-panel .ai-body,
+.ai-panel .ai-quick,
+.ai-panel .ai-foot {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 5;
+}
+
+.ai-panel .ai-input,
+.ai-panel .ai-send,
+.ai-panel .ai-mic-btn,
+.ai-panel .ai-chip,
+.ai-panel .ai-head-btn,
+.ai-panel .ai-avatar {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.ai-panel .ai-input {
+  cursor: text !important;
+}
+
+/* Mobile — Position AI panel ABOVE bottom nav (not overlapping) */
+@media (max-width: 900px) {
+  .ai-panel {
+    bottom: 90px !important;
+    max-height: calc(100dvh - 110px) !important;
+  }
+  .ai-panel.open {
+    bottom: 90px !important;
+    height: min(72dvh, 580px) !important;
+  }
+}
+
+/* ============================================================ */
+/* 1️⃣2️⃣ REMOVE ANY TRANSFORM/BACKDROP-FILTER OVERLAYS           */
+/* ============================================================ */
+
+/* Disable pointer-events issues from animated backgrounds */
+.ai-panel::before,
+.ai-panel::after {
+  pointer-events: none !important;
+}
+
+/* Ensure input wrapper doesn't have stacking issue */
+.ai-foot {
+  position: relative !important;
+  z-index: 20 !important;
+  background: #ffffff !important;
+}
+
+.ai-input {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  caret-color: #1e40af !important;
+}
+
+.ai-input:focus {
+  background: #ffffff !important;
+  border-color: #3b82f6 !important;
+  outline: none !important;
+}
+
+/* ============================================================ */
+/* 1️⃣3️⃣ FIX ANY REMAINING THEME ISSUES                          */
+/* ============================================================ */
+
+/* Winner Details modal header — force white text on blue gradient */
+#globalModal > div > div:first-child h3,
+#globalModal #modalTitle,
+#globalModal #modalTitle * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* All other modals — same fix */
+#passbookModal .modal-glass > div:first-child h3,
+#notificationsModal .modal-glass > div:first-child h3,
+#studentWithdrawalModal .modal-glass > div:first-child h3,
+#notesModal .modal-glass > div:first-child h3,
+#noticeBoardModal .modal-glass > div:first-child h3 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Modal body — ensure dark text */
+#globalModal #modalContentBody,
+#globalModal #modalContentBody *,
+#globalModal .modal-glass > div:last-child,
+#globalModal .modal-glass > div:last-child * {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* Specific amber/cyan accents in modal body */
+#globalModal #modalContentBody [style*="color:#fbbf24"],
+#globalModal #modalContentBody [style*="color:#fcd34d"] {
+  color: #b45309 !important;
+  -webkit-text-fill-color: #b45309 !important;
+}
+
+#globalModal #modalContentBody [style*="color:#67e8f9"],
+#globalModal #modalContentBody [style*="color:#22d3ee"] {
+  color: #0891b2 !important;
+  -webkit-text-fill-color: #0891b2 !important;
+}
+
+/* Bottom nav — keep below AI panel */
+.mob-bottom-nav {
+  z-index: 99999 !important;
+}
+
+/* ============================================================ */
+/* 1️⃣4️⃣ LOGIN PAGE — Optional Light Theme Override              */
+/* (Login page design intentionally dark for the hero)          */
+/* ============================================================ */
+
+/* If you want the login card itself to be lighter: */
+#loginSection .nsm-card {
+  background: linear-gradient(155deg, rgba(255,255,255,.28), rgba(255,255,255,.14)) !important;
+}
+
+#loginSection .nsm-card-title,
+#loginSection .nsm-label,
+#loginSection .nsm-hint {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Login card inputs — keep readable on glass */
+#loginSection .nsm-input {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+#loginSection .nsm-input::placeholder {
+  color: rgba(255,255,255,.6) !important;
+}
 </style>
 </head>
 <body>
@@ -3308,7 +3488,7 @@ body.light-mode {
 <!-- 🤖 AI ASSISTANT                                              -->
 <!-- ============================================================ -->
 <button class="ai-fab show" id="aiFab" onclick="toggleAIChat()"><i class="fas fa-robot"></i></button>
-<div class="ai-panel" id="aiPanel">
+<div class="ai-panel" id="aiPanel" style="z-index: 9999998 !important;">
   <div class="ai-head">
     <div class="ai-head-left">
       <div class="ai-avatar"><i class="fas fa-robot"></i></div>
@@ -9289,7 +9469,8 @@ else{handleShortcutNavigation();}
     aiPanel.style.top = offsetTop + 12 + 'px';
     aiPanel.style.bottom = 'auto';
     aiPanel.style.maxHeight = maxH + 'px';
-    aiPanel.style.height = Math.min(maxH, 640) + 'px';
+    aiPanel.style.height = Math.min(maxH, 600) + 'px';
+    aiPanel.style.zIndex = '9999998';
   }
 
   function resetAIPanelPosition(){
@@ -9300,10 +9481,12 @@ else{handleShortcutNavigation();}
       aiPanel.style.cssText = '';
       return;
     }
+    /* 🔧 FIX: Position above bottom nav (90px instead of 12px) */
     aiPanel.style.top = 'auto';
-    aiPanel.style.bottom = '12px';
+    aiPanel.style.bottom = '90px';
     aiPanel.style.height = '';
-    aiPanel.style.maxHeight = 'calc(100dvh - 24px)';
+    aiPanel.style.maxHeight = 'calc(100dvh - 110px)';
+    aiPanel.style.zIndex = '9999998';
   }
 
   if(vv){
@@ -9341,14 +9524,32 @@ else{handleShortcutNavigation();}
         var p = getPanel();
         if(p && p.classList.contains('open')){
           fixAIPanelPosition();
+          /* 🔧 FIX: Force input focus after panel opens */
+          var inp = document.getElementById('aiInput');
+          if(inp) inp.focus();
         } else {
           resetAIPanelPosition();
         }
-      }, 60);
+      }, 100);
     };
   }
 
-  console.log('✅ AI Panel keyboard-fix loaded');
+  /* 🔧 FIX: Ensure AI panel input works — attach direct listener */
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if(t && (t.id === 'aiFab' || t.closest && t.closest('#aiFab'))){
+      setTimeout(function(){
+        var p = getPanel();
+        if(p && p.classList.contains('open')){
+          resetAIPanelPosition();
+          var inp = document.getElementById('aiInput');
+          if(inp) setTimeout(function(){ inp.focus(); }, 200);
+        }
+      }, 150);
+    }
+  }, true);
+
+  console.log('✅ AI Panel keyboard-fix loaded + input fix');
 })();
 
 /* -------- 2️⃣ Bottom Nav — Ripple + Haptic Feedback -------- */
