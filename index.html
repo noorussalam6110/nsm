@@ -2645,6 +2645,103 @@ body.light-mode {
 #loginSection .nsm-input::placeholder {
   color: rgba(255,255,255,.6) !important;
 }
+
+/* ============================================================ */
+/* 1️⃣5️⃣ FIX — Hide FAB when AI panel is open                    */
+/* (FAB was covering the Send button)                           */
+/* ============================================================ */
+
+/* When AI panel is open, hide the FAB */
+body.ai-panel-open .ai-fab,
+body.ai-panel-open .ai-fab.show {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Alternative — hide FAB when panel has .open class */
+body:has(.ai-panel.open) .ai-fab {
+  display: none !important;
+}
+
+/* Ensure panel is always above FAB if both visible */
+.ai-panel {
+  z-index: 9999998 !important;
+}
+.ai-panel.open {
+  z-index: 9999999 !important;
+}
+
+/* Send button — make sure it's on top inside panel */
+.ai-panel .ai-foot {
+  position: relative !important;
+  z-index: 100 !important;
+}
+.ai-panel .ai-send,
+.ai-panel .ai-mic-btn,
+.ai-panel .ai-input {
+  position: relative !important;
+  z-index: 101 !important;
+}
+
+/* ============================================================ */
+/* 1️⃣6️⃣ MOBILE — Make sure Send button is visible                */
+/* ============================================================ */
+
+@media (max-width: 900px) {
+  /* Panel spacing */
+  .ai-panel.open {
+    bottom: 90px !important;
+    height: min(72dvh, 580px) !important;
+  }
+
+  /* Footer at bottom of panel */
+  .ai-panel .ai-foot {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 12px !important;
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    background: #ffffff !important;
+    border-top: 1px solid rgba(180,200,230,.4) !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Make send button clearly visible */
+  .ai-panel .ai-send {
+    background: linear-gradient(140deg, #3b82f6, #0891b2) !important;
+    color: #ffffff !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 6px 16px -6px rgba(59,130,246,.7) !important;
+  }
+
+  .ai-panel .ai-send i {
+    color: #ffffff !important;
+    font-size: 1rem !important;
+  }
+
+  .ai-panel .ai-mic-btn {
+    width: 44px !important;
+    height: 44px !important;
+    flex-shrink: 0 !important;
+    background: #eff6ff !important;
+    border: 1px solid rgba(59,130,246,.3) !important;
+    color: #1e40af !important;
+  }
+
+  .ai-panel .ai-input {
+    flex: 1 !important;
+    min-width: 0 !important;
+    font-size: 16px !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -9523,24 +9620,41 @@ else{handleShortcutNavigation();}
       setTimeout(function(){
         var p = getPanel();
         if(p && p.classList.contains('open')){
+          /* 🔧 FIX: Add body class to hide FAB */
+          document.body.classList.add('ai-panel-open');
           fixAIPanelPosition();
-          /* 🔧 FIX: Force input focus after panel opens */
           var inp = document.getElementById('aiInput');
           if(inp) inp.focus();
         } else {
+          /* 🔧 FIX: Remove body class to show FAB again */
+          document.body.classList.remove('ai-panel-open');
           resetAIPanelPosition();
         }
       }, 100);
     };
   }
 
-  /* 🔧 FIX: Ensure AI panel input works — attach direct listener */
+  /* Also watch panel class changes (in case toggle is bypassed) */
+  var panelEl = document.getElementById('aiPanel');
+  if(panelEl){
+    var mo = new MutationObserver(function(){
+      if(panelEl.classList.contains('open')){
+        document.body.classList.add('ai-panel-open');
+      } else {
+        document.body.classList.remove('ai-panel-open');
+      }
+    });
+    mo.observe(panelEl, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  /* 🔧 FIX: FAB click → ensure clean state */
   document.addEventListener('click', function(e){
     var t = e.target;
-    if(t && (t.id === 'aiFab' || t.closest && t.closest('#aiFab'))){
+    if(t && (t.id === 'aiFab' || (t.closest && t.closest('#aiFab')))){
       setTimeout(function(){
         var p = getPanel();
         if(p && p.classList.contains('open')){
+          document.body.classList.add('ai-panel-open');
           resetAIPanelPosition();
           var inp = document.getElementById('aiInput');
           if(inp) setTimeout(function(){ inp.focus(); }, 200);
@@ -9549,9 +9663,8 @@ else{handleShortcutNavigation();}
     }
   }, true);
 
-  console.log('✅ AI Panel keyboard-fix loaded + input fix');
+  console.log('✅ AI Panel keyboard-fix + FAB hide on open');
 })();
-
 /* -------- 2️⃣ Bottom Nav — Ripple + Haptic Feedback -------- */
 (function(){
   function attachRipples(){
