@@ -845,17 +845,79 @@ body.light-mode .notice-item {
 }
 
 body.light-mode .hub-card.prayer {
-  background: linear-gradient(155deg,rgba(236,253,245,.9),rgba(209,250,229,.7)) !important;
+  background: linear-gradient(155deg,rgba(236,253,245,.95),rgba(209,250,229,.85)) !important;
 }
 body.light-mode .hub-card.islamic {
-  background: linear-gradient(155deg,rgba(255,251,235,.9),rgba(254,243,199,.7)) !important;
+  background: linear-gradient(155deg,rgba(255,251,235,.95),rgba(254,243,199,.85)) !important;
 }
 body.light-mode .hub-card.exam {
-  background: linear-gradient(155deg,rgba(254,242,242,.9),rgba(254,202,202,.7)) !important;
+  background: linear-gradient(155deg,rgba(254,242,242,.95),rgba(254,202,202,.85)) !important;
 }
 
 body.light-mode .modal-glass .text-white,
 body.light-mode #modalTitle { color: #0a1a3f !important; }
+
+/* 🔧 മഞ്ഞ text → dark amber (light mode-ൽ കാണാൻ) */
+body.light-mode .prayer-countdown,
+body.light-mode .prayer-next,
+body.light-mode .exam-cd-num,
+body.light-mode .exam-cd-fill,
+body.light-mode .islamic-arabic,
+body.light-mode .hub-card.islamic .hub-title,
+body.light-mode .badge-rank,
+body.light-mode .lb-points,
+body.light-mode .pala-minhint,
+body.light-mode .pala-label,
+body.light-mode .creation-likes,
+body.light-mode .exam-cd-name {
+  color: #b45309 !important;
+  -webkit-text-fill-color: #b45309 !important;
+  background: none !important;
+}
+
+body.light-mode .exam-cd-num {
+  background: linear-gradient(100deg,#b45309,#d97706) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+body.light-mode .prayer-next {
+  background: linear-gradient(100deg,#2563eb,#0891b2) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+body.light-mode .islamic-arabic {
+  color: #92400e !important;
+  -webkit-text-fill-color: #92400e !important;
+}
+
+body.light-mode .notice-title .pin-badge,
+body.light-mode .notice-title .pri-badge.high {
+  background: rgba(180,83,9,.15) !important;
+  color: #b45309 !important;
+}
+
+body.light-mode .notice-title .pri-badge.urgent {
+  background: rgba(185,28,28,.15) !important;
+  color: #b91c1c !important;
+}
+
+body.light-mode .pala-minhint {
+  background: rgba(180,83,9,.12) !important;
+  color: #b45309 !important;
+  border-color: rgba(180,83,9,.35) !important;
+}
+
+body.light-mode .pala-label {
+  color: #0e7490 !important;
+  background: rgba(14,116,144,.12) !important;
+  border-color: rgba(14,116,144,.3) !important;
+}
 
 /* ============================================================ */
 /* ⚪ DIVIDER — Hero & Login Side                                */
@@ -1161,6 +1223,42 @@ body.light-mode #modalTitle { color: #0a1a3f !important; }
   .chart-card h5,
   .leaderboard-header .lb-title span {
     color: #0a1a3f !important;
+  }
+    /* 🔧 Yellow text → dark readable (mobile light bg) */
+  .prayer-countdown,
+  .exam-cd-name,
+  .exam-cd-num,
+  .islamic-arabic,
+  .hub-card.islamic .hub-title,
+  .lb-points,
+  .pala-minhint {
+    color: #b45309 !important;
+    -webkit-text-fill-color: #b45309 !important;
+  }
+  
+  .exam-cd-num {
+    background: linear-gradient(100deg,#b45309,#d97706) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+  }
+  
+  .islamic-arabic {
+    color: #92400e !important;
+    -webkit-text-fill-color: #92400e !important;
+  }
+  
+  .prayer-next {
+    background: linear-gradient(100deg,#2563eb,#0891b2) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+  }
+  
+  .exam-cd-fill {
+    background: linear-gradient(90deg,#ef4444,#b45309) !important;
   }
   .section-title i { color: #2b7cf0 !important; }
   .activity-timeline h5 i,
@@ -1991,8 +2089,8 @@ body.login-active .liquid-bg-mesh { display: none !important; }
     animation: mobPageIn .5s cubic-bezier(.34,1.2,.64,1) both;
   }
   @keyframes mobPageIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   .action-tile { animation: tilePop .4s cubic-bezier(.34,1.56,.64,1) both; }
@@ -2239,7 +2337,7 @@ body.login-active .liquid-bg-mesh { display: none !important; }
       </div>
     </div>
     <div class="hdr-actions">
-      <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme"><i class="fas fa-moon" id="themeIcon"></i></div>
+      <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Light mode" style="display:none;"><i class="fas fa-sun" id="themeIcon"></i></div>
       <div class="icon-btn" id="notifBell" onclick="openNotificationsModal()"><i class="fas fa-bell"></i><span id="notifBadge" class="notif-badge" style="display:none;">0</span></div>
       <button id="logoutBtn" class="btn-exit"><i class="fas fa-right-from-bracket"></i> Exit</button>
     </div>
@@ -2391,7 +2489,8 @@ body.login-active .liquid-bg-mesh { display: none !important; }
   <!-- Monthly Progress -->
   <div class="activity-timeline mt-3" id="monthlyProgressSection"><h5><i class="fas fa-chart-line"></i> <span id="monthlyTitleText">Monthly Progress</span></h5><div id="monthlyProgressList" style="font-size:.85rem;"><div class="text-center text-white-50 py-3">Loading...</div></div></div>
   <div class="text-center text-white-50 mt-5 pb-4" style="font-size:.72rem;opacity:.6;">Noorussalam Madrasa • v22.3 Ultimate+ Edition</div>
-
+</div>
+</div>
   <!-- 📱 Apple Liquid Glass Fixed Bottom Nav — FIXED HTML -->
   <div class="mob-bottom-nav" id="mobBottomNav">
     <div class="liquid-glare-container">
@@ -2422,31 +2521,7 @@ body.login-active .liquid-bg-mesh { display: none !important; }
         </div>
       </button>
     </div>
-
-    <div class="liquid-divider"></div>
-    <button class="liquid-theme-btn" id="liquidThemeBtn" aria-label="Theme Toggle" onclick="toggleTheme()">
-      <div class="liquid-theme-icon-wrapper">
-        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </div>
-    </button>
   </div>
-
-</div>
-</div>
-
 <!-- ============================================================ -->
 <!-- 🛡️ ADMIN SECTION                                             -->
 <!-- ============================================================ -->
@@ -7516,16 +7591,14 @@ async function downloadClassMarksPDF(){
 /* 🎨 THEME / PUSH / BADGES / CHARTS / VOICE / NOTES            */
 /* ============================================================ */
 function initTheme(){
-  var saved=localStorage.getItem('noor_theme')||'dark';
-  applyTheme(saved);
+  // 🔒 Force Light theme always
+  localStorage.setItem('noor_theme','light');
+  applyTheme('light');
 }
 
 function toggleTheme(){
-  var current=localStorage.getItem('noor_theme')||'dark';
-  var next=current==='dark'?'light':'dark';
-  applyTheme(next);
-  localStorage.setItem('noor_theme',next);
-  showToast(next==='light'?'☀️ Light mode':'🌙 Dark mode','info');
+  // 🔒 Theme toggle disabled — always light
+  showToast('☀️ Light mode only','info');
 }
 
 function applyTheme(theme){
