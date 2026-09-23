@@ -2202,6 +2202,632 @@ body.light-mode {
     padding-bottom: 120px !important;
   }
 }
+/* ============================================================ */
+/* 🍎 APPLE LIQUID GLASS — v22.5 COMPLETE SYSTEM                */
+/* ============================================================ */
+
+:root {
+  --liquid-bg: #eef2ff;
+  --blob-1: #ff2a5f;
+  --blob-2: #007aff;
+  --blob-3: #ff9500;
+  --blob-opacity: 0.45;
+
+  --glass-bg: rgba(255, 255, 255, 0.22);
+  --glass-border: rgba(255, 255, 255, 0.55);
+  --glass-shadow: rgba(15, 23, 42, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --glass-caustic: rgba(255, 255, 255, 0.5);
+  --reflection-start: rgba(255, 255, 255, 0.7);
+  --reflection-end: rgba(255, 255, 255, 0);
+  --glare-color: rgba(255, 255, 255, 0.65);
+
+  --pill-bg: rgba(255, 255, 255, 0.85);
+  --pill-shadow: 0 4px 14px rgba(15,23,42,.1), 0 1px 2px rgba(15,23,42,.05), inset 0 1px 1px rgba(255,255,255,.95);
+  --liquid-icon: rgba(15,23,42,.55);
+  --liquid-icon-active: #0a1a3f;
+  --liquid-divider: rgba(15,23,42,.12);
+
+  --card-text: #0a1a3f;
+  --card-text-dim: #64748b;
+  --card-accent: #2563eb;
+}
+
+body:not(.light-mode) {
+  --liquid-bg: #050a18;
+  --blob-1: #bf5af2;
+  --blob-2: #0a84ff;
+  --blob-3: #ff375f;
+  --blob-opacity: 0.4;
+
+  --glass-bg: rgba(20, 25, 40, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --glass-shadow: rgba(0, 0, 0, 0.85);
+  --glass-highlight: rgba(255, 255, 255, 0.3);
+  --glass-caustic: rgba(255, 255, 255, 0.06);
+  --reflection-start: rgba(255, 255, 255, 0.2);
+  --reflection-end: rgba(255, 255, 255, 0);
+  --glare-color: rgba(255, 255, 255, 0.22);
+
+  --pill-bg: rgba(58, 62, 72, 0.92);
+  --pill-shadow: 0 4px 16px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.28);
+  --liquid-icon: rgba(255,255,255,.6);
+  --liquid-icon-active: #ffffff;
+  --liquid-divider: rgba(255,255,255,.16);
+
+  --card-text: #eaf2ff;
+  --card-text-dim: #9db8dd;
+  --card-accent: #22d3ee;
+}
+
+/* ============================================================ */
+/* 🌊 MESH BACKGROUND                                           */
+/* ============================================================ */
+.liquid-bg-mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--liquid-bg);
+  transition: background .8s ease;
+}
+body.login-active .liquid-bg-mesh { display: none !important; }
+
+.liquid-bg-mesh .blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: var(--blob-opacity);
+  animation: liquidFloat 22s infinite alternate cubic-bezier(.45,.05,.55,.95);
+  will-change: transform;
+  transition: background .8s ease, opacity .8s ease;
+}
+.liquid-bg-mesh .blob-1 { width: 60vw; height: 60vw; top: -15%; left: -15%; background: var(--blob-1); }
+.liquid-bg-mesh .blob-2 { width: 55vw; height: 55vw; bottom: -15%; right: -15%; background: var(--blob-2); animation-delay: -7s; }
+.liquid-bg-mesh .blob-3 { width: 45vw; height: 45vw; top: 38%; left: 38%; background: var(--blob-3); animation-delay: -14s; }
+
+@keyframes liquidFloat {
+  0%   { transform: translate(0,0) scale(1) rotate(0deg); }
+  33%  { transform: translate(6%,10%) scale(1.08) rotate(6deg); }
+  66%  { transform: translate(-6%,6%) scale(.94) rotate(-6deg); }
+  100% { transform: translate(0,-10%) scale(1.12) rotate(0deg); }
+}
+
+/* ============================================================ */
+/* 🍎 MOBILE-ONLY ENHANCEMENTS                                  */
+/* ============================================================ */
+@media(max-width:900px){
+
+  /* ============ 1️⃣ MESH BG ON MOBILE ============ */
+  body:not(.login-active) {
+    background: transparent !important;
+  }
+  body:not(.login-active)::before,
+  body:not(.login-active)::after { display: none !important; }
+
+  /* ============ 2️⃣ HEADER — Rich Liquid Glass ============ */
+  .dashboard-header-glow {
+    background: linear-gradient(135deg, #1a4fc4 0%, #2563eb 45%, #22d3ee 100%) !important;
+    border: none !important;
+    border-radius: 0 0 32px 32px !important;
+    padding: 18px 18px 30px !important;
+    margin: -12px -12px 18px -12px !important;
+    box-shadow:
+      0 24px 50px -20px rgba(26,79,196,.55),
+      inset 0 1px 1px rgba(255,255,255,.35) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  .dashboard-header-glow::before {
+    content: '';
+    position: absolute;
+    top: -60%; right: -30%;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(34,211,238,.5), transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .dashboard-header-glow::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 12%; right: 12%;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
+    pointer-events: none;
+  }
+  .dashboard-header-glow > * { position: relative; z-index: 2; }
+
+  .dashboard-header-glow .text-white,
+  .dashboard-header-glow #studentFullName,
+  .dashboard-header-glow .header-meta,
+  .dashboard-header-glow .header-meta span,
+  .dashboard-header-glow .header-meta i { color: #fff !important; }
+  .dashboard-header-glow .header-meta i { color: #fcd34d !important; }
+
+  /* ============ 3️⃣ GLASS CARDS — Auto Theme Colors ============ */
+  .stat-card-neon,
+  .chart-card,
+  .activity-timeline,
+  .leaderboard-section {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow:
+      0 24px 50px -22px var(--glass-shadow),
+      inset 0 1px 1px var(--glass-highlight),
+      inset 0 -1px 2px rgba(255,255,255,.1) !important;
+    color: var(--card-text) !important;
+    transition: background .5s ease, box-shadow .5s ease, border-color .5s ease !important;
+  }
+
+  /* Text colors follow theme */
+  body #dashboardSection .container .text-white { color: var(--card-text) !important; }
+  body #dashboardSection .container .text-white-50 { color: var(--card-text-dim) !important; }
+
+  .section-title,
+  .activity-timeline h5,
+  .chart-card h5,
+  .leaderboard-header .lb-title span { color: var(--card-text) !important; }
+
+  .section-title i,
+  .activity-timeline h5 i,
+  .chart-card h5 i { color: var(--card-accent) !important; }
+
+  .stat-label,
+  .hub-sub,
+  .leaderboard-header .lb-subtitle { color: var(--card-text-dim) !important; }
+
+  /* Big stat values — adaptive gradient */
+  .stat-value-xl {
+    background: linear-gradient(120deg, var(--card-accent), #22d3ee) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    font-size: 2rem !important;
+    font-weight: 900 !important;
+    letter-spacing: -1px !important;
+  }
+
+  /* Icon bubbles — theme adaptive */
+  .stat-ico {
+    background: linear-gradient(140deg, rgba(59,139,255,.22), rgba(34,211,238,.15)) !important;
+    color: var(--card-accent) !important;
+    border: 1px solid rgba(59,139,255,.18) !important;
+  }
+
+  /* Stat cards top accent per column */
+  .stat-card-neon { position: relative; overflow: hidden; }
+  .stat-card-neon::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 12%; right: 12%;
+    height: 3px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  }
+  .stat-card-neon:nth-child(1)::before { background: linear-gradient(90deg,#f59e0b,#fbbf24); }
+  .stat-card-neon:nth-child(2)::before { background: linear-gradient(90deg,#10b981,#34d399); }
+  .stat-card-neon:nth-child(3)::before { background: linear-gradient(90deg,#3b82f6,#22d3ee); }
+  .stat-card-neon:nth-child(4)::before { background: linear-gradient(90deg,#ec4899,#f472b6); }
+
+  /* ============ 4️⃣ HUB CARDS — Adaptive Gradients ============ */
+  .hub-card {
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    box-shadow:
+      0 24px 50px -22px var(--glass-shadow),
+      inset 0 1px 1px var(--glass-highlight) !important;
+    border-radius: 24px !important;
+    padding: 18px !important;
+  }
+  body:not(.light-mode) .hub-card.prayer {
+    background: linear-gradient(155deg, rgba(16,185,129,.25), rgba(16,185,129,.08)) !important;
+  }
+  body:not(.light-mode) .hub-card.islamic {
+    background: linear-gradient(155deg, rgba(251,191,36,.22), rgba(251,191,36,.06)) !important;
+  }
+  body:not(.light-mode) .hub-card.exam {
+    background: linear-gradient(155deg, rgba(239,68,68,.22), rgba(239,68,68,.06)) !important;
+  }
+  body.light-mode .hub-card.prayer {
+    background: linear-gradient(155deg, rgba(236,253,245,.85), rgba(209,250,229,.65)) !important;
+  }
+  body.light-mode .hub-card.islamic {
+    background: linear-gradient(155deg, rgba(255,251,235,.88), rgba(254,243,199,.68)) !important;
+  }
+  body.light-mode .hub-card.exam {
+    background: linear-gradient(155deg, rgba(254,242,242,.88), rgba(254,202,202,.65)) !important;
+  }
+
+  .hub-title { color: var(--card-text) !important; font-weight: 900 !important; }
+  .hub-sub { color: var(--card-text-dim) !important; font-weight: 700 !important; }
+
+  /* ============ 5️⃣ LEADERBOARD — Warm Adaptive ============ */
+  body:not(.light-mode) .leaderboard-section {
+    background: linear-gradient(155deg, rgba(251,191,36,.12), rgba(251,191,36,.03)) !important;
+  }
+  body.light-mode .leaderboard-section {
+    background: linear-gradient(155deg, rgba(255,251,235,.85), rgba(254,243,199,.7)) !important;
+  }
+  .leaderboard-header .lb-title span { color: var(--card-text) !important; }
+  .lb-card {
+    background: var(--glass-bg) !important;
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+  }
+  .lb-name { color: var(--card-text) !important; }
+  .lb-class { color: var(--card-text-dim) !important; }
+  .lb-card.rank-1 { background: linear-gradient(150deg, #fef3c7, #fde68a) !important; border-color: #f59e0b !important; }
+  .lb-card.rank-2 { background: linear-gradient(150deg, #f1f5f9, #e2e8f0) !important; }
+  .lb-card.rank-3 { background: linear-gradient(150deg, #fed7aa, #fdba74) !important; }
+  .lb-card.rank-1 .lb-name, .lb-card.rank-2 .lb-name, .lb-card.rank-3 .lb-name { color: #0a1a3f !important; }
+
+  /* ============ 6️⃣ PALATHULLI — Rich Glossy Blue ============ */
+  .palathulli-hero {
+    background: linear-gradient(135deg, #1a4fc4 0%, #2563eb 50%, #3b82f6 100%) !important;
+    border: 1px solid rgba(255,255,255,.28) !important;
+    border-radius: 26px !important;
+    box-shadow:
+      0 24px 55px -22px rgba(26,79,196,.7),
+      inset 0 1px 2px rgba(255,255,255,.4) !important;
+  }
+  .palathulli-hero, .palathulli-hero * { color: #fff !important; }
+  .palathulli-hero .pala-amount {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  /* ============ 7️⃣ ACTIVITY FEED / CHARTS — Adaptive ============ */
+  .feed-item .text-white,
+  .event-card .text-white { color: var(--card-text) !important; }
+  .feed-item small { color: var(--card-text-dim) !important; }
+  .event-card {
+    background: rgba(59,139,255,.08) !important;
+    border-color: var(--glass-border) !important;
+  }
+
+  #monthlyProgressList .text-white { color: var(--card-text) !important; }
+
+  /* ============ 8️⃣ QUICK ACTIONS GRID — Glass ============ */
+  #quickActionsGrid {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow:
+      0 24px 50px -22px var(--glass-shadow),
+      inset 0 1px 1px var(--glass-highlight) !important;
+    border-radius: 24px !important;
+    padding: 20px 12px !important;
+  }
+  .action-tile h6 { color: var(--card-text) !important; }
+  .action-tile:active { background: rgba(59,139,255,.15) !important; }
+
+  /* ============ 9️⃣ FIXED LIQUID GLASS BOTTOM NAV ============ */
+  .mob-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    left: 14px !important;
+    right: 14px !important;
+    bottom: 14px !important;
+    top: auto !important;
+    padding: 8px !important;
+    border-radius: 99px !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(50px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
+
+    box-shadow:
+      0 40px 80px -20px var(--glass-shadow),
+      0 10px 30px -10px var(--glass-shadow),
+      inset 0 2px 3px -1px var(--glass-highlight),
+      inset 0 -2px 4px -1px var(--glass-caustic),
+      inset 0 0 0 1px var(--glass-border) !important;
+
+    transition: transform .35s cubic-bezier(.34,1.2,.64,1), box-shadow .35s ease !important;
+    padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+    animation: none !important;
+  }
+
+  /* Wet aqua reflection top */
+  .mob-bottom-nav::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 1px !important;
+    left: 1px !important;
+    right: 1px !important;
+    height: 46% !important;
+    border-radius: 99px 99px 24px 24px / 99px 99px 12px 12px !important;
+    background: linear-gradient(180deg, var(--reflection-start) 0%, var(--reflection-end) 100%) !important;
+    pointer-events: none !important;
+    z-index: 6 !important;
+  }
+
+  .mob-bottom-nav .liquid-glare-container {
+    position: absolute !important;
+    inset: 0 !important;
+    border-radius: 99px !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 5 !important;
+  }
+  .mob-bottom-nav .liquid-glare {
+    position: absolute !important;
+    inset: 0 !important;
+    opacity: 0 !important;
+    transition: opacity .3s ease !important;
+    background: radial-gradient(circle 90px at var(--x,50%) var(--y,50%), var(--glare-color) 0%, transparent 100%) !important;
+    mix-blend-mode: overlay !important;
+  }
+  .mob-bottom-nav:hover .liquid-glare,
+  .mob-bottom-nav:active .liquid-glare,
+  .mob-bottom-nav.glare-active .liquid-glare { opacity: 1 !important; }
+
+  .mob-bottom-nav .nav-items {
+    position: relative !important;
+    display: flex !important;
+    gap: 4px !important;
+    z-index: 3 !important;
+    flex: 1 !important;
+    justify-content: space-around !important;
+  }
+
+  .mob-bottom-nav .active-pill {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 44px !important;
+    background: var(--pill-bg) !important;
+    border-radius: 99px !important;
+    box-shadow: var(--pill-shadow) !important;
+    transition:
+      transform .5s cubic-bezier(.34,1.2,.64,1),
+      width .5s cubic-bezier(.34,1.2,.64,1),
+      background .5s ease,
+      box-shadow .5s ease !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  .mob-bottom-nav .mob-nav-item {
+    position: relative !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 18px !important;
+    height: 44px !important;
+    border-radius: 99px !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--liquid-icon) !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+    transition: color .3s ease !important;
+    outline: none !important;
+    z-index: 2 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 !important;
+  }
+  .mob-bottom-nav .mob-nav-item .btn-content {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    pointer-events: none !important;
+    transition: transform .2s cubic-bezier(.32,.72,0,1) !important;
+  }
+  .mob-bottom-nav .mob-nav-item:active .btn-content {
+    transform: scale(.9) !important;
+  }
+  .mob-bottom-nav .mob-nav-item.active {
+    color: var(--liquid-icon-active) !important;
+  }
+  .mob-bottom-nav .mob-nav-item i {
+    font-size: 1.05rem !important;
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+  .mob-bottom-nav .mob-nav-item.active i {
+    animation: liquidBounce .55s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+  @keyframes liquidBounce {
+    0%   { transform: scale(1) translateY(0); }
+    35%  { transform: scale(1.35) translateY(-3px); }
+    70%  { transform: scale(.92) translateY(1px); }
+    100% { transform: scale(1) translateY(0); }
+  }
+  .mob-bottom-nav .mob-nav-item span {
+    font-size: .62rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+  }
+
+  .mob-bottom-nav .liquid-divider {
+    width: 1px !important;
+    height: 24px !important;
+    background: var(--liquid-divider) !important;
+    margin: 0 4px !important;
+    z-index: 3 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .mob-bottom-nav .liquid-theme-btn {
+    position: relative !important;
+    background: transparent !important;
+    border: none !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    color: var(--liquid-icon) !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+    z-index: 3 !important;
+    outline: none !important;
+    margin-left: 2px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: color .3s ease !important;
+    flex-shrink: 0 !important;
+  }
+  .mob-bottom-nav .liquid-theme-btn:active { color: var(--liquid-icon-active) !important; }
+
+  .mob-bottom-nav .liquid-theme-icon-wrapper {
+    position: relative !important;
+    width: 20px !important;
+    height: 20px !important;
+    pointer-events: none !important;
+    transition: transform .2s cubic-bezier(.32,.72,0,1) !important;
+  }
+  .mob-bottom-nav .liquid-theme-btn:active .liquid-theme-icon-wrapper {
+    transform: scale(.8) !important;
+  }
+  .mob-bottom-nav .liquid-theme-icon-wrapper svg {
+    position: absolute !important;
+    top: 0 !important; left: 0 !important;
+    transition: transform .5s cubic-bezier(.34,1.2,.64,1), opacity .4s ease !important;
+    stroke-width: 2.2 !important;
+  }
+  .mob-bottom-nav .liquid-theme-icon-wrapper .sun {
+    opacity: 1 !important;
+    transform: rotate(0deg) scale(1) !important;
+  }
+  .mob-bottom-nav .liquid-theme-icon-wrapper .moon {
+    opacity: 0 !important;
+    transform: rotate(-90deg) scale(0) !important;
+  }
+  body.light-mode .mob-bottom-nav .liquid-theme-icon-wrapper .sun {
+    opacity: 0 !important;
+    transform: rotate(90deg) scale(0) !important;
+  }
+  body.light-mode .mob-bottom-nav .liquid-theme-icon-wrapper .moon {
+    opacity: 1 !important;
+    transform: rotate(0deg) scale(1) !important;
+  }
+
+  /* Hide AI fab above nav (or move higher) */
+  body:not(.login-active) .ai-fab {
+    bottom: 110px !important;
+    right: 16px !important;
+    width: 56px !important;
+    height: 56px !important;
+    box-shadow: 0 20px 50px -14px rgba(34,211,238,1), 0 0 0 1px rgba(255,255,255,.15) !important;
+  }
+
+  /* Dashboard content must have bottom padding so nav never overlaps */
+  #dashboardSection > .container {
+    padding-bottom: 130px !important;
+  }
+
+  /* ============ 🔟 AI PANEL — Keyboard-Safe ============ */
+  .ai-panel {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+    top: auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: calc(100dvh - 24px) !important;
+    border-radius: 26px !important;
+    display: none !important;
+    z-index: 9500 !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(50px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow:
+      0 40px 80px -20px var(--glass-shadow),
+      inset 0 1px 2px rgba(255,255,255,.35) !important;
+    overflow: hidden !important;
+  }
+  .ai-panel.open {
+    display: flex !important;
+    flex-direction: column !important;
+    height: min(82dvh, 620px) !important;
+  }
+
+  .ai-panel .ai-body {
+    flex: 1 1 auto !important;
+    min-height: 100px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 14px 14px !important;
+    scroll-behavior: smooth !important;
+  }
+  .ai-panel .ai-foot {
+    flex-shrink: 0 !important;
+    padding: 10px 12px !important;
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    background: transparent !important;
+  }
+  .ai-panel .ai-input {
+    font-size: 16px !important;
+    min-height: 44px !important;
+    padding: 12px 18px !important;
+  }
+
+  /* When keyboard open */
+  body.ai-keyboard-open .ai-panel.open {
+    transition: none !important;
+  }
+
+  /* ============ 1️⃣1️⃣ MODAL ENHANCEMENTS ============ */
+  #globalModal > div,
+  #notificationsModal > div,
+  #passbookModal > div {
+    animation: modalSlideUp .4s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+  @keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(30px) scale(.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-glass {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(50px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow:
+      0 40px 80px -20px var(--glass-shadow),
+      inset 0 1px 2px rgba(255,255,255,.4) !important;
+  }
+
+  /* ============ 1️⃣2️⃣ PAGE ENTRANCE ============ */
+  #dashboardSection > .container {
+    animation: mobPageIn .5s cubic-bezier(.34,1.2,.64,1) both;
+  }
+  @keyframes mobPageIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Staggered tile reveal */
+  .action-tile { animation: tilePop .4s cubic-bezier(.34,1.56,.64,1) both; }
+  .action-tile:nth-child(1) { animation-delay: .02s; }
+  .action-tile:nth-child(2) { animation-delay: .04s; }
+  .action-tile:nth-child(3) { animation-delay: .06s; }
+  .action-tile:nth-child(4) { animation-delay: .08s; }
+  .action-tile:nth-child(5) { animation-delay: .10s; }
+  .action-tile:nth-child(6) { animation-delay: .12s; }
+  .action-tile:nth-child(7) { animation-delay: .14s; }
+  .action-tile:nth-child(8) { animation-delay: .16s; }
+  @keyframes tilePop {
+    from { opacity: 0; transform: scale(.7); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+}
 </style>
 </head>
 <body>
@@ -2213,9 +2839,7 @@ body.light-mode {
   <div class="blob blob-3"></div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 🎬 SPLASH SCREEN                                             -->
-<!-- ============================================================ -->
+<!-- 🎬 SPLASH SCREEN -->
 <div id="splashScreen" style="position:fixed;inset:0;z-index:99998;background:linear-gradient(155deg,#03081c,#050e2b 30%,#071433);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity .4s ease;">
   <div style="width:90px;height:90px;border-radius:24px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 50px -15px rgba(59,139,255,.9);">
     <img src="https://i.postimg.cc/DznFT7L9/IMG-3167.png" style="width:70px;height:70px;object-fit:contain;" alt="NSM">
@@ -2585,7 +3209,8 @@ body.light-mode {
   <!-- Monthly Progress -->
   <div class="activity-timeline mt-3" id="monthlyProgressSection"><h5><i class="fas fa-chart-line"></i> <span id="monthlyTitleText">Monthly Progress</span></h5><div id="monthlyProgressList" style="font-size:.85rem;"><div class="text-center text-white-50 py-3">Loading...</div></div></div>
   <div class="text-center text-white-50 mt-5 pb-4" style="font-size:.72rem;opacity:.6;">Noorussalam Madrasa • v22.3 Ultimate+ Edition</div>
-  <!-- 📱 Apple Liquid Glass Bottom Nav -->
+
+  <!-- 📱 Apple Liquid Glass Fixed Bottom Nav -->
 <div class="mob-bottom-nav" id="mobBottomNav">
   <div class="liquid-glare-container">
     <div class="liquid-glare" id="liquidGlare"></div>
@@ -2615,6 +3240,28 @@ body.light-mode {
       </div>
     </button>
   </div>
+
+  <div class="liquid-divider"></div>
+
+  <button class="liquid-theme-btn" id="liquidThemeBtn" aria-label="Theme Toggle">
+    <div class="liquid-theme-icon-wrapper">
+      <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </div>
+  </button>
+</div>
 
   <div class="liquid-divider"></div>
 
@@ -9295,6 +9942,324 @@ else{handleShortcutNavigation();}
 })();
 
 console.log('✅ All mobile enhancements loaded — v22.5');
+/* ============================================================ */
+/* 🍎 LIQUID GLASS NAV + AI KEYBOARD FIX + EFFECTS              */
+/* ============================================================ */
+(function(){
+  'use strict';
+
+  /* ---------- 1️⃣ LIQUID GLASS BOTTOM NAV ---------- */
+  function initLiquidNav(){
+    var nav = document.getElementById('mobBottomNav');
+    var pill = document.getElementById('liquidActivePill');
+    var glare = document.getElementById('liquidGlare');
+    var navItems = document.querySelectorAll('#mobBottomNav .mob-nav-item');
+    var themeBtn = document.getElementById('liquidThemeBtn');
+
+    if(!nav || !pill) return;
+    if(nav._liquidInit) {
+      // Just reposition pill on re-init
+      var a = nav.querySelector('.mob-nav-item.active');
+      if(a) updatePill(a, false);
+      return;
+    }
+    nav._liquidInit = true;
+
+    function updatePill(btn, smooth){
+      if(!btn || !pill) return;
+      var navRect = nav.getBoundingClientRect();
+      var btnRect = btn.getBoundingClientRect();
+
+      pill.style.transition = smooth
+        ? 'transform .5s cubic-bezier(.34,1.2,.64,1), width .5s cubic-bezier(.34,1.2,.64,1)'
+        : 'none';
+
+      var leftOffset = btnRect.left - navRect.left - 8; // minus nav padding
+      pill.style.width = btnRect.width + 'px';
+      pill.style.transform = 'translateX(' + leftOffset + 'px)';
+    }
+
+    // Initial position
+    var initialActive = nav.querySelector('.mob-nav-item.active');
+    if(initialActive){
+      setTimeout(function(){
+        updatePill(initialActive, false);
+        void pill.offsetWidth;
+      }, 80);
+    }
+
+    // Watch active class changes
+    var mo = new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        if(m.attributeName === 'class'){
+          var t = m.target;
+          if(t.classList.contains('active')){
+            updatePill(t, true);
+          }
+        }
+      });
+    });
+    navItems.forEach(function(item){
+      mo.observe(item, { attributes: true, attributeFilter: ['class'] });
+    });
+
+    // Glare follows finger
+    function setGlare(x, y){
+      if(!glare) return;
+      var rect = nav.getBoundingClientRect();
+      glare.style.setProperty('--x', (x - rect.left) + 'px');
+      glare.style.setProperty('--y', (y - rect.top) + 'px');
+      nav.classList.add('glare-active');
+    }
+    nav.addEventListener('mousemove', function(e){ setGlare(e.clientX, e.clientY); });
+    nav.addEventListener('mouseleave', function(){ nav.classList.remove('glare-active'); });
+    nav.addEventListener('touchstart', function(e){
+      if(e.touches[0]) setGlare(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    nav.addEventListener('touchmove', function(e){
+      if(e.touches[0]) setGlare(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    nav.addEventListener('touchend', function(){
+      setTimeout(function(){ nav.classList.remove('glare-active'); }, 350);
+    });
+
+    // Theme button
+    if(themeBtn){
+      themeBtn.addEventListener('click', function(){
+        if(typeof window.toggleTheme === 'function'){
+          window.toggleTheme();
+        }
+        setTimeout(function(){
+          var active = nav.querySelector('.mob-nav-item.active');
+          if(active) updatePill(active, true);
+        }, 150);
+      });
+    }
+
+    // Resize handlers
+    window.addEventListener('resize', function(){
+      var active = nav.querySelector('.mob-nav-item.active');
+      if(active) updatePill(active, false);
+    });
+    window.addEventListener('orientationchange', function(){
+      setTimeout(function(){
+        var active = nav.querySelector('.mob-nav-item.active');
+        if(active) updatePill(active, false);
+      }, 350);
+    });
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(function(){
+        var active = nav.querySelector('.mob-nav-item.active');
+        if(active) updatePill(active, false);
+      });
+    }
+
+    console.log('✅ Liquid Glass Nav ready');
+  }
+
+  /* ---------- 2️⃣ FIXED NAV ENFORCER ---------- */
+  function enforceFixedNav(){
+    var nav = document.getElementById('mobBottomNav');
+    if(!nav) return;
+    // Force fixed every time something might have broken it
+    nav.style.position = 'fixed';
+    nav.style.bottom = '14px';
+    nav.style.top = 'auto';
+    nav.style.transform = 'translateZ(0)';
+    // Reposition pill
+    var active = nav.querySelector('.mob-nav-item.active');
+    var pill = document.getElementById('liquidActivePill');
+    if(active && pill){
+      var navRect = nav.getBoundingClientRect();
+      var btnRect = active.getBoundingClientRect();
+      pill.style.width = btnRect.width + 'px';
+      pill.style.transform = 'translateX(' + (btnRect.left - navRect.left - 8) + 'px)';
+    }
+  }
+
+  /* ---------- 3️⃣ AI PANEL KEYBOARD FIX ---------- */
+  var aiPanelEl = null;
+  var keyboardOpen = false;
+
+  function getAIPanel(){
+    aiPanelEl = aiPanelEl || document.getElementById('aiPanel');
+    return aiPanelEl;
+  }
+
+  function fixAIPanel(){
+    var panel = getAIPanel();
+    if(!panel || !panel.classList.contains('open')) return;
+
+    var vv = window.visualViewport;
+    if(!vv){ return; }
+
+    // Keyboard height = viewport shrink
+    var keyboardHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+
+    if(keyboardHeight > 80){
+      // Keyboard is open — push panel up
+      keyboardOpen = true;
+      document.body.classList.add('ai-keyboard-open');
+
+      panel.style.position = 'fixed';
+      panel.style.bottom = (keyboardHeight + 8) + 'px';
+      panel.style.top = 'auto';
+      panel.style.maxHeight = Math.max(200, (vv.height - 20)) + 'px';
+      panel.style.height = Math.min((vv.height - 20), 620) + 'px';
+    } else {
+      // Keyboard closed — normal position
+      keyboardOpen = false;
+      document.body.classList.remove('ai-keyboard-open');
+
+      panel.style.position = 'fixed';
+      panel.style.bottom = '12px';
+      panel.style.top = 'auto';
+      panel.style.height = 'min(82dvh, 620px)';
+      panel.style.maxHeight = 'calc(100dvh - 24px)';
+    }
+
+    // Keep last message visible
+    var body = document.getElementById('aiBody');
+    if(body){
+      requestAnimationFrame(function(){
+        body.scrollTop = body.scrollHeight;
+      });
+    }
+
+    // Also make sure nav stays fixed
+    enforceFixedNav();
+  }
+
+  // Attach VisualViewport listeners
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', fixAIPanel);
+    window.visualViewport.addEventListener('scroll', fixAIPanel);
+  }
+  window.addEventListener('resize', fixAIPanel);
+  window.addEventListener('orientationchange', function(){
+    setTimeout(fixAIPanel, 350);
+  });
+
+  // Detect input focus
+  document.addEventListener('focusin', function(e){
+    if(e.target && e.target.classList && e.target.classList.contains('ai-input')){
+      document.body.classList.add('ai-keyboard-open');
+      setTimeout(fixAIPanel, 100);
+      setTimeout(fixAIPanel, 350);
+      setTimeout(fixAIPanel, 650);
+    }
+  });
+  document.addEventListener('focusout', function(e){
+    if(e.target && e.target.classList && e.target.classList.contains('ai-input')){
+      setTimeout(function(){
+        document.body.classList.remove('ai-keyboard-open');
+        fixAIPanel();
+      }, 200);
+    }
+  });
+
+  // Patch toggleAIChat
+  if(typeof window.toggleAIChat === 'function'){
+    var _origToggle = window.toggleAIChat;
+    window.toggleAIChat = function(){
+      _origToggle.apply(this, arguments);
+      setTimeout(fixAIPanel, 60);
+      setTimeout(fixAIPanel, 300);
+    };
+  }
+
+  // Patch sendAIMessage to scroll after
+  if(typeof window.sendAIMessage === 'function'){
+    var _origSend = window.sendAIMessage;
+    window.sendAIMessage = function(){
+      _origSend.apply(this, arguments);
+      setTimeout(function(){
+        var body = document.getElementById('aiBody');
+        if(body) body.scrollTop = body.scrollHeight;
+      }, 200);
+    };
+  }
+
+  /* ---------- 4️⃣ HAPTIC FEEDBACK ---------- */
+  function haptic(ms){
+    try{ if(navigator.vibrate) navigator.vibrate(ms || 8); }catch(e){}
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target.closest(
+      '.mob-nav-item, .action-tile, .mob-quick-card, .pala-btn, ' +
+      '.btn-update, .btn-load, .nsm-btn-primary, .pf-action-btn, ' +
+      '.creation-card, .lb-card, .prayer-item, .liquid-theme-btn'
+    );
+    if(t) haptic(8);
+  }, { passive: true });
+
+  /* ---------- 5️⃣ iOS INPUT ZOOM PREVENT ---------- */
+  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    var ensureZoom = function(){
+      document.querySelectorAll('input, textarea, select').forEach(function(el){
+        if(!el.style.fontSize || parseFloat(el.style.fontSize) < 16){
+          el.style.fontSize = '16px';
+        }
+      });
+    };
+    document.addEventListener('DOMContentLoaded', ensureZoom);
+    setTimeout(ensureZoom, 1500);
+    setTimeout(ensureZoom, 3500);
+  }
+
+  /* ---------- 6️⃣ SCROLL-TRIGGERED CARD ANIMATIONS ---------- */
+  if('IntersectionObserver' in window){
+    var cardObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          en.target.style.opacity = '1';
+          en.target.style.transform = 'translateY(0)';
+          cardObs.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
+
+    function registerCards(){
+      if(window.innerWidth > 900) return;
+      document.querySelectorAll(
+        '#dashboardSection .hub-card, ' +
+        '#dashboardSection .activity-timeline, ' +
+        '#dashboardSection .chart-card, ' +
+        '#dashboardSection .leaderboard-section, ' +
+        '#dashboardSection .stats-grid .stat-card-neon'
+      ).forEach(function(c){
+        if(c._animReg) return;
+        c._animReg = true;
+        c.style.opacity = '0';
+        c.style.transform = 'translateY(20px)';
+        c.style.transition = 'opacity .55s cubic-bezier(.34,1.2,.64,1), transform .55s cubic-bezier(.34,1.2,.64,1)';
+        cardObs.observe(c);
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(registerCards, 1200);
+    });
+    setTimeout(registerCards, 3000);
+  }
+
+  /* ---------- 7️⃣ BOOT ---------- */
+  function boot(){
+    initLiquidNav();
+    enforceFixedNav();
+    // Watch for nav breaking
+    setInterval(enforceFixedNav, 2000);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+  setTimeout(boot, 1000);
+  setTimeout(boot, 3000);
+
+  console.log('✅ Liquid Glass + AI Keyboard Fix + Effects loaded — v22.5');
+})();
 </script>
 
 <!-- ============================================================ -->
