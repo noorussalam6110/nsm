@@ -5998,6 +5998,7 @@ function closeSettingsTab(){
 }
 
 function switchAdminTab(tab){
+  /* ⚙️ Settings tab — class ആവശ്യമില്ല */
   if(tab==='settings'){
     document.getElementById('adminSettingsTab').style.display='block';
     document.getElementById('adminMainContent').style.display='none';
@@ -6007,17 +6008,76 @@ function switchAdminTab(tab){
     loadTeacherSettingsIntoForm();
     return;
   }
+
+  /* 💰 Fees Management — class ആവശ്യമില്ല (all classes together) */
   if(tab==='feeparents'){
+    document.getElementById('adminSettingsTab').style.display='none';
+    document.getElementById('adminMainContent').style.display='block';
+    document.getElementById('noClassMsg').style.display='none';
+    document.getElementById('selectedClassBadge').style.display='none';
+    document.querySelectorAll('.admin-tab').forEach(function(t){t.classList.remove('active');});
+    var fBtn=document.querySelector('.admin-tab[data-tab="feeparents"]');
+    if(fBtn)fBtn.classList.add('active');
+    document.querySelectorAll('.admin-tab-content').forEach(function(c){c.style.display='none';});
+    document.getElementById('adminFeeParentsTab').style.display='block';
+    loadFeeParentsAdmin();
+    return;
+  }
+
+  /* ബാക്കി tabs — class select ചെയ്യണം */
+  if(!currentAdminClass){showToast('⚠️ Select class','error');return;}
   document.getElementById('adminSettingsTab').style.display='none';
   document.getElementById('adminMainContent').style.display='block';
-  document.getElementById('noClassMsg').style.display='none';
   document.querySelectorAll('.admin-tab').forEach(function(t){t.classList.remove('active');});
-  var tabBtn=document.querySelector('.admin-tab[data-tab="feeparents"]');
+  var tabBtn=document.querySelector('.admin-tab[data-tab="'+tab+'"]');
   if(tabBtn)tabBtn.classList.add('active');
   document.querySelectorAll('.admin-tab-content').forEach(function(c){c.style.display='none';});
-  document.getElementById('adminFeeParentsTab').style.display='block';
-  loadFeeParentsAdmin();
-  return;
+
+  var map={
+    payments:'adminPaymentsTab',
+    withdrawals:'adminWithdrawalsTab',
+    balances:'adminBalancesTab',
+    summary:'adminSummaryTab',
+    students:'adminStudentsTab',
+    events:'adminEventsTab',
+    attendance:'adminAttendanceTab',
+    grades:'adminGradesTab',
+    feed:'adminFeedTab',
+    marks:'adminMarksTab',
+    moralvalues:'adminMoralValuesTab',
+    extracurricular:'adminExtracurricularTab',
+    competitions:'adminCompetitionsTab',
+    timetable:'adminTimetableTab',
+    homework:'adminHomeworkTab',
+    notifications:'adminNotificationsTab',
+    library:'adminLibraryTab',
+    creations:'adminCreationsTab',
+    notice:'adminNoticeTab',
+    feeparents:'adminFeeParentsTab'   /* ✅ പുതിയ വരി — safety net */
+  };
+  var el=document.getElementById(map[tab]);
+  if(el)el.style.display='block';
+
+  if(tab==='payments'){var di=document.getElementById('adminDate');if(!di.value)di.value=new Date().toISOString().split('T')[0];loadPaymentsForDate();}
+  if(tab==='students')loadStudentsForAdmin();
+  if(tab==='withdrawals')loadAllWithdrawals();
+  if(tab==='balances')loadBalances();
+  if(tab==='summary'){document.getElementById('summaryDate').value=new Date().toISOString().split('T')[0];loadDailySummary();}
+  if(tab==='attendance'){var n=new Date();document.getElementById('attendanceMonth').value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');loadAttendanceForAdmin();}
+  if(tab==='grades')loadGradesForAdmin();
+  if(tab==='moralvalues')loadMoralValuesAdmin();
+  if(tab==='extracurricular'){var n2=new Date();document.getElementById('extraMonth').value=n2.getFullYear()+'-'+String(n2.getMonth()+1).padStart(2,'0');loadExtraAdmin();}
+  if(tab==='competitions')loadCompetitionsAdmin();
+  if(tab==='creations')loadCreationsAdmin();
+  if(tab==='timetable')loadTimetableAdmin();
+  if(tab==='homework')loadHomeworkAdmin();
+  if(tab==='notifications')loadNotificationsAdmin();
+  if(tab==='library')loadLibraryAdmin();
+  if(tab==='events')loadAllEvents();
+  if(tab==='feed')loadAllActivities();
+  if(tab==='notice')loadNoticeAdmin();
+  if(tab==='feeparents')loadFeeParentsAdmin();
+  if(tab==='marks')populateDynamicDropdowns();
 }
   if(!currentAdminClass){showToast('⚠️ Select class','error');return;}
   document.getElementById('adminSettingsTab').style.display='none';
