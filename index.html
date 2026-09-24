@@ -3320,6 +3320,7 @@ body:has(.ai-panel.open) .ai-fab {
       <button class="admin-tab" data-tab="notifications" onclick="switchAdminTab('notifications')">🔔 Notify</button>
       <button class="admin-tab" data-tab="library" onclick="switchAdminTab('library')">📚 Library</button>
       <button class="admin-tab" data-tab="events" onclick="switchAdminTab('events')">📅 Events</button>
+      <button class="admin-tab" data-tab="feeparents" onclick="switchAdminTab('feeparents')">💰 Fees Management</button>
       <button class="admin-tab" data-tab="notice" onclick="switchAdminTab('notice')">📌 Notice</button>
       <button class="admin-tab" data-tab="feed" onclick="switchAdminTab('feed')">📢 Feed</button>
     </div>
@@ -3413,7 +3414,16 @@ body:has(.ai-panel.open) .ai-fab {
       <div class="admin-toolbar"><button class="btn-load" onclick="loadAllEvents()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openEventForm()"><i class="fas fa-plus"></i> Add Event</button></div>
       <div class="admin-table-wrap" id="eventsWrap"></div>
     </div>
-
+<div id="adminFeeParentsTab" class="admin-tab-content" style="display:none;">
+  <div class="admin-toolbar">
+    <button class="btn-load" onclick="loadFeeParentsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <button class="btn-update" onclick="openFeeParentForm()"><i class="fas fa-plus"></i> Add Parent</button>
+    <button class="btn-update" onclick="openFeeSettingsForm()" style="background:linear-gradient(100deg,#06b6d4,#22d3ee);color:#03132e;"><i class="fas fa-cog"></i> Fee Settings</button>
+    <input type="text" id="feeParentSearch" placeholder="🔍 Search mobile / name" oninput="filterFeeParents()" class="modal-form-input" style="width:auto;padding:9px 15px;">
+  </div>
+  <div class="admin-summary" id="feeAdminSummary"></div>
+  <div class="admin-table-wrap" id="feeParentsWrap"></div>
+</div>
     <div id="adminNoticeTab" class="admin-tab-content" style="display:none;">
       <div class="admin-toolbar"><button class="btn-load" onclick="loadNoticeAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-update" onclick="openNoticeForm()"><i class="fas fa-plus"></i> Add Notice</button></div>
       <div class="admin-table-wrap" id="noticeAdminWrap"></div>
@@ -3598,7 +3608,29 @@ body:has(.ai-panel.open) .ai-fab {
 <div class="topper-loading" id="topperLoading"><div class="spinner"></div><p id="topperLoadingText" style="color:#d6e6ff;">Generating...</p></div>
 
 <input type="file" id="profilePhotoInput" accept="image/*" style="display:none">
+<!-- ============================================================ -->
+<!-- 💰 STUDENT FEES OVERLAY                                      -->
+<!-- ============================================================ -->
+<div id="studentFeesOverlay" style="display:none;position:fixed;inset:0;background:linear-gradient(155deg,#03081c,#050e2b 30%,#071433);z-index:1400;overflow-y:auto;padding:16px;">
+  <div style="max-width:720px;margin:0 auto;padding-bottom:80px;">
 
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;background:linear-gradient(120deg,rgba(34,211,238,.18),rgba(59,139,255,.12));border:1.6px solid rgba(34,211,238,.4);border-radius:22px;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <h2 style="margin:0;color:#fff;font-size:1.3rem;font-weight:800;display:flex;align-items:center;gap:10px;"><i class="fas fa-hand-holding-usd" style="color:#22d3ee;"></i> വരിസംഖ്യ വിവരങ്ങൾ</h2>
+        <p style="margin:6px 0 0;color:#9db8dd;font-size:.78rem;">Fee Payment Status • Noorussalam Madrasa</p>
+      </div>
+      <button onclick="closeStudentFees()" style="background:rgba(255,255,255,.10);border:1px solid rgba(140,190,255,.3);color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.1rem;cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div id="studentFeesContent">
+      <div style="text-align:center;padding:60px 20px;color:#9db8dd;">
+        <div style="width:36px;height:36px;border:4px solid rgba(59,139,255,.2);border-top-color:#22d3ee;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;"></div>
+        <p style="margin-top:14px;">Loading fee details...</p>
+      </div>
+    </div>
+
+  </div>
+</div>
 <!-- ============================================================ -->
 <!-- 🎨 CREATIONS OVERLAY                                         -->
 <!-- ============================================================ -->
@@ -6010,6 +6042,7 @@ function switchAdminTab(tab){
   if(tab==='events')loadAllEvents();
   if(tab==='feed')loadAllActivities();
   if(tab==='notice')loadNoticeAdmin();
+  if(tab==='feeparents')loadFeeParentsAdmin();
   if(tab==='marks')populateDynamicDropdowns();
 }
 
@@ -10053,6 +10086,375 @@ window.addEventListener('appinstalled',()=>{
   if(installBtn)installBtn.style.display='none';
 });
 </script>
+<script>
+/* ============================================================ */
+/* 💰 FEE SYSTEM — Supabase Based                              */
+/* ============================================================ */
+var FEE_SETTINGS_CACHE = {};
+var feeParentsData = [];
+var filteredFeeParents = [];
 
+async function loadFeeSettings(){
+  if(!supabaseClient) return {};
+  try{
+    var r = await supabaseClient.from('fee_settings').select('*');
+    var s = {};
+    (r.data||[]).forEach(function(x){ s[x.setting_key] = x.value; });
+    FEE_SETTINGS_CACHE = {
+      monthlyFee: parseInt(s.monthly_fee) || 200,
+      upiId: s.upi_id || '',
+      payeeName: s.payee_name || '',
+      supportPhone: s.support_phone || '',
+      supportEmail: s.support_email || '',
+      startMonth: s.start_month || '',
+      monthsElapsed: (s.months_elapsed !== '' && s.months_elapsed !== undefined) ? parseInt(s.months_elapsed) : null
+    };
+    return FEE_SETTINGS_CACHE;
+  }catch(e){ return {}; }
+}
+
+function calcMonthsElapsed(startMonth, manual){
+  if(manual !== null && manual >= 0) return manual;
+  if(!startMonth) return 0;
+  var parts = String(startMonth).split('-');
+  if(parts.length !== 2) return 0;
+  var sy = parseInt(parts[0]), sm = parseInt(parts[1]);
+  var now = new Date();
+  var months = (now.getFullYear() - sy) * 12 + (now.getMonth() + 1 - sm) + 1;
+  if(now.getDate() < 20) months = Math.max(0, months - 1);
+  return Math.max(0, months);
+}
+
+function formatFeeMonthML(raw){
+  if(!raw) return '---';
+  var d = new Date(raw);
+  var mlM = ['ജനുവരി','ഫെബ്രുവരി','മാർച്ച്','ഏപ്രിൽ','മേയ്','ജൂൺ','ജൂലൈ','ഓഗസ്റ്റ്','സെപ്റ്റംബർ','ഒക്ടോബർ','നവംബർ','ഡിസംബർ'];
+  if(isNaN(d.getTime())){
+    var p = String(raw).split('-');
+    if(p.length === 2) return (mlM[parseInt(p[1])-1]||p[1]) + ' ' + p[0];
+    return String(raw);
+  }
+  return mlM[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+async function getFeeParentByMobile(mobile){
+  if(!supabaseClient || !mobile) return null;
+  try{
+    var clean = String(mobile).replace(/\D/g,'').slice(-10);
+    var r = await supabaseClient.from('fee_parents').select('*').eq('mobile', clean).maybeSingle();
+    return r.data || null;
+  }catch(e){ return null; }
+}
+
+function openStudentFees(){
+  if(!currentUser){ showToast('Login first','error'); return; }
+  document.getElementById('studentFeesOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  loadStudentFeeData();
+}
+
+function closeStudentFees(){
+  document.getElementById('studentFeesOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+async function loadStudentFeeData(){
+  var wrap = document.getElementById('studentFeesContent');
+  if(!wrap) return;
+  wrap.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#9db8dd;"><div style="width:36px;height:36px;border:4px solid rgba(59,139,255,.2);border-top-color:#22d3ee;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;"></div><p style="margin-top:14px;">Loading...</p></div>';
+
+  try{
+    var settings = await loadFeeSettings();
+
+    // 🔑 രക്ഷിതാവിന്റെ ഫോൺ നമ്പർ
+    var parentMobile = String(currentUser.parentMobile || currentUser.phone || '').replace(/\D/g,'').slice(-10);
+
+    if(!parentMobile || parentMobile.length !== 10){
+      wrap.innerHTML = '<div style="text-align:center;padding:50px 20px;"><i class="fas fa-phone-slash" style="font-size:3rem;color:#fca5a5;opacity:.5;"></i><h4 style="color:#fff;margin-top:14px;">ഫോൺ നമ്പർ ലഭ്യമല്ല</h4><p style="color:#9db8dd;font-size:.82rem;">മദ്രസ ഓഫീസിൽ ബന്ധപ്പെടുക.</p></div>';
+      return;
+    }
+
+    var parent = await getFeeParentByMobile(parentMobile);
+
+    if(!parent){
+      wrap.innerHTML = '<div style="text-align:center;padding:50px 20px;"><i class="fas fa-folder-open" style="font-size:3.5rem;color:#fbbf24;opacity:.4;"></i><h4 style="color:#fff;margin-top:16px;">ഫീസ് വിവരങ്ങൾ കണ്ടെത്തിയില്ല</h4><p style="color:#9db8dd;font-size:.82rem;margin-top:8px;">ഫോൺ: <b style="color:#67e8f9;">'+parentMobile+'</b><br>ഈ നമ്പർ സിസ്റ്റത്തിൽ രജിസ്റ്റർ ചെയ്തിട്ടില്ല.</p></div>';
+      return;
+    }
+
+    var monthsElapsed = calcMonthsElapsed(settings.startMonth, settings.monthsElapsed);
+    var paidMonths = Number(parent.paid_months) || 0;
+    var previousBalance = Number(parent.previous_balance) || 0;
+    var pendingMonths = Math.max(0, monthsElapsed - paidMonths);
+    var monthlyFee = settings.monthlyFee || 200;
+    var totalPending = (pendingMonths * monthlyFee) + previousBalance;
+    var lastPaidMonthML = formatFeeMonthML(parent.last_paid_month);
+    var lastPaidDateDD = parent.last_paid_date ? formatDate(parent.last_paid_date) : '---';
+
+    var sc = totalPending > 0 ? '#fbbf24' : totalPending < 0 ? '#67e8f9' : '#6ee7b7';
+    var sl = totalPending > 0 ? '⏳ പെൻഡിംഗ്' : totalPending < 0 ? '💎 അഡ്വാൻസ്' : '✅ പൂർത്തിയായി';
+
+    var waMsg = 'നമസ്കാരം '+(parent.parent_name||'')+',\n\nനൂറുസ്സലാം മദ്റസ വരിസംഖ്യ:\n📱 '+parentMobile+'\n✅ അവസാനം അടച്ചത്: '+lastPaidMonthML+'\n📆 ബാക്കി മാസങ്ങൾ: '+pendingMonths+'\n💰 ആകെ ബാക്കി: ₹'+totalPending.toLocaleString()+'\n\nUPI: '+(settings.upiId||'');
+    var waLink = 'https://wa.me/91'+parentMobile+'?text='+encodeURIComponent(waMsg);
+
+    var html = '<div style="border-radius:28px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);overflow:hidden;margin-bottom:16px;">';
+    html += '<table style="width:100%;border-collapse:collapse;">';
+    html += '<tr style="border-bottom:1px solid rgba(255,255,255,.04);"><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;width:44%;"><i class="fas fa-user"></i> രക്ഷിതാവ്</td><td style="padding:14px 16px;color:#fff;font-weight:600;">'+escapeHtml(parent.parent_name||'')+'</td></tr>';
+    if(parent.student_names) html += '<tr style="border-bottom:1px solid rgba(255,255,255,.04);"><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;"><i class="fas fa-user-graduate"></i> കുട്ടികൾ</td><td style="padding:14px 16px;color:#fff;font-weight:600;">'+escapeHtml(parent.student_names)+'</td></tr>';
+    html += '<tr style="border-bottom:1px solid rgba(255,255,255,.04);"><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;"><i class="fas fa-mobile-alt"></i> മൊബൈൽ</td><td style="padding:14px 16px;color:#fff;font-weight:600;">'+parentMobile+'</td></tr>';
+    html += '<tr style="border-bottom:1px solid rgba(255,255,255,.04);"><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;"><i class="fas fa-calendar"></i> അവസാനം അടച്ച മാസം</td><td style="padding:14px 16px;color:#67e8f9;font-weight:700;">'+lastPaidMonthML+'</td></tr>';
+    html += '<tr style="border-bottom:1px solid rgba(255,255,255,.04);"><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;"><i class="fas fa-calendar-day"></i> അവസാനം അടച്ച തീയതി</td><td style="padding:14px 16px;color:#fbbf24;font-weight:700;">'+lastPaidDateDD+'</td></tr>';
+    html += '<tr style="border-bottom:1px solid rgba(255,255,255,.04);"><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;"><i class="fas fa-hourglass-half"></i> ബാക്കി മാസങ്ങൾ</td><td style="padding:14px 16px;color:#fff;">'+pendingMonths+' × ₹'+monthlyFee+' = ₹'+(pendingMonths*monthlyFee).toLocaleString()+'</td></tr>';
+    if(previousBalance > 0) html += '<tr style="border-bottom:1px solid rgba(255,255,255,.04);"><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;">📌 മുൻ ബാക്കി</td><td style="padding:14px 16px;color:#fff;">₹'+previousBalance.toLocaleString()+'</td></tr>';
+    html += '<tr style="background:rgba(251,191,36,.06);"><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;"><i class="fas fa-rupee-sign"></i> ആകെ അടക്കേണ്ടത്</td><td style="padding:14px 16px;color:'+sc+';font-size:1.15rem;font-weight:900;">₹'+totalPending.toLocaleString()+'</td></tr>';
+    html += '<tr><td style="padding:14px 16px;color:rgba(255,255,255,.4);font-size:.8rem;"><i class="fas fa-info-circle"></i> സ്റ്റാറ്റസ്</td><td style="padding:14px 16px;color:'+sc+';font-weight:800;">'+sl+'</td></tr>';
+    html += '</table>';
+    html += '<a href="'+waLink+'" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;padding:14px;margin:14px 20px 20px;border-radius:60px;text-decoration:none;font-weight:800;"><i class="fab fa-whatsapp"></i> WhatsApp-ൽ അയക്കാൻ</a>';
+    html += '</div>';
+
+    // GPay section
+    html += '<div style="background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border-radius:32px;padding:22px;border:1px solid rgba(255,255,255,.06);">';
+    html += '<div style="text-align:center;margin-bottom:16px;"><span style="background:rgba(255,255,255,.06);border-radius:40px;padding:8px 20px;font-size:.75rem;color:#fbbf24;font-weight:700;">📋 ബാക്കി: ₹'+totalPending.toLocaleString()+'</span></div>';
+    html += '<div style="margin-bottom:18px;text-align:center;"><div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:6px;">അടയ്ക്കുന്ന തുക</div>';
+    html += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.06);border-radius:60px;padding:6px 18px;"><span style="font-size:1.2rem;font-weight:700;color:rgba(255,255,255,.5);">₹</span><input type="number" id="feePayAmount" step="1" min="1" value="'+(totalPending>0?totalPending:'')+'" placeholder="തുക" style="border:none;padding:12px 8px;font-size:1.2rem;font-weight:700;width:150px;text-align:center;background:transparent;color:#fff;outline:none;"></div></div>';
+    html += '<button id="feeGpayBtn" style="width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:60px;padding:14px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;font-weight:700;color:#fff;font-size:1rem;font-family:inherit;"><i class="fab fa-google-pay"></i> Google Pay-ൽ അടയ്ക്കുക</button>';
+    html += '<p style="font-size:.7rem;text-align:center;margin-top:14px;color:rgba(255,255,255,.3);"><i class="fas fa-shield-alt"></i> UPI: '+(settings.upiId||'')+'</p>';
+    html += '</div>';
+
+    wrap.innerHTML = html;
+
+    var gpBtn = document.getElementById('feeGpayBtn');
+    if(gpBtn){
+      gpBtn.addEventListener('click', function(){
+        var amt = parseFloat(document.getElementById('feePayAmount').value);
+        if(isNaN(amt) || amt <= 0){ showToast('ശരിയായ തുക നൽകുക','error'); return; }
+        var pa = settings.upiId || 'ameerpattani786@oksbi';
+        var pn = settings.payeeName || 'Noorussalam Madrasa';
+        var link = 'upi://pay?pa='+encodeURIComponent(pa)+'&pn='+encodeURIComponent(pn)+'&am='+amt.toFixed(2)+'&cu=INR&tn='+encodeURIComponent('Madrasa Fee - '+parentMobile);
+        var a = document.createElement('a'); a.href = link; a.target = '_blank';
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ document.body.removeChild(a); }, 300);
+      });
+    }
+
+  }catch(e){
+    wrap.innerHTML = '<div style="text-align:center;padding:40px;color:#fca5a5;">❌ Error: '+escapeHtml(e.message)+'</div>';
+  }
+}
+
+/* ========== ADMIN: FEE MANAGEMENT ========== */
+async function loadFeeParentsAdmin(){
+  var wrap = document.getElementById('feeParentsWrap');
+  if(!wrap) return;
+  wrap.innerHTML = '<div style="text-align:center;padding:30px;"><div style="width:24px;height:24px;border:3px solid rgba(59,139,255,.2);border-top-color:#22d3ee;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;"></div></div>';
+  try{
+    var r = await supabaseClient.from('fee_parents').select('*').order('parent_name');
+    feeParentsData = r.data || [];
+    await loadFeeSettings();
+    renderFeeAdminSummary();
+    filterFeeParents();
+  }catch(e){
+    wrap.innerHTML = '<div style="padding:20px;color:#fca5a5;">Error: '+escapeHtml(e.message)+'</div>';
+  }
+}
+
+function renderFeeAdminSummary(){
+  var sum = document.getElementById('feeAdminSummary');
+  if(!sum) return;
+  var fee = FEE_SETTINGS_CACHE.monthlyFee || 200;
+  var me = calcMonthsElapsed(FEE_SETTINGS_CACHE.startMonth, FEE_SETTINGS_CACHE.monthsElapsed);
+  var tp = 0, wb = 0, fp = 0;
+  feeParentsData.forEach(function(p){
+    var pm = Math.max(0, me - (p.paid_months||0));
+    var t = (pm * fee) + (p.previous_balance||0);
+    tp += t; if(t>0) wb++; else fp++;
+  });
+  sum.innerHTML =
+    '<div style="background:linear-gradient(150deg,rgba(120,180,255,.09),rgba(120,180,255,.02));border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(140,190,255,.18);"><div style="font-weight:900;font-size:1.2rem;color:#7db3ff;">'+feeParentsData.length+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#9db8dd;margin-top:3px;letter-spacing:1px;">Total Parents</div></div>'+
+    '<div style="background:linear-gradient(150deg,rgba(120,180,255,.09),rgba(120,180,255,.02));border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(140,190,255,.18);"><div style="font-weight:900;font-size:1.2rem;color:#fcd34d;">'+wb+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#9db8dd;margin-top:3px;letter-spacing:1px;">Pending</div></div>'+
+    '<div style="background:linear-gradient(150deg,rgba(120,180,255,.09),rgba(120,180,255,.02));border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(140,190,255,.18);"><div style="font-weight:900;font-size:1.2rem;color:#6ee7b7;">'+fp+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#9db8dd;margin-top:3px;letter-spacing:1px;">Paid</div></div>'+
+    '<div style="background:linear-gradient(150deg,rgba(120,180,255,.09),rgba(120,180,255,.02));border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(140,190,255,.18);"><div style="font-weight:900;font-size:1.2rem;color:#fcd34d;">₹'+tp.toLocaleString()+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#9db8dd;margin-top:3px;letter-spacing:1px;">Total Due</div></div>'+
+    '<div style="background:linear-gradient(150deg,rgba(120,180,255,.09),rgba(120,180,255,.02));border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(140,190,255,.18);"><div style="font-weight:900;font-size:1.2rem;color:#7db3ff;">'+me+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#9db8dd;margin-top:3px;letter-spacing:1px;">Months</div></div>';
+}
+
+function filterFeeParents(){
+  var q = (document.getElementById('feeParentSearch')?.value||'').toLowerCase().trim();
+  filteredFeeParents = feeParentsData.filter(function(p){
+    return !q || (p.parent_name||'').toLowerCase().indexOf(q)>-1 || (p.mobile||'').indexOf(q)>-1;
+  });
+  renderFeeParentsTable();
+}
+
+function renderFeeParentsTable(){
+  var wrap = document.getElementById('feeParentsWrap');
+  if(!wrap) return;
+  if(filteredFeeParents.length === 0){
+    wrap.innerHTML = '<div style="text-align:center;padding:30px;color:#9db8dd;">No records</div>';
+    return;
+  }
+  var fee = FEE_SETTINGS_CACHE.monthlyFee || 200;
+  var me = calcMonthsElapsed(FEE_SETTINGS_CACHE.startMonth, FEE_SETTINGS_CACHE.monthsElapsed);
+  var h = '<table style="width:100%;border-collapse:collapse;font-size:.78rem;color:#eaf2ff;"><thead><tr>';
+  h += '<th style="padding:11px 13px;text-align:left;font-size:.6rem;text-transform:uppercase;color:#7db3ff;background:rgba(59,139,255,.10);border-bottom:1.5px solid rgba(140,190,255,.18);">#</th>';
+  h += '<th style="padding:11px 13px;text-align:left;font-size:.6rem;text-transform:uppercase;color:#7db3ff;background:rgba(59,139,255,.10);border-bottom:1.5px solid rgba(140,190,255,.18);">Parent</th>';
+  h += '<th style="padding:11px 13px;text-align:left;font-size:.6rem;text-transform:uppercase;color:#7db3ff;background:rgba(59,139,255,.10);border-bottom:1.5px solid rgba(140,190,255,.18);">Mobile</th>';
+  h += '<th style="padding:11px 13px;text-align:left;font-size:.6rem;text-transform:uppercase;color:#7db3ff;background:rgba(59,139,255,.10);border-bottom:1.5px solid rgba(140,190,255,.18);">Paid</th>';
+  h += '<th style="padding:11px 13px;text-align:left;font-size:.6rem;text-transform:uppercase;color:#7db3ff;background:rgba(59,139,255,.10);border-bottom:1.5px solid rgba(140,190,255,.18);">Due</th>';
+  h += '<th style="padding:11px 13px;text-align:left;font-size:.6rem;text-transform:uppercase;color:#7db3ff;background:rgba(59,139,255,.10);border-bottom:1.5px solid rgba(140,190,255,.18);">Actions</th>';
+  h += '</tr></thead><tbody>';
+  filteredFeeParents.forEach(function(p, i){
+    var pm = Math.max(0, me - (p.paid_months||0));
+    var tp = (pm * fee) + (p.previous_balance||0);
+    var sc = tp > 0 ? '#fca5a5' : tp < 0 ? '#67e8f9' : '#6ee7b7';
+    h += '<tr style="border-bottom:1px solid rgba(140,190,255,.05);">';
+    h += '<td style="padding:9px 13px;">'+(i+1)+'</td>';
+    h += '<td style="padding:9px 13px;"><strong>'+escapeHtml(p.parent_name)+'</strong>'+(p.student_names?'<br><small style="color:#6d88ad;font-size:.7rem;">'+escapeHtml(p.student_names)+'</small>':'')+'</td>';
+    h += '<td style="padding:9px 13px;">'+escapeHtml(p.mobile)+'</td>';
+    h += '<td style="padding:9px 13px;">'+(p.paid_months||0)+' / '+me+'</td>';
+    h += '<td style="padding:9px 13px;color:'+sc+';font-weight:900;">₹'+tp.toLocaleString()+'</td>';
+    h += '<td style="padding:9px 13px;">';
+    h += '<button onclick="markFeePaid('+p.id+')" style="background:linear-gradient(100deg,#059669,#34d399);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">✅</button>';
+    h += '<button onclick="editFeeParent('+p.id+')" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">✏️</button>';
+    h += '<button onclick="deleteFeeParent('+p.id+')" style="background:linear-gradient(100deg,#b91c1c,#f87171);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;">🗑️</button>';
+    h += '</td></tr>';
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+function openFeeParentForm(id){
+  var p = id ? feeParentsData.find(function(x){return x.id===id;}) : {};
+  var isEdit = !!id;
+  modalTitleSpan.innerText = isEdit ? '✏️ Edit Fee Record' : '➕ Add Fee Parent';
+  modalBodyDiv.innerHTML =
+    '<form onsubmit="saveFeeParent(event,'+(id||'null')+')">'+
+    '<div class="row g-3">'+
+    '<div class="col-md-6"><label class="text-white-50 small">Parent Name *</label><input type="text" id="fp_name" class="modal-form-input" value="'+escapeHtml(p.parent_name||'')+'" required></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Mobile (10 digits) *</label><input type="tel" id="fp_mobile" class="modal-form-input" maxlength="10" value="'+escapeHtml(p.mobile||'')+'" required></div>'+
+    '<div class="col-12"><label class="text-white-50 small">Children (comma separated)</label><input type="text" id="fp_children" class="modal-form-input" value="'+escapeHtml(p.student_names||'')+'" placeholder="Ahmed, Fatima"></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Last Paid Month</label><input type="month" id="fp_lastmonth" class="modal-form-input" value="'+(p.last_paid_month||'')+'"></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Last Paid Date</label><input type="date" id="fp_lastdate" class="modal-form-input" value="'+(p.last_paid_date||'')+'"></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Months Paid</label><input type="number" id="fp_paid" class="modal-form-input" min="0" value="'+(p.paid_months||0)+'"></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Previous Balance (₹)</label><input type="number" id="fp_prev" class="modal-form-input" min="0" value="'+(p.previous_balance||0)+'"></div>'+
+    '</div>'+
+    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>'+
+    '</form>';
+  modal.style.display = 'flex';
+}
+
+function editFeeParent(id){ openFeeParentForm(id); }
+
+async function saveFeeParent(e, id){
+  e.preventDefault();
+  var obj = {
+    parent_name: document.getElementById('fp_name').value.trim(),
+    mobile: document.getElementById('fp_mobile').value.trim(),
+    student_names: document.getElementById('fp_children').value.trim() || null,
+    last_paid_month: document.getElementById('fp_lastmonth').value || null,
+    last_paid_date: document.getElementById('fp_lastdate').value || null,
+    paid_months: parseInt(document.getElementById('fp_paid').value) || 0,
+    previous_balance: parseFloat(document.getElementById('fp_prev').value) || 0,
+    updated_at: new Date().toISOString()
+  };
+  if(!obj.parent_name || obj.mobile.length !== 10){ showToast('Name & 10-digit mobile required','error'); return; }
+  try{
+    if(id) await supabaseClient.from('fee_parents').update(obj).eq('id',id);
+    else   await supabaseClient.from('fee_parents').insert(obj);
+    showToast(id?'✅ Updated':'✅ Added','success');
+    closeModal('globalModal');
+    loadFeeParentsAdmin();
+  }catch(e){ showToast('❌ '+e.message,'error'); }
+}
+
+async function deleteFeeParent(id){
+  if(!confirm('Delete this fee record?')) return;
+  try{
+    await supabaseClient.from('fee_parents').delete().eq('id',id);
+    showToast('🗑️ Deleted','success');
+    loadFeeParentsAdmin();
+  }catch(e){ showToast('❌ '+e.message,'error'); }
+}
+
+async function markFeePaid(id){
+  var p = feeParentsData.find(function(x){return x.id===id;});
+  if(!p) return;
+  var month = prompt('ഏത് മാസത്തെ ഫീസ്? (YYYY-MM)', new Date().toISOString().slice(0,7));
+  if(!month) return;
+  var amt = prompt('തുക (₹):', FEE_SETTINGS_CACHE.monthlyFee || 200);
+  if(!amt) return;
+  var entry = { month: month, amount: parseInt(amt), date: new Date().toISOString().split('T')[0], paidBy: 'Admin' };
+  var history = [];
+  try{ history = p.payment_history ? (typeof p.payment_history==='string'?JSON.parse(p.payment_history):p.payment_history) : []; }catch(e){}
+  history.push(entry);
+  try{
+    await supabaseClient.from('fee_parents').update({
+      last_paid_month: month,
+      last_paid_date: entry.date,
+      paid_months: (p.paid_months||0) + 1,
+      payment_history: history,
+      updated_at: new Date().toISOString()
+    }).eq('id', id);
+    showToast('✅ Fee recorded','success');
+    if(typeof confetti!=='undefined') confetti({particleCount:80,spread:70,origin:{y:.7}});
+    loadFeeParentsAdmin();
+  }catch(e){ showToast('❌ '+e.message,'error'); }
+}
+
+async function openFeeSettingsForm(){
+  var s = FEE_SETTINGS_CACHE;
+  modalTitleSpan.innerText = '⚙️ Fee Settings';
+  modalBodyDiv.innerHTML =
+    '<form onsubmit="saveFeeSettings(event)">'+
+    '<div class="row g-3">'+
+    '<div class="col-md-6"><label class="text-white-50 small">Monthly Fee (₹) *</label><input type="number" id="fs_fee" class="modal-form-input" min="1" value="'+(s.monthlyFee||200)+'" required></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Start Month *</label><input type="month" id="fs_start" class="modal-form-input" value="'+(s.startMonth||'')+'" required></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">UPI ID</label><input type="text" id="fs_upi" class="modal-form-input" value="'+escapeHtml(s.upiId||'')+'"></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Payee Name</label><input type="text" id="fs_payee" class="modal-form-input" value="'+escapeHtml(s.payeeName||'')+'"></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Support Phone</label><input type="text" id="fs_phone" class="modal-form-input" value="'+escapeHtml(s.supportPhone||'')+'"></div>'+
+    '<div class="col-md-6"><label class="text-white-50 small">Support Email</label><input type="email" id="fs_email" class="modal-form-input" value="'+escapeHtml(s.supportEmail||'')+'"></div>'+
+    '<div class="col-12"><label class="text-white-50 small">Months Elapsed (blank = auto)</label><input type="number" id="fs_elapsed" class="modal-form-input" min="0" value="'+(s.monthsElapsed!==null&&s.monthsElapsed!==undefined?s.monthsElapsed:'')+'"></div>'+
+    '</div>'+
+    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save Settings</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>'+
+    '</form>';
+  modal.style.display = 'flex';
+}
+
+async function saveFeeSettings(e){
+  e.preventDefault();
+  var updates = {
+    monthly_fee: document.getElementById('fs_fee').value,
+    start_month: document.getElementById('fs_start').value,
+    upi_id: document.getElementById('fs_upi').value.trim(),
+    payee_name: document.getElementById('fs_payee').value.trim(),
+    support_phone: document.getElementById('fs_phone').value.trim(),
+    support_email: document.getElementById('fs_email').value.trim(),
+    months_elapsed: document.getElementById('fs_elapsed').value.trim()
+  };
+  try{
+    for(var k in updates){
+      await supabaseClient.from('fee_settings').upsert({setting_key:k, value:updates[k]}, {onConflict:'setting_key'});
+    }
+    showToast('✅ Settings saved','success');
+    closeModal('globalModal');
+    await loadFeeSettings();
+    renderFeeAdminSummary();
+    renderFeeParentsTable();
+  }catch(e){ showToast('❌ '+e.message,'error'); }
+}
+
+// goToFees ഫങ്ക്ഷൻ override ചെയ്യുന്നു
+window.goToFees = function(){
+  if(!currentUser){ showToast('Login first','error'); return; }
+  openStudentFees();
+};
+
+// Expose functions
+Object.assign(window, {
+  openStudentFees, closeStudentFees, loadStudentFeeData,
+  loadFeeParentsAdmin, filterFeeParents, openFeeParentForm, saveFeeParent,
+  editFeeParent, deleteFeeParent, markFeePaid, openFeeSettingsForm, saveFeeSettings
+});
+
+console.log('✅ Fee System loaded');
+</script>
 </body>
 </html>
