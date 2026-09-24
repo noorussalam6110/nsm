@@ -4348,6 +4348,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
       address:student.address||'',trendAttendance:student.trendattendance||null,rankChange:student.rankchange||null,
       isBestStudent:student.isbeststudent||false,extraCurricularGrade:student.extracurriculargrade||null,
       totalMarks:student.totalmarks||0,madrasaRank:student.madrasarank||null
+      parentMobile:student.parent_mobile||student.phone||''   // ✅ പുതിയ വരി
     };
     isAdminMode=false;
     localStorage.setItem('noor_session',JSON.stringify(currentUser));
@@ -6006,6 +6007,18 @@ function switchAdminTab(tab){
     loadTeacherSettingsIntoForm();
     return;
   }
+  if(tab==='feeparents'){
+  document.getElementById('adminSettingsTab').style.display='none';
+  document.getElementById('adminMainContent').style.display='block';
+  document.getElementById('noClassMsg').style.display='none';
+  document.querySelectorAll('.admin-tab').forEach(function(t){t.classList.remove('active');});
+  var tabBtn=document.querySelector('.admin-tab[data-tab="feeparents"]');
+  if(tabBtn)tabBtn.classList.add('active');
+  document.querySelectorAll('.admin-tab-content').forEach(function(c){c.style.display='none';});
+  document.getElementById('adminFeeParentsTab').style.display='block';
+  loadFeeParentsAdmin();
+  return;
+}
   if(!currentAdminClass){showToast('⚠️ Select class','error');return;}
   document.getElementById('adminSettingsTab').style.display='none';
   document.getElementById('adminMainContent').style.display='block';
