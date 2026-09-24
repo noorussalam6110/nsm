@@ -3476,6 +3476,25 @@ body:has(.ai-panel.open) .ai-fab {
 
       <div class="mb-4" style="background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(251,191,36,.04));padding:16px;border-radius:16px;border:1px solid rgba(239,68,68,.25);"><h5 class="text-white mb-3" style="font-size:.95rem;">⏰ Exam Countdown Setting</h5><label class="text-white-50 small d-block mb-1">Exam Name</label><input type="text" id="settingsExamName" class="modal-form-input mb-2" placeholder="e.g., Annual Exam 2026"><label class="text-white-50 small d-block mb-1">Exam Date</label><input type="date" id="settingsExamDate" class="modal-form-input mb-2"><div class="d-flex gap-2 mt-2"><button class="btn-update" onclick="saveExamCountdown()"><i class="fas fa-save"></i> Save</button><button class="btn-cancel" onclick="clearExamCountdown()"><i class="fas fa-trash"></i> Clear</button></div></div>
 
+     <div class="mb-4" style="background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(59,139,255,.04));padding:16px;border-radius:16px;border:1.5px solid rgba(34,211,238,.3);">
+  <h5 class="text-white mb-2" style="font-size:.95rem;">🌅 Daily Greeting Message</h5>
+  <p class="text-white-50 small mb-2">എല്ലാ ദിവസവും രാവിലെ 6-ന് students-ന് അയക്കുന്ന message</p>
+  <textarea id="settingsGreetingMsg" class="modal-form-input mb-2" 
+    style="min-height:100px;font-size:.86rem;" 
+    maxlength="200"
+    placeholder="Blank ആയാൽ default greetings rotate ചെയ്യും..."></textarea>
+  <small class="text-white-50" style="display:block;margin-bottom:10px;font-size:.68rem;">
+    <i class="fas fa-lightbulb" style="color:#fcd34d;"></i> 
+    Blank ആയാൽ 7 default greetings ഓരോ ദിവസവും rotate ആകും
+  </small>
+  <button class="btn-update" onclick="saveDailyGreeting()">
+    <i class="fas fa-save"></i> Save
+  </button>
+  <button class="btn-cancel" style="padding:11px 22px;font-size:.85rem;margin-left:6px;" onclick="clearDailyGreeting()">
+    <i class="fas fa-eraser"></i> Clear
+  </button>
+</div>
+      
       <div class="mb-4" style="background:rgba(120,180,255,.04);padding:16px;border-radius:16px;border:1px solid var(--stroke);"><h5 class="text-white mb-3" style="font-size:.95rem;">📊 Per-Class Extra-Curricular Categories</h5><textarea id="settingsClassExtraCategories" class="modal-form-input" style="min-height:180px;font-family:monospace;font-size:.85rem;"></textarea><button class="btn-update mt-3" onclick="saveClassExtraCategories()"><i class="fas fa-save"></i> Save Categories</button></div>
 
       <div class="mb-4" style="background:linear-gradient(135deg,rgba(251,191,36,.06),rgba(120,180,255,.04));padding:16px;border-radius:16px;border:1px solid rgba(251,191,36,.25);"><h5 class="text-white mb-3" style="font-size:.95rem;">⏰ Result Publish Time</h5><input type="datetime-local" id="settingsResultTime" class="modal-form-input" /><small class="text-white-50 d-block mt-2">Current: <span id="currentResultTime">Not set</span></small><div class="d-flex gap-2 mt-3"><button class="btn-update" onclick="saveResultPublishTime()"><i class="fas fa-clock"></i> Set</button><button class="btn-cancel" onclick="clearResultPublishTime()"><i class="fas fa-trash"></i> Clear</button></div></div>
@@ -4497,6 +4516,14 @@ async function openNotificationsModal(){
   lastReadNotifTime=Date.now();
   localStorage.setItem('lastReadNotifTime',lastReadNotifTime.toString());
   document.getElementById('notifBadge').style.display='none';
+  
+  // 🔔 Clear home-screen app badge
+  try{
+    if('serviceWorker' in navigator && navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({type:'CLEAR_BADGE'});
+    }
+    if('clearAppBadge' in navigator) navigator.clearAppBadge();
+  }catch(e){}
   var list=document.getElementById('notificationsList');
   list.innerHTML='<div class="text-center py-3 text-white-50">Loading...</div>';
   if(!currentUser){list.innerHTML='<div class="text-center py-3 text-white-50">Please login</div>';return;}
@@ -7873,6 +7900,9 @@ function loadTeacherSettingsIntoForm(){
   var sd=document.getElementById('settingsExamDate');if(sd)sd.value=SETTINGS_CACHE.nextExamDate||'';
   var i1=document.getElementById('settingsIdBgUrl');if(i1)i1.value=localStorage.getItem('id_card_bg')||'';
   var i2=document.getElementById('settingsTopperBgUrl');if(i2)i2.value=localStorage.getItem('topper_bg')||'';
+    // 🌅 Daily greeting message load
+  var dg=document.getElementById('settingsGreetingMsg');
+  if(dg)dg.value=SETTINGS_CACHE.dailyGreetingMessage||'';
   renderSignaturePreviews();
   loadDBStats();
   var ct=document.getElementById('settingsClassTraits');if(ct)ct.value=stringifyClassTraits(CLASS_TRAITS);
@@ -8934,6 +8964,30 @@ async function clearExamCountdown(){
     showToast('🗑️ Cleared','info');
   }catch(e){showToast('❌','error');}
 }
+async function saveDailyGreeting(){
+  var val=document.getElementById('settingsGreetingMsg').value.trim();
+  try{
+    await supabaseClient.from('settings').upsert(
+      {key:'dailyGreetingMessage',value:val},
+      {onConflict:'key'}
+    );
+    SETTINGS_CACHE.dailyGreetingMessage=val;
+    showToast(val?'✅ Greeting saved':'🗑️ Cleared — default rotate ചെയ്യും','success');
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+async function clearDailyGreeting(){
+  if(!confirm('Clear custom greeting? Default greetings പുനരാരംഭിക്കും.'))return;
+  try{
+    await supabaseClient.from('settings').upsert(
+      {key:'dailyGreetingMessage',value:''},
+      {onConflict:'key'}
+    );
+    document.getElementById('settingsGreetingMsg').value='';
+    SETTINGS_CACHE.dailyGreetingMessage='';
+    showToast('🗑️ Cleared — Default rotate','info');
+  }catch(e){showToast('❌','error');}
+}
 
 /* ============================================================ */
 /* 📌 NOTICE BOARD                                              */
@@ -9592,6 +9646,11 @@ function handleShortcutNavigation(){
   function openTarget(){
     if(!currentUser)return;
     if(hash==='palathulli')openPassbook();
+    else if(hash==='fees'){
+      // Fee notification tap → Fees overlay open
+      if(typeof openStudentFees==='function')openStudentFees();
+      else openPassbook();
+    }
     else if(hash==='creations')openCreationsGallery();
     else if(hash==='ai'){var fab=document.getElementById('aiFab');if(fab&&fab.classList.contains('show'))toggleAIChat();}
     if(params.get('public')==='1')openPublicCreationsFeed();
