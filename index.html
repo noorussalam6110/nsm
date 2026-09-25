@@ -3058,7 +3058,14 @@ const CREATION_CATEGORIES={
 
 let STUDENT_PORTAL_VISIBILITY={
   sections:{leaderboard:true,palathulli:true,statsGrid:true,madrasaRank:true,quickActionsTitle:true,quickActionsGrid:true,feedEvents:true,monthlyProgress:true},
-  actions:{results:true,attendance:true,moral:true,profile:true,marks:true,timetable:true,homework:true,library:true,idcard:true,palathulli:true,extracurricular:true,competitions:true,creations:true,report:true,studentzone:true,fees:true,calendar:true,topper:true}
+  actions:{
+    results:true,attendance:true,moral:true,profile:true,marks:true,timetable:true,
+    homework:true,library:true,idcard:true,palathulli:true,extracurricular:true,
+    competitions:true,creations:true,report:true,studentzone:true,fees:true,
+    calendar:true,topper:true,
+    notes:true,badges:true,notice:true,
+    lessons:true,downloads:true
+  }
 };
 
 const VIS_SECTIONS_META=[
@@ -3090,7 +3097,13 @@ const VIS_ACTIONS_META=[
   {key:'studentzone',label:'Student Zone',icon:'fa-graduation-cap'},
   {key:'fees',label:'Fees',icon:'fa-money-bill-wave'},
   {key:'calendar',label:'Calendar',icon:'fa-calendar-alt'},
-  {key:'topper',label:'Topper Poster',icon:'fa-crown'}
+  {key:'topper',label:'Topper Poster',icon:'fa-crown'},
+  // ✅ NEW — these were missing
+  {key:'notes',label:'Notes',icon:'fa-sticky-note'},
+  {key:'badges',label:'Badges',icon:'fa-medal'},
+  {key:'notice',label:'Notice Board',icon:'fa-bullhorn'},
+  {key:'lessons',label:'Lessons',icon:'fa-book-reader'},
+  {key:'downloads',label:'Downloads',icon:'fa-download'}
 ];
 
 window._topWinnersData=[];
@@ -3440,9 +3453,15 @@ function populateDynamicDropdowns(){
 function parseStudentVisibility(raw){
   try{
     var p=raw?JSON.parse(raw):{};
+    var defs = {
+      results:true,attendance:true,moral:true,profile:true,marks:true,timetable:true,
+      homework:true,library:true,idcard:true,palathulli:true,extracurricular:true,
+      competitions:true,creations:true,report:true,studentzone:true,fees:true,
+      calendar:true,topper:true,notes:true,badges:true,notice:true,lessons:true,downloads:true
+    };
     return{
       sections:Object.assign({},STUDENT_PORTAL_VISIBILITY.sections,p.sections||{}),
-      actions:Object.assign({},STUDENT_PORTAL_VISIBILITY.actions,p.actions||{})
+      actions:Object.assign({},defs,p.actions||{})
     };
   }catch(e){return STUDENT_PORTAL_VISIBILITY;}
 }
@@ -3500,7 +3519,13 @@ function toggleAllQuickActions(state){
 function resetStudentPortalVisibility(){
   STUDENT_PORTAL_VISIBILITY={
     sections:{leaderboard:true,palathulli:true,statsGrid:true,madrasaRank:true,quickActionsTitle:true,quickActionsGrid:true,feedEvents:true,monthlyProgress:true},
-    actions:{results:true,attendance:true,moral:true,profile:true,marks:true,timetable:true,homework:true,library:true,idcard:true,palathulli:true,extracurricular:true,competitions:true,creations:true,report:true,studentzone:true,fees:true,calendar:true,topper:true}
+    actions:{
+      results:true,attendance:true,moral:true,profile:true,marks:true,timetable:true,
+      homework:true,library:true,idcard:true,palathulli:true,extracurricular:true,
+      competitions:true,creations:true,report:true,studentzone:true,fees:true,
+      calendar:true,topper:true,
+      notes:true,badges:true,notice:true,lessons:true,downloads:true
+    }
   };
   renderVisibilityUI();
   showToast('🔄 Reset','info');
@@ -7261,7 +7286,14 @@ async function loadCreationsGallery(){
   if(!grid)return;
   grid.innerHTML='<div class="creations-loading"><div class="spinner-sm"></div> Loading...</div>';
   try{
-    var r=await supabaseClient.from('student_creations').select('*').eq('approved',true).order('created_at',{ascending:false}).limit(200);
+    // ✅ FIX — Load approved + own pending creations
+    var sid = currentUser ? currentUser.studentId : '__none__';
+    var r = await supabaseClient
+      .from('student_creations')
+      .select('*')
+      .or('approved.eq.true,and(approved.eq.false,studentid.eq.' + sid + ')')
+      .order('created_at', { ascending: false })
+      .limit(200);
     allCreations=r.data||[];
     var sids=Array.from(new Set(allCreations.map(function(c){return c.studentid;})));
     var smap={};
@@ -7318,7 +7350,12 @@ function renderCreationsGrid(){
     }else{
       thumb='<div class="creation-thumb"><img src="'+url+'" alt="'+escapeHtml(c.title)+'" loading="lazy"><span class="creation-cat-chip">'+getCategoryLabel(c.category)+'</span></div>';
     }
-    return'<div class="creation-card" onclick="openCreationLightbox('+c.id+')">'+thumb+'<div class="creation-body"><h4 class="creation-title">'+escapeHtml(c.title)+'</h4><div class="creation-author"><div class="mini-avatar">'+av+'</div><div class="author-text">'+escapeHtml(c.studentName||'Student')+(c.studentClass?' • C'+c.studentClass:'')+'</div></div><div class="creation-meta"><span>'+formatDate(c.created_at)+'</span><span class="creation-likes"><i class="fas fa-heart"></i> '+(c.likes||0)+'</span></div></div></div>';
+        // ✅ FIX — Pending indicator
+    var pendingChip = '';
+    if(!c.approved && currentUser && c.studentid === currentUser.studentId){
+      pendingChip = '<span style="position:absolute;top:10px;right:10px;background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#03132e;font-size:.6rem;font-weight:800;padding:4px 10px;border-radius:20px;box-shadow:0 4px 10px -2px rgba(251,191,36,.6);z-index:3;">⏳ Pending</span>';
+    }
+    return'<div class="creation-card" onclick="openCreationLightbox('+c.id+')" style="position:relative;">'+thumb+pendingChip+'<div class="creation-body"><h4 class="creation-title">'+escapeHtml(c.title)+'</h4><div class="creation-author"><div class="mini-avatar">'+av+'</div><div class="author-text">'+escapeHtml(c.studentName||'Student')+(c.studentClass?' • C'+c.studentClass:'')+'</div></div><div class="creation-meta"><span>'+formatDate(c.created_at)+'</span><span class="creation-likes"><i class="fas fa-heart"></i> '+(c.likes||0)+'</span></div></div></div>';
   }).join('');
 }
 
@@ -7523,7 +7560,17 @@ async function openCreationLightbox(id){
   var typeLabel=ft==='text'?' • ✍️ Text':ft==='pdf'?' • 📄 PDF':'';
   document.getElementById('clCategory').innerHTML='<i class="fas fa-tag"></i> '+getCategoryLabel(c.category)+typeLabel;
   document.getElementById('clDate').innerHTML='<i class="fas fa-calendar"></i> '+formatDate(c.created_at);
-  document.getElementById('clDescription').textContent=c.description||'';
+  // ✅ FIX — Pending warning
+  var descEl = document.getElementById('clDescription');
+  if(!c.approved && currentUser && c.studentid === currentUser.studentId){
+    descEl.innerHTML =
+      '<div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid rgba(180,83,9,.4);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;color:#78350f;">' +
+        '<i class="fas fa-clock"></i> <b>Approval കാത്തിരിക്കുന്നു</b> — Admin approve ചെയ്താൽ എല്ലാവർക്കും കാണാം.' +
+      '</div>' +
+      (c.description ? escapeHtml(c.description) : '');
+  } else {
+    descEl.textContent = c.description || '';
+  }
   document.getElementById('clLikeCount').textContent=c.likes||0;
   var iLiked=false;
   try{
