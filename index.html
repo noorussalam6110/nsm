@@ -4024,6 +4024,63 @@ function showAIAssistant(){
 var aiOpen=false,aiHistory=[],aiGuestMode=false,_aiSending=false;
 
 function toggleAIChat(){
+  if(!currentUser){aiGuestMode=true;}
+  aiOpen=!aiOpen;
+  var panel=document.getElementById('aiPanel');
+  panel.classList.toggle('open',aiOpen);
+
+  var nameEl=document.getElementById('aiStudentNameText');
+  if(nameEl)nameEl.textContent=currentUser?currentUser.name:'Guest';
+
+  // Welcome text personalize
+  var wSub=document.getElementById('aiWelcomeSub');
+  if(wSub){
+    wSub.textContent=currentUser
+      ? ('അസ്സലാമു അലൈക്കും '+currentUser.name+'! 👋 എന്തെങ്കിലും ചോദിക്കൂ.')
+      : 'നിങ്ങളെ എങ്ങനെ സഹായിക്കാം? ചുവടെ type ചെയ്യുക.';
+  }
+
+  // Suggestions — guest vs student
+  var sugg=document.getElementById('aiSuggestions');
+  if(sugg){
+    if(currentUser){
+      sugg.innerHTML=
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ സമ്പാദ്യം എത്ര?\')"><i class="fas fa-piggy-bank"></i>എന്റെ സമ്പാദ്യം<span>Palathulli balance</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ ഹാജർ\')"><i class="fas fa-calendar-check"></i>എന്റെ ഹാജർ<span>Attendance report</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ റിസൾട്ട്\')"><i class="fas fa-chart-simple"></i>എന്റെ റിസൾട്ട്<span>Exam performance</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ റാങ്ക് എത്ര?\')"><i class="fas fa-trophy"></i>എന്റെ റാങ്ക്<span>Class rank</span></button>';
+    } else {
+      sugg.innerHTML=
+        '<button class="ai-suggestion" onclick="aiQuick(\'മദ്രസ എവിടെ?\')"><i class="fas fa-map-marker-alt"></i>മദ്രസ സ്ഥലം<span>Location info</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'സ്ഥാപകർ ആരാണ്?\')"><i class="fas fa-users"></i>സ്ഥാപകർ<span>Founders</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'മദ്രസ സമയം\')"><i class="fas fa-clock"></i>മദ്രസ സമയം<span>Timings</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എങ്ങനെ ലോഗിൻ ചെയ്യാം?\')"><i class="fas fa-key"></i>Login ചെയ്യാൻ<span>How to login</span></button>';
+    }
+  }
+
+  if(aiOpen){
+    document.body.classList.add('ai-panel-open');
+    document.body.style.overflow='hidden';
+    setTimeout(function(){
+      var inp=document.getElementById('aiInput');
+      if(inp)inp.focus();
+      var body=document.getElementById('aiBody');
+      if(body)body.scrollTop=body.scrollHeight;
+    },300);
+  } else {
+    document.body.classList.remove('ai-panel-open');
+    document.body.style.overflow='';
+    var panel=document.getElementById('aiPanel');
+    if(panel){
+      panel.style.height='';
+      panel.style.maxHeight='';
+      panel.style.top='';
+      panel.style.bottom='';
+    }
+    var foot=document.getElementById('aiFoot');
+    if(foot){foot.style.top='';foot.style.transform='';foot.style.bottom='0';}
+  }
+}
 
 const MADRASA_INFO={
   name:'NOORUSSALAM MADRASA',
@@ -9565,6 +9622,7 @@ console.log('✅ PART 8 loaded — Full System Ready (v23.0)');
 <!-- ============================================================ -->
 <!-- 🎨 MOBILE APP-LIKE ENHANCEMENTS                              -->
 <!-- ============================================================ -->
+<script>
 /* 1️⃣ AI Panel — Gemini-style Full Screen Keyboard Handler */
 (function(){
   var _vvListenerAttached = false;
