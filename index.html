@@ -1830,9 +1830,9 @@ body.light-mode .new-badge{
     <div class="action-tile" data-action="studentzone" onclick="goToStudentZone()"><div class="action-ico cy"><i class="fas fa-graduation-cap"></i></div><h6>Student Zone</h6></div>
     <div class="action-tile" data-action="fees" onclick="goToFees()"><div class="action-ico gold"><i class="fas fa-money-bill-wave"></i></div><h6>ഫീസ്</h6></div>
     <div class="action-tile" data-action="calendar" onclick="goToCalendar()"><div class="action-ico green"><i class="fas fa-calendar-alt"></i></div><h6>കലണ്ടർ</h6></div>
-    <div class="action-tile" onclick="openNotesModal()"><div class="action-ico" style="background:linear-gradient(145deg,#06b6d4,#0ea5e9)"><i class="fas fa-sticky-note"></i></div><h6>കുറിപ്പുകൾ</h6></div>
-    <div class="action-tile" onclick="showBadgesModal()"><div class="action-ico" style="background:linear-gradient(145deg,#fbbf24,#f59e0b)"><i class="fas fa-medal"></i></div><h6>ബാഡ്ജുകൾ</h6></div>
-    <div class="action-tile" onclick="openNoticeBoard()"><div class="action-ico" style="background:linear-gradient(145deg,#a855f7,#c084fc)"><i class="fas fa-bullhorn"></i></div><h6>നോട്ടീസ്</h6></div>
+    <div class="action-tile" data-action="notes" onclick="openNotesModal()"><div class="action-ico" style="background:linear-gradient(145deg,#06b6d4,#0ea5e9)"><i class="fas fa-sticky-note"></i></div><h6>കുറിപ്പുകൾ</h6></div>
+    <div class="action-tile" data-action="badges" onclick="showBadgesModal()"><div class="action-ico" style="background:linear-gradient(145deg,#fbbf24,#f59e0b)"><i class="fas fa-medal"></i></div><h6>ബാഡ്ജുകൾ</h6></div>
+    <div class="action-tile" data-action="notice" onclick="openNoticeBoard()"><div class="action-ico" style="background:linear-gradient(145deg,#a855f7,#c084fc)"><i class="fas fa-bullhorn"></i></div><h6>നോട്ടീസ്</h6></div>
     <div class="action-tile" data-action="topper" onclick="showTopperPoster()" id="topperPosterTile" style="display:none;"><div class="action-ico c-results"><i class="fas fa-trophy"></i></div><h6>ടോപ്പർ</h6></div>
     <div class="action-tile" data-action="lessons" onclick="showStudentLessons()"><div class="action-ico" style="background:linear-gradient(145deg,#059669,#34d399)"><i class="fas fa-book-reader"></i></div><h6>പാഠങ്ങൾ</h6></div>
     <div class="action-tile" data-action="downloads" onclick="showStudentDownloads()"><div class="action-ico" style="background:linear-gradient(145deg,#1e6be0,#60a5fa)"><i class="fas fa-download"></i></div><h6>Downloads</h6></div>
@@ -3628,6 +3628,11 @@ document.getElementById('adminLogoutBtn').addEventListener('click',logout);
 function logout(){
   if(adminImpersonating){returnToAdmin();return;}
   currentUser=null;isAdminMode=false;currentAdminClass='';
+
+  // ✅ FIX #3 — Reset tracking flags so next login records properly
+  window._lastTrackedUser = null;
+  if(window._topWinnersData) window._topWinnersData = [];
+
   localStorage.removeItem('noor_session');
   document.body.classList.remove('logged-in');
   dashboardSection.style.display='none';
@@ -5846,6 +5851,10 @@ function closeBlockedScreen(){
   document.getElementById('loginSection').style.display='flex';
   var sidInput=document.getElementById('studentId');
   if(sidInput)sidInput.value='';
+
+  // ✅ FIX #3 — Reset tracking
+  window._lastTrackedUser = null;
+
   localStorage.removeItem('noor_session');
 }
 
@@ -5896,6 +5905,10 @@ function returnToAdmin(){
   var b=document.getElementById('adminViewBanner');
   if(b)b.classList.remove('show');
   currentUser=null;
+
+  // ✅ FIX #3 — Reset tracking
+  window._lastTrackedUser = null;
+
   document.body.classList.remove('logged-in');
   dashboardSection.style.display='none';
   adminSection.style.display='block';
@@ -10500,31 +10513,9 @@ async function showStudentDownloads(){
 })();
 
 /* ============================================================ */
-/* 🔧 EXTEND LOGIN HANDLER — track login                        */
+/* ✅ Login tracking moved to PART A for reliability            */
+/*    (Removed duplicate listener + setTimeout race condition)  */
 /* ============================================================ */
-(function(){
-  document.addEventListener('DOMContentLoaded',function(){
-    var _origLoginForm=document.getElementById('loginForm');
-    if(_origLoginForm){
-      _origLoginForm.addEventListener('submit',function(){
-        // After successful login, currentUser will be set — track via observer
-        setTimeout(function(){
-          if(currentUser&&!window._lastTrackedUser){
-            trackLogin({studentid:currentUser.studentId,name:currentUser.name,class:currentUser.class});
-            window._lastTrackedUser=currentUser.studentId+'|'+Date.now();
-          }
-        },2500);
-      });
-    }
-    // Also track restoreSession
-    setTimeout(function(){
-      if(currentUser&&!window._lastTrackedUser){
-        trackLogin({studentid:currentUser.studentId,name:currentUser.name,class:currentUser.class});
-        window._lastTrackedUser=currentUser.studentId+'|'+Date.now();
-      }
-    },4000);
-  });
-})();
 
 /* ============================================================ */
 /* 📥 EXTEND VISIBILITY — add new tiles                         */
@@ -10809,12 +10800,27 @@ function initBadgeSystem(){
   obs.observe(_dash, { attributes: true, attributeFilter: ['style'] });
 })();
 
-// Clear timestamps on logout
+/* ============================================================ */
+/* 🧹 Logout cleanup — SAFE (no timestamp corruption)          */
+/* ============================================================ */
 (function(){
   var _origLogout = window.logout;
   if(typeof _origLogout === 'function'){
     window.logout = function(){
-      markAllBadgesSeen(); // safe cleanup
+
+      // ✅ 1. Visually remove badges — DO NOT touch timestamps!
+      document.querySelectorAll('.new-badge').forEach(function(b){ 
+        b.remove(); 
+      });
+
+      // ✅ 2. Reset login tracking (Fix #3)
+      window._lastTrackedUser = null;
+
+      // ✅ 3. Clear in-memory caches
+      if(window._topWinnersData) window._topWinnersData = [];
+      _lastBadgeCheck = 0;  // reset throttle
+
+      // ✅ 4. Call original logout
       return _origLogout.apply(this, arguments);
     };
   }
