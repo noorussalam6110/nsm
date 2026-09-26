@@ -8397,7 +8397,17 @@ async function loadStudentFeeData(){
       return;
     }
 
+    // ⭐ FIX: phone variable GLOBAL ആയി define ചെയ്യുക
+    // Priority: parent.mobile → currentUser.phone → '—'
+    var phone = String(parent.mobile || currentUser.phone || '')
+      .replace(/\D/g, '').slice(-10);
+    if (phone.length !== 10) {
+      // Fallback: original value as-is
+      phone = String(parent.mobile || currentUser.phone || '—').trim() || '—';
+    }
+
     var monthsElapsed = calcMonthsElapsed(settings.startMonth, settings.monthsElapsed);
+    // ... (ബാക്കി code അതേപടി തുടരുന്നു)
     var paidMonths = Number(parent.paid_months) || 0;
     var previousBalance = Number(parent.previous_balance) || 0;
     var pendingMonths = Math.max(0, monthsElapsed - paidMonths);
