@@ -3628,7 +3628,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
       address:student.address||'',trendAttendance:student.trendattendance||null,rankChange:student.rankchange||null,
       isBestStudent:student.isbeststudent||false,extraCurricularGrade:student.extracurriculargrade||null,
       totalMarks:student.totalmarks||0,madrasaRank:student.madrasarank||null,
-      parentMobile:student.parent_mobile||student.phone||''
+      phone:student.parent_mobile||student.phone||''
     };
     isAdminMode=false;
     localStorage.setItem('noor_session',JSON.stringify(currentUser));
@@ -5756,6 +5756,234 @@ async function downloadPaymentsPDF(){
   doc.save('palathulli_'+currentAdminClass+'_'+date+'.pdf');
   showToast('✅ Downloaded','success');
 }
+/* ============================================================ */
+/* 📄 STUDENTS PDF — Class + Roll + Phone                       */
+/* ============================================================ */
+async function downloadStudentsPDF(){
+  showLoading(true);
+  
+  try {
+    // ⭐ Step 1: Fetch all students (with phone)
+    var q = supabaseClient.from('students').select('*');
+    
+    if(currentAdminClass && currentAdminClass !== 'all'){
+      q = q.eq('class', currentAdminClass);
+    }
+    
+    var r = await q;
+    var list = r.data || [];
+    
+    if(list.length === 0){
+      showToast('⚠️ No students to download', 'error');
+      showLoading(false);
+      return;
+    }
+    
+    // ⭐ Step 2: NUMERIC SORT — Class → Roll → Name
+    list.sort(function(a, b){
+      var ca = parseInt(a.class) || 0;
+      var cb = parseInt(b.class) || 0;
+      if(ca !== cb) return ca - cb;
+      
+      var ra = parseInt(a.roll) || 999999;
+      var rb = parseInt(b.roll) || 999999;
+      if(ra !== rb) return ra - rb;
+      
+      return (a.name || '').localeCompare(b.name || '');
+    });
+    
+    // ⭐ Step 3: Build PDF
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
+    
+    // ─── Header ────────────────────────────────
+    doc.setFillColor(21, 71, 168);
+    doc.rect(0, 0, pageW, 80, 'F');
+    
+    try {
+      var logoData = await getLogoDataUrl();
+      if(logoData) doc.addImage(logoData, 'PNG', 40, 15, 50, 50);
+    } catch(e){}
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.setFont(undefined, 'bold');
+    doc.text('NOORUSSALAM MADRASA', pageW / 2, 32, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text('Kambippalam, Kerala Estate', pageW / 2, 50, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    var titleText = currentAdminClass === 'all'
+      ? 'ALL STUDENTS LIST'
+      : 'STUDENTS LIST — CLASS ' + currentAdminClass;
+    doc.text(titleText, pageW / 2, 70, { align: 'center' });
+    
+    // ─── Stats Bar ─────────────────────────────
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    
+    var classCounts = {};
+    list.forEach(function(s){
+      var c = s.class || '—';
+      classCounts[c] = (classCounts[c] || 0) + 1;
+    });
+    var classSummary = Object.keys(classCounts)
+      .sort(function(a,b){return parseInt(a)-parseInt(b);})
+      .map(function(c){ return 'C' + c + ': ' + classCounts[c]; })
+      .join('  |  ');
+    
+    var y = 100;
+    doc.setFillColor(240, 246, 255);
+    doc.rect(30, y - 12, pageW - 60, 30, 'F');
+    doc.setDrawColor(30, 107, 224);
+    doc.setLineWidth(0.8);
+    doc.rect(30, y - 12, pageW - 60, 30);
+    
+    doc.setFont(undefined, 'bold');
+    doc.text('Total Students:', 42, y + 5);
+    doc.setFont(undefined, 'normal');
+    doc.text(String(list.length), 130, y + 5);
+    
+    doc.setFont(undefined, 'bold');
+    doc.text('Date:', pageW - 180, y + 5);
+    doc.setFont(undefined, 'normal');
+    doc.text(new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), pageW - 130, y + 5);
+    
+    y += 22;
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Breakdown: ' + classSummary, 42, y);
+    
+    // ─── Table with PHONE column ───────────────
+    var tableStartY = y + 15;
+    
+    var tableBody = [];
+    var sc = (currentAdminClass === 'all');
+    var lastClass = null;
+    var slNo = 0;
+    
+    list.forEach(function(s){
+      // Class group header (when "All Classes")
+      if(sc && s.class !== lastClass){
+        tableBody.push([
+          {
+            content: 'CLASS ' + (s.class || '—'),
+            colSpan: 7,   // ⭐ Now 7 columns (was 6)
+            styles: {
+              fillColor: [30, 107, 224],
+              textColor: [255, 255, 255],
+              fontStyle: 'bold',
+              halign: 'left',
+              fontSize: 10
+            }
+          }
+        ]);
+        lastClass = s.class;
+        slNo = 0;
+      }
+      
+      slNo++;
+      
+      // ⭐ Phone formatting
+      var phone = (s.phone || s.parent_mobile || '').toString().trim();
+      if(phone && phone !== '—'){
+        // Format: if 10 digits → "9876543210"
+        // If has country code → clean it
+        var cleanPhone = phone.replace(/[^0-9+]/g, '');
+        // Remove +91 / 91 prefix if present
+        if(cleanPhone.length === 12 && cleanPhone.startsWith('91')){
+          cleanPhone = cleanPhone.substring(2);
+        } else if(cleanPhone.length === 13 && cleanPhone.startsWith('+91')){
+          cleanPhone = cleanPhone.substring(3);
+        }
+        phone = cleanPhone || '—';
+      } else {
+        phone = '—';
+      }
+      
+      tableBody.push([
+        String(slNo),
+        s.roll || '—',
+        s.studentid || '—',
+        s.name || '—',
+        s.class || '—',
+        s.fathername || '—',   // Father's name
+        phone                  // ⭐ Phone column
+      ]);
+    });
+    
+    doc.autoTable({
+      startY: tableStartY,
+      head: [['#', 'Roll', 'Student ID', 'Name', 'Class', "Father's Name", 'Phone']],
+      body: tableBody,
+      theme: 'grid',
+      styles: {
+        fontSize: 8,
+        cellPadding: 4,
+        textColor: [0, 0, 0],
+        lineColor: [200, 215, 240],
+        lineWidth: 0.3
+      },
+      headStyles: {
+        fillColor: [21, 71, 168],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 9,
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' },                                    // #
+        1: { cellWidth: 40, halign: 'center', fontStyle: 'bold', textColor: [8, 145, 178] },          // Roll
+        2: { cellWidth: 78, halign: 'center', fontSize: 7.5 },                                        // ID
+        3: { cellWidth: 'auto', halign: 'left' },                                                     // Name
+        4: { cellWidth: 38, halign: 'center' },                                                       // Class
+        5: { cellWidth: 95, halign: 'left' },                                                         // Father
+        6: { cellWidth: 80, halign: 'center', fontStyle: 'bold', textColor: [5, 150, 105] }           // ⭐ Phone
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252]
+      },
+      didDrawPage: function(data) {
+        var pageNum = doc.internal.getCurrentPageInfo().pageNumber;
+        doc.setFontSize(8);
+        doc.setTextColor(120, 120, 120);
+        doc.text('Page ' + pageNum, pageW / 2, pageH - 20, { align: 'center' });
+        doc.setFontSize(7);
+        doc.text(
+          'Noorussalam Madrasa • Generated: ' + new Date().toLocaleString('en-IN'),
+          pageW / 2,
+          pageH - 8,
+          { align: 'center' }
+        );
+      }
+    });
+    
+    // ─── Save ───────────────────────────────────
+    var filename = 'Students_'
+      + (currentAdminClass === 'all' ? 'All' : 'Class' + currentAdminClass)
+      + '_' + new Date().toISOString().split('T')[0]
+      + '.pdf';
+    
+    doc.save(filename);
+    
+    showToast('✅ PDF Downloaded — ' + list.length + ' students', 'success');
+    
+    if(typeof confetti !== 'undefined'){
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
+    }
+    
+  } catch(err) {
+    console.error('PDF error:', err);
+    showToast('❌ PDF failed: ' + err.message, 'error');
+  }
+  
+  showLoading(false);
+}
 
 /* ============================================================ */
 /* 👥 ADMIN: STUDENTS                                           */
@@ -5766,43 +5994,121 @@ async function loadStudentsForAdmin(){
   try{
     var q=supabaseClient.from('students').select('*');
     if(currentAdminClass!=='all')q=q.eq('class',currentAdminClass);
-    q=q.order('class').order('roll').order('name');
+    // DB-ൽ sort ചെയ്യുമ്പോൾ basic sort
+    q=q.order('class').order('name');
     var r=await q;
     studentsAdminData=r.data||[];
+    
+    // ⭐ NUMERIC SORT — Class → Roll (number) → Name
+    studentsAdminData.sort(function(a, b){
+      var ca = parseInt(a.class) || 0;
+      var cb = parseInt(b.class) || 0;
+      if(ca !== cb) return ca - cb;                 // Class sort
+      
+      var ra = parseInt(a.roll) || 999999;
+      var rb = parseInt(b.roll) || 999999;
+      if(ra !== rb) return ra - rb;                 // Roll numeric sort
+      
+      return (a.name || '').localeCompare(b.name || ''); // Name fallback
+    });
+    
     filterStudentsAdmin();
-  }catch(e){wrap.innerHTML='<div class="empty-state">Error</div>';}
+  }catch(e){
+    console.error(e);
+    wrap.innerHTML='<div class="empty-state">Error: '+escapeHtml(e.message)+'</div>';
+  }
 }
-
 function filterStudentsAdmin(){
-  var s=(document.getElementById('studentSearchAdmin')?document.getElementById('studentSearchAdmin').value:'').toLowerCase().trim();
-  filteredStudentsAdmin=studentsAdminData.filter(function(x){
-    return!s||(x.name||'').toLowerCase().indexOf(s)>-1||(x.studentid||'').toLowerCase().indexOf(s)>-1;
+  var s = (document.getElementById('studentSearchAdmin')?.value || '').toLowerCase().trim();
+  
+  filteredStudentsAdmin = studentsAdminData.filter(function(x){
+    return !s 
+      || (x.name || '').toLowerCase().indexOf(s) > -1
+      || (x.studentid || '').toLowerCase().indexOf(s) > -1
+      || (x.roll || '').toString().indexOf(s) > -1
+      || ('class ' + (x.class || '')).indexOf(s) > -1;
   });
+  
+  // ⭐ Same numeric sort applied after filter
+  filteredStudentsAdmin.sort(function(a, b){
+    var ca = parseInt(a.class) || 0;
+    var cb = parseInt(b.class) || 0;
+    if(ca !== cb) return ca - cb;
+    var ra = parseInt(a.roll) || 999999;
+    var rb = parseInt(b.roll) || 999999;
+    if(ra !== rb) return ra - rb;
+    return (a.name || '').localeCompare(b.name || '');
+  });
+  
   renderStudentsAdmin();
 }
 
 function renderStudentsAdmin(){
-  var wrap=document.getElementById('adminStudentsWrap');
-  if(filteredStudentsAdmin.length===0){wrap.innerHTML='<div class="empty-state">No students</div>';return;}
-  var sc=currentAdminClass==='all';
-  var h='<table><thead><tr><th>#</th><th>Photo</th><th>ID</th><th>Name</th>'+(sc?'<th>Class</th>':'')+'<th>Roll</th><th>Actions</th></tr></thead><tbody>';
-  filteredStudentsAdmin.forEach(function(s,idx){
-    var ph=hasPhoto(s.photo)?'<img src="'+s.photo+'" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">':'<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(140deg,#1e6be0,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;">'+(s.name||'?').charAt(0).toUpperCase()+'</div>';
-    var blockedBadge=s.is_blocked?' <span style="background:rgba(220,38,38,.15);color:#dc2626;padding:2px 8px;border-radius:20px;font-size:.62rem;font-weight:800;margin-left:6px;">🚫 BLOCKED</span>':'';
-    h+='<tr '+(s.is_blocked?'style="background:#fee2e2;"':'')+'><td>'+(idx+1)+'</td><td>'+ph+'</td><td><strong>'+escapeHtml(s.studentid)+'</strong></td><td>'+escapeHtml(s.name||'')+blockedBadge+'</td>';
-    if(sc)h+='<td>'+escapeHtml(s.class||'')+'</td>';
-    h+='<td>'+escapeHtml(s.roll||'')+'</td><td>';
-    if(s.is_blocked){
-      h+='<button class="btn-sm approve" onclick="unblockStudent(\''+s.studentid+'\')" title="Unblock">🔓</button> ';
-    }else{
-      h+='<button class="btn-sm reject" onclick="openBlockForm(\''+s.studentid+'\')" title="Block">🔒</button> ';
+  var wrap = document.getElementById('adminStudentsWrap');
+  
+  if(filteredStudentsAdmin.length === 0){
+    wrap.innerHTML = '<div class="empty-state">No students found</div>';
+    return;
+  }
+  
+  var sc = (currentAdminClass === 'all');
+  var h = '<table><thead><tr>'
+        + '<th>#</th>'
+        + '<th>Photo</th>'
+        + '<th>Roll</th>'
+        + '<th>ID</th>'
+        + '<th>Name</th>'
+        + (sc ? '<th>Class</th>' : '')
+        + '<th>Actions</th>'
+        + '</tr></thead><tbody>';
+  
+  var lastClass = null;
+  var counter = 0;
+  
+  filteredStudentsAdmin.forEach(function(s){
+    // ⭐ Class group header (only when "All Classes")
+    if(sc && s.class !== lastClass){
+      h += '<tr style="background:linear-gradient(100deg,#1e40af,#2563eb);">'
+         + '<td colspan="' + (sc ? 7 : 6) + '" '
+         + 'style="color:#fff;font-weight:900;font-size:.92rem;padding:10px 14px;letter-spacing:.5px;">'
+         + '<i class="fas fa-graduation-cap"></i> Class ' + escapeHtml(s.class || '—')
+         + ' <span style="background:rgba(255,255,255,.2);padding:2px 10px;border-radius:20px;font-size:.7rem;margin-left:8px;">'
+         + filteredStudentsAdmin.filter(function(x){return x.class === s.class;}).length + ' Students'
+         + '</span></td></tr>';
+      lastClass = s.class;
     }
-    h+='<button class="btn-sm" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;padding:5px 10px;" onclick="impersonateStudent(\''+s.studentid+'\')" title="View as">👁️</button> ';
-    h+='<button class="btn-sm approve" onclick="editStudent(\''+s.studentid+'\')">✏️</button>';
-    h+='<button class="btn-sm reject" onclick="deleteStudent(\''+s.studentid+'\')">🗑️</button></td></tr>';
+    
+    counter++;
+    var ph = hasPhoto(s.photo)
+      ? '<img src="' + s.photo + '" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">'
+      : '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(140deg,#1e6be0,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;">'
+        + (s.name || '?').charAt(0).toUpperCase() + '</div>';
+    
+    var blockedBadge = s.is_blocked
+      ? ' <span style="background:rgba(220,38,38,.15);color:#dc2626;padding:2px 8px;border-radius:20px;font-size:.62rem;font-weight:800;margin-left:6px;">🚫 BLOCKED</span>'
+      : '';
+    
+    h += '<tr ' + (s.is_blocked ? 'style="background:#fee2e2;"' : '') + '>';
+    h += '<td>' + counter + '</td>';
+    h += '<td>' + ph + '</td>';
+    h += '<td><strong style="color:#0891b2;">' + escapeHtml(s.roll || '—') + '</strong></td>';
+    h += '<td><strong>' + escapeHtml(s.studentid) + '</strong></td>';
+    h += '<td>' + escapeHtml(s.name || '') + blockedBadge + '</td>';
+    if(sc) h += '<td>' + escapeHtml(s.class || '') + '</td>';
+    h += '<td>';
+    if(s.is_blocked){
+      h += '<button class="btn-sm approve" onclick="unblockStudent(\'' + s.studentid + '\')" title="Unblock">🔓</button> ';
+    }else{
+      h += '<button class="btn-sm reject" onclick="openBlockForm(\'' + s.studentid + '\')" title="Block">🔒</button> ';
+    }
+    h += '<button class="btn-sm" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;padding:5px 10px;" onclick="impersonateStudent(\'' + s.studentid + '\')" title="View as">👁️</button> ';
+    h += '<button class="btn-sm approve" onclick="editStudent(\'' + s.studentid + '\')">✏️</button>';
+    h += '<button class="btn-sm reject" onclick="deleteStudent(\'' + s.studentid + '\')">🗑️</button>';
+    h += '</td></tr>';
   });
-  h+='</tbody></table>';
-  wrap.innerHTML=h;
+  
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
 }
 
 function openStudentForm(sid){
@@ -5983,49 +6289,131 @@ function returnToAdmin(){
 }
 
 /* ============================================================ */
-/* 📊 ADMIN: MARKS ENTRY                                        */
+/* 📊 ADMIN: MARKS ENTRY — Roll Number Order                    */
 /* ============================================================ */
 async function loadMarksEntry(){
-  if(!currentAdminClass)return;
-  if(currentAdminClass==='all'){
-    showToast('Specific class','error');
-    document.getElementById('marksWrap').innerHTML='<div class="empty-state">Specific class</div>';
+  if(!currentAdminClass) return;
+  
+  if(currentAdminClass === 'all'){
+    showToast('⚠️ Specific class select ചെയ്യുക', 'error');
+    document.getElementById('marksWrap').innerHTML = 
+      '<div class="empty-state">Specific class തിരഞ്ഞെടുക്കുക</div>';
     return;
   }
-  var exam=document.getElementById('marksExamName').value.trim();
-  if(!exam){showToast('Select exam','error');return;}
-  marksExamCache=exam;
-  var subjects=getSubjectsForClass(currentAdminClass,exam);
-  var wrap=document.getElementById('marksWrap');
-  wrap.innerHTML='<div class="loading-tx"><div class="spinner-sm"></div></div>';
-  try{
-    var sr=await supabaseClient.from('students').select('studentid,name').eq('class',currentAdminClass).order('name');
-    var er=await supabaseClient.from('exam_marks').select('*').eq('exam_name',exam);
-    marksEntryData=(sr.data||[]).map(function(s){
-      var m={};
+  
+  var exam = document.getElementById('marksExamName').value.trim();
+  if(!exam){
+    showToast('⚠️ Exam select ചെയ്യുക', 'error');
+    return;
+  }
+  
+  marksExamCache = exam;
+  var subjects = getSubjectsForClass(currentAdminClass, exam);
+  var wrap = document.getElementById('marksWrap');
+  wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+  
+  try {
+    // ⭐ Fetch roll field too
+    var sr = await supabaseClient
+      .from('students')
+      .select('studentid, name, roll, class')
+      .eq('class', currentAdminClass);
+    
+    var er = await supabaseClient
+      .from('exam_marks')
+      .select('*')
+      .eq('exam_name', exam);
+    
+    var students = sr.data || [];
+    
+    // ⭐ NUMERIC SORT by Roll Number
+    students.sort(function(a, b){
+      var ra = parseInt(a.roll) || 999999;
+      var rb = parseInt(b.roll) || 999999;
+      if(ra !== rb) return ra - rb;
+      return (a.name || '').localeCompare(b.name || '');
+    });
+    
+    // ⭐ Build marks entry data
+    marksEntryData = students.map(function(s){
+      var m = {};
       subjects.forEach(function(sub){
-        var r=(er.data||[]).find(function(e){return e.studentid===s.studentid&&e.subject===sub;});
-        m[sub]=r&&r.obtained_marks!==null?String(r.obtained_marks):'';
+        var r = (er.data || []).find(function(e){
+          return e.studentid === s.studentid && e.subject === sub;
+        });
+        m[sub] = r && r.obtained_marks !== null ? String(r.obtained_marks) : '';
       });
-      return{studentid:s.studentid,name:s.name,marks:m};
+      return {
+        studentid: s.studentid,
+        name: s.name,
+        roll: s.roll || '—',
+        marks: m
+      };
     });
-    if(marksEntryData.length===0){wrap.innerHTML='<div class="empty-state">No students</div>';return;}
-    var h='<div class="class-subjects-info"><strong>📚 Class '+currentAdminClass+' — '+exam+'</strong></div><div class="admin-table-wrap"><table><thead><tr><th>#</th><th>Student</th>';
-    subjects.forEach(function(sub){h+='<th style="text-align:center;">'+escapeHtml(sub)+'</th>';});
-    h+='</tr></thead><tbody>';
-    marksEntryData.forEach(function(s,sidx){
-      h+='<tr><td>'+(sidx+1)+'</td><td><strong>'+escapeHtml(s.name)+'</strong></td>';
-      subjects.forEach(function(sub,si){
-        h+='<td style="text-align:center;"><input type="text" class="mk-inp" data-sidx="'+sidx+'" data-si="'+si+'" value="'+(s.marks[sub]||'')+'"></td>';
+    
+    if(marksEntryData.length === 0){
+      wrap.innerHTML = '<div class="empty-state">No students in this class</div>';
+      return;
+    }
+    
+    // ⭐ Header info with count
+    var h = '<div class="class-subjects-info">'
+          + '<strong>📚 Class ' + currentAdminClass + ' — ' + escapeHtml(exam) + '</strong>'
+          + '<span style="float:right;color:#1e40af;font-weight:800;font-size:.8rem;">'
+          + '👥 ' + marksEntryData.length + ' Students'
+          + '</span>'
+          + '</div>';
+    
+    // ⭐ Table with Roll column
+    h += '<div class="admin-table-wrap"><table>';
+    h += '<thead><tr>';
+    h += '<th style="width:40px;text-align:center;">#</th>';
+    h += '<th style="width:60px;text-align:center;">Roll</th>';
+    h += '<th style="min-width:160px;">Student</th>';
+    subjects.forEach(function(sub){
+      h += '<th style="text-align:center;">' + escapeHtml(sub) + '</th>';
+    });
+    h += '</tr></thead><tbody>';
+    
+    marksEntryData.forEach(function(s, sidx){
+      h += '<tr>';
+      h += '<td style="text-align:center;color:#64748b;font-weight:700;">' + (sidx + 1) + '</td>';
+      h += '<td style="text-align:center;">'
+         + '<span style="background:linear-gradient(100deg,#ecfeff,#cffafe);'
+         + 'color:#0891b2;font-weight:900;padding:4px 10px;border-radius:20px;'
+         + 'font-size:.82rem;border:1px solid rgba(8,145,178,.3);display:inline-block;min-width:32px;">'
+         + escapeHtml(String(s.roll))
+         + '</span></td>';
+      h += '<td><strong style="color:#0f172a;">' + escapeHtml(s.name) + '</strong>'
+         + '<br><small style="color:#94a3b8;font-size:.68rem;">' + escapeHtml(s.studentid) + '</small></td>';
+      
+      subjects.forEach(function(sub, si){
+        var val = s.marks[sub] || '';
+        h += '<td style="text-align:center;">'
+           + '<input type="text" class="mk-inp" '
+           + 'data-sidx="' + sidx + '" data-si="' + si + '" '
+           + 'value="' + escapeHtml(val) + '" '
+           + 'style="width:58px;padding:6px 8px;text-align:center;font-weight:700;'
+           + 'border:1.5px solid rgba(100,116,139,.25);border-radius:8px;'
+           + 'background:#fff;color:#0f172a;outline:none;font-family:inherit;" '
+           + 'onfocus="this.style.borderColor=\'#3b82f6\';this.style.background=\'#eff6ff\';" '
+           + 'onblur="this.style.borderColor=\'rgba(100,116,139,.25)\';this.style.background=\'#fff\';" '
+           + 'placeholder="—">'
+           + '</td>';
       });
-      h+='</tr>';
+      
+      h += '</tr>';
     });
-    h+='</tbody></table></div>';
-    wrap.innerHTML=h;
-    wrap.dataset.subjects=JSON.stringify(subjects);
-  }catch(e){wrap.innerHTML='<div class="empty-state">Error</div>';}
+    
+    h += '</tbody></table></div>';
+    wrap.innerHTML = h;
+    wrap.dataset.subjects = JSON.stringify(subjects);
+    
+  } catch(e) {
+    console.error('loadMarksEntry error:', e);
+    wrap.innerHTML = '<div class="empty-state" style="color:#dc2626;">Error: ' + escapeHtml(e.message) + '</div>';
+  }
 }
-
 async function saveMarksBulk(){
   var wrap=document.getElementById('marksWrap');
   var subjects=JSON.parse(wrap.dataset.subjects||'[]');
@@ -7907,12 +8295,22 @@ function formatFeeMonthML(raw){
 }
 
 async function getFeeParentByMobile(mobile){
-  if(!supabaseClient || !mobile) return null;
-  try{
-    var clean = String(mobile).replace(/\D/g,'').slice(-10);
-    var r = await supabaseClient.from('fee_parents').select('*').eq('mobile', clean).maybeSingle();
-    return r.data || null;
-  }catch(e){ return null; }
+  if (!supabaseClient || !mobile) return null;
+  try {
+    var clean = String(mobile).replace(/\D/g, '').slice(-10);
+    if (clean.length !== 10) return null;
+    
+    // Get all fee_parents and match by last 10 digits
+    var r = await supabaseClient.from('fee_parents').select('*');
+    var found = (r.data || []).find(function(fp){
+      var fpClean = String(fp.mobile || '').replace(/\D/g, '').slice(-10);
+      return fpClean === clean && fpClean.length === 10;
+    });
+    return found || null;
+  } catch(e) { 
+    console.warn('getFeeParentByMobile:', e);
+    return null; 
+  }
 }
 
 function openStudentFees(){
@@ -7974,11 +8372,12 @@ async function loadStudentFeeData(){
     // ⭐ METHOD 3: Fallback — Mobile match (purana data-ക്ക്)
     if (!parent) {
       try {
-        var parentMobile = String(currentUser.parentMobile || currentUser.phone || '')
-          .replace(/\D/g,'').slice(-10);
+        // Only use `phone` (no parent_mobile)
+           var phone = String(currentUser.phone || '')
+               .replace(/\D/g, '').slice(-10);
         
-        if (parentMobile.length === 10) {
-          parent = await getFeeParentByMobile(parentMobile);
+        if (phone.length === 10) {
+          parent = await getFeeParentByMobile(phone);
           if (parent) console.log('✅ Fee parent found via mobile (fallback)');
         }
       } catch(e) { console.warn('Method 3 (mobile) failed:', e.message); }
@@ -8010,14 +8409,14 @@ async function loadStudentFeeData(){
     var sc = totalPending > 0 ? '#b45309' : totalPending < 0 ? '#0891b2' : '#059669';
     var sl = totalPending > 0 ? '⏳ പെൻഡിംഗ്' : totalPending < 0 ? '💎 അഡ്വാൻസ്' : '✅ പൂർത്തിയായി';
 
-    var waMsg = 'നമസ്കാരം '+(parent.parent_name||'')+',\n\nനൂറുസ്സലാം മദ്റസ വരിസംഖ്യ:\n📱 '+parentMobile+'\n✅ അവസാനം അടച്ചത്: '+lastPaidMonthML+'\n📆 ബാക്കി മാസങ്ങൾ: '+pendingMonths+'\n💰 ആകെ ബാക്കി: ₹'+totalPending.toLocaleString()+'\n\nUPI: '+(settings.upiId||'');
-    var waLink = 'https://wa.me/91'+parentMobile+'?text='+encodeURIComponent(waMsg);
+    var waMsg = 'നമസ്കാരം '+(parent.parent_name||'')+',\n\nനൂറുസ്സലാം മദ്റസ വരിസംഖ്യ:\n📱 '+phone+'\n✅ അവസാനം അടച്ചത്: '+lastPaidMonthML+'\n📆 ബാക്കി മാസങ്ങൾ: '+pendingMonths+'\n💰 ആകെ ബാക്കി: ₹'+totalPending.toLocaleString()+'\n\nUPI: '+(settings.upiId||'');
+    var waLink = 'https://wa.me/91'+phone+'?text='+encodeURIComponent(waMsg);
 
     var html = '<div style="border-radius:28px;background:#fff;border:1px solid rgba(180,200,230,.5);overflow:hidden;margin-bottom:16px;">';
     html += '<table style="width:100%;border-collapse:collapse;">';
     html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;width:44%;"><i class="fas fa-user"></i> രക്ഷിതാവ്</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+escapeHtml(parent.parent_name||'')+'</td></tr>';
     if(parent.student_names) html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-user-graduate"></i> കുട്ടികൾ</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+escapeHtml(parent.student_names)+'</td></tr>';
-    html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-mobile-alt"></i> മൊബൈൽ</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+parentMobile+'</td></tr>';
+    html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-mobile-alt"></i> മൊബൈൽ</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+phone+'</td></tr>';
     html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-calendar"></i> അവസാനം അടച്ച മാസം</td><td style="padding:14px 16px;color:#0891b2;font-weight:700;">'+lastPaidMonthML+'</td></tr>';
     html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-calendar-day"></i> അവസാനം അടച്ച തീയതി</td><td style="padding:14px 16px;color:#b45309;font-weight:700;">'+lastPaidDateDD+'</td></tr>';
     html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-hourglass-half"></i> ബാക്കി മാസങ്ങൾ</td><td style="padding:14px 16px;color:#0f172a;">'+pendingMonths+' × ₹'+monthlyFee+' = ₹'+(pendingMonths*monthlyFee).toLocaleString()+'</td></tr>';
@@ -8045,7 +8444,7 @@ async function loadStudentFeeData(){
         if(isNaN(amt) || amt <= 0){ showToast('ശരിയായ തുക നൽകുക','error'); return; }
         var pa = settings.upiId || 'ameerpattani786@oksbi';
         var pn = settings.payeeName || 'Noorussalam Madrasa';
-        var link = 'upi://pay?pa='+encodeURIComponent(pa)+'&pn='+encodeURIComponent(pn)+'&am='+amt.toFixed(2)+'&cu=INR&tn='+encodeURIComponent('Madrasa Fee - '+parentMobile);
+        var link = 'upi://pay?pa='+encodeURIComponent(pa)+'&pn='+encodeURIComponent(pn)+'&am='+amt.toFixed(2)+'&cu=INR&tn='+encodeURIComponent('Madrasa Fee - '+phone);
         var a = document.createElement('a'); a.href = link; a.target = '_blank';
         document.body.appendChild(a); a.click();
         setTimeout(function(){ document.body.removeChild(a); }, 300);
