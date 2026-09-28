@@ -535,8 +535,8 @@ body.ai-panel-open .ai-fab{display:none!important}
   overflow:hidden;
   background:#fff;
   padding:0;
-  padding-top:env(safe-area-inset-top, 0px);       /* ✅ പുതിയത് */
-  padding-bottom:env(safe-area-inset-bottom, 0px); /* ✅ പുതിയത് */
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
   border:none;
   border-radius:0;
   box-shadow:none;
@@ -546,8 +546,8 @@ body.ai-panel-open .ai-fab{display:none!important}
   max-width:100%;
   margin:0;
   animation:aiPanelSlide .35s cubic-bezier(.34,1.2,.64,1);
-  padding-top:max(env(safe-area-inset-top, 0px), 12px);    /* ✅ */
-  padding-bottom:env(safe-area-inset-bottom, 0px);         /* ✅ */
+  padding-top:max(env(safe-area-inset-top, 0px), 12px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
 }
 @supports (height: 100dvh) {
   .ai-panel {
@@ -555,8 +555,6 @@ body.ai-panel-open .ai-fab{display:none!important}
     max-height: 100dvh !important;
   }
 }
-
-/* iOS Safari — visualViewport height */
 @supports (-webkit-touch-callout: none) {
   .ai-panel {
     height: -webkit-fill-available;
@@ -569,7 +567,7 @@ body.ai-panel-open .ai-fab{display:none!important}
 /* Header (Gemini style) */
 .ai-head{
   padding:14px 18px;
-  padding-top:calc(14px + env(safe-area-inset-top, 0px));  /* ✅ പുതിയത് */
+  padding-top:calc(14px + env(safe-area-inset-top, 0px));
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -577,9 +575,9 @@ body.ai-panel-open .ai-fab{display:none!important}
   background:#fff;
   border-bottom:1px solid rgba(100,116,139,.1);
   flex-shrink:0;
-  position:relative;   /* ✅ sticky-ന് പകരം relative */
+  position:relative;
   z-index:10;
-  min-height:64px;     /* ✅ കുറഞ്ഞ ഉയരം */
+  min-height:64px;
 }
 .ai-head-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
 .ai-avatar{
@@ -773,7 +771,7 @@ body.ai-panel-open .ai-fab{display:none!important}
   right:0;
   bottom:0;
   padding:12px 16px;
-  padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px));  /* ✅ */
+  padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px));
   background:linear-gradient(180deg,rgba(255,255,255,0) 0%,#fff 18%,#fff 100%);
   display:flex;
   gap:8px;
@@ -863,7 +861,6 @@ body.ai-panel-open .ai-fab{display:none!important}
   @keyframes aiPanelDesk{0%{opacity:0;transform:translate(-50%,-46%) scale(.94)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
   .ai-body{padding:20px 16px 100px}
 }
-@keyframes pulseMic{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0)}}
 
 /* ============================================================ */
 /* 🎨 CREATIONS                                                 */
@@ -1241,6 +1238,7 @@ body.ai-panel-open .ai-fab{display:none!important}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
 /* ============================================================ */
 /* 🆕 PART 9 — LOGIN TRACKING / LESSONS / DOWNLOADS             */
 /* ============================================================ */
@@ -1299,11 +1297,10 @@ body.ai-panel-open .ai-fab{display:none!important}
   .login-log-meta{font-size:.66rem}
   .login-log-time{font-size:.72rem}
 }
+
 /* ============================================================ */
 /* 🔧 FIX — Modal vs Bottom Nav & FAB conflicts                 */
 /* ============================================================ */
-
-/* 1️⃣ Hide bottom nav + FAB when ANY modal is open */
 body.modal-open .mob-bottom-nav,
 body.modal-open .ai-fab,
 body.modal-open .ai-fab.show {
@@ -1313,7 +1310,6 @@ body.modal-open .ai-fab.show {
   visibility: hidden !important;
 }
 
-/* 2️⃣ Raise ALL modals above bottom nav (currently 99999) */
 #globalModal,
 #passbookModal,
 #studentWithdrawalModal,
@@ -1333,7 +1329,6 @@ body.modal-open .ai-fab.show {
 .poster-preview-container { z-index: 9999999 !important; }
 .topper-loading { z-index: 9999998 !important; }
 
-/* 3️⃣ Reposition FAB clearly ABOVE bottom nav on mobile */
 @media (max-width: 900px) {
   body.logged-in .ai-fab,
   body.logged-in .ai-fab.show {
@@ -1344,13 +1339,10 @@ body.modal-open .ai-fab.show {
     font-size: 1.3rem !important;
     box-shadow: 0 14px 34px -12px rgba(34,211,238,1), 0 0 0 1px rgba(255,255,255,.18) !important;
   }
-
-  /* When AI panel open, hide FAB (already handled) */
   body.ai-panel-open .ai-fab { display: none !important; }
-
-  /* When modal open, hide FAB */
   body.modal-open .ai-fab { display: none !important; }
 }
+
 /* ============================================================ */
 /* 🔔 NEW ITEM BADGE — Quick Action tiles                       */
 /* ============================================================ */
@@ -1394,7 +1386,6 @@ body.modal-open .ai-fab.show {
   50%     { box-shadow: 0 4px 10px -2px rgba(239,68,68,.8), 0 0 0 8px rgba(239,68,68,0); }
 }
 
-/* Mobile: smaller */
 @media (max-width: 900px){
   .new-badge{
     min-width: 20px;
@@ -1406,7 +1397,6 @@ body.modal-open .ai-fab.show {
   }
 }
 
-/* Light mode adjust */
 body.light-mode .new-badge{
   border-color: #fff;
   box-shadow: 0 4px 12px -2px rgba(239,68,68,.5);
@@ -2158,50 +2148,51 @@ body.light-mode .new-badge{
       </div>
       <div class="admin-table-wrap" id="feedWrap"></div>
     </div>
+
     <!-- 📊 ADMIN: LOGIN LOGS -->
-<div id="adminLoginsTab" class="admin-tab-content" style="display:none;">
-  <div class="admin-toolbar">
-    <label>Date</label>
-    <input type="date" id="loginLogDate" />
-    <button class="btn-load" onclick="loadLoginLogs()"><i class="fas fa-sync-alt"></i> Load</button>
-    <button class="btn-load" onclick="loadLoginLogsToday()" style="background:linear-gradient(100deg,#059669,#34d399);"><i class="fas fa-calendar-day"></i> Today</button>
-    <input type="text" id="loginLogSearch" placeholder="🔍 Search name / ID" oninput="filterLoginLogs()" />
-    <button class="btn-pdf" onclick="downloadLoginLogsPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
-    <button class="btn-cancel" onclick="clearAllLoginLogs()" style="background:#fee2e2;color:#dc2626;border:1px solid rgba(220,38,38,.3);"><i class="fas fa-trash"></i> Clear All</button>
-  </div>
-  <div class="admin-summary" id="loginLogSummary"></div>
-  <div id="loginLogsWrap"></div>
-</div>
+    <div id="adminLoginsTab" class="admin-tab-content" style="display:none;">
+      <div class="admin-toolbar">
+        <label>Date</label>
+        <input type="date" id="loginLogDate" />
+        <button class="btn-load" onclick="loadLoginLogs()"><i class="fas fa-sync-alt"></i> Load</button>
+        <button class="btn-load" onclick="loadLoginLogsToday()" style="background:linear-gradient(100deg,#059669,#34d399);"><i class="fas fa-calendar-day"></i> Today</button>
+        <input type="text" id="loginLogSearch" placeholder="🔍 Search name / ID" oninput="filterLoginLogs()" />
+        <button class="btn-pdf" onclick="downloadLoginLogsPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+        <button class="btn-cancel" onclick="clearAllLoginLogs()" style="background:#fee2e2;color:#dc2626;border:1px solid rgba(220,38,38,.3);"><i class="fas fa-trash"></i> Clear All</button>
+      </div>
+      <div class="admin-summary" id="loginLogSummary"></div>
+      <div id="loginLogsWrap"></div>
+    </div>
 
-<!-- 📖 ADMIN: LESSONS -->
-<div id="adminLessonsTab" class="admin-tab-content" style="display:none;">
-  <div class="admin-toolbar">
-    <label>Class</label>
-    <select id="lessonAdminClass" class="modal-form-input" style="width:auto;padding:9px 15px;">
-      <option value="">-- Select --</option>
-      <option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option>
-      <option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option>
-      <option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option>
-      <option value="10">Class 10</option>
-    </select>
-    <label>Month</label>
-    <input type="month" id="lessonAdminMonth" />
-    <button class="btn-load" onclick="loadLessonsAdmin()"><i class="fas fa-sync-alt"></i> Load</button>
-    <button class="btn-update" onclick="openLessonForm()"><i class="fas fa-plus"></i> Add Lesson</button>
-    <button class="btn-update" onclick="openBulkLessonForm()" style="background:linear-gradient(100deg,#7c3aed,#a78bfa);color:#fff;"><i class="fas fa-layer-group"></i> Bulk Add</button>
-  </div>
-  <div class="admin-table-wrap" id="lessonsAdminWrap"></div>
-</div>
+    <!-- 📖 ADMIN: LESSONS -->
+    <div id="adminLessonsTab" class="admin-tab-content" style="display:none;">
+      <div class="admin-toolbar">
+        <label>Class</label>
+        <select id="lessonAdminClass" class="modal-form-input" style="width:auto;padding:9px 15px;">
+          <option value="">-- Select --</option>
+          <option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option>
+          <option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option>
+          <option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option>
+          <option value="10">Class 10</option>
+        </select>
+        <label>Month</label>
+        <input type="month" id="lessonAdminMonth" />
+        <button class="btn-load" onclick="loadLessonsAdmin()"><i class="fas fa-sync-alt"></i> Load</button>
+        <button class="btn-update" onclick="openLessonForm()"><i class="fas fa-plus"></i> Add Lesson</button>
+        <button class="btn-update" onclick="openBulkLessonForm()" style="background:linear-gradient(100deg,#7c3aed,#a78bfa);color:#fff;"><i class="fas fa-layer-group"></i> Bulk Add</button>
+      </div>
+      <div class="admin-table-wrap" id="lessonsAdminWrap"></div>
+    </div>
 
-<!-- 📥 ADMIN: DOWNLOADS -->
-<div id="adminDownloadsTab" class="admin-tab-content" style="display:none;">
-  <div class="admin-toolbar">
-    <button class="btn-load" onclick="loadDownloadsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
-    <button class="btn-update" onclick="openDownloadForm()"><i class="fas fa-plus"></i> Upload</button>
-    <input type="text" id="downloadAdminSearch" placeholder="🔍 Search" oninput="filterDownloadsAdmin()" />
-  </div>
-  <div class="admin-table-wrap" id="downloadsAdminWrap"></div>
-</div>
+    <!-- 📥 ADMIN: DOWNLOADS -->
+    <div id="adminDownloadsTab" class="admin-tab-content" style="display:none;">
+      <div class="admin-toolbar">
+        <button class="btn-load" onclick="loadDownloadsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="btn-update" onclick="openDownloadForm()"><i class="fas fa-plus"></i> Upload</button>
+        <input type="text" id="downloadAdminSearch" placeholder="🔍 Search" oninput="filterDownloadsAdmin()" />
+      </div>
+      <div class="admin-table-wrap" id="downloadsAdminWrap"></div>
+    </div>
 
   </div>
 
@@ -2440,6 +2431,7 @@ body.light-mode .new-badge{
 
 </div>
 </div>
+
 <!-- ============================================================ -->
 <!-- 💰 PASSBOOK MODAL                                            -->
 <!-- ============================================================ -->
@@ -2886,9 +2878,6 @@ body.light-mode .new-badge{
 </div>
 
 <!-- ============================================================ -->
-<!-- 🤖 AI ASSISTANT                                              -->
-<!-- ============================================================ -->
-<!-- ============================================================ -->
 <!-- 🤖 AI ASSISTANT — GEMINI STYLE FULL SCREEN                   -->
 <!-- ============================================================ -->
 <button class="ai-fab show" id="aiFab" onclick="toggleAIChat()"><i class="fas fa-robot"></i></button>
@@ -2992,6 +2981,7 @@ body.light-mode .new-badge{
 <button id="pwaInstallBtn" style="display:none;position:fixed;bottom:90px;right:20px;z-index:9999;background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#fff;border:none;padding:12px 20px;border-radius:50px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 10px 30px -8px rgba(34,211,238,.9);font-size:.85rem;align-items:center;gap:8px;">
   <i class="fas fa-download"></i> ആപ്പ് ഇൻസ്റ്റാൾ
 </button>
+
 <!-- ============================================================ -->
 <!-- ⚙️ CORE JAVASCRIPT — PART A                                  -->
 <!-- ============================================================ -->
@@ -3099,7 +3089,6 @@ const VIS_ACTIONS_META=[
   {key:'fees',label:'Fees',icon:'fa-money-bill-wave'},
   {key:'calendar',label:'Calendar',icon:'fa-calendar-alt'},
   {key:'topper',label:'Topper Poster',icon:'fa-crown'},
-  // ✅ NEW — these were missing
   {key:'notes',label:'Notes',icon:'fa-sticky-note'},
   {key:'badges',label:'Badges',icon:'fa-medal'},
   {key:'notice',label:'Notice Board',icon:'fa-bullhorn'},
@@ -3543,6 +3532,7 @@ async function saveStudentPortalVisibility(){
   }catch(e){showToast('❌ '+e.message,'error');}
 }
 </script>
+
 <script>
 /* ============================================================ */
 /* 🔐 LOGIN                                                     */
@@ -3592,6 +3582,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
       enableBodyScroll();
       showLoading(false);
       return;
+    }
 
     var r=await supabaseClient.from('students').select('*').eq('studentid',raw).single();
     if(r.error||!r.data){showToast('Invalid Student ID','error');showLoading(false);return;}
@@ -3639,7 +3630,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
         }
       }
     },2500);
-      // ✅ NEW: Login tracking into login_logs table
+
     try {
       if (typeof trackLogin === 'function') {
         await trackLogin(student);
@@ -3649,7 +3640,6 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
       console.warn('⚠️ trackLogin failed:', trackErr);
     }
 
-    showToast('Welcome '+currentUser.name+' ✨','success');
     showToast('Welcome '+currentUser.name+' ✨','success');
   }catch(err){
     console.error('Login error:',err);
@@ -3664,11 +3654,8 @@ document.getElementById('adminLogoutBtn').addEventListener('click',logout);
 function logout(){
   if(adminImpersonating){returnToAdmin();return;}
   currentUser=null;isAdminMode=false;currentAdminClass='';
-
-  // ✅ FIX #3 — Reset tracking flags so next login records properly
   window._lastTrackedUser = null;
   if(window._topWinnersData) window._topWinnersData = [];
-
   localStorage.removeItem('noor_session');
   document.body.classList.remove('logged-in');
   dashboardSection.style.display='none';
@@ -4092,7 +4079,6 @@ function toggleAIChat(){
   var nameEl=document.getElementById('aiStudentNameText');
   if(nameEl)nameEl.textContent=currentUser?currentUser.name:'Guest';
 
-  // Welcome text personalize
   var wSub=document.getElementById('aiWelcomeSub');
   if(wSub){
     wSub.textContent=currentUser
@@ -4100,7 +4086,6 @@ function toggleAIChat(){
       : 'നിങ്ങളെ എങ്ങനെ സഹായിക്കാം? ചുവടെ type ചെയ്യുക.';
   }
 
-  // Suggestions — guest vs student
   var sugg=document.getElementById('aiSuggestions');
   if(sugg){
     if(currentUser){
@@ -4194,7 +4179,6 @@ function aiQuick(t){document.getElementById('aiInput').value=t;sendAIMessage();}
 
 function aiAddMsg(t,w){
   var b=document.getElementById('aiBody');if(!b)return;
-  // Remove welcome screen if exists
   var wl=document.getElementById('aiWelcome');
   if(wl)wl.remove();
 
@@ -4227,7 +4211,6 @@ function clearAIChat(){
   var b=document.getElementById('aiBody');if(!b)return;
   aiHistory=[];
 
-  // Restore welcome screen
   b.innerHTML =
     '<div class="ai-welcome" id="aiWelcome">'+
       '<div class="ai-welcome-logo"><i class="fas fa-sparkles"></i></div>'+
@@ -4236,7 +4219,6 @@ function clearAIChat(){
       '<div class="ai-suggestions" id="aiSuggestions"></div>'+
     '</div>';
 
-  // Re-attach suggestions
   var sugg=document.getElementById('aiSuggestions');
   if(sugg){
     if(currentUser){
@@ -4395,6 +4377,7 @@ async function aiRespond(q){
   var fallbacks=['🤔 '+uname+', എന്റെ brain cell ഇപ്പോൾ ലീവിൽ ആണ് 😅 വേറെ എന്തേലും ചോദിക്ക്!','😂 '+uname+', ഇത് ഞാൻ പോലും ചിരിച്ചു! വേറെ എന്തേലും?','🤷 അളിയാ '+uname+', എനിക്ക് ഇത് മനസ്സിലായില്ല. ലളിതമായി ചോദിക്ക്! 😄'];
   return fallbacks[Math.floor(Math.random()*fallbacks.length)];
 }
+
 /* ============================================================ */
 /* 🆕 GEMINI-STYLE AI — FULL SCREEN + KEYBOARD HANDLING        */
 /* ============================================================ */
@@ -4410,7 +4393,7 @@ function setupAIKeyboardHandler(){
     var panel=document.getElementById('aiPanel');
     var foot=document.getElementById('aiFoot');
     if(!panel||!panel.classList.contains('open'))return;
-    if(window.innerWidth>900)return; // desktop skip
+    if(window.innerWidth>900)return;
 
     var vh=vv.height;
     var offsetTop=vv.offsetTop;
@@ -4418,7 +4401,6 @@ function setupAIKeyboardHandler(){
     var keyboardOpen=(winH-vh)>120;
 
     if(keyboardOpen){
-      // Panel occupies only visible area, input sticks to keyboard top
       panel.style.height=vh+'px';
       panel.style.maxHeight=vh+'px';
       panel.style.top=offsetTop+'px';
@@ -4429,7 +4411,6 @@ function setupAIKeyboardHandler(){
         foot.style.transform='translateY(-100%)';
         foot.style.bottom='auto';
       }
-      // scroll chat to bottom
       var body=document.getElementById('aiBody');
       if(body)setTimeout(function(){body.scrollTop=body.scrollHeight;},80);
     }else{
@@ -4451,7 +4432,6 @@ function setupAIKeyboardHandler(){
   window.addEventListener('orientationchange',function(){setTimeout(onVVResize,300);});
 }
 
-// Attach on DOM ready
 document.addEventListener('DOMContentLoaded',setupAIKeyboardHandler);
 setTimeout(setupAIKeyboardHandler,1000);
 
@@ -4630,6 +4610,7 @@ window.mobNavClick = mobNavClick;
 
 console.log('✅ PART 4 loaded — Core JavaScript (A)');
 </script>
+
 <!-- ============================================================ -->
 <!-- 📖 STUDENT MODALS — PART B                                   -->
 <!-- ============================================================ -->
@@ -5512,6 +5493,7 @@ function shareReportViaWhatsApp(){
 
 console.log('✅ PART 5 loaded — Student Modals complete');
 </script>
+
 <!-- ============================================================ -->
 <!-- 🛡️ ADMIN PANEL JAVASCRIPT — PART C                           -->
 <!-- ============================================================ -->
@@ -5736,77 +5718,73 @@ async function downloadPaymentsPDF(){
   doc.save('palathulli_'+currentAdminClass+'_'+date+'.pdf');
   showToast('✅ Downloaded','success');
 }
+
 /* ============================================================ */
 /* 📄 STUDENTS PDF — Class + Roll + Phone                       */
 /* ============================================================ */
 async function downloadStudentsPDF(){
   showLoading(true);
-  
+
   try {
-    // ⭐ Step 1: Fetch all students (with phone)
     var q = supabaseClient.from('students').select('*');
-    
+
     if(currentAdminClass && currentAdminClass !== 'all'){
       q = q.eq('class', currentAdminClass);
     }
-    
+
     var r = await q;
     var list = r.data || [];
-    
+
     if(list.length === 0){
       showToast('⚠️ No students to download', 'error');
       showLoading(false);
       return;
     }
-    
-    // ⭐ Step 2: NUMERIC SORT — Class → Roll → Name
+
     list.sort(function(a, b){
       var ca = parseInt(a.class) || 0;
       var cb = parseInt(b.class) || 0;
       if(ca !== cb) return ca - cb;
-      
+
       var ra = parseInt(a.roll) || 999999;
       var rb = parseInt(b.roll) || 999999;
       if(ra !== rb) return ra - rb;
-      
+
       return (a.name || '').localeCompare(b.name || '');
     });
-    
-    // ⭐ Step 3: Build PDF
+
     var jsPDF = window.jspdf.jsPDF;
     var doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     var pageW = doc.internal.pageSize.getWidth();
     var pageH = doc.internal.pageSize.getHeight();
-    
-    // ─── Header ────────────────────────────────
+
     doc.setFillColor(21, 71, 168);
     doc.rect(0, 0, pageW, 80, 'F');
-    
+
     try {
       var logoData = await getLogoDataUrl();
       if(logoData) doc.addImage(logoData, 'PNG', 40, 15, 50, 50);
     } catch(e){}
-    
+
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(18);
     doc.setFont(undefined, 'bold');
     doc.text('NOORUSSALAM MADRASA', pageW / 2, 32, { align: 'center' });
-    
+
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
     doc.text('Kambippalam, Kerala Estate', pageW / 2, 50, { align: 'center' });
-    
+
     doc.setFontSize(12);
     doc.setFont(undefined, 'bold');
     var titleText = currentAdminClass === 'all'
       ? 'ALL STUDENTS LIST'
       : 'STUDENTS LIST — CLASS ' + currentAdminClass;
     doc.text(titleText, pageW / 2, 70, { align: 'center' });
-    
-    // ─── Stats Bar ─────────────────────────────
+
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(10);
-    
+
     var classCounts = {};
     list.forEach(function(s){
       var c = s.class || '—';
@@ -5816,44 +5794,42 @@ async function downloadStudentsPDF(){
       .sort(function(a,b){return parseInt(a)-parseInt(b);})
       .map(function(c){ return 'C' + c + ': ' + classCounts[c]; })
       .join('  |  ');
-    
+
     var y = 100;
     doc.setFillColor(240, 246, 255);
     doc.rect(30, y - 12, pageW - 60, 30, 'F');
     doc.setDrawColor(30, 107, 224);
     doc.setLineWidth(0.8);
     doc.rect(30, y - 12, pageW - 60, 30);
-    
+
     doc.setFont(undefined, 'bold');
     doc.text('Total Students:', 42, y + 5);
     doc.setFont(undefined, 'normal');
     doc.text(String(list.length), 130, y + 5);
-    
+
     doc.setFont(undefined, 'bold');
     doc.text('Date:', pageW - 180, y + 5);
     doc.setFont(undefined, 'normal');
     doc.text(new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), pageW - 130, y + 5);
-    
+
     y += 22;
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
     doc.text('Breakdown: ' + classSummary, 42, y);
-    
-    // ─── Table with PHONE column ───────────────
+
     var tableStartY = y + 15;
-    
+
     var tableBody = [];
     var sc = (currentAdminClass === 'all');
     var lastClass = null;
     var slNo = 0;
-    
+
     list.forEach(function(s){
-      // Class group header (when "All Classes")
       if(sc && s.class !== lastClass){
         tableBody.push([
           {
             content: 'CLASS ' + (s.class || '—'),
-            colSpan: 7,   // ⭐ Now 7 columns (was 6)
+            colSpan: 7,
             styles: {
               fillColor: [30, 107, 224],
               textColor: [255, 255, 255],
@@ -5866,16 +5842,12 @@ async function downloadStudentsPDF(){
         lastClass = s.class;
         slNo = 0;
       }
-      
+
       slNo++;
-      
-      // ⭐ Phone formatting
+
       var phone = (s.phone || s.parent_mobile || '').toString().trim();
       if(phone && phone !== '—'){
-        // Format: if 10 digits → "9876543210"
-        // If has country code → clean it
         var cleanPhone = phone.replace(/[^0-9+]/g, '');
-        // Remove +91 / 91 prefix if present
         if(cleanPhone.length === 12 && cleanPhone.startsWith('91')){
           cleanPhone = cleanPhone.substring(2);
         } else if(cleanPhone.length === 13 && cleanPhone.startsWith('+91')){
@@ -5885,18 +5857,18 @@ async function downloadStudentsPDF(){
       } else {
         phone = '—';
       }
-      
+
       tableBody.push([
         String(slNo),
         s.roll || '—',
         s.studentid || '—',
         s.name || '—',
         s.class || '—',
-        s.fathername || '—',   // Father's name
-        phone                  // ⭐ Phone column
+        s.fathername || '—',
+        phone
       ]);
     });
-    
+
     doc.autoTable({
       startY: tableStartY,
       head: [['#', 'Roll', 'Student ID', 'Name', 'Class', "Father's Name", 'Phone']],
@@ -5917,13 +5889,13 @@ async function downloadStudentsPDF(){
         halign: 'center'
       },
       columnStyles: {
-        0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' },                                    // #
-        1: { cellWidth: 40, halign: 'center', fontStyle: 'bold', textColor: [8, 145, 178] },          // Roll
-        2: { cellWidth: 78, halign: 'center', fontSize: 7.5 },                                        // ID
-        3: { cellWidth: 'auto', halign: 'left' },                                                     // Name
-        4: { cellWidth: 38, halign: 'center' },                                                       // Class
-        5: { cellWidth: 95, halign: 'left' },                                                         // Father
-        6: { cellWidth: 80, halign: 'center', fontStyle: 'bold', textColor: [5, 150, 105] }           // ⭐ Phone
+        0: { cellWidth: 25, halign: 'center', fontStyle: 'bold' },
+        1: { cellWidth: 40, halign: 'center', fontStyle: 'bold', textColor: [8, 145, 178] },
+        2: { cellWidth: 78, halign: 'center', fontSize: 7.5 },
+        3: { cellWidth: 'auto', halign: 'left' },
+        4: { cellWidth: 38, halign: 'center' },
+        5: { cellWidth: 95, halign: 'left' },
+        6: { cellWidth: 80, halign: 'center', fontStyle: 'bold', textColor: [5, 150, 105] }
       },
       alternateRowStyles: {
         fillColor: [248, 250, 252]
@@ -5942,26 +5914,25 @@ async function downloadStudentsPDF(){
         );
       }
     });
-    
-    // ─── Save ───────────────────────────────────
+
     var filename = 'Students_'
       + (currentAdminClass === 'all' ? 'All' : 'Class' + currentAdminClass)
       + '_' + new Date().toISOString().split('T')[0]
       + '.pdf';
-    
+
     doc.save(filename);
-    
+
     showToast('✅ PDF Downloaded — ' + list.length + ' students', 'success');
-    
+
     if(typeof confetti !== 'undefined'){
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
     }
-    
+
   } catch(err) {
     console.error('PDF error:', err);
     showToast('❌ PDF failed: ' + err.message, 'error');
   }
-  
+
   showLoading(false);
 }
 
@@ -5974,24 +5945,22 @@ async function loadStudentsForAdmin(){
   try{
     var q=supabaseClient.from('students').select('*');
     if(currentAdminClass!=='all')q=q.eq('class',currentAdminClass);
-    // DB-ൽ sort ചെയ്യുമ്പോൾ basic sort
     q=q.order('class').order('name');
     var r=await q;
     studentsAdminData=r.data||[];
-    
-    // ⭐ NUMERIC SORT — Class → Roll (number) → Name
+
     studentsAdminData.sort(function(a, b){
       var ca = parseInt(a.class) || 0;
       var cb = parseInt(b.class) || 0;
-      if(ca !== cb) return ca - cb;                 // Class sort
-      
+      if(ca !== cb) return ca - cb;
+
       var ra = parseInt(a.roll) || 999999;
       var rb = parseInt(b.roll) || 999999;
-      if(ra !== rb) return ra - rb;                 // Roll numeric sort
-      
-      return (a.name || '').localeCompare(b.name || ''); // Name fallback
+      if(ra !== rb) return ra - rb;
+
+      return (a.name || '').localeCompare(b.name || '');
     });
-    
+
     filterStudentsAdmin();
   }catch(e){
     console.error(e);
@@ -6000,16 +5969,15 @@ async function loadStudentsForAdmin(){
 }
 function filterStudentsAdmin(){
   var s = (document.getElementById('studentSearchAdmin')?.value || '').toLowerCase().trim();
-  
+
   filteredStudentsAdmin = studentsAdminData.filter(function(x){
-    return !s 
+    return !s
       || (x.name || '').toLowerCase().indexOf(s) > -1
       || (x.studentid || '').toLowerCase().indexOf(s) > -1
       || (x.roll || '').toString().indexOf(s) > -1
       || ('class ' + (x.class || '')).indexOf(s) > -1;
   });
-  
-  // ⭐ Same numeric sort applied after filter
+
   filteredStudentsAdmin.sort(function(a, b){
     var ca = parseInt(a.class) || 0;
     var cb = parseInt(b.class) || 0;
@@ -6019,18 +5987,18 @@ function filterStudentsAdmin(){
     if(ra !== rb) return ra - rb;
     return (a.name || '').localeCompare(b.name || '');
   });
-  
+
   renderStudentsAdmin();
 }
 
 function renderStudentsAdmin(){
   var wrap = document.getElementById('adminStudentsWrap');
-  
+
   if(filteredStudentsAdmin.length === 0){
     wrap.innerHTML = '<div class="empty-state">No students found</div>';
     return;
   }
-  
+
   var sc = (currentAdminClass === 'all');
   var h = '<table><thead><tr>'
         + '<th>#</th>'
@@ -6041,12 +6009,11 @@ function renderStudentsAdmin(){
         + (sc ? '<th>Class</th>' : '')
         + '<th>Actions</th>'
         + '</tr></thead><tbody>';
-  
+
   var lastClass = null;
   var counter = 0;
-  
+
   filteredStudentsAdmin.forEach(function(s){
-    // ⭐ Class group header (only when "All Classes")
     if(sc && s.class !== lastClass){
       h += '<tr style="background:linear-gradient(100deg,#1e40af,#2563eb);">'
          + '<td colspan="' + (sc ? 7 : 6) + '" '
@@ -6057,17 +6024,17 @@ function renderStudentsAdmin(){
          + '</span></td></tr>';
       lastClass = s.class;
     }
-    
+
     counter++;
     var ph = hasPhoto(s.photo)
       ? '<img src="' + s.photo + '" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">'
       : '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(140deg,#1e6be0,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;">'
         + (s.name || '?').charAt(0).toUpperCase() + '</div>';
-    
+
     var blockedBadge = s.is_blocked
       ? ' <span style="background:rgba(220,38,38,.15);color:#dc2626;padding:2px 8px;border-radius:20px;font-size:.62rem;font-weight:800;margin-left:6px;">🚫 BLOCKED</span>'
       : '';
-    
+
     h += '<tr ' + (s.is_blocked ? 'style="background:#fee2e2;"' : '') + '>';
     h += '<td>' + counter + '</td>';
     h += '<td>' + ph + '</td>';
@@ -6086,7 +6053,7 @@ function renderStudentsAdmin(){
     h += '<button class="btn-sm reject" onclick="deleteStudent(\'' + s.studentid + '\')">🗑️</button>';
     h += '</td></tr>';
   });
-  
+
   h += '</tbody></table>';
   wrap.innerHTML = h;
 }
@@ -6193,10 +6160,7 @@ function closeBlockedScreen(){
   document.getElementById('loginSection').style.display='flex';
   var sidInput=document.getElementById('studentId');
   if(sidInput)sidInput.value='';
-
-  // ✅ FIX #3 — Reset tracking
   window._lastTrackedUser = null;
-
   localStorage.removeItem('noor_session');
 }
 
@@ -6247,10 +6211,7 @@ function returnToAdmin(){
   var b=document.getElementById('adminViewBanner');
   if(b)b.classList.remove('show');
   currentUser=null;
-
-  // ✅ FIX #3 — Reset tracking
   window._lastTrackedUser = null;
-
   document.body.classList.remove('logged-in');
   dashboardSection.style.display='none';
   adminSection.style.display='block';
@@ -6273,48 +6234,45 @@ function returnToAdmin(){
 /* ============================================================ */
 async function loadMarksEntry(){
   if(!currentAdminClass) return;
-  
+
   if(currentAdminClass === 'all'){
     showToast('⚠️ Specific class select ചെയ്യുക', 'error');
-    document.getElementById('marksWrap').innerHTML = 
+    document.getElementById('marksWrap').innerHTML =
       '<div class="empty-state">Specific class തിരഞ്ഞെടുക്കുക</div>';
     return;
   }
-  
+
   var exam = document.getElementById('marksExamName').value.trim();
   if(!exam){
     showToast('⚠️ Exam select ചെയ്യുക', 'error');
     return;
   }
-  
+
   marksExamCache = exam;
   var subjects = getSubjectsForClass(currentAdminClass, exam);
   var wrap = document.getElementById('marksWrap');
   wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
-  
+
   try {
-    // ⭐ Fetch roll field too
     var sr = await supabaseClient
       .from('students')
       .select('studentid, name, roll, class')
       .eq('class', currentAdminClass);
-    
+
     var er = await supabaseClient
       .from('exam_marks')
       .select('*')
       .eq('exam_name', exam);
-    
+
     var students = sr.data || [];
-    
-    // ⭐ NUMERIC SORT by Roll Number
+
     students.sort(function(a, b){
       var ra = parseInt(a.roll) || 999999;
       var rb = parseInt(b.roll) || 999999;
       if(ra !== rb) return ra - rb;
       return (a.name || '').localeCompare(b.name || '');
     });
-    
-    // ⭐ Build marks entry data
+
     marksEntryData = students.map(function(s){
       var m = {};
       subjects.forEach(function(sub){
@@ -6330,21 +6288,19 @@ async function loadMarksEntry(){
         marks: m
       };
     });
-    
+
     if(marksEntryData.length === 0){
       wrap.innerHTML = '<div class="empty-state">No students in this class</div>';
       return;
     }
-    
-    // ⭐ Header info with count
+
     var h = '<div class="class-subjects-info">'
           + '<strong>📚 Class ' + currentAdminClass + ' — ' + escapeHtml(exam) + '</strong>'
           + '<span style="float:right;color:#1e40af;font-weight:800;font-size:.8rem;">'
           + '👥 ' + marksEntryData.length + ' Students'
           + '</span>'
           + '</div>';
-    
-    // ⭐ Table with Roll column
+
     h += '<div class="admin-table-wrap"><table>';
     h += '<thead><tr>';
     h += '<th style="width:40px;text-align:center;">#</th>';
@@ -6354,7 +6310,7 @@ async function loadMarksEntry(){
       h += '<th style="text-align:center;">' + escapeHtml(sub) + '</th>';
     });
     h += '</tr></thead><tbody>';
-    
+
     marksEntryData.forEach(function(s, sidx){
       h += '<tr>';
       h += '<td style="text-align:center;color:#64748b;font-weight:700;">' + (sidx + 1) + '</td>';
@@ -6366,7 +6322,7 @@ async function loadMarksEntry(){
          + '</span></td>';
       h += '<td><strong style="color:#0f172a;">' + escapeHtml(s.name) + '</strong>'
          + '<br><small style="color:#94a3b8;font-size:.68rem;">' + escapeHtml(s.studentid) + '</small></td>';
-      
+
       subjects.forEach(function(sub, si){
         var val = s.marks[sub] || '';
         h += '<td style="text-align:center;">'
@@ -6381,14 +6337,14 @@ async function loadMarksEntry(){
            + 'placeholder="—">'
            + '</td>';
       });
-      
+
       h += '</tr>';
     });
-    
+
     h += '</tbody></table></div>';
     wrap.innerHTML = h;
     wrap.dataset.subjects = JSON.stringify(subjects);
-    
+
   } catch(e) {
     console.error('loadMarksEntry error:', e);
     wrap.innerHTML = '<div class="empty-state" style="color:#dc2626;">Error: ' + escapeHtml(e.message) + '</div>';
@@ -6956,8 +6912,9 @@ async function downloadCompetitionsPDF(){
 
 console.log('✅ PART 6 loaded — Admin Core (Payments, Students, Marks, Grades, Moral, Extra, Competitions)');
 </script>
+
 <!-- ============================================================ -->
-<!-- 🛡️ ADMIN SECONDARY + CREATIONS + FEES — PART D               -->
+<!-- 🛡️ ADMIN SECONDARY + CREATIONS — PART D                      -->
 <!-- ============================================================ -->
 <script>
 /* ============================================================ */
@@ -7685,7 +7642,6 @@ async function loadCreationsGallery(){
   if(!grid)return;
   grid.innerHTML='<div class="creations-loading"><div class="spinner-sm"></div> Loading...</div>';
   try{
-    // ✅ FIX — Load approved + own pending creations
     var sid = currentUser ? currentUser.studentId : '__none__';
     var r = await supabaseClient
       .from('student_creations')
@@ -7749,7 +7705,6 @@ function renderCreationsGrid(){
     }else{
       thumb='<div class="creation-thumb"><img src="'+url+'" alt="'+escapeHtml(c.title)+'" loading="lazy"><span class="creation-cat-chip">'+getCategoryLabel(c.category)+'</span></div>';
     }
-        // ✅ FIX — Pending indicator
     var pendingChip = '';
     if(!c.approved && currentUser && c.studentid === currentUser.studentId){
       pendingChip = '<span style="position:absolute;top:10px;right:10px;background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#03132e;font-size:.6rem;font-weight:800;padding:4px 10px;border-radius:20px;box-shadow:0 4px 10px -2px rgba(251,191,36,.6);z-index:3;">⏳ Pending</span>';
@@ -7959,7 +7914,6 @@ async function openCreationLightbox(id){
   var typeLabel=ft==='text'?' • ✍️ Text':ft==='pdf'?' • 📄 PDF':'';
   document.getElementById('clCategory').innerHTML='<i class="fas fa-tag"></i> '+getCategoryLabel(c.category)+typeLabel;
   document.getElementById('clDate').innerHTML='<i class="fas fa-calendar"></i> '+formatDate(c.created_at);
-  // ✅ FIX — Pending warning
   var descEl = document.getElementById('clDescription');
   if(!c.approved && currentUser && c.studentid === currentUser.studentId){
     descEl.innerHTML =
@@ -8233,6 +8187,8 @@ async function saveNoticeAdmin(e,id){
 <!-- 💰 FEE SYSTEM (UID-BASED) — v2.0                            -->
 <!-- ============================================================ -->
 <script>
+
+<script>
 /* ============================================================ */
 /* 🧮 FEE CALCULATION HELPERS                                  */
 /* ============================================================ */
@@ -8249,7 +8205,6 @@ function calcMonthsElapsed(startMonth, manual){
   if(isNaN(sy) || isNaN(sm)) return 0;
   var now = new Date();
   var months = (now.getFullYear() - sy) * 12 + (now.getMonth() + 1 - sm) + 1;
-  // Before 20th of month → previous month not counted yet
   if(now.getDate() < 20) months = Math.max(0, months - 1);
   return Math.max(0, months);
 }
@@ -8277,7 +8232,7 @@ var ML_MONTHS = ['ജനുവരി','ഫെബ്രുവരി','മാർ�
 var EN_MONTHS = ['January','February','March','April','May','June',
                  'July','August','September','October','November','December'];
 
-function formatFeeMonthML(raw){  // for parents/students
+function formatFeeMonthML(raw){
   if(!raw) return '---';
   var s = String(raw);
   var p = s.split('-');
@@ -8290,7 +8245,7 @@ function formatFeeMonthML(raw){  // for parents/students
   return s;
 }
 
-function formatFeeMonthEN(raw){  // for admin
+function formatFeeMonthEN(raw){
   if(!raw) return '---';
   var s = String(raw);
   var p = s.split('-');
@@ -8359,7 +8314,6 @@ async function saveFeeSettingsFromForm(e){
 async function getFeeParentByUID(sid){
   if(!supabaseClient || !sid) return null;
   try{
-    // Method 1: direct link via students.fee_parent_id
     var sr = await supabaseClient.from('students')
       .select('fee_parent_id')
       .eq('studentid', sid)
@@ -8369,7 +8323,6 @@ async function getFeeParentByUID(sid){
         .select('*').eq('id', sr.data.fee_parent_id).maybeSingle();
       if(pr.data) return pr.data;
     }
-    // Method 2: search inside student_ids array
     var r2 = await supabaseClient.from('fee_parents')
       .select('*').contains('student_ids', [sid]).maybeSingle();
     if(r2.data) return r2.data;
@@ -8423,7 +8376,6 @@ async function loadStudentFeeData(){
     var sl = br.totalPending > 0 ? '⏳ പെൻഡിംഗ്'
            : br.totalPending < 0 ? '💎 അഡ്വാൻസ്' : '✅ പൂർത്തിയായി';
 
-    // WhatsApp message
     var waMsg =
       'നമസ്കാരം '+(parent.parent_name||'')+',\n\n'+
       'നൂറുസ്സലാം മദ്റസ വരിസംഖ്യ:\n'+
@@ -8451,7 +8403,6 @@ async function loadStudentFeeData(){
     html += '<a href="'+waLink+'" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;padding:14px;margin:14px 20px 20px;border-radius:60px;text-decoration:none;font-weight:800;"><i class="fab fa-whatsapp"></i> WhatsApp-ൽ അയക്കാൻ</a>';
     html += '</div>';
 
-    // GPay section
     if(br.totalPending > 0){
       html += '<div style="background:#fff;border-radius:32px;padding:22px;border:1px solid rgba(180,200,230,.5);">';
       html += '<div style="text-align:center;margin-bottom:16px;"><span style="background:#fef3c7;border-radius:40px;padding:8px 20px;font-size:.75rem;color:#b45309;font-weight:700;">📋 ബാക്കി: ₹'+br.totalPending.toLocaleString()+'</span></div>';
@@ -8467,7 +8418,6 @@ async function loadStudentFeeData(){
       html += '</div>';
     }
 
-    // Payment history (last 5)
     var hist = parent.payment_history || [];
     if(typeof hist === 'string'){ try{ hist = JSON.parse(hist); }catch(e){ hist = []; } }
     if(hist.length > 0){
@@ -8484,7 +8434,6 @@ async function loadStudentFeeData(){
 
     wrap.innerHTML = html;
 
-    // GPay hook
     var gpBtn = document.getElementById('feeGpayBtn');
     if(gpBtn){
       gpBtn.addEventListener('click', function(){
@@ -8602,7 +8551,6 @@ async function openFeeParentForm(id){
   var p = id ? feeParentsData.find(function(x){ return x.id === id; }) : {};
   var isEdit = !!id;
 
-  // Load all students
   var studentsList = [];
   try{
     var sr = await supabaseClient.from('students')
@@ -8687,7 +8635,6 @@ async function saveFeeParent(e, id){
     return;
   }
 
-  // Fetch student names for autofill
   var studentNames = [];
   try{
     var sr = await supabaseClient.from('students')
@@ -8722,7 +8669,6 @@ async function saveFeeParent(e, id){
       if(ins.data) savedId = ins.data.id;
     }
 
-    // Reverse link: students.fee_parent_id
     if(savedId){
       await supabaseClient.from('students').update({ fee_parent_id: null }).eq('fee_parent_id', savedId);
       await supabaseClient.from('students').update({ fee_parent_id: savedId }).in('studentid', selectedStudentIds);
@@ -8944,2718 +8890,3 @@ function goToFees(){
 
 console.log('✅ PART 7 v2.0 loaded — UID-based Fee System ready');
 </script>
-<!-- ============================================================ -->
-<!-- ⚙️ SETTINGS + CHARTS + PUSH + INIT — PART E (Final)          -->
-<!-- ============================================================ -->
-<script>
-/* ============================================================ */
-/* 🎨 ADMIN SETTINGS — SAVE FUNCTIONS                           */
-/* ============================================================ */
-function populateSubjectClassSelect(){
-  var sel=document.getElementById('settingsSubjectClassSelect');
-  var copySel=document.getElementById('settingsSubjectCopyFrom');
-  var opts=[1,2,3,4,5,6,7,8,9,10].map(function(c){return'<option value="'+c+'">Class '+c+'</option>';}).join('');
-  if(sel)sel.innerHTML=opts;
-  if(copySel)copySel.innerHTML='<option value="">Copy from class...</option>'+opts;
-}
-
-function renderClassExamSubjectsUI(){
-  var clsEl=document.getElementById('settingsSubjectClassSelect');
-  var area=document.getElementById('settingsSubjectExamsArea');
-  if(!clsEl||!area)return;
-  var cls=clsEl.value;
-  if(!cls){area.innerHTML='<div style="color:#64748b;text-align:center;padding:20px;font-size:.82rem;">Class തിരഞ്ഞെടുക്കുക...</div>';return;}
-  var classData=CLASS_EXAM_SUBJECTS[cls]||{};
-  var exams=EXAMS_LIST.slice();
-  if(exams.length===0){area.innerHTML='<div style="padding:14px;text-align:center;color:#b45309;font-size:.8rem;"><i class="fas fa-exclamation-triangle"></i> ആദ്യം 📝 Exams list-ൽ exams ചേർക്കുക</div>';return;}
-  var html='';
-  var defSubs=classData['__default__']||[];
-  html+='<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;padding:10px;background:#fef3c7;border:1px solid rgba(180,83,9,.28);border-radius:12px;">';
-  html+='<div style="min-width:130px;font-weight:800;color:#b45309;font-size:.8rem;"><i class="fas fa-star"></i> Default</div>';
-  html+='<input type="text" class="modal-form-input subject-input" data-exam="__default__" value="'+escapeHtml(defSubs.join(','))+'" placeholder="e.g., Arabic,Malayalam,Maths" style="flex:1;font-size:.82rem;">';
-  html+='</div>';
-  exams.forEach(function(exam){
-    var subs=classData[exam]||[];
-    var isOverridden=subs.length>0;
-    html+='<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;padding:10px;background:#f8fafc;border:1px solid rgba(100,116,139,.15);border-radius:12px;">';
-    html+='<div style="min-width:130px;font-weight:800;color:#0f172a;font-size:.8rem;">';
-    html+=isOverridden?'<i class="fas fa-check-circle" style="color:#059669;"></i> ':'<i class="fas fa-circle-notch" style="color:#94a3b8;"></i> ';
-    html+=escapeHtml(exam)+'</div>';
-    html+='<input type="text" class="modal-form-input subject-input" data-exam="'+escapeHtml(exam)+'" value="'+escapeHtml(subs.join(','))+'" placeholder="Override (blank = default)" style="flex:1;font-size:.82rem;">';
-    html+='</div>';
-  });
-  html+='<div style="margin-top:10px;font-size:.7rem;color:#64748b;"><i class="fas fa-info-circle"></i> Blank ആയി വിട്ടാൽ Default subjects ഉപയോഗിക്കും</div>';
-  area.innerHTML=html;
-}
-
-async function saveClassSubjectsUI(){
-  var cls=document.getElementById('settingsSubjectClassSelect')?.value;
-  if(!cls){showToast('Class select ചെയ്യുക','error');return;}
-  var inputs=document.querySelectorAll('#settingsSubjectExamsArea .subject-input');
-  if(inputs.length===0){showToast('Load data first','error');return;}
-  CLASS_EXAM_SUBJECTS[cls]={};
-  var anyData=false;
-  inputs.forEach(function(inp){
-    var exam=inp.dataset.exam;
-    var val=inp.value.trim();
-    if(!val)return;
-    var subs=val.split(',').map(function(s){return s.trim();}).filter(Boolean);
-    if(subs.length===0)return;
-    CLASS_EXAM_SUBJECTS[cls][exam]=subs;
-    anyData=true;
-  });
-  if(!anyData)delete CLASS_EXAM_SUBJECTS[cls];
-  syncLegacyClassSubjects();
-  try{
-    var str=stringifyClassExamSubjects(CLASS_EXAM_SUBJECTS);
-    await supabaseClient.from('settings').upsert({key:'classSubjectsList',value:str},{onConflict:'key'});
-    SETTINGS_CACHE.classSubjectsList=str;
-    var ta=document.getElementById('settingsClassSubjects');
-    if(ta)ta.value=str;
-    showToast('✅ Class '+cls+' subjects saved','success');
-    if(typeof confetti!=='undefined')confetti({particleCount:60,spread:70,origin:{y:.7}});
-    renderClassExamSubjectsUI();
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-function copyClassSubjectsFrom(){
-  var from=document.getElementById('settingsSubjectCopyFrom')?.value;
-  var to=document.getElementById('settingsSubjectClassSelect')?.value;
-  if(!from||!to){showToast('Select both classes','error');return;}
-  if(from===to){showToast('Same class','error');return;}
-  if(!CLASS_EXAM_SUBJECTS[from]){showToast('Source class has no subjects','error');return;}
-  if(!confirm('Copy Class '+from+' → Class '+to+'?'))return;
-  CLASS_EXAM_SUBJECTS[to]=JSON.parse(JSON.stringify(CLASS_EXAM_SUBJECTS[from]));
-  renderClassExamSubjectsUI();
-  showToast('✅ Copied! Save ചെയ്യാൻ മറക്കരുത്','info');
-}
-
-async function saveClassTraits(){
-  var val=document.getElementById('settingsClassTraits').value.trim();
-  try{
-    await supabaseClient.from('settings').upsert({key:'classTraitsList',value:val},{onConflict:'key'});
-    CLASS_TRAITS=parseClassTraits(val);
-    SETTINGS_CACHE.classTraitsList=val;
-    showToast('✅ Class traits saved','success');
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-function previewSubjectMatrix(){
-  var val=document.getElementById('settingsClassSubjects').value.trim();
-  var parsed=parseClassExamSubjects(val);
-  var classes=Object.keys(parsed).sort(function(a,b){return parseInt(a)-parseInt(b);});
-  if(classes.length===0){
-    modalTitleSpan.innerText='🔍 Subject Preview';
-    modalBodyDiv.innerHTML='<div class="empty-state">ഒന്നും parse ചെയ്യാൻ പറ്റിയില്ല</div>';
-    modal.style.display='flex';
-    return;
-  }
-  var html='<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.78rem;color:#0f172a;">';
-  html+='<thead><tr style="background:#f0f6ff;"><th style="padding:9px 12px;text-align:left;color:#1e40af;font-size:.62rem;text-transform:uppercase;">Class</th><th style="padding:9px 12px;text-align:left;color:#1e40af;font-size:.62rem;text-transform:uppercase;">Exam</th><th style="padding:9px 12px;text-align:left;color:#1e40af;font-size:.62rem;text-transform:uppercase;">Subjects</th><th style="padding:9px 12px;text-align:center;color:#1e40af;font-size:.62rem;">Count</th><th style="padding:9px 12px;text-align:center;color:#1e40af;font-size:.62rem;">Max</th></tr></thead><tbody>';
-  var grandTotal=0;
-  classes.forEach(function(cls){
-    var exams=parsed[cls];
-    var examKeys=Object.keys(exams).filter(function(e){return e!=='__default__';}).sort();
-    if(examKeys.length===0&&exams['__default__'])examKeys=['__default__'];
-    examKeys.forEach(function(exam,idx){
-      var subs=exams[exam];
-      var examLabel=exam==='__default__'?'<i style="color:#b45309;">⭐ All Exams (default)</i>':escapeHtml(exam);
-      var clsCell=idx===0?'<td style="padding:9px 12px;border-bottom:1px solid rgba(100,116,139,.08);font-weight:800;color:#0f172a;vertical-align:top;" rowspan="'+examKeys.length+'">Class '+cls+'</td>':'';
-      html+='<tr>'+clsCell+'<td style="padding:9px 12px;border-bottom:1px solid rgba(100,116,139,.08);">'+examLabel+'</td>';
-      html+='<td style="padding:9px 12px;border-bottom:1px solid rgba(100,116,139,.08);font-size:.72rem;color:#475569;">'+subs.map(function(s){return escapeHtml(s);}).join(', ')+'</td>';
-      html+='<td style="padding:9px 12px;border-bottom:1px solid rgba(100,116,139,.08);text-align:center;font-weight:800;color:#0891b2;">'+subs.length+'</td>';
-      html+='<td style="padding:9px 12px;border-bottom:1px solid rgba(100,116,139,.08);text-align:center;font-weight:800;color:#b45309;">'+(subs.length*50)+'</td></tr>';
-      grandTotal++;
-    });
-  });
-  html+='</tbody></table></div>';
-  html+='<div style="margin-top:14px;padding:12px 16px;background:#ecfeff;border:1px solid rgba(8,145,178,.25);border-radius:12px;color:#0891b2;font-size:.78rem;"><i class="fas fa-info-circle"></i> <b>'+grandTotal+'</b> class-exam combinations parsed.</div>';
-  modalTitleSpan.innerText='🔍 Subject Matrix Preview';
-  modalBodyDiv.innerHTML=html;
-  modal.style.display='flex';
-}
-
-async function saveSetting(key,elId){
-  var val=document.getElementById(elId).value.trim();
-  if(!val){showToast('Required','error');return;}
-  try{
-    await supabaseClient.from('settings').upsert({key:key,value:val},{onConflict:'key'});
-    SETTINGS_CACHE[key]=val;
-    if(key==='examsList'){EXAMS_LIST=val.split(',').map(function(s){return s.trim();});populateDynamicDropdowns();}
-    if(key==='traitsList')TRAITS_LIST=val.split(',').map(function(s){return s.trim();});
-    if(key==='minWithdraw'){MIN_WITHDRAW=parseInt(val)||100;var e=document.getElementById('swMinAmount');if(e)e.textContent=MIN_WITHDRAW;}
-    showToast('✅ Saved','success');
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-async function saveSwadarName(){
-  var val=document.getElementById('settingsSwadarName').value.trim();
-  try{
-    await supabaseClient.from('settings').upsert({key:'swadarMuallimName',value:val},{onConflict:'key'});
-    SWADAR_MUALLIM_NAME=val;
-    showToast('✅ Saved','success');
-  }catch(e){showToast('❌','error');}
-}
-
-async function saveClassTeachers(){
-  var val=document.getElementById('settingsClassTeachers').value.trim();
-  try{
-    await supabaseClient.from('settings').upsert({key:'classTeachers',value:val},{onConflict:'key'});
-    CLASS_TEACHERS=parseClassTeachers(val);
-    showToast('✅ Saved','success');
-  }catch(e){showToast('❌','error');}
-}
-
-async function saveHeadings(){
-  var he=document.getElementById('settingsHeadingExtra').value.trim();
-  var ho=document.getElementById('settingsHeadingOverallRank').value.trim();
-  var hm=document.getElementById('settingsHeadingMonthly').value.trim();
-  if(!he||!ho||!hm){showToast('All required','error');return;}
-  try{
-    await supabaseClient.from('settings').upsert({key:'headingExtraTitle',value:he},{onConflict:'key'});
-    await supabaseClient.from('settings').upsert({key:'headingOverallRankTitle',value:ho},{onConflict:'key'});
-    await supabaseClient.from('settings').upsert({key:'headingMonthlyTitle',value:hm},{onConflict:'key'});
-    HEADING_EXTRA=he;HEADING_OVERALL_RANK=ho;HEADING_MONTHLY=hm;
-    showToast('✅ Saved','success');
-  }catch(e){showToast('❌','error');}
-}
-
-async function saveClassExtraCategories(){
-  var val=document.getElementById('settingsClassExtraCategories').value.trim();
-  try{
-    await supabaseClient.from('settings').upsert({key:'classExtraCategories',value:val},{onConflict:'key'});
-    CLASS_EXTRA_CATEGORIES=parseClassExtraCategories(val);
-    showToast('✅ Saved','success');
-  }catch(e){showToast('❌','error');}
-}
-
-async function saveResultPublishTime(){
-  var val=document.getElementById('settingsResultTime').value;
-  if(!val){showToast('Required','error');return;}
-  try{
-    var iso=new Date(val).toISOString();
-    await supabaseClient.from('settings').upsert({key:'resultPublishTime',value:iso},{onConflict:'key'});
-    RESULT_PUBLISH_TIME=iso;
-    document.getElementById('currentResultTime').textContent=getPublishTimeText();
-    showToast('✅ Saved','success');
-  }catch(e){showToast('❌','error');}
-}
-
-async function clearResultPublishTime(){
-  if(!confirm('Clear?'))return;
-  try{
-    await supabaseClient.from('settings').upsert({key:'resultPublishTime',value:''},{onConflict:'key'});
-    RESULT_PUBLISH_TIME='';
-    document.getElementById('currentResultTime').textContent='Not set';
-    showToast('🗑️ Cleared','info');
-  }catch(e){showToast('❌','error');}
-}
-
-async function changeAdminPassword(){
-  var np=document.getElementById('newAdminPassword').value.trim();
-  if(!np||np.length<4){showToast('Min 4 chars','error');return;}
-  try{
-    await supabaseClient.from('settings').upsert({key:'adminPassword',value:np},{onConflict:'key'});
-    localStorage.setItem('admin_password',np);
-    document.getElementById('currentAdminPwd').textContent=np;
-    showToast('✅ Changed','success');
-    document.getElementById('newAdminPassword').value='';
-  }catch(e){showToast('❌','error');}
-}
-
-async function uploadSignature(type){
-  var input=type==='swadar'?document.getElementById('swadarSignUpload'):document.getElementById('classSignUpload');
-  var file=input.files[0];
-  if(!file){showToast('Select image','error');return;}
-  if(file.size>200*1024){showToast('⚠️ < 200KB','error');return;}
-  try{
-    var b64=await fileToBase64(file);
-    if(type==='swadar'){
-      await supabaseClient.from('settings').upsert({key:'swadarSignature',value:b64},{onConflict:'key'});
-      SWADAR_SIGNATURE=b64;
-    }else{
-      var cls=document.getElementById('classSignSelect').value;
-      CLASS_SIGNATURES[cls]=b64;
-      await supabaseClient.from('settings').upsert({key:'classSignatures',value:JSON.stringify(CLASS_SIGNATURES)},{onConflict:'key'});
-    }
-    showToast('✅ Saved','success');
-    renderSignaturePreviews();
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-async function uploadClassSignature(){await uploadSignature('class');}
-
-async function clearSignature(type){
-  if(!confirm('Clear?'))return;
-  if(type==='swadar'){
-    await supabaseClient.from('settings').upsert({key:'swadarSignature',value:''},{onConflict:'key'});
-    SWADAR_SIGNATURE='';
-  }else{
-    var cls=document.getElementById('classSignSelect').value;
-    delete CLASS_SIGNATURES[cls];
-    await supabaseClient.from('settings').upsert({key:'classSignatures',value:JSON.stringify(CLASS_SIGNATURES)},{onConflict:'key'});
-  }
-  showToast('🗑️ Cleared','info');
-  renderSignaturePreviews();
-}
-
-async function clearClassSignature(){await clearSignature('class');}
-
-function renderSignaturePreviews(){
-  var prev=document.getElementById('swadarSignPreview');
-  if(prev){
-    if(SWADAR_SIGNATURE&&SWADAR_SIGNATURE.indexOf('data:image')===0){
-      prev.innerHTML='<img src="'+SWADAR_SIGNATURE+'" style="max-height:60px;background:white;padding:5px;border-radius:8px;">';
-    }else{
-      prev.innerHTML='<small style="color:#64748b;">No signature</small>';
-    }
-  }
-}
-
-function saveBgUrl(type){
-  var url=document.getElementById(type==='id'?'settingsIdBgUrl':'settingsTopperBgUrl').value.trim();
-  if(!url){showToast('URL required','error');return;}
-  localStorage.setItem(type==='id'?'id_card_bg':'topper_bg',url);
-  showToast('✅ Saved','success');
-}
-
-function clearBgUrl(type){
-  localStorage.removeItem(type==='id'?'id_card_bg':'topper_bg');
-  var e=document.getElementById(type==='id'?'settingsIdBgUrl':'settingsTopperBgUrl');
-  if(e)e.value='';
-  showToast('🗑️ Cleared','info');
-}
-
-function loadTeacherSettingsIntoForm(){
-  var s1=document.getElementById('settingsSwadarName');if(s1)s1.value=SWADAR_MUALLIM_NAME||'';
-  var s2=document.getElementById('settingsClassTeachers');if(s2)s2.value=stringifyClassTeachers(CLASS_TEACHERS);
-  var h1=document.getElementById('settingsHeadingExtra');if(h1)h1.value=HEADING_EXTRA||'';
-  var h2=document.getElementById('settingsHeadingOverallRank');if(h2)h2.value=HEADING_OVERALL_RANK||'';
-  var h3=document.getElementById('settingsHeadingMonthly');if(h3)h3.value=HEADING_MONTHLY||'';
-  var c1=document.getElementById('settingsClassExtraCategories');if(c1)c1.value=stringifyClassExtraCategories(CLASS_EXTRA_CATEGORIES);
-  var s3=document.getElementById('settingsResultTime');
-  if(s3&&RESULT_PUBLISH_TIME){
-    try{
-      var d=new Date(RESULT_PUBLISH_TIME);
-      var local=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
-      s3.value=local;
-    }catch(e){}
-  }
-  var info=document.getElementById('currentResultTime');
-  if(info)info.textContent=RESULT_PUBLISH_TIME?getPublishTimeText():'Not set';
-  var t1=document.getElementById('settingsTraits');if(t1)t1.value=TRAITS_LIST.join(',');
-  var sn=document.getElementById('settingsExamName');if(sn)sn.value=SETTINGS_CACHE.nextExamName||'';
-  var sd=document.getElementById('settingsExamDate');if(sd)sd.value=SETTINGS_CACHE.nextExamDate||'';
-  var i1=document.getElementById('settingsIdBgUrl');if(i1)i1.value=localStorage.getItem('id_card_bg')||'';
-  var i2=document.getElementById('settingsTopperBgUrl');if(i2)i2.value=localStorage.getItem('topper_bg')||'';
-  var dg=document.getElementById('settingsGreetingMsg');
-  if(dg)dg.value=SETTINGS_CACHE.dailyGreetingMessage||'';
-  renderSignaturePreviews();
-  loadDBStats();
-  var ct=document.getElementById('settingsClassTraits');if(ct)ct.value=stringifyClassTraits(CLASS_TRAITS);
-  populateSubjectClassSelect();
-  renderClassExamSubjectsUI();
-}
-
-async function loadDBStats(){
-  var el=document.getElementById('dbStatsContent');
-  if(!el)return;
-  el.innerHTML='<div class="loading-tx"><div class="spinner-sm"></div></div>';
-  try{
-    var results=await Promise.all([
-      supabaseClient.from('students').select('*',{count:'exact',head:true}),
-      supabaseClient.from('payments').select('*',{count:'exact',head:true}),
-      supabaseClient.from('withdrawals').select('*',{count:'exact',head:true}),
-      supabaseClient.from('events').select('*',{count:'exact',head:true}),
-      supabaseClient.from('activities').select('*',{count:'exact',head:true}),
-      supabaseClient.from('exam_marks').select('*',{count:'exact',head:true}),
-      supabaseClient.from('competitions').select('*',{count:'exact',head:true}),
-      supabaseClient.from('student_creations').select('*',{count:'exact',head:true})
-    ]);
-    var colors=['#2563eb','#059669','#b45309','#3b82f6','#34d399','#dc2626','#d97706','#be185d'];
-    el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;">'+results.map(function(r,i){
-      return'<div style="background:#fff;padding:11px;border-radius:12px;text-align:center;border:1px solid rgba(180,200,230,.5);"><div style="font-weight:900;color:'+colors[i]+';font-size:1.15rem;">'+(r.count||0)+'</div></div>';
-    }).join('')+'</div>';
-  }catch(e){el.innerHTML='<div class="empty-state">Error</div>';}
-}
-
-async function saveExamCountdown(){
-  var name=document.getElementById('settingsExamName').value.trim();
-  var date=document.getElementById('settingsExamDate').value;
-  if(!name||!date){showToast('Name & Date required','error');return;}
-  try{
-    await supabaseClient.from('settings').upsert({key:'nextExamName',value:name},{onConflict:'key'});
-    await supabaseClient.from('settings').upsert({key:'nextExamDate',value:date},{onConflict:'key'});
-    SETTINGS_CACHE.nextExamName=name;
-    SETTINGS_CACHE.nextExamDate=date;
-    showToast('✅ Exam countdown saved','success');
-    if(typeof loadExamCountdown==='function'&&currentUser)loadExamCountdown();
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-async function clearExamCountdown(){
-  if(!confirm('Clear exam countdown?'))return;
-  try{
-    await supabaseClient.from('settings').upsert({key:'nextExamName',value:''},{onConflict:'key'});
-    await supabaseClient.from('settings').upsert({key:'nextExamDate',value:''},{onConflict:'key'});
-    showToast('🗑️ Cleared','info');
-  }catch(e){showToast('❌','error');}
-}
-
-async function saveDailyGreeting(){
-  var val=document.getElementById('settingsGreetingMsg').value.trim();
-  try{
-    await supabaseClient.from('settings').upsert(
-      {key:'dailyGreetingMessage',value:val},
-      {onConflict:'key'}
-    );
-    SETTINGS_CACHE.dailyGreetingMessage=val;
-    showToast(val?'✅ Greeting saved':'🗑️ Cleared — default rotate ചെയ്യും','success');
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-async function clearDailyGreeting(){
-  if(!confirm('Clear custom greeting? Default greetings പുനരാരംഭിക്കും.'))return;
-  try{
-    await supabaseClient.from('settings').upsert(
-      {key:'dailyGreetingMessage',value:''},
-      {onConflict:'key'}
-    );
-    document.getElementById('settingsGreetingMsg').value='';
-    SETTINGS_CACHE.dailyGreetingMessage='';
-    showToast('🗑️ Cleared — Default rotate','info');
-  }catch(e){showToast('❌','error');}
-}
-
-/* ============================================================ */
-/* 📊 CHART RENDERING                                           */
-/* ============================================================ */
-var _attChart=null,_marksChart=null;
-
-async function renderCharts(){
-  if(!currentUser||!window.Chart)return;
-  var attCtx=document.getElementById('attendanceChart');
-  var marksCtx=document.getElementById('marksChart');
-  if(!attCtx||!marksCtx)return;
-  var txtColor='#0f172a';
-  var gridColor='rgba(59,130,246,.15)';
-  try{
-    var ar=await supabaseClient.from('attendance_records').select('month_year,percentage').eq('studentid',currentUser.studentId).order('month_year');
-    var labels=(ar.data||[]).map(function(x){return formatMonthMalayalam(x.month_year,true);});
-    var vals=(ar.data||[]).map(function(x){return Number(x.percentage)||0;});
-    if(!labels.length){labels=['No data'];vals=[0];}
-    if(_attChart)_attChart.destroy();
-    _attChart=new Chart(attCtx,{
-      type:'line',
-      data:{labels:labels,datasets:[{label:'Attendance %',data:vals,borderColor:'#0891b2',backgroundColor:'rgba(8,145,178,.15)',fill:true,tension:.35,pointBackgroundColor:'#0891b2',pointRadius:5,borderWidth:3}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{color:txtColor},grid:{color:gridColor}},x:{ticks:{color:txtColor},grid:{color:gridColor}}}}
-    });
-  }catch(e){console.warn('attChart',e);}
-  try{
-    var mr=await supabaseClient.from('exam_marks').select('exam_name,obtained_marks,max_marks').eq('studentid',currentUser.studentId);
-    var byExam={};
-    (mr.data||[]).forEach(function(m){
-      if(!byExam[m.exam_name])byExam[m.exam_name]={o:0,t:0};
-      if(Number(m.max_marks)>0){byExam[m.exam_name].o+=Number(m.obtained_marks)||0;byExam[m.exam_name].t+=Number(m.max_marks);}
-    });
-    var exLabels=Object.keys(byExam);
-    var exVals=exLabels.map(function(k){var e=byExam[k];return e.t>0?Math.round(e.o/e.t*100):0;});
-    if(!exLabels.length){exLabels=['No data'];exVals=[0];}
-    if(_marksChart)_marksChart.destroy();
-    _marksChart=new Chart(marksCtx,{
-      type:'bar',
-      data:{labels:exLabels,datasets:[{label:'Score %',data:exVals,backgroundColor:'rgba(59,130,246,.7)',borderColor:'#2563eb',borderWidth:2,borderRadius:10}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{color:txtColor},grid:{color:gridColor}},x:{ticks:{color:txtColor},grid:{color:gridColor}}}}
-    });
-  }catch(e){console.warn('marksChart',e);}
-}
-
-/* ============================================================ */
-/* 🎤 VOICE INPUT                                               */
-/* ============================================================ */
-var _recognition=null,_isListening=false;
-
-function initVoiceRecognition(){
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window))return null;
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  _recognition=new SR();
-  _recognition.continuous=false;
-  _recognition.interimResults=false;
-  _recognition.lang='ml-IN';
-  _recognition.onstart=function(){_isListening=true;updateMicUI(true);};
-  _recognition.onend=function(){_isListening=false;updateMicUI(false);};
-  _recognition.onerror=function(e){_isListening=false;updateMicUI(false);if(e.error!=='aborted')showToast('⚠️ Voice: '+e.error,'error');};
-  _recognition.onresult=function(e){
-    var text=e.results[0][0].transcript;
-    var inp=document.getElementById('aiInput');
-    if(inp){inp.value=text;sendAIMessage();}
-  };
-  return _recognition;
-}
-
-function toggleVoiceInput(){
-  if(!_recognition)_recognition=initVoiceRecognition();
-  if(!_recognition){showToast('⚠️ Voice not supported','error');return;}
-  if(_isListening){try{_recognition.stop();}catch(e){}return;}
-  try{_recognition.start();showToast('🎤 Listening...','info');}catch(e){showToast('⚠️ '+e.message,'error');}
-}
-
-function updateMicUI(on){
-  var btn=document.getElementById('aiMicBtn');
-  if(!btn)return;
-  btn.classList.toggle('listening',on);
-  var icon=btn.querySelector('i');
-  if(icon)icon.className=on?'fas fa-stop':'fas fa-microphone';
-}
-
-/* ============================================================ */
-/* 📝 NOTES                                                     */
-/* ============================================================ */
-var _notes=[];
-
-function notesKey(){return currentUser?('noor_notes_'+currentUser.studentId):'noor_notes_guest';}
-
-function loadNotesFromStorage(){
-  try{_notes=JSON.parse(localStorage.getItem(notesKey())||'[]');}catch(e){_notes=[];}
-}
-
-function saveNotesToStorage(){
-  try{localStorage.setItem(notesKey(),JSON.stringify(_notes));}catch(e){showToast('⚠️ Storage full','error');}
-}
-
-function openNotesModal(){
-  if(!currentUser){showToast('Login first','error');return;}
-  loadNotesFromStorage();
-  renderNotesList();
-  document.getElementById('notesModal').style.display='flex';
-}
-
-function closeNotesModal(){document.getElementById('notesModal').style.display='none';}
-
-function renderNotesList(){
-  var list=document.getElementById('notesList');
-  if(!list)return;
-  if(_notes.length===0){
-    list.innerHTML='<div class="notes-empty"><i class="fas fa-sticky-note"></i><div style="font-weight:800;color:#0f172a;margin-bottom:6px;">ഇതുവരെ കുറിപ്പുകൾ ഇല്ല</div><div>ആദ്യത്തേത് എഴുതി തുടങ്ങൂ! 📝</div></div>';
-    return;
-  }
-  list.innerHTML=_notes.slice().sort(function(a,b){return new Date(b.updated)-new Date(a.updated);}).map(function(n){
-    return'<div class="note-card"><div class="note-card-header"><div class="note-card-title">'+escapeHtml(n.title)+'</div><span class="note-subject-tag">'+escapeHtml(n.subject)+'</span></div><div class="note-body">'+escapeHtml(n.body||'').substring(0,200)+'</div><div class="note-card-footer"><span><i class="far fa-clock"></i> '+timeAgo(n.updated)+'</span><div class="note-actions"><button class="note-action-btn" onclick="editNote(\''+n.id+'\')" title="Edit"><i class="fas fa-pen"></i></button><button class="note-action-btn danger" onclick="deleteNote(\''+n.id+'\')" title="Delete"><i class="fas fa-trash"></i></button></div></div></div>';
-  }).join('');
-}
-
-function openNoteEditor(note){
-  var ex=note||{};
-  modalTitleSpan.innerText=note?'✏️ Edit Note':'📝 New Note';
-  modalBodyDiv.innerHTML='<form onsubmit="saveNote(event)"><div class="mb-3"><label style="color:#475569;font-size:.78rem;">Title *</label><input type="text" id="noteTitleInput" class="modal-form-input" value="'+escapeHtml(ex.title||'')+'" required maxlength="80"></div><div class="mb-3"><label style="color:#475569;font-size:.78rem;">Subject</label><select id="noteSubjectInput" class="modal-form-input">'+['Notes','Maths','English','Arabic','Science','Malayalam','Other'].map(function(s){return'<option value="'+s+'" '+(ex.subject===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div><div class="mb-3"><label style="color:#475569;font-size:.78rem;">Content</label><textarea id="noteBodyInput" class="modal-form-input" style="min-height:140px;" maxlength="2000">'+escapeHtml(ex.body||'')+'</textarea></div><input type="hidden" id="noteEditId" value="'+(ex.id||'')+'"><div class="d-flex gap-2 mt-3"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div></form>';
-  modal.style.display='flex';
-  setTimeout(function(){var i=document.getElementById('noteTitleInput');if(i)i.focus();},150);
-}
-
-function saveNote(e){
-  e.preventDefault();
-  var title=document.getElementById('noteTitleInput').value.trim();
-  var subject=document.getElementById('noteSubjectInput').value;
-  var body=document.getElementById('noteBodyInput').value;
-  var editId=document.getElementById('noteEditId').value;
-  if(!title){showToast('Title required','error');return;}
-  if(editId){
-    var idx=_notes.findIndex(function(n){return n.id===editId;});
-    if(idx>-1){
-      _notes[idx].title=title;
-      _notes[idx].subject=subject;
-      _notes[idx].body=body;
-      _notes[idx].updated=new Date().toISOString();
-    }
-  }else{
-    _notes.push({
-      id:'note_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),
-      title:title,subject:subject,body:body,
-      created:new Date().toISOString(),updated:new Date().toISOString()
-    });
-  }
-  saveNotesToStorage();
-  closeModal('globalModal');
-  renderNotesList();
-  showToast(editId?'✅ Updated':'✅ Note saved','success');
-  if(typeof confetti!=='undefined')confetti({particleCount:60,spread:60,origin:{y:.7}});
-}
-
-function editNote(id){
-  var n=_notes.find(function(x){return x.id===id;});
-  if(n)openNoteEditor(n);
-}
-
-function deleteNote(id){
-  if(!confirm('Delete this note?'))return;
-  _notes=_notes.filter(function(n){return n.id!==id;});
-  saveNotesToStorage();
-  renderNotesList();
-  showToast('🗑️ Deleted','info');
-}
-
-/* ============================================================ */
-/* 🏆 BADGES                                                    */
-/* ============================================================ */
-var BADGE_DEFS=[
-  {id:'top_scorer',emoji:'🥇',name:'Top Scorer',desc:'Rank 1-3',check:function(u){return u.rank&&u.rank<=3;}},
-  {id:'perfect_att',emoji:'🌟',name:'Perfect Attendance',desc:'95%+ attendance',check:function(u){return (u.attendance||0)>=95;}},
-  {id:'att_star',emoji:'📆',name:'Attendance Star',desc:'80%+ attendance',check:function(u){return (u.attendance||0)>=80;}},
-  {id:'scholar',emoji:'📖',name:'Scholar',desc:'A+ or A grade',check:function(u){return u.overallGrade==='A+'||u.overallGrade==='A';}},
-  {id:'competitor',emoji:'🏆',name:'Competitor',desc:'Any competition',check:function(u){return (u._compCount||0)>=1;}},
-  {id:'champion',emoji:'👑',name:'Champion',desc:'1st place winner',check:function(u){return (u._wins1||0)>=1;}},
-  {id:'creative',emoji:'🎨',name:'Creative',desc:'3+ creations',check:function(u){return (u._creationCount||0)>=3;}},
-  {id:'saver',emoji:'💰',name:'Saver',desc:'Balance ₹500+',check:function(u){return (u._balance||0)>=500;}},
-  {id:'super_saver',emoji:'💎',name:'Super Saver',desc:'Balance ₹2000+',check:function(u){return (u._balance||0)>=2000;}},
-  {id:'best',emoji:'⭐',name:'Best Student',desc:'Selected as best',check:function(u){return !!u.isBestStudent;}},
-  {id:'moral_star',emoji:'🌟',name:'Moral Star',desc:'A+ in morals',check:function(u){return u.moralValuesGrade==='A+';}},
-  {id:'streak',emoji:'🔥',name:'Streak Master',desc:'5+ competitions',check:function(u){return (u._compCount||0)>=5;}}
-];
-
-async function loadBadgeData(){
-  if(!currentUser)return null;
-  try{
-    var compR=await supabaseClient.from('competitions').select('position').eq('studentid',currentUser.studentId);
-    var crR=await supabaseClient.from('student_creations').select('id',{count:'exact',head:true}).eq('studentid',currentUser.studentId).eq('approved',true);
-    var bal=await getStudentBalance(currentUser.studentId);
-    var comps=compR.data||[];
-    currentUser._compCount=comps.length;
-    currentUser._wins1=comps.filter(function(c){return c.position===1;}).length;
-    currentUser._creationCount=crR.count||0;
-    currentUser._balance=bal||0;
-    return currentUser;
-  }catch(e){return currentUser;}
-}
-
-function getUnlockedBadges(u){return BADGE_DEFS.filter(function(b){try{return b.check(u);}catch(e){return false;}});}
-
-async function showBadgesModal(){
-  if(!currentUser){showToast('Login first','error');return;}
-  modalTitleSpan.innerText="🏆 Achievements";
-  modalBodyDiv.innerHTML='<div class="text-center py-4"><div class="spinner-border" style="color:#b45309"></div></div>';
-  modal.style.display='flex';
-  var u=await loadBadgeData();
-  var unlocked=getUnlockedBadges(u);
-  var h='<div style="text-align:center;margin-bottom:18px;">';
-  h+='<div style="width:80px;height:80px;margin:0 auto 12px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:linear-gradient(140deg,#fbbf24,#f59e0b);font-size:2.5rem;color:#fff;box-shadow:0 12px 28px -10px rgba(251,191,36,.9);"><i class="fas fa-trophy"></i></div>';
-  h+='<h4 style="color:#0f172a;font-weight:800;margin:0 0 8px;">Your Achievements</h4>';
-  h+='<div class="badge-count-pill"><i class="fas fa-medal"></i> '+unlocked.length+' / '+BADGE_DEFS.length+' Unlocked</div></div>';
-  h+='<div class="badges-grid">';
-  BADGE_DEFS.forEach(function(b){
-    var on=unlocked.some(function(x){return x.id===b.id;});
-    h+='<div class="badge-card '+(on?'unlocked':'locked')+'"><span class="badge-emoji">'+b.emoji+'</span><div class="badge-name">'+escapeHtml(b.name)+'</div><div class="badge-desc">'+escapeHtml(b.desc)+'</div></div>';
-  });
-  h+='</div>';
-  modalBodyDiv.innerHTML=h;
-}
-
-/* ============================================================ */
-/* 🕌 PRAYER TIMES                                              */
-/* ============================================================ */
-var _prayerData=null,_prayerTickInterval=null;
-var PRAYER_LOCATION={lat:11.2588,lng:75.7804,city:'Kambippalam'};
-
-async function loadPrayerTimes(){
-  var list=document.getElementById('prayerList');
-  if(list)list.innerHTML='<div style="text-align:center;color:#64748b;padding:8px;grid-column:1/-1"><div class="spinner-sm"></div></div>';
-  try{
-    var today=new Date();
-    var dd=String(today.getDate()).padStart(2,'0');
-    var mm=String(today.getMonth()+1).padStart(2,'0');
-    var yyyy=today.getFullYear();
-    var url='https://api.aladhan.com/v1/timings/'+dd+'-'+mm+'-'+yyyy+'?latitude='+PRAYER_LOCATION.lat+'&longitude='+PRAYER_LOCATION.lng+'&method=1&school=0';
-    var res=await fetch(url);
-    if(!res.ok)throw new Error('API error');
-    var data=await res.json();
-    if(!data||!data.data||!data.data.timings)throw new Error('Invalid response');
-    _prayerData=data.data.timings;
-    renderPrayerTimes();
-    startPrayerCountdown();
-  }catch(e){
-    console.warn('Prayer times error:',e);
-    if(list)list.innerHTML='<div style="text-align:center;color:#64748b;padding:8px;grid-column:1/-1;font-size:.7rem;">⚠️ Prayer times unavailable</div>';
-  }
-}
-
-function renderPrayerTimes(){
-  if(!_prayerData)return;
-  var list=document.getElementById('prayerList');
-  var main=document.getElementById('prayerMainContent');
-  if(!list||!main)return;
-  var prayers=[
-    {key:'Fajr',label:'Fajr',ar:'ഫജ്‌ർ'},
-    {key:'Dhuhr',label:'Dhuhr',ar:'ളുഹ്‌ർ'},
-    {key:'Asr',label:'Asr',ar:'അസ്‌ർ'},
-    {key:'Maghrib',label:'Maghrib',ar:'മഗ്‌രിബ്'},
-    {key:'Isha',label:'Isha',ar:'ഇശാ'}
-  ];
-  var now=new Date();
-  var nowMin=now.getHours()*60+now.getMinutes();
-  var nextPrayer=null;
-  var times=prayers.map(function(p){
-    var t=_prayerData[p.key]||'00:00';
-    var parts=t.split(':');
-    var mins=parseInt(parts[0])*60+parseInt(parts[1]);
-    return{key:p.key,label:p.label,ar:p.ar,time:t,mins:mins};
-  });
-  for(var i=0;i<times.length;i++){
-    if(times[i].mins>nowMin){nextPrayer=times[i];break;}
-  }
-  if(!nextPrayer){nextPrayer=times[0];nextPrayer.mins+=24*60;}
-  list.innerHTML=times.map(function(t){
-    var isActive=nextPrayer&&t.key===nextPrayer.key;
-    return'<div class="prayer-item'+(isActive?' active':'')+'"><span class="p-name">'+t.label+'</span><span class="p-time">'+t.time+'</span></div>';
-  }).join('');
-  main.innerHTML='<div class="prayer-next">'+nextPrayer.time+'</div><div class="prayer-name">'+nextPrayer.ar+' • '+nextPrayer.label+'</div><div class="prayer-countdown" id="prayerCountdown">—</div>';
-}
-
-function startPrayerCountdown(){
-  if(_prayerTickInterval)clearInterval(_prayerTickInterval);
-  _prayerTickInterval=setInterval(updatePrayerCountdown,1000);
-  updatePrayerCountdown();
-}
-
-function updatePrayerCountdown(){
-  var el=document.getElementById('prayerCountdown');
-  if(!el||!_prayerData)return;
-  var prayers=['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-  var now=new Date();
-  var nowMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
-  var target=null;
-  for(var i=0;i<prayers.length;i++){
-    var t=_prayerData[prayers[i]]||'00:00';
-    var parts=t.split(':');
-    var mins=parseInt(parts[0])*60+parseInt(parts[1]);
-    if(mins>nowMin){target={name:prayers[i],mins:mins};break;}
-  }
-  if(!target){
-    var t2=_prayerData.Fajr||'00:00';
-    var parts2=t2.split(':');
-    target={name:'Fajr',mins:parseInt(parts2[0])*60+parseInt(parts2[1])+24*60};
-  }
-  var diff=target.mins-nowMin;
-  var hours=Math.floor(diff/60);
-  var mins=Math.floor(diff%60);
-  var secs=Math.floor((diff*60)%60);
-  el.textContent='⏱ '+hours+'h '+mins+'m '+secs+'s remaining';
-}
-
-/* ============================================================ */
-/* 📖 ISLAMIC CONTENT                                           */
-/* ============================================================ */
-var ISLAMIC_VERSES=[
-  {ar:'إِنَّ مَعَ الْعُسْرِ يُسْرًا',ml:'തീർച്ചയായും പ്രയാസത്തോടൊപ്പം എളുപ്പമുണ്ട്.',src:'Quran 94:6'},
-  {ar:'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',ml:'ആരെങ്കിലും അല്ലാഹുവിൽ ഭരമേൽപ്പിക്കുന്നുവെങ്കിൽ അവൻ അവന് മതിയാകും.',src:'Quran 65:3'},
-  {ar:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',ml:'തീർച്ചയായും അല്ലാഹു ക്ഷമാശീലരോടൊപ്പമുണ്ട്.',src:'Quran 2:153'},
-  {ar:'وَقُل رَّبِّ زِدْنِي عِلْمًا',ml:'നീ പറയുക: എന്റെ രക്ഷിതാവേ, എനിക്ക് ജ്ഞാനം വർദ്ധിപ്പിക്കേണമേ.',src:'Quran 20:114'},
-  {ar:'فَاذْكُرُونِي أَذْكُرْكُمْ',ml:'നിങ്ങൾ എന്നെ ഓർക്കുക, ഞാനും നിങ്ങളെ ഓർക്കാം.',src:'Quran 2:152'},
-  {ar:'وَاعْتَصِمُوا بِحَبْلِ اللَّهِ جَمِيعًا',ml:'നിങ്ങളെല്ലാവരും അല്ലാഹുവിൽ മുറുകെ പിടിക്കുക.',src:'Quran 3:103'},
-  {ar:'إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا',ml:'നിശ്ചയമായും സത്യവിശ്വാസികൾക്ക് നിശ്ചിത സമയങ്ങളിൽ നമസ്കാരം നിർബന്ധമാണ്.',src:'Quran 4:103'}
-];
-
-var ISLAMIC_HADITHS=[
-  {ar:'إِنَّمَا بُعِثْتُ لِأُتَمِّمَ مَكَارِمَ الأَخْلاقِ',ml:'ഉത്തമ സ്വഭാവങ്ങൾ പൂർത്തിയാക്കാൻ വേണ്ടിയാണ് എന്നെ അയച്ചിട്ടുള്ളത്.',src:'Tirmidhi'},
-  {ar:'الدِّينُ النَّصِيحَةُ',ml:'മതം നന്മ ഉപദേശമാണ്.',src:'Muslim'},
-  {ar:'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ',ml:'മറ്റു മുസ്‌ലിമുകൾക്ക് തന്റെ നാവിൽ നിന്നും കൈയിൽ നിന്നും ഉപദ്രവം ഏൽക്കാത്തവനാണ് യഥാർത്ഥ മുസ്‌ലിം.',src:'Bukhari'},
-  {ar:'مَنْ لا يَرْحَمُ لا يُرْحَمُ',ml:'കരുണ കാണിക്കാത്തവനോട് കരുണ കാണിക്കപ്പെടുകയില്ല.',src:'Bukhari'},
-  {ar:'طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ',ml:'വിജ്ഞാനം തേടുന്നത് എല്ലാ മുസ്‌ലിമിനും നിർബന്ധമാണ്.',src:'Ibn Majah'},
-  {ar:'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ',ml:'ഖുർആൻ പഠിക്കുകയും പഠിപ്പിക്കുകയും ചെയ്യുന്നവനാണ് നിങ്ങളിൽ ഉത്തമൻ.',src:'Bukhari'},
-  {ar:'الْكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ',ml:'നല്ല വാക്ക് ഒരു ദാനമാണ്.',src:'Bukhari'}
-];
-
-var ISLAMIC_DUAS=[
-  {ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً',ml:'ഞങ്ങളുടെ രക്ഷിതാവേ, ഇഹലോകത്തും പരലോകത്തും ഞങ്ങൾക്ക് നന്മ നൽകേണമേ.',src:'Quran 2:201'},
-  {ar:'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',ml:'എന്റെ രക്ഷിതാവേ, എന്റെ മനസ്സ് വിശാലമാക്കേണമേ, എന്റെ കാര്യം എളുപ്പമാക്കേണമേ.',src:'Quran 20:25-26'},
-  {ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعِلْمَ النَّافِعَ',ml:'അല്ലാഹുവേ, ഉപകാരപ്രദമായ അറിവ് ഞാൻ അങ്ങയോട് ചോദിക്കുന്നു.',src:'Ibn Majah'},
-  {ar:'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',ml:'അല്ലാഹുവേ, അങ്ങയെ സ്മരിക്കാനും നന്ദി പറയാനും മനോഹരമായി ആരാധിക്കാനും എന്നെ സഹായിക്കേണമേ.',src:'Abu Dawud'},
-  {ar:'رَبِّ زِدْنِي عِلْمًا وَارْزُقْنِي فَهْمًا',ml:'എന്റെ രക്ഷിതാവേ, എനിക്ക് അറിവ് വർദ്ധിപ്പിക്കേണമേ, ഗ്രഹണശക്തി നൽകേണമേ.',src:'Traditional'}
-];
-
-var ALLAH_NAMES=[
-  {ar:'الرَّحْمَنُ',tr:'Ar-Rahman',ml:'അപാര കാരുണ്യവാൻ'},
-  {ar:'الرَّحِيمُ',tr:'Ar-Raheem',ml:'മഹാ കരുണാമയൻ'},
-  {ar:'الْمَلِكُ',tr:'Al-Malik',ml:'രാജാധിരാജൻ'},
-  {ar:'الْقُدُّوسُ',tr:'Al-Quddus',ml:'പരിശുദ്ധൻ'},
-  {ar:'السَّلَامُ',tr:'As-Salam',ml:'സമാധാനദായകൻ'},
-  {ar:'الْمُؤْمِنُ',tr:"Al-Mu'min",ml:'സുരക്ഷ നൽകുന്നവൻ'},
-  {ar:'الْعَزِيزُ',tr:'Al-Azeez',ml:'സർവ്വശക്തൻ'},
-  {ar:'الْحَكِيمُ',tr:'Al-Hakeem',ml:'മഹാ ജ്ഞാനി'},
-  {ar:'الْعَلِيمُ',tr:'Al-Aleem',ml:'സർവ്വജ്ഞാനി'},
-  {ar:'الْغَفُورُ',tr:'Al-Ghafoor',ml:'ഏറെ പൊറുക്കുന്നവൻ'}
-];
-
-var ISLAMIC_HISTORY=[
-  {title:'മക്കയിലെ ആദ്യ വെളിപ്പെടുത്തൽ',ml:'ഹിറ ഗുഹയിൽ ധ്യാനനിമഗ്നനായിരുന്ന പ്രവാചകൻ മുഹമ്മദ് ﷺ-ന് ജിബ്രീൽ (അ) വഴി ആദ്യ വെളിപ്പെടുത്തൽ ലഭിച്ചു. "ഇഖ്‌റഅ്" (വായിക്കുക) എന്ന വാക്കോടെയാണ് ഖുർആൻ ആരംഭിച്ചത്.',year:'610 CE • 27 റമദാൻ',place:'മക്ക • ഹിറ ഗുഹ'},
-  {title:'ഹിജ്‌റ — മദീനയിലേക്കുള്ള യാത്ര',ml:'മക്കയിലെ എതിർപ്പുകൾ കാരണം പ്രവാചകൻ ﷺ-ഉം അനുയായികളും മദീനയിലേക്ക് കുടിയേറി. ഇതാണ് ഹിജ്‌റ. ഈ സംഭവം ഇസ്ലാമിക കലണ്ടറിന്റെ ആരംഭമായി കണക്കാക്കപ്പെടുന്നു.',year:'622 CE • ഹിജ്‌റി 1',place:'മക്ക → മദീന'},
-  {title:'ബദ്ർ യുദ്ധം — ചരിത്രത്തിലെ വഴിത്തിരിവ്',ml:'ഹിജ്‌റി 2-ാം വർഷം റമദാൻ 17-ന് ബദ്ർ കിണറിന് സമീപം മുസ്‌ലിംകളും ഖുറൈശികളും തമ്മിൽ യുദ്ധം. 313 മുസ്‌ലിംകൾ 1000-ത്തോളം വരുന്ന ശത്രുസൈന്യത്തെ പരാജയപ്പെടുത്തി.',year:'624 CE • ഹിജ്‌റി 2',place:'ബദ്ർ • മദീനയ്ക്ക് സമീപം'},
-  {title:'മക്ക വിജയം — ക്ഷമയുടെ നിറവേറ്റൽ',ml:'ഹിജ്‌റി 8-ാം വർഷം പ്രവാചകൻ ﷺ 10,000 അനുയായികളുമായി മക്കയിലേക്ക് മടങ്ങി. ഒരു തുള്ളി രക്തം പോലും ചിന്താതെ മക്ക വിജയിച്ചു.',year:'630 CE • ഹിജ്‌റി 8',place:'മക്ക'},
-  {title:'ഖുർആൻ സമാഹരണം',ml:'ഖലീഫ അബൂബക്കർ (റ)-ന്റെ കാലത്ത് യമാമ യുദ്ധത്തിൽ ഹാഫിസുകൾ വധിക്കപ്പെട്ടപ്പോൾ ഖുർആൻ നഷ്ടപ്പെടുമോ എന്ന ഭയത്താൽ സൈദ് ബിൻ ഥാബിത്ത് (റ)-ന്റെ നേതൃത്വത്തിൽ ഖുർആൻ ക്രോഡീകരിച്ചു.',year:'633 CE • ഹിജ്‌റി 12',place:'മദീന'},
-  {title:'ഉമറിന്റെ നീതി',ml:'ഖലീഫ ഉമർ (റ) രാത്രികാലങ്ങളിൽ മദീനയിലെ വീഥികളിൽ കാവൽ നടന്നിരുന്നു. ഭരണാധികാരിയുടെ നീതിയുടെ ഉത്തമ ഉദാഹരണം.',year:'634-644 CE',place:'മദീന'},
-  {title:'ഇസ്ലാമിക സ്വർണ്ണയുഗം',ml:'അബ്ബാസിയ ഖിലാഫത്തിന്റെ കാലത്ത് (750-1258 CE) ബാഗ്ദാദ് ലോകത്തിന്റെ വിജ്ഞാന കേന്ദ്രമായി. ബൈത്തുൽ ഹിക്മ (വിജ്ഞാന ഭവനം) സ്ഥാപിക്കപ്പെട്ടു.',year:'750-1258 CE',place:'ബാഗ്ദാദ്'},
-  {title:'കേരളത്തിലെ ഇസ്ലാമിക ആഗമനം',ml:'ഹിജ്‌റി ഒന്നാം നൂറ്റാണ്ടിൽ മാലിക് ദീനാർ (റ)-ന്റെ നേതൃത്വത്തിൽ ഇസ്ലാം കേരളത്തിലെത്തി. കൊടുങ്ങല്ലൂരിൽ ആദ്യ പള്ളി (ചേരമാൻ ജുമാ മസ്ജിദ്) പണിതു.',year:'629 CE ഏകദേശം',place:'കൊടുങ്ങല്ലൂർ • കേരളം'},
-  {title:'സമസ്തയുടെ പിറവി',ml:'കേരളത്തിലെ സുന്നി മുസ്‌ലിം സമൂഹത്തിന്റെ വിദ്യാഭ്യാസ-സാമൂഹിക സംഘടനയായ സമസ്ത 1926-ൽ രൂപീകൃതമായി. നമ്മുടെ നൂറുസ്സലാം മദ്‌റസയും ഇതിന്റെ ഭാഗമാണ് (Reg No. 6110).',year:'1926 CE',place:'കേരളം'}
-];
-
-var _islamicTab='verse';
-
-function getDayIndex(len){
-  var d=new Date();
-  var dayOfYear=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);
-  return dayOfYear%len;
-}
-
-function renderIslamicContent(){
-  var el=document.getElementById('islamicContent');
-  if(!el)return;
-  var idx=getDayIndex(30);
-  if(_islamicTab==='verse'){
-    var v=ISLAMIC_VERSES[idx%ISLAMIC_VERSES.length];
-    el.innerHTML='<div class="islamic-arabic">'+v.ar+'</div><div class="islamic-text">'+v.ml+'</div><div class="islamic-source">— '+v.src+'</div>';
-  }else if(_islamicTab==='hadith'){
-    var h=ISLAMIC_HADITHS[idx%ISLAMIC_HADITHS.length];
-    el.innerHTML='<div class="islamic-arabic">'+h.ar+'</div><div class="islamic-text">'+h.ml+'</div><div class="islamic-source">— '+h.src+'</div>';
-  }else if(_islamicTab==='dua'){
-    var d=ISLAMIC_DUAS[idx%ISLAMIC_DUAS.length];
-    el.innerHTML='<div class="islamic-arabic">'+d.ar+'</div><div class="islamic-text">'+d.ml+'</div><div class="islamic-source">— '+d.src+'</div>';
-  }else if(_islamicTab==='name'){
-    var n=ALLAH_NAMES[idx%ALLAH_NAMES.length];
-    el.innerHTML='<div class="islamic-arabic" style="font-size:1.8rem;text-align:center;">'+n.ar+'</div><div style="text-align:center;font-size:1rem;font-weight:800;color:#b45309;margin-top:8px;">'+n.tr+'</div><div class="islamic-text" style="text-align:center;">'+n.ml+'</div><div class="islamic-source" style="text-align:center;">— Asma ul Husna</div>';
-  }else if(_islamicTab==='history'){
-    var hs=ISLAMIC_HISTORY[idx%ISLAMIC_HISTORY.length];
-    var html='';
-    html+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">';
-    html+='<span style="font-size:.68rem;font-weight:800;padding:4px 10px;border-radius:20px;background:#fef3c7;color:#b45309;border:1px solid rgba(180,83,9,.35);">📅 '+hs.year+'</span>';
-    html+='<span style="font-size:.68rem;font-weight:800;padding:4px 10px;border-radius:20px;background:#ecfeff;color:#0891b2;border:1px solid rgba(8,145,178,.3);">📍 '+hs.place+'</span>';
-    html+='</div>';
-    html+='<div style="font-size:1rem;font-weight:900;color:#b45309;margin:4px 0 10px;line-height:1.35;">📜 '+escapeHtml(hs.title)+'</div>';
-    html+='<div class="islamic-text" style="font-size:.88rem;line-height:1.7;">'+escapeHtml(hs.ml)+'</div>';
-    html+='<div class="islamic-source" style="margin-top:10px;">— ഇസ്ലാമിക ചരിത്രം</div>';
-    el.innerHTML=html;
-  }
-}
-
-function switchIslamicTab(tab,btn){
-  _islamicTab=tab;
-  document.querySelectorAll('.islamic-tab').forEach(function(t){t.classList.remove('active');});
-  if(btn)btn.classList.add('active');
-  renderIslamicContent();
-}
-
-function renderHijriDate(){
-  var el=document.getElementById('hijriDate');
-  if(!el)return;
-  try{
-    var hijri=new Intl.DateTimeFormat('en-TN-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(new Date());
-    el.textContent=hijri.replace(' AH','').toUpperCase()+' AH';
-  }catch(e){el.textContent=new Date().toDateString();}
-}
-
-/* ============================================================ */
-/* ⏳ EXAM COUNTDOWN                                            */
-/* ============================================================ */
-var _examTickInterval=null;
-
-async function loadExamCountdown(){
-  var el=document.getElementById('examCountdownContent');
-  if(!el)return;
-  try{
-    var r=await supabaseClient.from('settings').select('key,value').in('key',['nextExamName','nextExamDate']);
-    var data={};
-    (r.data||[]).forEach(function(s){data[s.key]=s.value;});
-    if(!data.nextExamDate||!data.nextExamName){
-      el.innerHTML='<div style="text-align:center;color:#64748b;padding:14px;font-size:.82rem;"><i class="fas fa-inbox" style="font-size:2rem;opacity:.3;display:block;margin-bottom:8px;"></i>പരീക്ഷ അറിയിപ്പുകൾ ലഭ്യമല്ല</div>';
-      return;
-    }
-    renderExamCountdown(data.nextExamName,data.nextExamDate);
-    if(_examTickInterval)clearInterval(_examTickInterval);
-    _examTickInterval=setInterval(function(){renderExamCountdown(data.nextExamName,data.nextExamDate);},1000);
-  }catch(e){el.innerHTML='<div style="text-align:center;color:#64748b;padding:14px;font-size:.82rem;">⚠️ Error</div>';}
-}
-
-function renderExamCountdown(name,dateStr){
-  var el=document.getElementById('examCountdownContent');
-  if(!el)return;
-  var now=new Date();
-  var examDate=new Date(dateStr+'T00:00:00');
-  var diff=examDate-now;
-  if(diff<=0){
-    el.innerHTML='<div style="text-align:center;padding:20px;"><i class="fas fa-flag-checkered" style="font-size:2.5rem;color:#059669;margin-bottom:8px;"></i><div style="font-weight:800;color:#0f172a;font-size:.94rem;">'+escapeHtml(name)+'</div><div style="color:#059669;font-size:.82rem;margin-top:4px;font-weight:800;">✦ പരീക്ഷ കഴിഞ്ഞു ✦</div></div>';
-    return;
-  }
-  var days=Math.floor(diff/(1000*60*60*24));
-  var hours=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
-  var mins=Math.floor((diff%(1000*60*60))/(1000*60));
-  var secs=Math.floor((diff%(1000*60))/1000);
-  var totalDays=Math.max(1,Math.floor((examDate-new Date(examDate.getFullYear(),0,0))/86400000));
-  var passed=Math.max(0,totalDays-days);
-  var pct=Math.min(100,Math.max(0,Math.round((passed/totalDays)*100)));
-  var color=pct<50?'linear-gradient(90deg,#dc2626,#b45309)':pct<80?'linear-gradient(90deg,#b45309,#d97706)':'linear-gradient(90deg,#dc2626,#ea580c)';
-  var html='<div class="exam-countdown">';
-  if(days>0)html+='<span class="exam-cd-num">'+days+'</span><span class="exam-cd-unit">days</span>';
-  html+='<span class="exam-cd-num">'+String(hours).padStart(2,'0')+'</span><span class="exam-cd-unit">h</span>';
-  html+='<span class="exam-cd-num">'+String(mins).padStart(2,'0')+'</span><span class="exam-cd-unit">m</span>';
-  html+='<span class="exam-cd-num">'+String(secs).padStart(2,'0')+'</span><span class="exam-cd-unit">s</span></div>';
-  html+='<div class="exam-cd-name">'+escapeHtml(name)+'</div>';
-  html+='<div class="exam-cd-date"><i class="far fa-calendar"></i> '+examDate.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+'</div>';
-  html+='<div class="exam-cd-bar"><div class="exam-cd-fill" style="width:'+pct+'%;background:'+color+';"></div></div>';
-  el.innerHTML=html;
-}
-
-async function loadDailyHub(){
-  if(!currentUser)return;
-  loadPrayerTimes();
-  renderHijriDate();
-  renderIslamicContent();
-  loadExamCountdown();
-}
-
-async function initNewFeatures(){
-  if('Notification' in window&&Notification.permission==='default'){
-    setTimeout(function(){if(currentUser)requestPushPermission();},4000);
-  }
-  if(currentUser)setTimeout(renderCharts,800);
-  if(currentUser)setTimeout(loadDailyHub,600);
-}
-
-/* ============================================================ */
-/* 🌐 PUBLIC CREATIONS FEED                                     */
-/* ============================================================ */
-var _publicFeedCache=[];
-var _publicFeedLikesCache={};
-
-async function openPublicCreationsFeed(){
-  var overlay=document.getElementById('publicFeedOverlay');
-  if(!overlay)return;
-  overlay.classList.add('open');
-  document.body.style.overflow='hidden';
-  await loadPublicCreationsFeed();
-}
-
-function closePublicCreationsFeed(){
-  var overlay=document.getElementById('publicFeedOverlay');
-  if(overlay)overlay.classList.remove('open');
-  document.body.style.overflow='';
-}
-
-function loginFromFeed(){
-  closePublicCreationsFeed();
-  window.scrollTo({top:0,behavior:'smooth'});
-  var sidInput=document.getElementById('studentId');
-  if(sidInput)setTimeout(function(){sidInput.focus();},400);
-}
-
-async function loadPublicCreationsFeed(){
-  var container=document.getElementById('publicFeedContainer');
-  if(!container)return;
-  container.innerHTML='<div class="pf-feed-loading"><div class="spinner-sm"></div><div style="margin-top:10px;">ലോഡ് ചെയ്യുന്നു...</div></div>';
-  if(!supabaseClient){
-    container.innerHTML='<div class="pf-feed-empty"><i class="fas fa-triangle-exclamation"></i>System loading...</div>';
-    return;
-  }
-  try{
-    var r=await supabaseClient.from('student_creations').select('*').eq('approved',true).order('created_at',{ascending:false}).limit(100);
-    if(r.error)throw r.error;
-    _publicFeedCache=(r.data||[]).map(function(c){
-      return Object.assign({},c,{
-        file_url:c.file_url||c.image_url||null,
-        file_type:c.file_type||'image',
-        text_content:c.text_content||null
-      });
-    });
-    if(_publicFeedCache.length===0){
-      container.innerHTML='<div class="pf-feed-empty"><i class="fas fa-palette"></i><h3 style="color:#0f172a;">ഇതുവരെ സൃഷ്ടികൾ ഇല്ല</h3><p style="color:#64748b;">ആദ്യത്തെ സൃഷ്ടി വരുമ്പോൾ ഇവിടെ കാണാം</p></div>';
-      return;
-    }
-    var sids=Array.from(new Set(_publicFeedCache.map(function(c){return c.studentid;})));
-    var smap={};
-    if(sids.length>0){
-      var sr=await supabaseClient.from('students').select('studentid,name,class,photo').in('studentid',sids);
-      (sr.data||[]).forEach(function(s){smap[s.studentid]={name:s.name,class:s.class,photo:s.photo};});
-    }
-    if(currentUser){
-      try{
-        var ids=_publicFeedCache.map(function(c){return c.id;});
-        var lr=await supabaseClient.from('creation_likes').select('creation_id').eq('studentid',currentUser.studentId).in('creation_id',ids);
-        (lr.data||[]).forEach(function(l){_publicFeedLikesCache[l.creation_id]=true;});
-      }catch(e){}
-    }
-    var html='';
-    if(!currentUser){
-      html+='<div class="pf-cta-banner"><p>🎨 ഇഷ്ടമുള്ള സൃഷ്ടികൾ ലൈക്ക് ചെയ്യാനും കമന്റ് ചെയ്യാനും Login ചെയ്യുക</p><button class="pf-cta-btn" onclick="loginFromFeed()"><i class="fas fa-sign-in-alt"></i> Login ചെയ്യുക</button></div>';
-    }
-    html+=_publicFeedCache.map(function(c){return renderPublicFeedCard(c,smap[c.studentid]);}).join('');
-    container.innerHTML=html;
-  }catch(e){
-    console.error('Public feed error:',e);
-    container.innerHTML='<div class="pf-feed-empty"><i class="fas fa-triangle-exclamation" style="color:#dc2626;"></i><h3 style="color:#0f172a;">Error</h3><p style="color:#64748b;">'+escapeHtml(e.message||'Error loading')+'</p></div>';
-  }
-}
-
-function renderPublicFeedCard(c,author){
-  if(!author)author={name:'Student',class:'',photo:''};
-  var ft=c.file_type||'image';
-  var url=c.file_url||c.image_url;
-  var avatar=hasPhoto(author.photo)?'<img src="'+author.photo+'" alt="">':escapeHtml((author.name||'S').charAt(0).toUpperCase());
-  var mediaHtml;
-  if(ft==='text'){
-    var preview=(c.text_content||'').trim();
-    var short=preview.length>320?preview.substring(0,320)+'…':preview;
-    mediaHtml='<div style="padding:18px 20px 6px;cursor:pointer;" onclick="openPublicFeedDetail('+c.id+')"><div class="cl-text-content" style="max-height:none;">'+escapeHtml(short)+'</div></div>';
-  }else if(ft==='pdf'){
-    mediaHtml='<div class="pf-card-media" onclick="openPublicFeedDetail('+c.id+')"><div class="pf-pdf-preview"><i class="fas fa-file-pdf"></i><div class="pf-pdf-label">PDF Document</div><div class="pf-pdf-sub">ടാപ്പ് ചെയ്ത് കാണുക</div></div></div>';
-  }else{
-    mediaHtml='<div class="pf-card-media" onclick="openPublicFeedDetail('+c.id+')"><img src="'+url+'" loading="lazy" alt="'+escapeHtml(c.title)+'"></div>';
-  }
-  var liked=_publicFeedLikesCache[c.id]?' liked':'';
-  var typeChip=ft==='text'?'<span class="pf-cat-chip" style="background:rgba(139,92,246,.85);color:#fff;">✍️ Text</span>':'';
-  return'<div class="pf-card" id="pfCard_'+c.id+'"><div class="pf-card-header"><div class="pf-author-avatar">'+avatar+'</div><div class="pf-author-info"><div class="pf-author-name">'+escapeHtml(author.name)+'</div><div class="pf-post-meta">Class '+escapeHtml(author.class||'—')+' • '+timeAgo(c.created_at)+'<span class="pf-cat-chip">'+getCategoryLabel(c.category)+'</span>'+typeChip+'</div></div></div>'+mediaHtml+'<div class="pf-card-body"><h3 class="pf-card-title">'+escapeHtml(c.title)+'</h3>'+(c.description?'<p class="pf-card-desc">'+escapeHtml(c.description)+'</p>':'')+'<div class="pf-card-actions"><button class="pf-action-btn'+liked+'" id="pfLikeBtn_'+c.id+'" onclick="publicFeedLike('+c.id+')"><i class="fas fa-heart"></i> <span id="pfLikeCount_'+c.id+'">'+(c.likes||0)+'</span></button><button class="pf-action-btn" onclick="openPublicFeedDetail('+c.id+')"><i class="fas fa-comment"></i> കമന്റ്</button><button class="pf-action-btn" onclick="publicFeedShare('+c.id+')"><i class="fas fa-share"></i> Share</button></div></div></div>';
-}
-
-async function publicFeedLike(creationId){
-  if(!currentUser){showToast('❤️ ലൈക്ക് ചെയ്യാൻ Login ചെയ്യുക','info');return;}
-  var btn=document.getElementById('pfLikeBtn_'+creationId);
-  var countEl=document.getElementById('pfLikeCount_'+creationId);
-  if(!btn||!countEl)return;
-  btn.disabled=true;
-  try{
-    var ex=await supabaseClient.from('creation_likes').select('id').eq('creation_id',creationId).eq('studentid',currentUser.studentId).maybeSingle();
-    var c=_publicFeedCache.find(function(x){return x.id===creationId;});
-    if(!c)return;
-    if(ex.data){
-      await supabaseClient.from('creation_likes').delete().eq('id',ex.data.id);
-      var nc=Math.max(0,(c.likes||0)-1);
-      await supabaseClient.from('student_creations').update({likes:nc}).eq('id',creationId);
-      c.likes=nc;
-      delete _publicFeedLikesCache[creationId];
-      btn.classList.remove('liked');
-      countEl.textContent=nc;
-    }else{
-      await supabaseClient.from('creation_likes').insert({creation_id:creationId,studentid:currentUser.studentId});
-      var nc2=(c.likes||0)+1;
-      await supabaseClient.from('student_creations').update({likes:nc2}).eq('id',creationId);
-      c.likes=nc2;
-      _publicFeedLikesCache[creationId]=true;
-      btn.classList.add('liked');
-      countEl.textContent=nc2;
-      if(typeof confetti!=='undefined')confetti({particleCount:40,spread:60,origin:{y:0.7}});
-    }
-  }catch(e){showToast('❌ '+e.message,'error');}
-  btn.disabled=false;
-}
-
-function publicFeedShare(creationId){
-  var c=_publicFeedCache.find(function(x){return x.id===creationId;});
-  if(!c)return;
-  var text='🎨 '+c.title+' — Noorussalam Madrasa';
-  if(navigator.share){
-    navigator.share({title:c.title,text:text,url:window.location.origin}).catch(function(){});
-  }else{
-    var whatsapp='https://wa.me/?text='+encodeURIComponent(text+'\n'+window.location.origin);
-    window.open(whatsapp,'_blank');
-  }
-}
-
-async function openPublicFeedDetail(creationId){
-  var c=_publicFeedCache.find(function(x){return x.id===creationId;});
-  if(!c)return;
-  if(currentUser){
-    if(!allCreations.find(function(x){return x.id===creationId;}))allCreations.push(c);
-    if(!c.file_type)c.file_type='image';
-    if(!c.file_url&&c.image_url)c.file_url=c.image_url;
-    openCreationLightbox(creationId);
-    return;
-  }
-  var isPdf=c.file_type==='pdf';
-  var isText=c.file_type==='text';
-  var url=c.file_url||c.image_url;
-  var author={name:'Student',class:''};
-  try{
-    var sr=await supabaseClient.from('students').select('name,class').eq('studentid',c.studentid).single();
-    if(sr.data)author=sr.data;
-  }catch(e){}
-  modalTitleSpan.innerText='🎨 '+c.title;
-  var mediaHtml;
-  if(isText){mediaHtml='<div class="cl-text-content">'+escapeHtml(c.text_content||'')+'</div>';}
-  else if(isPdf){mediaHtml='<div style="background:#fff;border-radius:16px;overflow:hidden;margin-bottom:14px;"><iframe src="'+url+'" style="width:100%;height:60vh;border:0;"></iframe></div>';}
-  else{mediaHtml='<img src="'+url+'" style="width:100%;border-radius:16px;margin-bottom:14px;max-height:60vh;object-fit:contain;background:#000;">';}
-  modalBodyDiv.innerHTML=mediaHtml+'<div style="color:#0f172a;font-weight:800;font-size:1.1rem;margin-bottom:6px;">'+escapeHtml(c.title)+'</div><div style="color:#64748b;font-size:.78rem;margin-bottom:10px;">'+escapeHtml(author.name)+' • Class '+escapeHtml(author.class||'—')+' • '+formatDate(c.created_at)+'</div>'+(c.description?'<p style="color:#475569;font-size:.88rem;line-height:1.55;white-space:pre-wrap;margin-bottom:14px;">'+escapeHtml(c.description)+'</p>':'')+'<div style="background:linear-gradient(135deg,#ecfeff,#fce7f3);border:1px solid rgba(34,211,238,.3);border-radius:14px;padding:14px;text-align:center;"><p style="color:#0f172a;font-size:.82rem;margin:0 0 10px;">❤️ ലൈക്ക് ചെയ്യാനും കമന്റ് ചെയ്യാനും Login ചെയ്യുക</p><button class="pf-cta-btn" onclick="closeModal(\'globalModal\');openPublicCreationsFeed();loginFromFeed();"><i class="fas fa-sign-in-alt"></i> Login</button></div>';
-  modal.style.display='flex';
-}
-
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){
-    var pf=document.getElementById('publicFeedOverlay');
-    if(pf&&pf.classList.contains('open'))closePublicCreationsFeed();
-  }
-});
-
-/* ============================================================ */
-/* 📢 TICKER + 🔔 NOTIFICATIONS + APP BADGE                     */
-/* ============================================================ */
-var loginNotifChannel=null;
-
-async function loadTickerMessages(){
-  var ticker=document.getElementById('nsmTicker');
-  var track=document.getElementById('nsmTickerTrack');
-  if(!ticker||!track)return;
-  var messages=[];
-  try{
-    if(supabaseClient){
-      var r=await supabaseClient.from('notifications').select('title, message, type, created_at, link_url').eq('target_type','all').order('created_at',{ascending:false}).limit(10);
-      if(r.data&&r.data.length>0){
-        messages=r.data.map(function(n){return{text:n.title+(n.message?' — '+n.message:''),type:n.type||'general',link:n.link_url||null};});
-      }
-    }
-  }catch(e){console.warn('Ticker DB error:',e);}
-  if(messages.length===0){
-    messages=[
-      {text:'നൂറുസ്സലാം മദ്‌റസയിലേക്ക് സ്വാഗതം! 🌟',type:'general'},
-      {text:'Student ID ഉപയോഗിച്ച് Portal-ൽ Login ചെയ്യൂ 🔐',type:'info'},
-      {text:'പലതുള്ളി സമ്പാദ്യ പദ്ധതി — Minimum ₹100 💰',type:'info'},
-      {text:'പുതിയ അറിയിപ്പുകൾക്കായി Alerts കാണുക 🔔',type:'general'}
-    ];
-  }
-  var items=messages.map(function(m){
-    var icon=m.type==='urgent'?'fa-circle-exclamation':m.type==='important'?'fa-bolt':'fa-bullhorn';
-    var cls=m.type==='urgent'?'urgent':'';
-    var clickHandler = m.link ? 'onclick="window.open(\''+escapeHtml(m.link)+'\',\'_blank\')"' : 'onclick="openGuestNotifications()"';
-    var linkIcon = m.link ? ' <i class="fas fa-external-link-alt" style="font-size:.7rem;margin-left:4px;"></i>' : '';
-    return '<span class="nsm-ticker-item '+cls+'" '+clickHandler+' style="cursor:pointer;"><i class="fas '+icon+'"></i><span>'+escapeHtml(m.text)+linkIcon+'</span></span><span class="nsm-ticker-dot">◆</span>';
-  }).join('');
-  track.innerHTML=items+items;
-  ticker.style.display='flex';
-}
-
-function positionTicker(){
-  var ticker=document.getElementById('nsmTicker');
-  var hero=document.querySelector('.nsm-hero');
-  var navbar=document.querySelector('.nsm-navbar');
-  if(!ticker||!hero)return;
-  var isMobile=window.innerWidth<=900;
-  if(isMobile){
-    if(hero.nextElementSibling!==ticker){hero.parentNode.insertBefore(ticker,hero.nextSibling);}
-  }else{
-    if(navbar&&navbar.nextElementSibling!==ticker){navbar.parentNode.insertBefore(ticker,navbar.nextSibling);}
-  }
-}
-
-async function updateAppBadge(count){
-  try{
-    if('setAppBadge' in navigator){
-      if(count>0)await navigator.setAppBadge(count);
-      else await navigator.clearAppBadge();
-    }
-  }catch(e){console.warn('Badge error:',e);}
-}
-
-async function askNotificationPermission(){
-  if(!('Notification' in window))return false;
-  if(Notification.permission==='granted')return true;
-  if(Notification.permission==='denied')return false;
-  try{
-    var perm=await Notification.requestPermission();
-    if(perm==='granted'){showToast('🔔 അറിയിപ്പുകൾ ഓൺ ആയി!','success');checkUnreadNotifications();return true;}
-  }catch(e){}
-  return false;
-}
-
-async function checkUnreadNotifications(){
-  if(!supabaseClient)return 0;
-  try{
-    var r=await supabaseClient.from('notifications').select('id, created_at').eq('target_type','all').order('created_at',{ascending:false}).limit(50);
-    if(r.error)return 0;
-    var lastRead=parseInt(localStorage.getItem('lastReadNotifTime')||'0');
-    var unread=(r.data||[]).filter(function(n){return new Date(n.created_at).getTime()>lastRead;});
-    await updateAppBadge(unread.length);
-    var lb=document.getElementById('loginNotifBadge');
-    if(lb){
-      if(unread.length>0){lb.textContent=unread.length>9?'9+':unread.length;lb.classList.add('show');}
-      else{lb.classList.remove('show');}
-    }
-    var b=document.getElementById('notifBadge');
-    if(b&&currentUser){
-      if(unread.length>0){b.textContent=unread.length>9?'9+':unread.length;b.style.display='flex';}
-      else{b.style.display='none';}
-    }
-    return unread.length;
-  }catch(e){console.warn('Check unread error:',e);return 0;}
-}
-
-async function openGuestNotifications(){
-  document.getElementById('notificationsModal').style.display='flex';
-  localStorage.setItem('lastReadNotifTime',Date.now().toString());
-  var lb=document.getElementById('loginNotifBadge');
-  if(lb)lb.classList.remove('show');
-  await updateAppBadge(0);
-  var list=document.getElementById('notificationsList');
-  list.innerHTML='<div class="text-center py-3" style="color:#64748b;">Loading...</div>';
-  if(!supabaseClient){list.innerHTML='<div class="text-center py-3" style="color:#64748b;">System loading...</div>';return;}
-  try{
-    var r=await supabaseClient.from('notifications').select('*').eq('target_type','all').order('created_at',{ascending:false}).limit(30);
-    if(!r.data||r.data.length===0){list.innerHTML='<div class="text-center py-4" style="color:#64748b;">🔕 No notifications</div>';return;}
-    list.innerHTML=r.data.map(function(n){
-      var c=n.type==='urgent'?'urgent':n.type==='important'?'important':'';
-      var i=n.type==='urgent'?'fa-exclamation-triangle':n.type==='important'?'fa-exclamation-circle':'fa-info-circle';
-      var linkHtml = '';
-      if(n.link_url){
-        linkHtml = '<a href="'+escapeHtml(n.link_url)+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:.78rem;color:#0891b2;text-decoration:none;padding:6px 12px;background:rgba(8,145,178,.1);border:1px solid rgba(8,145,178,.3);border-radius:20px;font-weight:700;"><i class="fas fa-external-link-alt"></i> Open Link</a>';
-      }
-      return '<div class="notif-item '+c+'"><div class="d-flex justify-content-between mb-2 flex-wrap gap-2"><strong style="color:#0f172a;font-size:.88rem;"><i class="fas '+i+' me-2"></i>'+escapeHtml(n.title)+'</strong><small style="color:#64748b;font-size:.7rem;">'+formatDate(n.created_at)+'</small></div><p style="color:#475569;margin-bottom:0;font-size:.82rem;">'+escapeHtml(n.message)+'</p>'+linkHtml+'</div>';
-    }).join('');
-    if(!currentUser){
-      list.innerHTML+='<div style="margin-top:16px;padding:12px;background:#ecfeff;border:1px solid rgba(8,145,178,.3);border-radius:14px;text-align:center;"><p style="color:#0f172a;font-size:.82rem;margin:0 0 10px;">🔐 Personal notifications കാണാൻ Login ചെയ്യുക</p><button class="pf-cta-btn" onclick="closeNotificationsModal()"><i class="fas fa-sign-in-alt"></i> Login</button></div>';
-    }
-  }catch(e){list.innerHTML='<div class="text-center py-3" style="color:#64748b;">Error</div>';}
-}
-
-function subscribePublicNotifications(){
-  if(!supabaseClient)return;
-  try{
-    loginNotifChannel=supabaseClient.channel('public_notifs_login').on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications'},function(payload){
-      var n=payload.new;
-      if(!n)return;
-      var tt=n.target_type||(n.target_class==='all'?'all':'class');
-      if(tt==='all'){
-        if(!currentUser){showToast('🔔 '+n.title,'info');}
-        if(Notification.permission==='granted'){
-          try{new Notification('🔔 '+n.title,{body:n.message||'',icon:'https://i.postimg.cc/DznFT7L9/IMG-3167.png',badge:'https://i.postimg.cc/DznFT7L9/IMG-3167.png'});}catch(e){}
-        }
-        checkUnreadNotifications();
-        loadTickerMessages();
-      }
-    }).subscribe();
-  }catch(e){console.warn('Subscribe error:',e);}
-}
-
-/* ============================================================ */
-/* 🔔 PUSH SUBSCRIPTION                                         */
-/* ============================================================ */
-async function subscribePushNotifications(){
-  if(!('serviceWorker' in navigator)||!('PushManager' in window))return false;
-  if(Notification.permission!=='granted')return false;
-  try{
-    var reg=await navigator.serviceWorker.ready;
-    var sub=await reg.pushManager.getSubscription();
-    if(!sub){
-      var padding='='.repeat((4-VAPID_PUBLIC_KEY.length%4)%4);
-      var base64=(VAPID_PUBLIC_KEY+padding).replace(/-/g,'+').replace(/_/g,'/');
-      var raw=atob(base64);
-      var arr=Uint8Array.from([].map.call(raw,function(c){return c.charCodeAt(0);}));
-      sub=await reg.pushManager.subscribe({
-        userVisibleOnly:true,
-        applicationServerKey:arr
-      });
-    }
-    var j=sub.toJSON();
-    var sid=currentUser?currentUser.studentId:'GUEST';
-    var cls=currentUser?currentUser.class:null;
-    var r=await supabaseClient.from('push_subscriptions').upsert({
-      studentid:sid,
-      class:cls,
-      endpoint:j.endpoint,
-      p256dh:j.keys.p256dh,
-      auth:j.keys.auth,
-      updated_at:new Date().toISOString()
-    },{onConflict:'studentid,endpoint'});
-    if(r.error)throw r.error;
-    console.log('✅ Push subscription saved:',sid);
-    localStorage.setItem('noor_push_subscribed','true');
-    return true;
-  }catch(err){
-    console.error('❌ Push subscribe error:',err);
-    return false;
-  }
-}
-
-async function requestPushPermission(){
-  if(!('Notification' in window))return false;
-  if(Notification.permission==='granted')return true;
-  if(Notification.permission==='denied')return false;
-  try{
-    var perm=await Notification.requestPermission();
-    localStorage.setItem('noor_push_asked','true');
-    if(perm==='granted'){showToast('🔔 Notifications enabled','success');return true;}
-  }catch(e){}
-  return false;
-}
-
-function showBrowserNotification(title,body){
-  if(!('Notification' in window)||Notification.permission!=='granted')return;
-  try{
-    var n=new Notification(title,{
-      body:body||'',
-      icon:'https://i.postimg.cc/DznFT7L9/IMG-3167.png',
-      badge:'https://i.postimg.cc/DznFT7L9/IMG-3167.png',
-      tag:'nsm-'+Date.now()
-    });
-    n.onclick=function(){window.focus();n.close();};
-    setTimeout(function(){try{n.close();}catch(e){}},8000);
-  }catch(e){}
-}
-
-/* ============================================================ */
-/* 🎨 THEME                                                     */
-/* ============================================================ */
-function initTheme(){
-  localStorage.setItem('noor_theme','light');
-  document.body.classList.add('light-mode');
-  document.body.classList.remove('logged-in');
-}
-
-function toggleTheme(){
-  showToast('☀️ Light mode only','info');
-}
-
-function applyTheme(theme){
-  document.body.classList.add('light-mode');
-  var icon=document.getElementById('themeIcon');
-  if(icon)icon.className='fas fa-sun';
-  if(typeof renderCharts==='function'&&currentUser)setTimeout(renderCharts,300);
-}
-
-/* ============================================================ */
-/* 🚀 INIT                                                      */
-/* ============================================================ */
-async function initApp(){
-  initTheme();
-  await restoreSession();
-  var splash=document.getElementById('splashScreen');
-  if(splash){splash.style.opacity='0';setTimeout(function(){splash.remove();},250);}
-  console.log('%c✅ Noorussalam Madrasa v23.0 Ultimate+ Edition','color:#0891b2;font-weight:bold;font-size:14px;');
-  console.log('%c📱 Mobile Bottom Nav: ENABLED','color:#059669;font-weight:bold;');
-  console.log('%c🎨 Light Theme: ACTIVE','color:#b45309;font-weight:bold;');
-  setTimeout(async () => {
-    if (Notification.permission === 'granted') {
-      await subscribePushNotifications();
-    }
-  }, 3000);
-}
-
-document.addEventListener('visibilitychange',function(){
-  if(document.hidden){
-    if(_prayerTickInterval){clearInterval(_prayerTickInterval);_prayerTickInterval=null;}
-    if(_examTickInterval){clearInterval(_examTickInterval);_examTickInterval=null;}
-  }else{
-    if(currentUser&&_prayerData)startPrayerCountdown();
-    if(currentUser)loadExamCountdown();
-  }
-});
-
-/* Ticker + notifications boot */
-window.addEventListener('load',function(){
-  setTimeout(function(){loadTickerMessages();positionTicker();},1200);
-  setTimeout(function(){
-    if('Notification' in window&&Notification.permission==='default'){
-      var asked=localStorage.getItem('noor_push_asked');
-      if(!asked){
-        askNotificationPermission().then(function(){localStorage.setItem('noor_push_asked','true');});
-      }
-    }else if(Notification.permission==='granted'){
-      checkUnreadNotifications();
-    }
-  },5000);
-  setTimeout(function(){subscribePublicNotifications();checkUnreadNotifications();},2000);
-});
-window.addEventListener('resize',positionTicker);
-setInterval(function(){
-  if(!document.hidden){loadTickerMessages();checkUnreadNotifications();}
-},300000);
-document.addEventListener('visibilitychange',function(){
-  if(!document.hidden)checkUnreadNotifications();
-});
-
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initApp);}
-else{initApp();}
-
-/* ============================================================ */
-/* 🌐 EXPORTS                                                   */
-/* ============================================================ */
-Object.assign(window,{
-  openHelpModal,closeHelpModal,showResultsModal,showAttendanceReport,showMoralValuesModal,showProfileCard,closeModal,openEditProfile,closeEditProfile,
-  showIdCard,downloadIdCard,showTopperPoster,closeTopperModal,openTopperCrop,closeTopperCrop,saveTopperCrop,
-  previewTopperPoster,closePosterPreview,downloadTopperPoster,openPassbook,closePassbook,openStudentWithdrawalModal,closeStudentWithdrawalModal,downloadPassbookPDF,
-  switchAdminTab,loadPaymentsForDate,loadAllWithdrawals,loadBalances,clearAdminForm,bulkUpdate,applyPaymentsFilters,loadPassbookData,
-  closeFindStudentId,findStudentId,loadStudentsForAdmin,filterStudentsAdmin,openStudentForm,editStudent,saveStudent,deleteStudent,
-  loadAllEvents,openEventForm,saveEvent,deleteEvent,loadAttendanceForAdmin,bulkUpdateAttendance,loadAllActivities,openActivityForm,saveActivity,deleteActivity,
-  loadMarksEntry,saveMarksBulk,saveSetting,saveClassSubjectsUI,selectAdminClass,closeSettingsTab,showTimetable,showHomework,showLibrary,
-  openNotificationsModal,closeNotificationsModal,loadTimetableAdmin,openTimetableForm,saveTimetable,deleteTimetable,
-  loadHomeworkAdmin,openHomeworkForm,saveHomework,deleteHomework,loadNotificationsAdmin,openNotificationForm,saveNotification,deleteNotification,onNotifTargetChange,editNotification,
-  loadLibraryAdmin,openLibraryForm,saveLibraryItem,deleteLibrary,
-  openProfilePhotoPicker,uploadProfilePhoto,handleCropFile,recalcAttendancePercentages,getFilteredStudentIds,showExamMarks,onStudentExamChange,
-  renderStudentExamMarks,getStudentBalance,refreshStudentAttendance,calculateGrade,showExtracurricular,
-  saveSwadarName,saveClassTeachers,isResultPublished,getPublishTimeText,parseClassTeachers,stringifyClassTeachers,
-  getExtraCategoriesForClass,loadOverallMadrasaRank,loadMonthlyProgress,parseClassExtraCategories,stringifyClassExtraCategories,
-  goToStudentZone,goToFees,goToCalendar,showCompetitions,loadCompetitionsAdmin,openCompetitionForm,editCompetition,saveCompetition,deleteCompetition,
-  downloadCompetitionsPDF,filterCompetitionsAdmin,openBulkCompetitionForm,saveBulkCompetition,loadBulkCompetitionStudents,
-  loadTopWinners,getPositionLabel,startLeaderboardAutoScroll,stopLeaderboardAutoScroll,openWinnerDetails,
-  impersonateStudent,returnToAdmin,classMatchesTarget,formatTargetClasses,
-  renderVisibilityUI,onVisibilityToggle,toggleAllQuickActions,resetStudentPortalVisibility,saveStudentPortalVisibility,applyStudentPortalVisibility,parseStudentVisibility,
-  openCreationsGallery,closeCreationsGallery,loadCreationsGallery,filterCreationsGallery,openUploadCreationModal,closeUploadCreationModal,
-  handleCreationImagePick,submitCreation,openCreationLightbox,closeCreationLightbox,toggleCreationLike,deleteCreation,
-  loadCreationComments,submitComment,deleteComment,timeAgo,loadCreationsAdmin,filterCreationsAdmin,deleteCreationAdmin,approveCreationAdmin,getCategoryLabel,editCreationAdmin,
-  openReportOptions,handleDownloadReport,downloadAcademicReportEnhanced,getLogoDataUrl,loadDailySummary,changeAdminPassword,loadTeacherSettingsIntoForm,
-  loadDBStats,saveHeadings,saveClassExtraCategories,saveResultPublishTime,clearResultPublishTime,uploadSignature,uploadClassSignature,clearSignature,clearClassSignature,
-  saveBgUrl,clearBgUrl,loadGradesForAdmin,bulkUpdateGrades,autoCalculateRanks,loadMoralValuesAdmin,
-  loadExtraAdmin,saveExtraBulk,findBestStudent,
-  downloadPaymentsPDF,downloadStudentsPDF,downloadBalancesPDF,downloadClassMarksPDF,
-  toggleAIChat,aiQuick,sendAIMessage,callGeminiAI,showAIAssistant,clearAIChat,copyAIMsg,
-  adminDeleteWithdrawal,approveWithdrawal,rejectWithdrawal,
-  toggleTheme,applyTheme,requestPushPermission,showBrowserNotification,
-  showBadgesModal,loadBadgeData,getUnlockedBadges,
-  renderCharts,shareReportViaWhatsApp,
-  toggleVoiceInput,updateMicUI,
-  openNotesModal,closeNotesModal,renderNotesList,openNoteEditor,saveNote,editNote,deleteNote,
-  initNewFeatures,
-  loadPrayerTimes,renderPrayerTimes,startPrayerCountdown,updatePrayerCountdown,
-  switchIslamicTab,renderIslamicContent,renderHijriDate,
-  loadExamCountdown,saveExamCountdown,clearExamCountdown,
-  openNoticeBoard,closeNoticeBoard,loadNoticeAdmin,togglePinNotice,
-  editNoticeAdmin,deleteNoticeAdmin,openNoticeForm,saveNoticeAdmin,saveMoralValuesBulk,recalcMoralOverall,
-  loadDailyHub,parseClassExamSubjects,stringifyClassExamSubjects,getSubjectsForClass,
-  calculateGradeFromPercent,previewSubjectMatrix,switchCreationMode,updateCreationTextMeta,
-  populateSubjectClassSelect,renderClassExamSubjectsUI,saveClassSubjectsUI,copyClassSubjectsFrom,
-  parseClassTraits,stringifyClassTraits,getTraitsForClass,saveClassTraits,
-  openBlockForm,confirmBlockStudent,unblockStudent,showBlockedScreen,closeBlockedScreen,
-  openPublicCreationsFeed,closePublicCreationsFeed,loginFromFeed,publicFeedLike,publicFeedShare,openPublicFeedDetail,loadPublicCreationsFeed,nsmSwitchTab,
-  enableBodyScroll,disableBodyScroll,
-  loadTickerMessages,positionTicker,updateAppBadge,askNotificationPermission,
-  checkUnreadNotifications,openGuestNotifications,subscribePublicNotifications,
-  subscribePushNotifications,mobNavClick,
-  openStudentFees,closeStudentFees,loadStudentFeeData,
-  loadFeeParentsAdmin,filterFeeParents,openFeeParentForm,saveFeeParent,
-  editFeeParent,deleteFeeParent,markFeePaid,openFeeSettingsForm,saveFeeSettingsFromForm,
-  saveDailyGreeting,clearDailyGreeting
-});
-
-/* Shortcut navigation from URL hash */
-function handleShortcutNavigation(){
-  var hash=(window.location.hash||'').replace('#','').toLowerCase();
-  var params=new URLSearchParams(window.location.search);
-  function openTarget(){
-    if(!currentUser)return;
-    if(hash==='palathulli')openPassbook();
-    else if(hash==='fees'){ if(typeof openStudentFees==='function')openStudentFees(); else openPassbook(); }
-    else if(hash==='creations')openCreationsGallery();
-    else if(hash==='ai'){var fab=document.getElementById('aiFab');if(fab&&fab.classList.contains('show'))toggleAIChat();}
-    if(params.get('public')==='1')openPublicCreationsFeed();
-  }
-  if(currentUser){setTimeout(openTarget,800);}
-  else{
-    var tries=0;
-    var timer=setInterval(function(){
-      tries++;
-      if(currentUser){clearInterval(timer);setTimeout(openTarget,800);}
-      if(tries>60)clearInterval(timer);
-    },500);
-  }
-  if(params.get('public')==='1'){
-    setTimeout(function(){if(typeof openPublicCreationsFeed==='function')openPublicCreationsFeed();},1500);
-  }
-}
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',handleShortcutNavigation);}
-else{handleShortcutNavigation();}
-
-/* Chart redraw on section show */
-(function(){
-  var _obsDash = new MutationObserver(function(){
-    var dash = document.getElementById('dashboardSection');
-    if(dash && dash.style.display === 'block'){
-      setTimeout(function(){
-        try { if(typeof renderCharts === 'function' && currentUser) renderCharts(); }
-        catch(e){ console.warn('chart redraw', e); }
-      }, 350);
-    }
-  });
-  document.addEventListener('DOMContentLoaded', function(){
-    var dash = document.getElementById('dashboardSection');
-    if(dash) _obsDash.observe(dash, { attributes: true, attributeFilter: ['style'] });
-  });
-  window.addEventListener('orientationchange', function(){
-    setTimeout(function(){
-      if(typeof renderCharts === 'function' && currentUser) renderCharts();
-    }, 500);
-  });
-})();
-
-console.log('✅ PART 8 loaded — Full System Ready (v23.0)');
-</script>
-
-<!-- ============================================================ -->
-<!-- 🔒 UNIVERSAL CLOSE SYSTEM                                    -->
-<!-- ============================================================ -->
-<script>
-(function(){
-  window.closeModal=window.closeModal||function(id){var el=document.getElementById(id);if(el)el.style.display='none';};
-
-  var MODAL_IDS=['globalModal','passbookModal','findStudentIdModal','editProfileModal','forgotModal','topperModal','topperCropModal','studentWithdrawalModal','notificationsModal','uploadCreationModal','notesModal','noticeBoardModal'];
-
-  function init(){
-    MODAL_IDS.forEach(function(id){
-      var el=document.getElementById(id);
-      if(el){el.addEventListener('click',function(e){if(e.target===this)this.style.display='none';});}
-    });
-    var lb=document.getElementById('creationLightbox');
-    if(lb){lb.addEventListener('click',function(e){if(e.target===this)window.closeCreationLightbox&&window.closeCreationLightbox();});}
-    var hm=document.getElementById('helpModal');
-    if(hm){hm.addEventListener('click',function(e){if(e.target===this)window.closeHelpModal();});}
-
-    document.addEventListener('keydown',function(e){
-      if(e.key!=='Escape')return;
-      for(var i=MODAL_IDS.length-1;i>=0;i--){
-        var el=document.getElementById(MODAL_IDS[i]);
-        if(el&&el.style.display==='flex'){el.style.display='none';return;}
-      }
-      var cb=document.getElementById('creationLightbox');
-      if(cb&&cb.classList.contains('open')){window.closeCreationLightbox&&window.closeCreationLightbox();return;}
-      var co=document.getElementById('creationsOverlay');
-      if(co&&co.classList.contains('open')){window.closeCreationsGallery&&window.closeCreationsGallery();return;}
-      var pp=document.getElementById('posterPreviewOverlay');
-      if(pp&&pp.style.display==='block'){window.closePosterPreview&&window.closePosterPreview();return;}
-      var hm2=document.getElementById('helpModal');
-      if(hm2&&hm2.classList.contains('active')){window.closeHelpModal();return;}
-    });
-    console.log('✅ Close system ready');
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
-  else init();
-  /* 🆕 Auto-toggle modal-open class */
-  function updateModalState(){
-    var ids = ['globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal','topperModal','topperCropModal','uploadCreationModal','notesModal','noticeBoardModal','forgotModal','findStudentIdModal','helpModal'];
-    var anyOpen = false;
-    ids.forEach(function(id){
-      var el = document.getElementById(id);
-      if(!el) return;
-      var disp = el.style.display;
-      var isFlex = disp === 'flex';
-      var isBlock = disp === 'block';
-      var hasActive = el.classList && el.classList.contains('active');
-      var hasOpen = el.classList && el.classList.contains('open');
-      if(isFlex || isBlock || hasActive || hasOpen) anyOpen = true;
-    });
-    // creationLightbox
-    var cb = document.getElementById('creationLightbox');
-    if(cb && cb.classList.contains('open')) anyOpen = true;
-    // poster preview
-    var pp = document.getElementById('posterPreviewOverlay');
-    if(pp && pp.style.display === 'block') anyOpen = true;
-    // creations overlay
-    var co = document.getElementById('creationsOverlay');
-    if(co && co.classList.contains('open')) anyOpen = true;
-    // public feed
-    var pf = document.getElementById('publicFeedOverlay');
-    if(pf && pf.classList.contains('open')) anyOpen = true;
-    // student fees
-    var sf = document.getElementById('studentFeesOverlay');
-    if(sf && sf.style.display === 'block') anyOpen = true;
-
-    if(anyOpen) document.body.classList.add('modal-open');
-    else document.body.classList.remove('modal-open');
-  }
-
-  window.updateModalState = updateModalState;
-
-  // Observe ALL modals for style changes
-  document.addEventListener('DOMContentLoaded', function(){
-    var watchIds = ['globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal','topperModal','topperCropModal','uploadCreationModal','notesModal','noticeBoardModal','forgotModal','findStudentIdModal','helpModal','creationLightbox','creationsOverlay','posterPreviewOverlay','publicFeedOverlay','studentFeesOverlay'];
-    var mo = new MutationObserver(updateModalState);
-    watchIds.forEach(function(id){
-      var el = document.getElementById(id);
-      if(el) mo.observe(el, { attributes:true, attributeFilter:['style','class'] });
-    });
-    // Initial state
-    updateModalState();
-  });
-})();
-</script>
-
-<!-- ============================================================ -->
-<!-- 🎨 MOBILE APP-LIKE ENHANCEMENTS                              -->
-<!-- ============================================================ -->
-<script>
-/* 1️⃣ AI Panel — Gemini-style Full Screen Keyboard Handler */
-(function(){
-  var _vvListenerAttached = false;
-
-  function setupAIKeyboardHandler(){
-    if(_vvListenerAttached) return;
-    var vv = window.visualViewport;
-    if(!vv) return;
-    _vvListenerAttached = true;
-
-    function onVVResize(){
-      var panel = document.getElementById('aiPanel');
-      var foot = document.getElementById('aiFoot');
-      if(!panel || !panel.classList.contains('open')) return;
-      if(window.innerWidth > 900) return; // desktop skip
-
-      var vh = vv.height;
-      var offsetTop = vv.offsetTop;
-      var winH = window.innerHeight;
-      var keyboardOpen = (winH - vh) > 120;
-
-      if(keyboardOpen){
-        // Panel occupies only visible area, input sticks to keyboard top
-        panel.style.height = vh + 'px';
-        panel.style.maxHeight = vh + 'px';
-        panel.style.top = offsetTop + 'px';
-        panel.style.bottom = 'auto';
-        if(foot){
-          foot.style.position = 'absolute';
-          foot.style.top = vh + 'px';
-          foot.style.transform = 'translateY(-100%)';
-          foot.style.bottom = 'auto';
-        }
-        // scroll chat to bottom
-        var body = document.getElementById('aiBody');
-        if(body) setTimeout(function(){ body.scrollTop = body.scrollHeight; }, 80);
-      } else {
-        panel.style.height = '';
-        panel.style.maxHeight = '';
-        panel.style.top = '';
-        panel.style.bottom = '';
-        if(foot){
-          foot.style.position = 'absolute';
-          foot.style.top = '';
-          foot.style.transform = '';
-          foot.style.bottom = '0';
-        }
-      }
-    }
-
-    vv.addEventListener('resize', onVVResize);
-    vv.addEventListener('scroll', onVVResize);
-    window.addEventListener('orientationchange', function(){ setTimeout(onVVResize, 300); });
-  }
-
-  // Attach on DOM ready
-  document.addEventListener('DOMContentLoaded', setupAIKeyboardHandler);
-  setTimeout(setupAIKeyboardHandler, 1000);
-
-  console.log('✅ AI Panel — Gemini-style keyboard handler ready');
-})();
-
-/* 2️⃣ Haptic Feedback */
-(function(){
-  function haptic(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms || 10); }catch(e){} }
-  document.addEventListener('click', function(e){
-    var t = e.target.closest('.action-tile, .pala-btn, .mob-nav-item, .btn-update, .btn-load, .nsm-btn-primary, .pf-action-btn, .creation-card, .lb-card, .prayer-item');
-    if(t) haptic(8);
-  }, { passive: true });
-  console.log('✅ Haptic feedback ready');
-})();
-
-/* 3️⃣ Pull-to-Refresh */
-(function(){
-  var startY = 0, currentY = 0, pulling = false;
-  var container = null;
-
-  document.addEventListener('touchstart', function(e){
-    container = e.target.closest('#dashboardSection');
-    if(!container) return;
-    if(window.scrollY > 5) return;
-    startY = e.touches[0].clientY;
-    pulling = true;
-  }, { passive: true });
-
-  document.addEventListener('touchmove', function(e){
-    if(!pulling || !container) return;
-    currentY = e.touches[0].clientY;
-    var diff = currentY - startY;
-    if(diff > 0 && window.scrollY <= 0){
-      var offset = Math.min(diff * 0.4, 60);
-      var ind = document.getElementById('pullIndicator');
-      if(!ind){
-        ind = document.createElement('div');
-        ind.id = 'pullIndicator';
-        ind.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-60px);z-index:8000;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b8bff,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 20px -6px rgba(59,139,255,.7);transition:transform .1s;';
-        ind.innerHTML = '<i class="fas fa-arrow-down" style="font-size:.9rem;"></i>';
-        document.body.appendChild(ind);
-      }
-      ind.style.transform = 'translateX(-50%) translateY(' + (offset - 20) + 'px) rotate(' + (offset * 3) + 'deg)';
-    }
-  }, { passive: true });
-
-  document.addEventListener('touchend', function(){
-    if(!pulling) return;
-    pulling = false;
-    var ind = document.getElementById('pullIndicator');
-    if(ind){
-      var diff = currentY - startY;
-      if(diff > 120){
-        ind.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:.9rem;"></i>';
-        if(currentUser && typeof refreshStudentAttendance === 'function'){
-          refreshStudentAttendance().then(function(){
-            if(typeof loadTopWinners === 'function') loadTopWinners();
-            if(typeof loadStudentBalance === 'function') loadStudentBalance();
-          }).finally(function(){
-            setTimeout(function(){
-              ind.style.transform = 'translateX(-50%) translateY(-60px)';
-              setTimeout(function(){ ind.remove(); }, 300);
-            }, 400);
-          });
-        } else {
-          ind.style.transform = 'translateX(-50%) translateY(-60px)';
-          setTimeout(function(){ ind.remove(); }, 300);
-        }
-      } else {
-        ind.style.transform = 'translateX(-50%) translateY(-60px)';
-        setTimeout(function(){ ind.remove(); }, 300);
-      }
-    }
-    startY = 0; currentY = 0;
-  });
-  console.log('✅ Pull-to-refresh ready');
-})();
-
-/* 4️⃣ iOS input zoom fix */
-(function(){
-  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
-    var ensureZoom = function(){
-      document.querySelectorAll('input, textarea, select').forEach(function(el){
-        if(!el.style.fontSize || parseFloat(el.style.fontSize) < 16){ el.style.fontSize = '16px'; }
-      });
-    };
-    document.addEventListener('DOMContentLoaded', ensureZoom);
-    setTimeout(ensureZoom, 1500);
-  }
-})();
-
-/* 5️⃣ Card Entrance Animation */
-(function(){
-  if(!('IntersectionObserver' in window)) return;
-  var obs = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if(en.isIntersecting){
-        en.target.style.opacity = '1';
-        en.target.style.transform = 'translateY(0)';
-        obs.unobserve(en.target);
-      }
-    });
-  }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
-
-  function registerCards(){
-    if(window.innerWidth > 900) return;
-    document.querySelectorAll('#dashboardSection .hub-card, #dashboardSection .activity-timeline, #dashboardSection .chart-card, #dashboardSection .leaderboard-section, #dashboardSection .stats-grid .stat-card-neon').forEach(function(c){
-      if(c._animRegistered) return;
-      c._animRegistered = true;
-      c.style.opacity = '0';
-      c.style.transform = 'translateY(20px)';
-      c.style.transition = 'opacity .55s cubic-bezier(.34,1.2,.64,1), transform .55s cubic-bezier(.34,1.2,.64,1)';
-      obs.observe(c);
-    });
-  }
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(registerCards, 1200); });
-  setTimeout(registerCards, 3000);
-})();
-
-/* 6️⃣ Bottom Nav enforcement */
-(function(){
-  function enforceBottomNav(){
-    var nav = document.getElementById('mobBottomNav');
-    if(!nav) return;
-    var isLoggedIn = document.body.classList.contains('logged-in');
-    var isMobile = window.innerWidth <= 900;
-    if(isLoggedIn && isMobile){
-      nav.style.display = 'flex';
-      nav.style.position = 'fixed';
-      nav.style.left = '14px';
-      nav.style.right = '14px';
-      nav.style.bottom = '14px';
-      nav.style.top = 'auto';
-      nav.style.zIndex = '99999';
-      nav.style.transform = 'none';
-    } else {
-      nav.style.display = 'none';
-    }
-  }
-  document.addEventListener('DOMContentLoaded', enforceBottomNav);
-  setTimeout(enforceBottomNav, 300);
-  setTimeout(enforceBottomNav, 1000);
-  setTimeout(enforceBottomNav, 2500);
-  var mo = new MutationObserver(enforceBottomNav);
-  mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-  window.addEventListener('resize', enforceBottomNav);
-  console.log('✅ Bottom nav enforcement ready');
-})();
-
-console.log('✅ Mobile enhancements loaded — v23.0');
-</script>
-
-<!-- ============================================================ -->
-<!-- 🔧 SERVICE WORKER                                            -->
-<!-- ============================================================ -->
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./service-worker.js')
-      .then(reg=>console.log('✅ SW registered:',reg.scope))
-      .catch(err=>console.log('❌ SW error:',err));
-  });
-}
-</script>
-
-<!-- ============================================================ -->
-<!-- 📱 PWA INSTALL BUTTON                                        -->
-<!-- ============================================================ -->
-<script>
-let deferredPrompt=null;
-const installBtn=document.getElementById('pwaInstallBtn');
-window.addEventListener('beforeinstallprompt',(e)=>{
-  console.log('✅ PWA installable!');
-  e.preventDefault();
-  deferredPrompt=e;
-  if(installBtn)installBtn.style.display='flex';
-});
-if(installBtn){
-  installBtn.addEventListener('click',async()=>{
-    if(!deferredPrompt){alert('ബ്രൗസർ മെനുവിൽ നിന്ന് "Add to Home Screen" തിരഞ്ഞെടുക്കുക');return;}
-    deferredPrompt.prompt();
-    const{outcome}=await deferredPrompt.userChoice;
-    console.log('Install outcome:',outcome);
-    deferredPrompt=null;
-    installBtn.style.display='none';
-  });
-}
-window.addEventListener('appinstalled',()=>{
-  console.log('✅ App installed!');
-  if(installBtn)installBtn.style.display='none';
-});
-</script>
-<!-- ============================================================ -->
-<!-- 🆕 PART 9 JAVASCRIPT — LOGINS / LESSONS / DOWNLOADS          -->
-<!-- ============================================================ -->
-<script>
-/* ============================================================ */
-/* 📊 LOGIN TRACKING                                            */
-/* ============================================================ */
-var loginLogsData=[],filteredLoginLogs=[];
-
-async function trackLogin(student){
-  if(!supabaseClient||!student)return;
-  try{
-    var device='Unknown';
-    var ua=navigator.userAgent||'';
-    if(/Android/i.test(ua))device='Android';
-    else if(/iPhone|iPad|iPod/i.test(ua))device='iOS';
-    else if(/Windows/i.test(ua))device='Windows';
-    else if(/Mac/i.test(ua))device='Mac';
-    else if(/Linux/i.test(ua))device='Linux';
-    await supabaseClient.from('login_logs').insert({
-      studentid:student.studentid,
-      name:student.name||'',
-      class:student.class||'',
-      device:device,
-      user_agent:ua.substring(0,200)
-    });
-  }catch(e){console.warn('trackLogin:',e);}
-}
-
-function loadLoginLogsToday(){
-  var d=document.getElementById('loginLogDate');
-  if(d)d.value=new Date().toISOString().split('T')[0];
-  loadLoginLogs();
-}
-
-async function loadLoginLogs(){
-  var dateEl=document.getElementById('loginLogDate');
-  if(dateEl&&!dateEl.value)dateEl.value=new Date().toISOString().split('T')[0];
-  var date=dateEl?dateEl.value:new Date().toISOString().split('T')[0];
-  var wrap=document.getElementById('loginLogsWrap');
-  wrap.innerHTML='<div class="loading-tx"><div class="spinner-sm"></div></div>';
-  try{
-    var start=new Date(date+'T00:00:00').toISOString();
-    var end=new Date(date+'T23:59:59.999').toISOString();
-    var r=await supabaseClient.from('login_logs')
-      .select('*')
-      .gte('login_at',start)
-      .lte('login_at',end)
-      .order('login_at',{ascending:false});
-    loginLogsData=r.data||[];
-    renderLoginLogs();
-  }catch(e){
-    wrap.innerHTML='<div class="empty-state">Error: '+escapeHtml(e.message)+'</div>';
-  }
-}
-
-function filterLoginLogs(){
-  var q=(document.getElementById('loginLogSearch')?.value||'').toLowerCase().trim();
-  filteredLoginLogs=loginLogsData.filter(function(l){
-    return !q || (l.name||'').toLowerCase().indexOf(q)>-1 || (l.studentid||'').toLowerCase().indexOf(q)>-1;
-  });
-  renderLoginLogs();
-}
-
-function renderLoginLogs(){
-  var wrap=document.getElementById('loginLogsWrap');
-  var sum=document.getElementById('loginLogSummary');
-  if(!wrap)return;
-  var list=filteredLoginLogs.length||document.getElementById('loginLogSearch')?.value?filteredLoginLogs:loginLogsData;
-  if(document.getElementById('loginLogSearch')?.value)list=filteredLoginLogs; else list=loginLogsData;
-
-  var unique=Array.from(new Set(loginLogsData.map(function(l){return l.studentid;}))).length;
-  var classCounts={};
-  loginLogsData.forEach(function(l){classCounts[l.class||'?']=(classCounts[l.class||'?']||0)+1;});
-  var mostClass='—';
-  var maxC=0;
-  Object.keys(classCounts).forEach(function(k){if(classCounts[k]>maxC){maxC=classCounts[k];mostClass=k;}});
-
-  if(sum){
-    sum.innerHTML=
-      '<div style="background:#fff;border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(180,200,230,.5);"><div style="font-weight:900;font-size:1.2rem;color:#1e40af;">'+loginLogsData.length+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#64748b;margin-top:3px;letter-spacing:1px;">Total Opens</div></div>'+
-      '<div style="background:#fff;border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(180,200,230,.5);"><div style="font-weight:900;font-size:1.2rem;color:#059669;">'+unique+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#64748b;margin-top:3px;letter-spacing:1px;">Unique Students</div></div>'+
-      '<div style="background:#fff;border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(180,200,230,.5);"><div style="font-weight:900;font-size:1.2rem;color:#b45309;">Class '+mostClass+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#64748b;margin-top:3px;letter-spacing:1px;">Most Active</div></div>';
-  }
-
-  if(!list||list.length===0){
-    wrap.innerHTML='<div class="empty-state"><i class="fas fa-user-clock" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i>ഈ ദിവസം ആരും ലോഗിൻ ചെയ്തിട്ടില്ല</div>';
-    return;
-  }
-
-  var dateStr=formatDate(document.getElementById('loginLogDate').value);
-  var h='<div class="login-date-badge"><i class="fas fa-calendar-day"></i> '+dateStr+'</div>';
-  h+=list.map(function(l){
-    var ini=(l.name||'S').charAt(0).toUpperCase();
-    var timeStr='';
-    try{var d=new Date(l.login_at);timeStr=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}catch(e){}
-    return'<div class="login-log-item"><div class="login-log-avatar">'+ini+'</div><div class="login-log-info"><div class="login-log-name">'+escapeHtml(l.name||l.studentid)+'</div><div class="login-log-meta"><span><i class="fas fa-id-card"></i> '+escapeHtml(l.studentid)+'</span><span><i class="fas fa-graduation-cap"></i> Class '+escapeHtml(l.class||'—')+'</span><span><i class="fas fa-mobile-alt"></i> '+escapeHtml(l.device||'—')+'</span></div></div><div class="login-log-time">'+timeStr+'</div><button class="login-log-del" onclick="deleteLoginLog('+l.id+')" title="Delete"><i class="fas fa-times"></i></button></div>';
-  }).join('');
-  wrap.innerHTML=h;
-}
-
-async function deleteLoginLog(id){
-  if(!confirm('ഈ login record ഡിലീറ്റ് ചെയ്യണോ?'))return;
-  try{
-    await supabaseClient.from('login_logs').delete().eq('id',id);
-    loginLogsData=loginLogsData.filter(function(l){return l.id!==id;});
-    filterLoginLogs();
-    showToast('🗑️ Deleted','info');
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-async function clearAllLoginLogs(){
-  var date=document.getElementById('loginLogDate').value;
-  if(!date){showToast('Select date first','error');return;}
-  if(!confirm('ഈ ദിവസത്തെ എല്ലാ login records-ഉം ഡിലീറ്റ് ചെയ്യണോ?'))return;
-  try{
-    var start=new Date(date+'T00:00:00').toISOString();
-    var end=new Date(date+'T23:59:59.999').toISOString();
-    await supabaseClient.from('login_logs').delete().gte('login_at',start).lte('login_at',end);
-    showToast('🗑️ Cleared','success');
-    loadLoginLogs();
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-async function downloadLoginLogsPDF(){
-  if(!loginLogsData.length){showToast('No data','error');return;}
-  var date=document.getElementById('loginLogDate').value;
-  var jsPDF=window.jspdf.jsPDF;
-  var doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
-  var pw=doc.internal.pageSize.getWidth();
-  doc.setFillColor(21,71,168);doc.rect(0,0,pw,70,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont(undefined,'bold');
-  doc.text('NOORUSSALAM MADRASA',pw/2,35,{align:'center'});
-  doc.setFontSize(11);doc.setFont(undefined,'normal');
-  doc.text('Daily Login Report — '+formatDate(date),pw/2,55,{align:'center'});
-  doc.setTextColor(0,0,0);
-  doc.autoTable({
-    startY:90,
-    head:[['#','Student','ID','Class','Device','Time']],
-    body:loginLogsData.map(function(l,i){
-      var t='';try{var d=new Date(l.login_at);t=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}catch(e){}
-      return[i+1,l.name||'',l.studentid||'',l.class||'',l.device||'',t];
-    }),
-    styles:{fontSize:9},headStyles:{fillColor:[30,107,224]}
-  });
-  doc.save('Logins_'+date+'.pdf');
-  showToast('✅ Downloaded','success');
-}
-
-/* ============================================================ */
-/* 📖 LESSONS — ADMIN                                           */
-/* ============================================================ */
-var lessonsAdminData=[];
-var _bulkLessonRows=[];
-
-async function loadLessonsAdmin(){
-  var cls=document.getElementById('lessonAdminClass')?.value;
-  var month=document.getElementById('lessonAdminMonth')?.value;
-  var wrap=document.getElementById('lessonsAdminWrap');
-  if(!cls){wrap.innerHTML='<div class="empty-state">Class തിരഞ്ഞെടുക്കുക</div>';return;}
-  wrap.innerHTML='<div class="loading-tx"><div class="spinner-sm"></div></div>';
-  try{
-    var q=supabaseClient.from('lessons').select('*').eq('class',cls);
-    if(month)q=q.eq('month_year',month);
-    q=q.order('month_year',{ascending:false}).order('subject').order('lesson_no');
-    var r=await q;
-    lessonsAdminData=r.data||[];
-    renderLessonsAdmin();
-  }catch(e){wrap.innerHTML='<div class="empty-state">Error: '+escapeHtml(e.message)+'</div>';}
-}
-
-function renderLessonsAdmin(){
-  var wrap=document.getElementById('lessonsAdminWrap');
-  if(!lessonsAdminData.length){wrap.innerHTML='<div class="empty-state">No lessons yet</div>';return;}
-  var h='<table><thead><tr><th>#</th><th>Month</th><th>Subject</th><th>No.</th><th>Title</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
-  lessonsAdminData.forEach(function(l,i){
-    var st=l.status||'pending';
-    h+='<tr><td>'+(i+1)+'</td><td>'+formatMonthMalayalam(l.month_year,true)+'</td><td><span class="lesson-subject-tag">'+escapeHtml(l.subject)+'</span></td><td>'+escapeHtml(String(l.lesson_no||'—'))+'</td><td><strong>'+escapeHtml(l.title)+'</strong>'+(l.description?'<br><small style="color:#64748b;">'+escapeHtml(l.description).substring(0,60)+'</small>':'')+'</td><td><span class="lesson-status '+st+'">'+(st==='completed'?'✓ Done':'⏳ Pending')+'</span></td><td><button class="btn-sm approve" onclick="editLesson('+l.id+')" title="Edit">✏️</button> <button class="btn-sm" style="background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;padding:5px 10px;" onclick="toggleLessonStatus('+l.id+')" title="Toggle">🔄</button> <button class="btn-sm reject" onclick="deleteLesson('+l.id+')">🗑️</button></td></tr>';
-  });
-  h+='</tbody></table>';
-  wrap.innerHTML=h;
-}
-
-function openLessonForm(id){
-  var cls=document.getElementById('lessonAdminClass')?.value;
-  if(!cls){showToast('⚠️ Class select ചെയ്യുക','error');return;}
-  var month=document.getElementById('lessonAdminMonth')?.value||new Date().toISOString().slice(0,7);
-  var ex=id?lessonsAdminData.find(function(l){return l.id===id;}):{};
-  var isEdit=!!id;
-  var subjects=getSubjectsForClass(cls);
-  modalTitleSpan.innerText=isEdit?'✏️ Edit Lesson':'📖 Add Lesson';
-  modalBodyDiv.innerHTML='<form onsubmit="saveLesson(event,'+(id||'null')+')">'+
-    '<div class="row g-3">'+
-    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Class</label><input type="text" class="modal-form-input" value="Class '+cls+'" readonly></div>'+
-    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Month *</label><input type="month" id="ls_month" class="modal-form-input" value="'+(ex.month_year||month)+'" required></div>'+
-    '<div class="col-md-8"><label style="color:#475569;font-size:.78rem;">Subject *</label><select id="ls_subject" class="modal-form-input" required><option value="">-- Select --</option>'+subjects.map(function(s){return'<option value="'+escapeHtml(s)+'" '+(ex.subject===s?'selected':'')+'>'+escapeHtml(s)+'</option>';}).join('')+'</select></div>'+
-    '<div class="col-md-4"><label style="color:#475569;font-size:.78rem;">Lesson No.</label><input type="number" id="ls_no" class="modal-form-input" min="1" value="'+(ex.lesson_no||'')+'"></div>'+
-    '<div class="col-12"><label style="color:#475569;font-size:.78rem;">Title *</label><input type="text" id="ls_title" class="modal-form-input" required maxlength="200" value="'+escapeHtml(ex.title||'')+'"></div>'+
-    '<div class="col-12"><label style="color:#475569;font-size:.78rem;">Description</label><textarea id="ls_desc" class="modal-form-input" style="min-height:80px;" maxlength="500">'+escapeHtml(ex.description||'')+'</textarea></div>'+
-    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Status</label><select id="ls_status" class="modal-form-input"><option value="pending" '+(ex.status!=='completed'?'selected':'')+'>⏳ Pending</option><option value="completed" '+(ex.status==='completed'?'selected':'')+'>✓ Completed</option></select></div>'+
-    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Completed Date</label><input type="date" id="ls_completed" class="modal-form-input" value="'+(ex.completed_date||'')+'"></div>'+
-    '</div>'+
-    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>'+
-    '</form>';
-  modal.style.display='flex';
-}
-
-async function saveLesson(e,id){
-  e.preventDefault();
-  var cls=document.getElementById('lessonAdminClass').value;
-  var obj={
-    class:cls,
-    month_year:document.getElementById('ls_month').value,
-    subject:document.getElementById('ls_subject').value,
-    lesson_no:parseInt(document.getElementById('ls_no').value)||null,
-    title:document.getElementById('ls_title').value.trim(),
-    description:document.getElementById('ls_desc').value.trim()||null,
-    status:document.getElementById('ls_status').value,
-    completed_date:document.getElementById('ls_completed').value||null
-  };
-  if(!obj.month_year||!obj.subject||!obj.title){showToast('Fill all required','error');return;}
-  showLoading(true);
-  try{
-    if(id)await supabaseClient.from('lessons').update(obj).eq('id',id);
-    else await supabaseClient.from('lessons').insert(obj);
-    showToast(id?'✅ Updated':'✅ Added','success');
-    closeModal('globalModal');
-    loadLessonsAdmin();
-  }catch(e){showToast('❌ '+e.message,'error');}
-  showLoading(false);
-}
-
-function editLesson(id){openLessonForm(id);}
-
-async function toggleLessonStatus(id){
-  var l=lessonsAdminData.find(function(x){return x.id===id;});
-  if(!l)return;
-  var newStatus=l.status==='completed'?'pending':'completed';
-  try{
-    await supabaseClient.from('lessons').update({
-      status:newStatus,
-      completed_date:newStatus==='completed'?new Date().toISOString().split('T')[0]:null
-    }).eq('id',id);
-    showToast(newStatus==='completed'?'✅ Marked done':'↩️ Marked pending','success');
-    loadLessonsAdmin();
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-async function deleteLesson(id){
-  if(!confirm('Delete this lesson?'))return;
-  try{
-    await supabaseClient.from('lessons').delete().eq('id',id);
-    showToast('🗑️ Deleted','info');
-    loadLessonsAdmin();
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-async function openBulkLessonForm(){
-  var cls=document.getElementById('lessonAdminClass')?.value;
-  if(!cls){showToast('⚠️ Class select ചെയ്യുക','error');return;}
-  var month=document.getElementById('lessonAdminMonth')?.value||new Date().toISOString().slice(0,7);
-  var subjects=getSubjectsForClass(cls);
-  modalTitleSpan.innerText='📖 Bulk Add Lessons';
-  modalBodyDiv.innerHTML='<form onsubmit="saveBulkLessons(event)">'+
-    '<div class="row g-3 mb-3">'+
-    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Month</label><input type="month" id="bl_month" class="modal-form-input" value="'+month+'" readonly></div>'+
-    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Subject</label><select id="bl_subject" class="modal-form-input" onchange="syncBulkLessonSubjects()">'+subjects.map(function(s){return'<option value="'+escapeHtml(s)+'">'+escapeHtml(s)+'</option>';}).join('')+'</select></div>'+
-    '</div>'+
-    '<div style="background:#eff6ff;border:1px solid rgba(59,130,246,.25);border-radius:12px;padding:10px 14px;font-size:.76rem;color:#1e40af;margin-bottom:12px;line-height:1.6;"><i class="fas fa-lightbulb"></i> ഒരു subject-ന്റെ എല്ലാ lessons-ഉം ഒരുമിച്ച് add ചെയ്യാം</div>'+
-    '<div id="blRowsContainer"></div>'+
-    '<button type="button" class="btn-load mt-2" onclick="addBulkLessonRow()"><i class="fas fa-plus"></i> Add Row</button>'+
-    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save All</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>'+
-    '</form>';
-  modal.style.display='flex';
-  _bulkLessonRows=[];
-  addBulkLessonRow();addBulkLessonRow();addBulkLessonRow();
-}
-
-function addBulkLessonRow(){
-  var c=document.getElementById('blRowsContainer');
-  if(!c)return;
-  var idx=_bulkLessonRows.length;
-  _bulkLessonRows.push({no:'',title:''});
-  var div=document.createElement('div');
-  div.className='d-flex gap-2 mb-2';
-  div.innerHTML='<input type="number" class="modal-form-input" placeholder="No" data-idx="'+idx+'" data-field="no" style="width:80px;" value="'+(idx+1)+'"><input type="text" class="modal-form-input" placeholder="Lesson title" data-idx="'+idx+'" data-field="title">';
-  c.appendChild(div);
-}
-
-function syncBulkLessonSubjects(){/* placeholder */}
-
-async function saveBulkLessons(e){
-  e.preventDefault();
-  var cls=document.getElementById('lessonAdminClass').value;
-  var month=document.getElementById('bl_month').value;
-  var subject=document.getElementById('bl_subject').value;
-  var inputs=document.querySelectorAll('#blRowsContainer input');
-  var rows=[];
-  var temp={};
-  inputs.forEach(function(inp){
-    var idx=parseInt(inp.dataset.idx);
-    var field=inp.dataset.field;
-    if(!temp[idx])temp[idx]={no:'',title:''};
-    temp[idx][field]=inp.value.trim();
-  });
-  Object.keys(temp).forEach(function(k){
-    var r=temp[k];
-    if(r.title)rows.push({
-      class:cls,month_year:month,subject:subject,
-      lesson_no:parseInt(r.no)||null,title:r.title,status:'pending'
-    });
-  });
-  if(!rows.length){showToast('⚠️ കുറഞ്ഞത് ഒരു lesson','error');return;}
-  var btn=e.target.querySelector('button[type="submit"]');
-  if(btn){btn.disabled=true;btn.textContent='Saving...';}
-  try{
-    var r=await supabaseClient.from('lessons').insert(rows);
-    if(r.error)throw r.error;
-    showToast('✅ '+rows.length+' lessons added','success');
-    if(typeof confetti!=='undefined')confetti({particleCount:100,spread:80,origin:{y:.7}});
-    closeModal('globalModal');
-    loadLessonsAdmin();
-  }catch(err){showToast('❌ '+err.message,'error');}
-  if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save All';}
-}
-
-/* ============================================================ */
-/* 📖 LESSONS — STUDENT VIEW                                    */
-/* ============================================================ */
-async function showStudentLessons(){
-  if(!currentUser){showToast('Login first','error');return;}
-  modalTitleSpan.innerText="📖 പാഠങ്ങൾ";
-  modalBodyDiv.innerHTML='<div class="text-center py-4"><div class="spinner-border" style="color:#059669"></div></div>';
-  modal.style.display='flex';
-  try{
-    var r=await supabaseClient.from('lessons').select('*').eq('class',String(currentUser.class)).order('month_year',{ascending:false}).order('subject').order('lesson_no');
-    if(!r.data||!r.data.length){
-      modalBodyDiv.innerHTML='<div class="empty-state"><i class="fas fa-book-open" style="font-size:3rem;color:#94a3b8;opacity:.4;display:block;margin-bottom:12px;"></i><div style="font-weight:800;color:#0f172a;margin-bottom:6px;">ഇതുവരെ പാഠങ്ങൾ ചേർത്തിട്ടില്ല</div><div style="font-size:.82rem;color:#64748b;">Admin lessons upload ചെയ്യുമ്പോൾ ഇവിടെ കാണും</div></div>';
-      return;
-    }
-    var byMonth={};
-    r.data.forEach(function(l){
-      if(!byMonth[l.month_year])byMonth[l.month_year]={};
-      if(!byMonth[l.month_year][l.subject])byMonth[l.month_year][l.subject]=[];
-      byMonth[l.month_year][l.subject].push(l);
-    });
-    var totalLessons=r.data.length;
-    var completedCount=r.data.filter(function(l){return l.status==='completed';}).length;
-    var overallPct=totalLessons>0?Math.round((completedCount/totalLessons)*100):0;
-
-    var h='<div style="background:linear-gradient(135deg,#ecfdf5,#dbeafe);border:1.6px solid rgba(5,150,105,.35);border-radius:18px;padding:16px;margin-bottom:18px;text-align:center;">';
-    h+='<div style="font-size:.75rem;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;">Overall Progress</div>';
-    h+='<div style="font-size:2.4rem;font-weight:900;color:#059669;line-height:1;">'+overallPct+'%</div>';
-    h+='<div style="color:#0891b2;font-size:.82rem;margin-top:6px;font-weight:700;">'+completedCount+' / '+totalLessons+' പാഠങ്ങൾ പൂർത്തിയായി</div>';
-    h+='<div style="height:8px;background:rgba(255,255,255,.7);border-radius:8px;overflow:hidden;margin-top:12px;"><div style="height:100%;background:linear-gradient(90deg,#059669,#34d399);width:'+overallPct+'%;transition:width .8s;"></div></div>';
-    h+='</div>';
-
-    Object.keys(byMonth).sort().reverse().forEach(function(mo){
-      var subs=byMonth[mo];
-      var mTotal=0,mDone=0;
-      Object.keys(subs).forEach(function(s){subs[s].forEach(function(l){mTotal++;if(l.status==='completed')mDone++;});});
-      h+='<div class="lesson-month-group">';
-      h+='<div class="lesson-month-title"><i class="fas fa-calendar-alt"></i> '+formatMonthMalayalam(mo)+'<span class="lesson-stats"><span class="done">✓ '+mDone+'</span><span class="total">/ '+mTotal+'</span></span></div>';
-      Object.keys(subs).sort().forEach(function(sub){
-        h+='<div style="margin-bottom:10px;"><div class="lesson-subject-tag" style="margin-bottom:8px;"><i class="fas fa-book"></i> '+escapeHtml(sub)+'</div>';
-        subs[sub].forEach(function(l){
-          var st=l.status||'pending';
-          h+='<div class="lesson-card '+st+'">';
-          h+='<div class="lesson-header">';
-          h+='<div style="display:flex;gap:10px;align-items:flex-start;flex:1;min-width:0;">';
-          if(l.lesson_no)h+='<div class="lesson-no">'+l.lesson_no+'</div>';
-          h+='<div class="lesson-title">'+escapeHtml(l.title)+'</div>';
-          h+='</div>';
-          h+='<span class="lesson-status '+st+'">'+(st==='completed'?'✓ Done':'⏳ Pending')+'</span>';
-          h+='</div>';
-          if(l.description)h+='<div class="lesson-desc">'+escapeHtml(l.description)+'</div>';
-          if(l.completed_date&&st==='completed')h+='<div style="color:#059669;font-size:.7rem;font-weight:700;margin-top:6px;"><i class="fas fa-check-circle"></i> Completed: '+formatDate(l.completed_date)+'</div>';
-          h+='</div>';
-        });
-        h+='</div>';
-      });
-      h+='</div>';
-    });
-    modalBodyDiv.innerHTML=h;
-  }catch(e){
-    modalBodyDiv.innerHTML='<div class="empty-state" style="color:#dc2626;">Error: '+escapeHtml(e.message)+'</div>';
-  }
-}
-
-/* ============================================================ */
-/* 📥 DOWNLOADS — ADMIN                                         */
-/* ============================================================ */
-var downloadsAdminData=[],filteredDownloadsAdmin=[];
-
-async function loadDownloadsAdmin(){
-  var wrap=document.getElementById('downloadsAdminWrap');
-  wrap.innerHTML='<div class="loading-tx"><div class="spinner-sm"></div></div>';
-  try{
-    var r=await supabaseClient.from('downloads').select('*').order('uploaded_at',{ascending:false}).limit(500);
-    downloadsAdminData=r.data||[];
-    filterDownloadsAdmin();
-  }catch(e){wrap.innerHTML='<div class="empty-state">Error: '+escapeHtml(e.message)+'</div>';}
-}
-
-function filterDownloadsAdmin(){
-  var q=(document.getElementById('downloadAdminSearch')?.value||'').toLowerCase().trim();
-  filteredDownloadsAdmin=downloadsAdminData.filter(function(d){
-    return !q || (d.title||'').toLowerCase().indexOf(q)>-1 || (d.subject||'').toLowerCase().indexOf(q)>-1 || (d.description||'').toLowerCase().indexOf(q)>-1;
-  });
-  renderDownloadsAdmin();
-}
-
-function renderDownloadsAdmin(){
-  var wrap=document.getElementById('downloadsAdminWrap');
-  if(!filteredDownloadsAdmin.length){wrap.innerHTML='<div class="empty-state">No downloads uploaded</div>';return;}
-  var h='<table><thead><tr><th>#</th><th>Type</th><th>Title</th><th>Class</th><th>Subject</th><th>Uploaded</th><th>Actions</th></tr></thead><tbody>';
-  filteredDownloadsAdmin.forEach(function(d,i){
-    var ft=(d.file_type||'pdf').toLowerCase();
-    var ic=ft==='pdf'?'📄':ft==='doc'?'📝':ft==='video'?'🎬':ft==='image'?'🖼️':'📎';
-    h+='<tr><td>'+(i+1)+'</td><td>'+ic+' '+ft.toUpperCase()+'</td><td><strong>'+escapeHtml(d.title)+'</strong>'+(d.description?'<br><small style="color:#64748b;">'+escapeHtml(d.description).substring(0,60)+'</small>':'')+'</td><td>'+(d.class==='all'?'🌟 All':'Class '+escapeHtml(d.class||'—'))+'</td><td>'+escapeHtml(d.subject||'—')+'</td><td>'+formatDate(d.uploaded_at)+'</td><td><a href="'+d.file_url+'" target="_blank" class="btn-sm approve" title="View">👁️</a> <button class="btn-sm reject" onclick="deleteDownload('+d.id+')">🗑️</button></td></tr>';
-  });
-  h+='</tbody></table>';
-  wrap.innerHTML=h;
-}
-
-function openDownloadForm(){
-  modalTitleSpan.innerText='📥 Upload Download';
-  modalBodyDiv.innerHTML='<form onsubmit="saveDownloadItem(event)">'+
-    '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Title *</label><input type="text" id="dl_title" class="modal-form-input" required maxlength="150"></div>'+
-    '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Description</label><textarea id="dl_desc" class="modal-form-input" style="min-height:70px;" maxlength="400"></textarea></div>'+
-    '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">📁 File Upload *</label><input type="file" id="dl_file" class="modal-form-input" style="padding:.55rem;" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,image/*,video/*" required></div>'+
-    '<div class="row g-3">'+
-    '<div class="col-md-4"><label style="color:#475569;font-size:.78rem;">Class</label><select id="dl_class" class="modal-form-input"><option value="all">🌟 All Classes</option>'+[1,2,3,4,5,6,7,8,9,10].map(function(c){return'<option value="'+c+'">Class '+c+'</option>';}).join('')+'</select></div>'+
-    '<div class="col-md-4"><label style="color:#475569;font-size:.78rem;">Subject</label><input type="text" id="dl_subject" class="modal-form-input" placeholder="e.g., Arabic" maxlength="60"></div>'+
-    '<div class="col-md-4"><label style="color:#475569;font-size:.78rem;">Type</label><select id="dl_type" class="modal-form-input"><option value="pdf">📄 PDF</option><option value="doc">📝 Document</option><option value="video">🎬 Video</option><option value="image">🖼️ Image</option><option value="other">📎 Other</option></select></div>'+
-    '</div>'+
-    '<div style="background:#ecfeff;border:1px solid rgba(8,145,178,.3);border-radius:12px;padding:10px 14px;margin-top:14px;font-size:.74rem;color:#0891b2;line-height:1.6;"><i class="fas fa-info-circle"></i> Max 50MB. File Supabase-ലേക്ക് upload ചെയ്യും.</div>'+
-    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1" id="dlSubmitBtn"><i class="fas fa-upload"></i> Upload</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>'+
-    '</form>';
-  modal.style.display='flex';
-}
-
-async function saveDownloadItem(e){
-  e.preventDefault();
-  var file=document.getElementById('dl_file').files[0];
-  if(!file){showToast('ഫയൽ തിരഞ്ഞെടുക്കുക','error');return;}
-  if(file.size>50*1024*1024){showToast('⚠️ Max 50MB','error');return;}
-  var btn=document.getElementById('dlSubmitBtn');
-  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Uploading...';
-  try{
-    var ext=file.name.split('.').pop().toLowerCase();
-    var fn='download_'+Date.now()+'_'+Math.random().toString(36).substring(2,8)+'.'+ext;
-    var ue=await supabaseClient.storage.from('downloads').upload(fn,file,{cacheControl:'3600',contentType:file.type||'application/octet-stream'});
-    if(ue.error)throw ue.error;
-    var pub=supabaseClient.storage.from('downloads').getPublicUrl(fn);
-    var url=pub.data.publicUrl;
-
-    var obj={
-      title:document.getElementById('dl_title').value.trim(),
-      description:document.getElementById('dl_desc').value.trim()||null,
-      class:document.getElementById('dl_class').value,
-      subject:document.getElementById('dl_subject').value.trim()||null,
-      file_url:url,
-      file_type:document.getElementById('dl_type').value,
-      file_size:(file.size/1024/1024).toFixed(2)+' MB'
-    };
-    var r=await supabaseClient.from('downloads').insert(obj);
-    if(r.error)throw r.error;
-    showToast('✅ Uploaded','success');
-    if(typeof confetti!=='undefined')confetti({particleCount:100,spread:70,origin:{y:.6}});
-    closeModal('globalModal');
-    loadDownloadsAdmin();
-  }catch(err){
-    showToast('❌ '+(err.message||'Upload failed'),'error');
-  }
-  btn.disabled=false;btn.innerHTML='<i class="fas fa-upload"></i> Upload';
-}
-
-async function deleteDownload(id){
-  if(!confirm('Delete this download?'))return;
-  try{
-    var d=downloadsAdminData.find(function(x){return x.id===id;});
-    if(d&&d.file_url){
-      try{
-        var parts=d.file_url.split('/downloads/');
-        if(parts[1]){
-          var path=parts[1].split('?')[0];
-          await supabaseClient.storage.from('downloads').remove([path]);
-        }
-      }catch(e){}
-    }
-    await supabaseClient.from('downloads').delete().eq('id',id);
-    showToast('🗑️ Deleted','info');
-    loadDownloadsAdmin();
-  }catch(e){showToast('❌ '+e.message,'error');}
-}
-
-/* ============================================================ */
-/* 📥 DOWNLOADS — STUDENT VIEW                                  */
-/* ============================================================ */
-async function showStudentDownloads(){
-  if(!currentUser){showToast('Login first','error');return;}
-  modalTitleSpan.innerText="📥 Downloads";
-  modalBodyDiv.innerHTML='<div class="text-center py-4"><div class="spinner-border" style="color:#1e6be0"></div></div>';
-  modal.style.display='flex';
-  try{
-    var cls=String(currentUser.class||'');
-    var r=await supabaseClient.from('downloads').select('*')
-      .or('class.eq.all,class.eq.'+cls)
-      .order('uploaded_at',{ascending:false});
-    var data=r.data||[];
-    if(!data.length){
-      modalBodyDiv.innerHTML='<div class="empty-state"><i class="fas fa-folder-open" style="font-size:3rem;color:#94a3b8;opacity:.4;display:block;margin-bottom:12px;"></i><div style="font-weight:800;color:#0f172a;margin-bottom:6px;">Downloads ലഭ്യമല്ല</div><div style="font-size:.82rem;color:#64748b;">Admin upload ചെയ്യുമ്പോൾ ഇവിടെ വരും</div></div>';
-      return;
-    }
-
-    var bySubject={};
-    data.forEach(function(d){
-      var k=d.subject||'General';
-      if(!bySubject[k])bySubject[k]=[];
-      bySubject[k].push(d);
-    });
-
-    var html='<div style="background:linear-gradient(135deg,#eff6ff,#ecfeff);border:1.6px solid rgba(30,107,224,.3);border-radius:16px;padding:14px 18px;margin-bottom:16px;text-align:center;"><div style="color:#0f172a;font-weight:800;font-size:.94rem;"><i class="fas fa-download" style="color:#1e6be0;"></i> '+data.length+' files available</div><div style="color:#64748b;font-size:.76rem;margin-top:4px;">ടാപ്പ് ചെയ്ത് ഡൗൺലോഡ് ചെയ്യുക</div></div>';
-
-    Object.keys(bySubject).sort().forEach(function(sub){
-      html+='<div style="margin-bottom:18px;"><div style="color:#0f172a;font-weight:900;font-size:.94rem;margin-bottom:10px;display:flex;align-items:center;gap:10px;"><i class="fas fa-folder" style="color:#0891b2;"></i> '+escapeHtml(sub)+'<span style="background:#eff6ff;color:#1e40af;padding:2px 10px;border-radius:20px;font-size:.68rem;font-weight:800;">'+bySubject[sub].length+'</span></div>';
-      bySubject[sub].forEach(function(d){
-        var ft=(d.file_type||'pdf').toLowerCase();
-        var ic=ft==='pdf'?'fa-file-pdf':ft==='doc'?'fa-file-word':ft==='video'?'fa-video':ft==='image'?'fa-image':'fa-file';
-        html+='<div class="download-card">';
-        html+='<div class="download-icon '+ft+'"><i class="fas '+ic+'"></i></div>';
-        html+='<div class="download-info">';
-        html+='<div class="download-title">'+escapeHtml(d.title)+'</div>';
-        if(d.description)html+='<div class="download-desc">'+escapeHtml(d.description)+'</div>';
-        html+='<div class="download-meta"><span>📁 '+ft.toUpperCase()+'</span>'+(d.class!=='all'?'<span>🎓 Class '+escapeHtml(d.class)+'</span>':'<span>🌟 All Classes</span>')+(d.file_size?'<span>💾 '+escapeHtml(d.file_size)+'</span>':'')+'<span>📅 '+formatDate(d.uploaded_at)+'</span></div>';
-        html+='</div>';
-        html+='<a href="'+d.file_url+'" target="_blank" rel="noopener" class="download-btn" download><i class="fas fa-download"></i> Download</a>';
-        html+='</div>';
-      });
-      html+='</div>';
-    });
-    modalBodyDiv.innerHTML=html;
-  }catch(e){
-    modalBodyDiv.innerHTML='<div class="empty-state" style="color:#dc2626;">Error: '+escapeHtml(e.message)+'</div>';
-  }
-}
-
-/* ============================================================ */
-/* 🔗 SWITCH TAB — extend with new tabs                         */
-/* ============================================================ */
-(function(){
-  var _origSwitch=window.switchAdminTab;
-  if(typeof _origSwitch==='function'){
-    window.switchAdminTab=function(tab){
-      // Logins tab — no class needed
-      if(tab==='logins'){
-        document.getElementById('adminSettingsTab').style.display='none';
-        document.getElementById('adminMainContent').style.display='block';
-        document.getElementById('noClassMsg').style.display='none';
-        document.querySelectorAll('.admin-tab').forEach(function(t){t.classList.remove('active');});
-        var lBtn=document.querySelector('.admin-tab[data-tab="logins"]');
-        if(lBtn)lBtn.classList.add('active');
-        document.querySelectorAll('.admin-tab-content').forEach(function(c){c.style.display='none';});
-        document.getElementById('adminLoginsTab').style.display='block';
-        var dateEl=document.getElementById('loginLogDate');
-        if(dateEl&&!dateEl.value)dateEl.value=new Date().toISOString().split('T')[0];
-        loadLoginLogs();
-        return;
-      }
-      // Downloads tab — no class needed
-      if(tab==='downloads'){
-        document.getElementById('adminSettingsTab').style.display='none';
-        document.getElementById('adminMainContent').style.display='block';
-        document.getElementById('noClassMsg').style.display='none';
-        document.querySelectorAll('.admin-tab').forEach(function(t){t.classList.remove('active');});
-        var dBtn=document.querySelector('.admin-tab[data-tab="downloads"]');
-        if(dBtn)dBtn.classList.add('active');
-        document.querySelectorAll('.admin-tab-content').forEach(function(c){c.style.display='none';});
-        document.getElementById('adminDownloadsTab').style.display='block';
-        loadDownloadsAdmin();
-        return;
-      }
-      // Lessons — needs class but uses own selector
-      if(tab==='lessons'){
-        document.getElementById('adminSettingsTab').style.display='none';
-        document.getElementById('adminMainContent').style.display='block';
-        document.getElementById('noClassMsg').style.display='none';
-        document.querySelectorAll('.admin-tab').forEach(function(t){t.classList.remove('active');});
-        var lsBtn=document.querySelector('.admin-tab[data-tab="lessons"]');
-        if(lsBtn)lsBtn.classList.add('active');
-        document.querySelectorAll('.admin-tab-content').forEach(function(c){c.style.display='none';});
-        document.getElementById('adminLessonsTab').style.display='block';
-        var mEl=document.getElementById('lessonAdminMonth');
-        if(mEl&&!mEl.value)mEl.value=new Date().toISOString().slice(0,7);
-        if(currentAdminClass&&currentAdminClass!=='all'){
-          var clSel=document.getElementById('lessonAdminClass');
-          if(clSel)clSel.value=currentAdminClass;
-          loadLessonsAdmin();
-        }
-        return;
-      }
-      // Otherwise fall through
-      return _origSwitch.call(this,tab);
-    };
-  }
-})();
-
-/* ============================================================ */
-/* ✅ Login tracking moved to PART A for reliability            */
-/*    (Removed duplicate listener + setTimeout race condition)  */
-/* ============================================================ */
-
-/* ============================================================ */
-/* 📥 EXTEND VISIBILITY — add new tiles                         */
-/* ============================================================ */
-(function(){
-  setTimeout(function(){
-    if(typeof VIS_ACTIONS_META!=='undefined'&&Array.isArray(VIS_ACTIONS_META)){
-      if(!VIS_ACTIONS_META.find(function(m){return m.key==='lessons';})){
-        VIS_ACTIONS_META.push({key:'lessons',label:'Lessons',icon:'fa-book-reader'});
-      }
-      if(!VIS_ACTIONS_META.find(function(m){return m.key==='downloads';})){
-        VIS_ACTIONS_META.push({key:'downloads',label:'Downloads',icon:'fa-download'});
-      }
-      if(typeof STUDENT_PORTAL_VISIBILITY!=='undefined'&&STUDENT_PORTAL_VISIBILITY.actions){
-        if(STUDENT_PORTAL_VISIBILITY.actions.lessons===undefined)STUDENT_PORTAL_VISIBILITY.actions.lessons=true;
-        if(STUDENT_PORTAL_VISIBILITY.actions.downloads===undefined)STUDENT_PORTAL_VISIBILITY.actions.downloads=true;
-      }
-    }
-  },300);
-})();
-
-/* ============================================================ */
-/* 🌐 EXPORTS                                                   */
-/* ============================================================ */
-Object.assign(window,{
-  trackLogin,
-  loadLoginLogs,loadLoginLogsToday,filterLoginLogs,renderLoginLogs,deleteLoginLog,clearAllLoginLogs,downloadLoginLogsPDF,
-  loadLessonsAdmin,renderLessonsAdmin,openLessonForm,saveLesson,editLesson,toggleLessonStatus,deleteLesson,openBulkLessonForm,addBulkLessonRow,saveBulkLessons,
-  showStudentLessons,
-  loadDownloadsAdmin,filterDownloadsAdmin,renderDownloadsAdmin,openDownloadForm,saveDownloadItem,deleteDownload,showStudentDownloads
-});
-
-console.log('✅ PART 9 loaded — Logins + Lessons + Downloads');
-</script>
-<!-- ============================================================ -->
-<!-- 🆕 PART 10 — NEW ITEM BADGES ON QUICK ACTIONS                 -->
-<!-- ============================================================ -->
-<script>
-/* ============================================================ */
-/* 🔔 BADGE CONFIG — Categories to watch                        */
-/* ============================================================ */
-var BADGE_CATEGORIES = {
-  lessons: {
-    table: 'lessons',
-    dateCol: 'created_at',
-    filterEq: ['class'],
-    label: 'പാഠങ്ങൾ'
-  },
-  downloads: {
-    table: 'downloads',
-    dateCol: 'uploaded_at',
-    filterOrAll: ['class'],
-    label: 'Downloads'
-  },
-  competitions: {
-    table: 'competitions',
-    dateCol: 'created_at',
-    filterOrAll: ['target_class'],
-    label: 'മൽസരങ്ങൾ'
-  },
-  notice: {
-    table: 'notice_board',
-    dateCol: 'created_at',
-    filterOrAll: ['target_class'],
-    label: 'നോട്ടീസ്'
-  },
-  homework: {
-    table: 'homework',
-    dateCol: 'created_at',
-    filterEq: ['class'],
-    label: 'ഹോംവർക്ക്'
-  },
-  library: {
-    table: 'library',
-    dateCol: 'uploaded_at',
-    filterOrAll: ['class'],
-    label: 'ലൈബ്രറി'
-  },
-  creations: {
-    table: 'student_creations',
-    dateCol: 'created_at',
-    filterApproved: true,
-    label: 'കലാസൃഷ്ടി'
-  }
-};
-
-/* ============================================================ */
-/* 🔑 localStorage helpers                                      */
-/* ============================================================ */
-function badgeSeenKey(cat){
-  var sid = currentUser ? currentUser.studentId : 'guest';
-  return 'noor_badge_seen_' + cat + '_' + sid;
-}
-
-function getBadgeSeenTime(cat){
-  try{ return localStorage.getItem(badgeSeenKey(cat)); }catch(e){ return null; }
-}
-
-function setBadgeSeenTime(cat){
-  try{ localStorage.setItem(badgeSeenKey(cat), new Date().toISOString()); }catch(e){}
-}
-
-/* First-time init: don't show badge for existing items */
-function initBadgeSeenTimes(){
-  if(!currentUser) return;
-  Object.keys(BADGE_CATEGORIES).forEach(function(cat){
-    if(!getBadgeSeenTime(cat)){
-      setBadgeSeenTime(cat);
-    }
-  });
-}
-
-/* ============================================================ */
-/* 📊 Count new items                                           */
-/* ============================================================ */
-async function countNewItems(cat){
-  if(!supabaseClient || !currentUser) return 0;
-  var cfg = BADGE_CATEGORIES[cat];
-  if(!cfg) return 0;
-  var seenAt = getBadgeSeenTime(cat);
-  if(!seenAt) return 0;
-
-  try{
-    var q = supabaseClient.from(cfg.table)
-      .select('id', { count: 'exact', head: true })
-      .gt(cfg.dateCol, seenAt);
-
-    // Class filter (exact match)
-    if(cfg.filterEq){
-      cfg.filterEq.forEach(function(col){
-        if(col === 'class'){
-          q = q.eq('class', String(currentUser.class));
-        }
-      });
-    }
-
-    // Class OR "all" filter
-    if(cfg.filterOrAll){
-      var cls = String(currentUser.class);
-      cfg.filterOrAll.forEach(function(col){
-        if(col === 'class'){
-          q = q.or('class.eq.all,class.eq.' + cls);
-        } else if(col === 'target_class'){
-          // matches: "all", exact class, or comma list containing class
-          q = q.or(
-            'target_class.eq.all,' +
-            'target_class.eq.' + cls + ',' +
-            'target_class.like.' + cls + ',%' + ',' +
-            'target_class.like.%,' + cls + ',' +
-            'target_class.like.%,' + cls + ',%'
-          );
-        }
-      });
-    }
-
-    // Approved creations only, exclude own
-    if(cfg.filterApproved){
-      q = q.eq('approved', true).neq('studentid', currentUser.studentId);
-    }
-
-    var r = await q;
-    if(r.error){ console.warn('countNewItems(' + cat + '):', r.error.message); return 0; }
-    return r.count || 0;
-  } catch(e){
-    console.warn('countNewItems(' + cat + ') err:', e);
-    return 0;
-  }
-}
-
-/* ============================================================ */
-/* 🎨 Render badge on tile                                      */
-/* ============================================================ */
-function renderTileBadge(tile, count){
-  var ico = tile.querySelector('.action-ico');
-  if(!ico) return;
-  var badge = ico.querySelector('.new-badge');
-
-  if(count > 0){
-    if(!badge){
-      badge = document.createElement('span');
-      badge.className = 'new-badge';
-      ico.appendChild(badge);
-    }
-    badge.textContent = count > 99 ? '99+' : String(count);
-    badge.classList.add('show');
-    // Pulse only when > 0
-    badge.classList.remove('pulse');
-    void badge.offsetWidth; // reflow
-    badge.classList.add('pulse');
-  } else if(badge){
-    badge.remove();
-  }
-}
-
-/* ============================================================ */
-/* 🔍 Check ALL categories                                      */
-/* ============================================================ */
-async function checkAllBadges(){
-  if(!currentUser) return;
-  var keys = Object.keys(BADGE_CATEGORIES);
-
-  // Parallel fetch
-  var results = await Promise.all(keys.map(function(k){ return countNewItems(k); }));
-
-  keys.forEach(function(k, i){
-    var tile = document.querySelector('.action-tile[data-action="' + k + '"]');
-    if(!tile) return;
-    if(!tile.dataset.badgeKey) tile.dataset.badgeKey = k;
-    renderTileBadge(tile, results[i]);
-  });
-}
-
-/* ============================================================ */
-/* ✅ Mark as seen                                              */
-/* ============================================================ */
-function markCategorySeen(cat){
-  if(!cat) return;
-  setBadgeSeenTime(cat);
-  var tile = document.querySelector('.action-tile[data-badge-key="' + cat + '"]');
-  if(tile){
-    var badge = tile.querySelector('.new-badge');
-    if(badge){
-      badge.classList.remove('pulse');
-      badge.style.transition = 'transform .25s, opacity .25s';
-      badge.style.transform = 'scale(1.4)';
-      badge.style.opacity = '0';
-      setTimeout(function(){ badge.remove(); }, 260);
-    }
-  }
-}
-
-function markAllBadgesSeen(){
-  Object.keys(BADGE_CATEGORIES).forEach(function(cat){ setBadgeSeenTime(cat); });
-  document.querySelectorAll('.new-badge').forEach(function(b){ b.remove(); });
-}
-
-/* ============================================================ */
-/* 🖱️ Click listener — capture phase (before tile onclick)     */
-/* ============================================================ */
-document.addEventListener('click', function(e){
-  var tile = e.target.closest('.action-tile');
-  if(!tile) return;
-  var key = tile.dataset.badgeKey || tile.dataset.action;
-  if(key && BADGE_CATEGORIES[key]){
-    // Delay so modal opens first
-    setTimeout(function(){ markCategorySeen(key); }, 400);
-  }
-}, true);
-
-/* ============================================================ */
-/* 🔄 Auto re-check on tab focus                                */
-/* ============================================================ */
-var _lastBadgeCheck = 0;
-document.addEventListener('visibilitychange', function(){
-  if(document.hidden) return;
-  if(!currentUser) return;
-  var now = Date.now();
-  if(now - _lastBadgeCheck < 60000) return; // throttle 60s
-  _lastBadgeCheck = now;
-  checkAllBadges();
-});
-
-/* ============================================================ */
-/* 🚀 Init — hook into login/dashboard                          */
-/* ============================================================ */
-function initBadgeSystem(){
-  if(!currentUser) return;
-  initBadgeSeenTimes();
-  setTimeout(checkAllBadges, 1200);
-  setTimeout(checkAllBadges, 3500); // retry after charts load
-}
-
-// Auto-run when dashboard shows
-(function(){
-  var _dash = document.getElementById('dashboardSection');
-  if(!_dash) return;
-  var obs = new MutationObserver(function(){
-    if(_dash.style.display === 'block' && currentUser){
-      setTimeout(initBadgeSystem, 800);
-    }
-  });
-  obs.observe(_dash, { attributes: true, attributeFilter: ['style'] });
-})();
-
-/* ============================================================ */
-/* 🧹 Logout cleanup — SAFE (no timestamp corruption)          */
-/* ============================================================ */
-(function(){
-  var _origLogout = window.logout;
-  if(typeof _origLogout === 'function'){
-    window.logout = function(){
-
-      // ✅ 1. Visually remove badges — DO NOT touch timestamps!
-      document.querySelectorAll('.new-badge').forEach(function(b){ 
-        b.remove(); 
-      });
-
-      // ✅ 2. Reset login tracking (Fix #3)
-      window._lastTrackedUser = null;
-
-      // ✅ 3. Clear in-memory caches
-      if(window._topWinnersData) window._topWinnersData = [];
-      _lastBadgeCheck = 0;  // reset throttle
-
-      // ✅ 4. Call original logout
-      return _origLogout.apply(this, arguments);
-    };
-  }
-})();
-
-/* ============================================================ */
-/* 🌐 Exports                                                   */
-/* ============================================================ */
-Object.assign(window, {
-  checkAllBadges,
-  markCategorySeen,
-  markAllBadgesSeen,
-  initBadgeSystem,
-  countNewItems,
-  initBadgeSeenTimes
-});
-
-console.log('✅ PART 10 loaded — Quick Action badges active');
-</script>
-</body>
-</html>
