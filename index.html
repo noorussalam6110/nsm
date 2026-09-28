@@ -3628,7 +3628,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
       address:student.address||'',trendAttendance:student.trendattendance||null,rankChange:student.rankchange||null,
       isBestStudent:student.isbeststudent||false,extraCurricularGrade:student.extracurriculargrade||null,
       totalMarks:student.totalmarks||0,madrasaRank:student.madrasarank||null,
-      phone:student.parent_mobile||student.phone||''
+      parentMobile:student.parent_mobile||student.phone||''
     };
     isAdminMode=false;
     localStorage.setItem('noor_session',JSON.stringify(currentUser));
@@ -8295,22 +8295,12 @@ function formatFeeMonthML(raw){
 }
 
 async function getFeeParentByMobile(mobile){
-  if (!supabaseClient || !mobile) return null;
-  try {
-    var clean = String(mobile).replace(/\D/g, '').slice(-10);
-    if (clean.length !== 10) return null;
-    
-    // Get all fee_parents and match by last 10 digits
-    var r = await supabaseClient.from('fee_parents').select('*');
-    var found = (r.data || []).find(function(fp){
-      var fpClean = String(fp.mobile || '').replace(/\D/g, '').slice(-10);
-      return fpClean === clean && fpClean.length === 10;
-    });
-    return found || null;
-  } catch(e) { 
-    console.warn('getFeeParentByMobile:', e);
-    return null; 
-  }
+  if(!supabaseClient || !mobile) return null;
+  try{
+    var clean = String(mobile).replace(/\D/g,'').slice(-10);
+    var r = await supabaseClient.from('fee_parents').select('*').eq('mobile', clean).maybeSingle();
+    return r.data || null;
+  }catch(e){ return null; }
 }
 
 function openStudentFees(){
@@ -8372,12 +8362,11 @@ async function loadStudentFeeData(){
     // ⭐ METHOD 3: Fallback — Mobile match (purana data-ക്ക്)
     if (!parent) {
       try {
-        // Only use `phone` (no parent_mobile)
-           var phone = String(currentUser.phone || '')
-               .replace(/\D/g, '').slice(-10);
+        var parentMobile = String(currentUser.parentMobile || currentUser.phone || '')
+          .replace(/\D/g,'').slice(-10);
         
-        if (phone.length === 10) {
-          parent = await getFeeParentByMobile(phone);
+        if (parentMobile.length === 10) {
+          parent = await getFeeParentByMobile(parentMobile);
           if (parent) console.log('✅ Fee parent found via mobile (fallback)');
         }
       } catch(e) { console.warn('Method 3 (mobile) failed:', e.message); }
@@ -8397,17 +8386,7 @@ async function loadStudentFeeData(){
       return;
     }
 
-    // ⭐ FIX: phone variable GLOBAL ആയി define ചെയ്യുക
-    // Priority: parent.mobile → currentUser.phone → '—'
-    var phone = String(parent.mobile || currentUser.phone || '')
-      .replace(/\D/g, '').slice(-10);
-    if (phone.length !== 10) {
-      // Fallback: original value as-is
-      phone = String(parent.mobile || currentUser.phone || '—').trim() || '—';
-    }
-
     var monthsElapsed = calcMonthsElapsed(settings.startMonth, settings.monthsElapsed);
-    // ... (ബാക്കി code അതേപടി തുടരുന്നു)
     var paidMonths = Number(parent.paid_months) || 0;
     var previousBalance = Number(parent.previous_balance) || 0;
     var pendingMonths = Math.max(0, monthsElapsed - paidMonths);
@@ -8419,14 +8398,14 @@ async function loadStudentFeeData(){
     var sc = totalPending > 0 ? '#b45309' : totalPending < 0 ? '#0891b2' : '#059669';
     var sl = totalPending > 0 ? '⏳ പെൻഡിംഗ്' : totalPending < 0 ? '💎 അഡ്വാൻസ്' : '✅ പൂർത്തിയായി';
 
-    var waMsg = 'നമസ്കാരം '+(parent.parent_name||'')+',\n\nനൂറുസ്സലാം മദ്റസ വരിസംഖ്യ:\n📱 '+phone+'\n✅ അവസാനം അടച്ചത്: '+lastPaidMonthML+'\n📆 ബാക്കി മാസങ്ങൾ: '+pendingMonths+'\n💰 ആകെ ബാക്കി: ₹'+totalPending.toLocaleString()+'\n\nUPI: '+(settings.upiId||'');
-    var waLink = 'https://wa.me/91'+phone+'?text='+encodeURIComponent(waMsg);
+    var waMsg = 'നമസ്കാരം '+(parent.parent_name||'')+',\n\nനൂറുസ്സലാം മദ്റസ വരിസംഖ്യ:\n📱 '+parentMobile+'\n✅ അവസാനം അടച്ചത്: '+lastPaidMonthML+'\n📆 ബാക്കി മാസങ്ങൾ: '+pendingMonths+'\n💰 ആകെ ബാക്കി: ₹'+totalPending.toLocaleString()+'\n\nUPI: '+(settings.upiId||'');
+    var waLink = 'https://wa.me/91'+parentMobile+'?text='+encodeURIComponent(waMsg);
 
     var html = '<div style="border-radius:28px;background:#fff;border:1px solid rgba(180,200,230,.5);overflow:hidden;margin-bottom:16px;">';
     html += '<table style="width:100%;border-collapse:collapse;">';
     html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;width:44%;"><i class="fas fa-user"></i> രക്ഷിതാവ്</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+escapeHtml(parent.parent_name||'')+'</td></tr>';
     if(parent.student_names) html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-user-graduate"></i> കുട്ടികൾ</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+escapeHtml(parent.student_names)+'</td></tr>';
-    html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-mobile-alt"></i> മൊബൈൽ</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+phone+'</td></tr>';
+    html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-mobile-alt"></i> മൊബൈൽ</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+parentMobile+'</td></tr>';
     html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-calendar"></i> അവസാനം അടച്ച മാസം</td><td style="padding:14px 16px;color:#0891b2;font-weight:700;">'+lastPaidMonthML+'</td></tr>';
     html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-calendar-day"></i> അവസാനം അടച്ച തീയതി</td><td style="padding:14px 16px;color:#b45309;font-weight:700;">'+lastPaidDateDD+'</td></tr>';
     html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-hourglass-half"></i> ബാക്കി മാസങ്ങൾ</td><td style="padding:14px 16px;color:#0f172a;">'+pendingMonths+' × ₹'+monthlyFee+' = ₹'+(pendingMonths*monthlyFee).toLocaleString()+'</td></tr>';
@@ -8454,7 +8433,7 @@ async function loadStudentFeeData(){
         if(isNaN(amt) || amt <= 0){ showToast('ശരിയായ തുക നൽകുക','error'); return; }
         var pa = settings.upiId || 'ameerpattani786@oksbi';
         var pn = settings.payeeName || 'Noorussalam Madrasa';
-        var link = 'upi://pay?pa='+encodeURIComponent(pa)+'&pn='+encodeURIComponent(pn)+'&am='+amt.toFixed(2)+'&cu=INR&tn='+encodeURIComponent('Madrasa Fee - '+phone);
+        var link = 'upi://pay?pa='+encodeURIComponent(pa)+'&pn='+encodeURIComponent(pn)+'&am='+amt.toFixed(2)+'&cu=INR&tn='+encodeURIComponent('Madrasa Fee - '+parentMobile);
         var a = document.createElement('a'); a.href = link; a.target = '_blank';
         document.body.appendChild(a); a.click();
         setTimeout(function(){ document.body.removeChild(a); }, 300);
