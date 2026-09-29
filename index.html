@@ -11544,7 +11544,29 @@ console.log('✅ PART 10 loaded — Quick Action badges active');
 <!-- 🚨 FEE SYSTEM COMPLETE EMERGENCY PATCH v2 -->
 <script>
 (function(){
-  console.log('🚨 Loading FEE EMERGENCY PATCH v2...');
+  // 🔧 SCOPE SYNC — currentUser, supabaseClient, helpers → window
+  setInterval(function(){
+    try{
+      if(typeof currentUser !== 'undefined' && currentUser && !window.currentUser){
+        window.currentUser = currentUser;
+        console.log('✅ currentUser synced:', currentUser.studentId);
+      }
+      if(typeof currentUser !== 'undefined' && currentUser){
+        window.currentUser = currentUser; // Always keep fresh
+      }
+      if(typeof supabaseClient !== 'undefined' && supabaseClient && !window.supabaseClient){
+        window.supabaseClient = supabaseClient;
+      }
+      if(typeof showToast === 'function' && !window.showToast) window.showToast = showToast;
+      if(typeof escapeHtml === 'function' && !window.escapeHtml) window.escapeHtml = escapeHtml;
+      if(typeof formatDate === 'function' && !window.formatDate) window.formatDate = formatDate;
+      if(typeof modal !== 'undefined' && !window.modal) window.modal = modal;
+      if(typeof modalBodyDiv !== 'undefined' && !window.modalBodyDiv) window.modalBodyDiv = modalBodyDiv;
+      if(typeof modalTitleSpan !== 'undefined' && !window.modalTitleSpan) window.modalTitleSpan = modalTitleSpan;
+      if(typeof closeModal === 'function' && !window.closeModal) window.closeModal = closeModal;
+    }catch(e){}
+  }, 300);
+    console.log('🚨 Loading FEE EMERGENCY PATCH v2...');
 
   // ============================================================
   // 1. MONTH CONSTANTS
