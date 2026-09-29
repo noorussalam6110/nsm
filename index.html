@@ -11469,6 +11469,77 @@ Object.assign(window, {
 
 console.log('✅ PART 10 loaded — Quick Action badges active');
 </script>
+<!-- 🔧 FEE SYSTEM EMERGENCY FIX -->
+<script>
+(function(){
+  console.log('🔧 Checking fee system functions...');
+  var missing = [];
+  if(typeof calcMonthsElapsed !== 'function') missing.push('calcMonthsElapsed');
+  if(typeof computeFeeBreakdown !== 'function') missing.push('computeFeeBreakdown');
+  if(typeof getFeeParentByUID !== 'function') missing.push('getFeeParentByUID');
 
+  if(typeof calcMonthsElapsed !== 'function'){
+    window.calcMonthsElapsed = function(startMonth, manual){
+      if(manual !== null && manual !== undefined && manual !== '' && !isNaN(manual) && parseInt(manual) >= 0){
+        return parseInt(manual);
+      }
+      if(!startMonth) return 0;
+      var p = String(startMonth).split('-');
+      if(p.length !== 2) return 0;
+      var sy = parseInt(p[0]), sm = parseInt(p[1]);
+      if(isNaN(sy) || isNaN(sm)) return 0;
+      var now = new Date();
+      var months = (now.getFullYear() - sy) * 12 + (now.getMonth() + 1 - sm) + 1;
+      if(now.getDate() < 20) months = Math.max(0, months - 1);
+      return Math.max(0, months);
+    };
+  }
+
+  if(typeof computeFeeBreakdown !== 'function'){
+    window.computeFeeBreakdown = function(parent, settings){
+      var monthlyFee      = Number(settings.monthlyFee)      || 200;
+      var monthsElapsed   = calcMonthsElapsed(settings.startMonth, settings.monthsElapsed);
+      var paidMonths      = Number(parent.paid_months)        || 0;
+      var previousBalance = Number(parent.previous_balance)   || 0;
+      var pendingMonths   = Math.max(0, monthsElapsed - paidMonths);
+      var pendingAmount   = pendingMonths * monthlyFee;
+      var totalPending    = pendingAmount + previousBalance;
+      var status          = totalPending > 0 ? 'pending'
+                          : totalPending < 0 ? 'advance' : 'paid';
+      return {
+        monthlyFee: monthlyFee, monthsElapsed: monthsElapsed,
+        paidMonths: paidMonths, previousBalance: previousBalance,
+        pendingMonths: pendingMonths, pendingAmount: pendingAmount,
+        totalPending: totalPending, status: status
+      };
+    };
+  }
+
+  if(typeof getFeeParentByUID !== 'function'){
+    window.getFeeParentByUID = async function(sid){
+      if(!supabaseClient || !sid) return null;
+      try{
+        var sr = await supabaseClient.from('students')
+          .select('fee_parent_id').eq('studentid', sid).maybeSingle();
+        if(sr.data && sr.data.fee_parent_id){
+          var pr = await supabaseClient.from('fee_parents')
+            .select('*').eq('id', sr.data.fee_parent_id).maybeSingle();
+          if(pr.data) return pr.data;
+        }
+        var r2 = await supabaseClient.from('fee_parents')
+          .select('*').contains('student_ids', [sid]).maybeSingle();
+        if(r2.data) return r2.data;
+      }catch(e){ console.warn('getFeeParentByUID:', e); }
+      return null;
+    };
+  }
+
+  if(missing.length > 0){
+    console.log('✅ Restored functions:', missing.join(', '));
+  } else {
+    console.log('✅ All fee functions were already loaded');
+  }
+})();
+</script>
 </body>
 </html>
