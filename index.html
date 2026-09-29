@@ -11922,5 +11922,268 @@ console.log('✅ PART 10 loaded — Quick Action badges active');
   console.log('   - markFeePaid:', typeof window.markFeePaid);
 })();
 </script>
+<!-- 🚨 FEE SYSTEM PATCH v3 — Settings + PDF + History + WhatsApp -->
+<script>
+(function(){
+  console.log('🚨 Loading FEE PATCH v3...');
+
+  // Ensure sync
+  setInterval(function(){
+    try{
+      if(typeof currentUser !== 'undefined' && currentUser) window.currentUser = currentUser;
+      if(typeof supabaseClient !== 'undefined' && supabaseClient) window.supabaseClient = supabaseClient;
+      if(typeof showToast === 'function') window.showToast = showToast;
+      if(typeof escapeHtml === 'function') window.escapeHtml = escapeHtml;
+      if(typeof formatDate === 'function') window.formatDate = formatDate;
+      if(typeof modal !== 'undefined') window.modal = modal;
+      if(typeof modalBodyDiv !== 'undefined') window.modalBodyDiv = modalBodyDiv;
+      if(typeof modalTitleSpan !== 'undefined') window.modalTitleSpan = modalTitleSpan;
+      if(typeof closeModal === 'function') window.closeModal = closeModal;
+      if(typeof loadImage === 'function') window.loadImage = loadImage;
+      if(typeof getLogoDataUrl === 'function') window.getLogoDataUrl = getLogoDataUrl;
+      if(typeof showLoading === 'function') window.showLoading = showLoading;
+    }catch(e){}
+  }, 300);
+
+  // ============================================================
+  // 1. FEE SETTINGS FORM
+  // ============================================================
+  window.openFeeSettingsForm = async function(){
+    try{
+      await window.loadFeeSettings();
+      var s = window.FEE_SETTINGS_CACHE || {};
+      window.modalTitleSpan.innerText = '⚙️ Fee Settings';
+      window.modalBodyDiv.innerHTML =
+        '<form onsubmit="window.saveFeeSettingsFromForm(event)">'+
+        '<div class="row g-3">'+
+        '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Monthly Fee (₹) *</label>'+
+        '<input type="number" id="fs_fee" class="modal-form-input" min="1" value="'+(s.monthlyFee||200)+'" required></div>'+
+        '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Start Month *</label>'+
+        '<input type="month" id="fs_start" class="modal-form-input" value="'+(s.startMonth||'')+'" required></div>'+
+        '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">UPI ID</label>'+
+        '<input type="text" id="fs_upi" class="modal-form-input" value="'+window.escapeHtml(s.upiId||'')+'"></div>'+
+        '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Payee Name</label>'+
+        '<input type="text" id="fs_payee" class="modal-form-input" value="'+window.escapeHtml(s.payeeName||'')+'"></div>'+
+        '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Support Phone</label>'+
+        '<input type="text" id="fs_phone" class="modal-form-input" value="'+window.escapeHtml(s.supportPhone||'')+'"></div>'+
+        '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Support Email</label>'+
+        '<input type="email" id="fs_email" class="modal-form-input" value="'+window.escapeHtml(s.supportEmail||'')+'"></div>'+
+        '<div class="col-12"><label style="color:#475569;font-size:.78rem;">Months Elapsed (manual override)</label>'+
+        '<input type="number" id="fs_elapsed" class="modal-form-input" min="0" placeholder="Leave blank for auto" value="'+(s.monthsElapsed !== null && s.monthsElapsed !== undefined ? s.monthsElapsed : '')+'">'+
+        '<small style="color:#64748b;display:block;margin-top:4px;font-size:.7rem;">'+
+        '<i class="fas fa-info-circle" style="color:#0891b2;"></i> Blank ആയാൽ start month-ൽ നിന്നും auto കണക്കാക്കും</small></div>'+
+        '</div>'+
+        '<div class="d-flex gap-2 mt-4">'+
+        '<button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save Settings</button>'+
+        '<button type="button" class="btn-cancel" onclick="window.closeModal(\'globalModal\')">Cancel</button>'+
+        '</div>'+
+        '</form>';
+      window.modal.style.display = 'flex';
+    }catch(e){
+      console.error('openFeeSettingsForm error:', e);
+      if(typeof showToast === 'function') showToast('❌ '+e.message, 'error');
+    }
+  };
+
+  // ============================================================
+  // 2. SAVE FEE SETTINGS
+  // ============================================================
+  window.saveFeeSettingsFromForm = async function(e){
+    if(e) e.preventDefault();
+    var updates = {
+      monthly_fee:    document.getElementById('fs_fee').value,
+      start_month:    document.getElementById('fs_start').value,
+      upi_id:         document.getElementById('fs_upi').value.trim(),
+      payee_name:     document.getElementById('fs_payee').value.trim(),
+      support_phone:  document.getElementById('fs_phone').value.trim(),
+      support_email:  document.getElementById('fs_email').value.trim(),
+      months_elapsed: document.getElementById('fs_elapsed').value.trim() || ''
+    };
+    try{
+      for(var k in updates){
+        await window.supabaseClient.from('fee_settings')
+          .upsert({ setting_key: k, value: updates[k] }, { onConflict: 'setting_key' });
+      }
+      if(typeof showToast === 'function') showToast('✅ Fee settings saved','success');
+      if(typeof closeModal === 'function') closeModal('globalModal');
+      await window.loadFeeSettings();
+      if(typeof renderFeeAdminSummary === 'function') renderFeeAdminSummary();
+      if(typeof renderFeeParentsTable === 'function') renderFeeParentsTable();
+    }catch(err){
+      if(typeof showToast === 'function') showToast('❌ '+err.message,'error');
+    }
+  };
+
+  // ============================================================
+  // 3. PDF DOWNLOAD — Fee Report
+  // ============================================================
+  window.downloadFeeParentsPDF = async function(){
+    var list = window.filteredFeeParents || window.feeParentsData || [];
+    if(!list.length){
+      if(typeof showToast === 'function') showToast('No data','error');
+      return;
+    }
+    if(typeof showLoading === 'function') showLoading(true);
+    try{
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+
+      doc.setFillColor(21,71,168); doc.rect(0,0,pw,80,'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(18); doc.setFont(undefined,'bold');
+      doc.text('NOORUSSALAM MADRASA', pw/2, 32, { align:'center' });
+      doc.setFontSize(11); doc.setFont(undefined,'normal');
+      doc.text('Fee Report (UID-based) — '+new Date().toLocaleDateString('en-IN'), pw/2, 55, { align:'center' });
+
+      doc.setTextColor(0,0,0);
+      var rows = list.map(function(p,i){
+        var br = window.computeFeeBreakdown(p, window.FEE_SETTINGS_CACHE || {});
+        var status = br.totalPending > 0 ? 'Pending'
+                   : br.totalPending < 0 ? 'Advance' : 'Paid';
+        return [
+          i+1,
+          p.parent_name||'',
+          (p.student_ids||[]).join(', '),
+          p.student_names||'',
+          p.mobile||'',
+          window.formatFeeMonthEN(p.last_paid_month),
+          br.paidMonths,
+          br.pendingMonths,
+          'Rs.'+br.totalPending.toLocaleString(),
+          status
+        ];
+      });
+
+      doc.autoTable({
+        startY: 100,
+        head: [['#','Parent','UIDs','Students','Mobile','Last Paid','Paid Mos','Pend Mos','Due','Status']],
+        body: rows,
+        theme: 'grid',
+        styles: { fontSize: 7.5, cellPadding: 4, lineColor: [200,215,240], lineWidth: 0.3 },
+        headStyles: { fillColor: [30,107,224], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        columnStyles: {
+          0: { cellWidth: 22, halign:'center' },
+          1: { cellWidth: 100 },
+          2: { cellWidth: 100, fontSize: 6.5 },
+          3: { cellWidth: 100, fontSize: 6.5 },
+          4: { cellWidth: 70, halign:'center' },
+          5: { cellWidth: 80, halign:'center' },
+          6: { cellWidth: 50, halign:'center' },
+          7: { cellWidth: 50, halign:'center' },
+          8: { cellWidth: 70, halign:'right', fontStyle:'bold' },
+          9: { cellWidth: 60, halign:'center', fontStyle:'bold' }
+        },
+        alternateRowStyles: { fillColor: [248,250,252] }
+      });
+
+      doc.save('Fee_Report_'+new Date().toISOString().split('T')[0]+'.pdf');
+      if(typeof showToast === 'function') showToast('✅ PDF Downloaded','success');
+    }catch(err){
+      console.error('PDF error:', err);
+      if(typeof showToast === 'function') showToast('❌ '+err.message,'error');
+    }
+    if(typeof showLoading === 'function') showLoading(false);
+  };
+
+  // ============================================================
+  // 4. PAYMENT HISTORY — Admin view
+  // ============================================================
+  window.viewPaymentHistoryAdmin = function(id){
+    var p = (window.feeParentsData||[]).find(function(x){ return x.id === id; });
+    if(!p) return;
+    var hist = p.payment_history || [];
+    if(typeof hist === 'string'){ try{ hist = JSON.parse(hist); }catch(e){ hist = []; } }
+
+    window.modalTitleSpan.innerText = '📜 '+p.parent_name+' — Payment History';
+    if(hist.length === 0){
+      window.modalBodyDiv.innerHTML = '<div style="text-align:center;padding:30px;color:#64748b;">No payments yet</div>';
+    } else {
+      var h = '<div style="max-height:60vh;overflow-y:auto;">';
+      hist.slice().reverse().forEach(function(e){
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#f8fafc;border:1px solid rgba(180,200,230,.5);border-radius:14px;margin-bottom:8px;">'+
+             '<div><div style="color:#0f172a;font-weight:800;font-size:.9rem;">'+window.formatFeeMonthEN(e.month)+'</div>'+
+             '<div style="color:#64748b;font-size:.72rem;margin-top:2px;"><i class="far fa-calendar"></i> '+window.formatDate(e.date)+' • by '+window.escapeHtml(e.paidBy||'Admin')+'</div></div>'+
+             '<div style="color:#059669;font-weight:900;font-size:1rem;">₹'+e.amount+'</div>'+
+             '</div>';
+      });
+      h += '</div>';
+      window.modalBodyDiv.innerHTML = h;
+    }
+    window.modal.style.display = 'flex';
+  };
+
+  // ============================================================
+  // 5. WHATSAPP REMINDER — Admin
+  // ============================================================
+  window.sendFeeWhatsAppAdmin = function(id){
+    var p = (window.feeParentsData||[]).find(function(x){ return x.id === id; });
+    if(!p) return;
+    var br = window.computeFeeBreakdown(p, window.FEE_SETTINGS_CACHE || {});
+    var mobile = String(p.mobile || '').replace(/\D/g,'').slice(-10);
+    var msg =
+      'നമസ്കാരം '+p.parent_name+',\n\n'+
+      '*നൂറുസ്സലാം മദ്റസ വരിസംഖ്യ വിവരം*\n\n'+
+      '👨‍👦 കുട്ടികൾ: '+(p.student_names||'—')+'\n'+
+      '📱 മൊബൈൽ: '+mobile+'\n'+
+      '✅ അവസാനം അടച്ചത്: '+window.formatFeeMonthML(p.last_paid_month)+'\n'+
+      '📆 ബാക്കി മാസങ്ങൾ: '+br.pendingMonths+'\n'+
+      '💰 ആകെ ബാക്കി: ₹'+br.totalPending.toLocaleString()+'\n\n'+
+      'ദയവായി വരിസംഖ്യ അടയ്ക്കുക.\n'+
+      'UPI: '+((window.FEE_SETTINGS_CACHE||{}).upiId||'')+'\n\n'+
+      'വിശദ വിവരങ്ങൾക്ക്: '+((window.FEE_SETTINGS_CACHE||{}).supportPhone||'');
+    window.open('https://wa.me/91'+mobile+'?text='+encodeURIComponent(msg), '_blank');
+  };
+
+  // ============================================================
+  // 6. Also add missing renderFeeParentsTable with full buttons
+  // ============================================================
+  if(typeof window.renderFeeParentsTable !== 'function' || !window.renderFeeParentsTable.toString().includes('viewPaymentHistoryAdmin')){
+    window.renderFeeParentsTable = function(){
+      var wrap = document.getElementById('feeParentsWrap');
+      if(!wrap) return;
+      if((window.filteredFeeParents||[]).length === 0){
+        wrap.innerHTML = '<div style="text-align:center;padding:30px;color:#64748b;">No records</div>';
+        return;
+      }
+      var h = '<table><thead><tr>'+
+              '<th>#</th><th>Parent</th><th>UID / Students</th><th>Mobile</th>'+
+              '<th>Last Paid</th><th>Due</th><th>Actions</th>'+
+              '</tr></thead><tbody>';
+      window.filteredFeeParents.forEach(function(p, i){
+        var br = window.computeFeeBreakdown(p, window.FEE_SETTINGS_CACHE||{});
+        var sc = br.totalPending > 0 ? '#dc2626' : br.totalPending < 0 ? '#0891b2' : '#059669';
+        var ids = p.student_ids || [];
+        var uidChips = ids.length === 0 ? '<span style="color:#94a3b8;font-size:.7rem;">No UID</span>' : ids.map(function(u){
+          return '<span style="display:inline-block;background:#ecfeff;color:#0891b2;padding:2px 8px;border-radius:20px;font-size:.65rem;font-weight:800;margin:1px 2px;">'+window.escapeHtml(u)+'</span>';
+        }).join('');
+        var studentNamesTxt = p.student_names ? '<div style="font-size:.68rem;color:#64748b;margin-top:4px;">'+window.escapeHtml(p.student_names)+'</div>' : '';
+        h += '<tr><td>'+(i+1)+'</td>';
+        h += '<td><strong>'+window.escapeHtml(p.parent_name)+'</strong></td>';
+        h += '<td><div style="max-width:220px;">'+uidChips+studentNamesTxt+'</div></td>';
+        h += '<td>'+window.escapeHtml(p.mobile)+'</td>';
+        h += '<td>'+window.formatFeeMonthEN(p.last_paid_month)+'</td>';
+        h += '<td style="color:'+sc+';font-weight:900;">₹'+br.totalPending.toLocaleString()+'</td>';
+        h += '<td>';
+        h += '<button onclick="window.markFeePaid('+p.id+')" style="background:linear-gradient(100deg,#059669,#34d399);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;" title="Mark Paid">✅</button>';
+        h += '<button onclick="window.viewPaymentHistoryAdmin('+p.id+')" style="background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;" title="History">📜</button>';
+        h += '<button onclick="window.sendFeeWhatsAppAdmin('+p.id+')" style="background:linear-gradient(100deg,#25D366,#128C7E);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;" title="WhatsApp">💬</button>';
+        h += '<button onclick="window.editFeeParent('+p.id+')" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">✏️</button>';
+        h += '<button onclick="window.deleteFeeParent('+p.id+')" style="background:linear-gradient(100deg,#b91c1c,#f87171);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;">🗑️</button>';
+        h += '</td></tr>';
+      });
+      h += '</tbody></table>';
+      wrap.innerHTML = h;
+    };
+  }
+
+  console.log('✅ FEE PATCH v3 loaded');
+  console.log('   openFeeSettingsForm:', typeof window.openFeeSettingsForm);
+  console.log('   saveFeeSettingsFromForm:', typeof window.saveFeeSettingsFromForm);
+  console.log('   downloadFeeParentsPDF:', typeof window.downloadFeeParentsPDF);
+  console.log('   viewPaymentHistoryAdmin:', typeof window.viewPaymentHistoryAdmin);
+  console.log('   sendFeeWhatsAppAdmin:', typeof window.sendFeeWhatsAppAdmin);
+})();
+</script>
 </body>
 </html>
