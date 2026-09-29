@@ -11541,5 +11541,364 @@ console.log('✅ PART 10 loaded — Quick Action badges active');
   }
 })();
 </script>
+<!-- 🚨 FEE SYSTEM COMPLETE EMERGENCY PATCH v2 -->
+<script>
+(function(){
+  console.log('🚨 Loading FEE EMERGENCY PATCH v2...');
+
+  // ============================================================
+  // 1. MONTH CONSTANTS
+  // ============================================================
+  window.ML_MONTHS = ['ജനുവരി','ഫെബ്രുവരി','മാർച്ച്','ഏപ്രിൽ','മേയ്','ജൂൺ','ജൂലൈ','ഓഗസ്റ്റ്','സെപ്റ്റംബർ','ഒക്ടോബർ','നവംബർ','ഡിസംബർ'];
+  window.EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // ============================================================
+  // 2. FORMAT FUNCTIONS
+  // ============================================================
+  window.formatFeeMonthML = function(raw){
+    if(!raw) return '---';
+    var s = String(raw); var p = s.split('-');
+    if(p.length === 2){ var m = parseInt(p[1]); if(m>=1&&m<=12) return window.ML_MONTHS[m-1]+' '+p[0]; }
+    var d = new Date(raw);
+    if(!isNaN(d.getTime())) return window.ML_MONTHS[d.getMonth()]+' '+d.getFullYear();
+    return s;
+  };
+  window.formatFeeMonthEN = function(raw){
+    if(!raw) return '---';
+    var s = String(raw); var p = s.split('-');
+    if(p.length === 2){ var m = parseInt(p[1]); if(m>=1&&m<=12) return window.EN_MONTHS[m-1]+' '+p[0]; }
+    var d = new Date(raw);
+    if(!isNaN(d.getTime())) return window.EN_MONTHS[d.getMonth()]+' '+d.getFullYear();
+    return s;
+  };
+
+  // ============================================================
+  // 3. LOAD FEE SETTINGS
+  // ============================================================
+  if(typeof window.loadFeeSettings !== 'function'){
+    window.loadFeeSettings = async function(){
+      if(!window.supabaseClient) return {};
+      try{
+        var r = await window.supabaseClient.from('fee_settings').select('*');
+        var s = {};
+        (r.data||[]).forEach(function(x){ s[x.setting_key] = x.value; });
+        window.FEE_SETTINGS_CACHE = {
+          monthlyFee: parseInt(s.monthly_fee) || 200,
+          upiId: s.upi_id || '',
+          payeeName: s.payee_name || '',
+          supportPhone: s.support_phone || '',
+          supportEmail: s.support_email || '',
+          startMonth: s.start_month || '',
+          monthsElapsed: (s.months_elapsed !== '' && s.months_elapsed !== undefined && s.months_elapsed !== null)
+                        ? parseInt(s.months_elapsed) : null
+        };
+        return window.FEE_SETTINGS_CACHE;
+      }catch(e){ console.warn('loadFeeSettings:', e); return window.FEE_SETTINGS_CACHE || {}; }
+    };
+  }
+
+  // ============================================================
+  // 4. STUDENT SIDE
+  // ============================================================
+  window.openStudentFees = function(){
+    if(!window.currentUser){ if(typeof showToast==='function') showToast('Login first','error'); return; }
+    document.getElementById('studentFeesOverlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    window.loadStudentFeeData();
+  };
+
+  window.closeStudentFees = function(){
+    document.getElementById('studentFeesOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
+  window.loadStudentFeeData = async function(){
+    var wrap = document.getElementById('studentFeesContent');
+    if(!wrap) return;
+    wrap.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#64748b;"><div style="width:36px;height:36px;border:4px solid rgba(59,139,255,.2);border-top-color:#22d3ee;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;"></div><p style="margin-top:14px;">Loading...</p></div>';
+    try{
+      var settings = await window.loadFeeSettings();
+      var sid = window.currentUser.studentId;
+      var parent = await window.getFeeParentByUID(sid);
+
+      if(!parent){
+        wrap.innerHTML = '<div style="text-align:center;padding:50px 20px;">'+
+          '<i class="fas fa-folder-open" style="font-size:3.5rem;color:#b45309;opacity:.4;"></i>'+
+          '<h4 style="color:#0f172a;margin-top:16px;">ഫീസ് വിവരങ്ങൾ കണ്ടെത്തിയില്ല</h4>'+
+          '<p style="color:#64748b;font-size:.82rem;margin-top:8px;line-height:1.7;">'+
+          'Student UID: <b style="color:#0891b2;">'+sid+'</b><br>'+
+          'ഈ UID fee system-ൽ link ചെയ്തിട്ടില്ല.<br>'+
+          'ദയവായി മദ്രസ ഓഫീസിൽ ബന്ധപ്പെടുക.</p></div>';
+        return;
+      }
+
+      var br = window.computeFeeBreakdown(parent, settings);
+      var parentMobile = String(parent.mobile || '').replace(/\D/g,'').slice(-10);
+      var lastPaidMonthML = window.formatFeeMonthML(parent.last_paid_month);
+      var lastPaidDateDD = parent.last_paid_date ? (typeof formatDate==='function'?formatDate(parent.last_paid_date):parent.last_paid_date) : '---';
+      var sc = br.totalPending > 0 ? '#b45309' : br.totalPending < 0 ? '#0891b2' : '#059669';
+      var sl = br.totalPending > 0 ? '⏳ പെൻഡിംഗ്' : br.totalPending < 0 ? '💎 അഡ്വാൻസ്' : '✅ പൂർത്തിയായി';
+
+      var waMsg = 'നമസ്കാരം '+(parent.parent_name||'')+',\n\nനൂറുസ്സലാം മദ്റസ വരിസംഖ്യ:\n📱 '+parentMobile+'\n✅ അവസാനം അടച്ചത്: '+lastPaidMonthML+'\n📆 ബാക്കി മാസങ്ങൾ: '+br.pendingMonths+'\n💰 ആകെ ബാക്കി: ₹'+br.totalPending.toLocaleString()+'\n\nUPI: '+(settings.upiId||'');
+      var waLink = 'https://wa.me/91'+parentMobile+'?text='+encodeURIComponent(waMsg);
+
+      var html = '<div style="border-radius:28px;background:#fff;border:1px solid rgba(180,200,230,.5);overflow:hidden;margin-bottom:16px;">';
+      html += '<table style="width:100%;border-collapse:collapse;">';
+      html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;width:44%;"><i class="fas fa-user"></i> രക്ഷിതാവ്</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+escapeHtml(parent.parent_name||'')+'</td></tr>';
+      if(parent.student_names) html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-user-graduate"></i> കുട്ടികൾ</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+escapeHtml(parent.student_names)+'</td></tr>';
+      html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-mobile-alt"></i> മൊബൈൽ</td><td style="padding:14px 16px;color:#0f172a;font-weight:600;">'+parentMobile+'</td></tr>';
+      html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-calendar"></i> അവസാനം അടച്ച മാസം</td><td style="padding:14px 16px;color:#0891b2;font-weight:700;">'+lastPaidMonthML+'</td></tr>';
+      html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-hourglass-half"></i> ബാക്കി മാസങ്ങൾ</td><td style="padding:14px 16px;color:#0f172a;">'+br.pendingMonths+' × ₹'+br.monthlyFee+' = ₹'+br.pendingAmount.toLocaleString()+'</td></tr>';
+      if(br.previousBalance > 0) html += '<tr style="border-bottom:1px solid rgba(100,116,139,.1);"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;">📌 മുൻ ബാക്കി</td><td style="padding:14px 16px;color:#0f172a;">₹'+br.previousBalance.toLocaleString()+'</td></tr>';
+      html += '<tr style="background:#fef3c7;"><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-rupee-sign"></i> ആകെ അടക്കേണ്ടത്</td><td style="padding:14px 16px;color:'+sc+';font-size:1.15rem;font-weight:900;">₹'+br.totalPending.toLocaleString()+'</td></tr>';
+      html += '<tr><td style="padding:14px 16px;color:#64748b;font-size:.8rem;"><i class="fas fa-info-circle"></i> സ്റ്റാറ്റസ്</td><td style="padding:14px 16px;color:'+sc+';font-weight:800;">'+sl+'</td></tr>';
+      html += '</table>';
+      html += '<a href="'+waLink+'" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;padding:14px;margin:14px 20px 20px;border-radius:60px;text-decoration:none;font-weight:800;"><i class="fab fa-whatsapp"></i> WhatsApp-ൽ അയക്കാൻ</a>';
+      html += '</div>';
+
+      if(br.totalPending > 0){
+        html += '<div style="background:#fff;border-radius:32px;padding:22px;border:1px solid rgba(180,200,230,.5);">';
+        html += '<div style="text-align:center;margin-bottom:16px;"><span style="background:#fef3c7;border-radius:40px;padding:8px 20px;font-size:.75rem;color:#b45309;font-weight:700;">📋 ബാക്കി: ₹'+br.totalPending.toLocaleString()+'</span></div>';
+        html += '<div style="margin-bottom:18px;text-align:center;"><div style="font-size:.7rem;color:#64748b;margin-bottom:6px;">അടയ്ക്കുന്ന തുക</div>';
+        html += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#f8fafc;border:1.5px solid rgba(100,116,139,.2);border-radius:60px;padding:6px 18px;"><span style="font-size:1.2rem;font-weight:700;color:#64748b;">₹</span><input type="number" id="feePayAmount" step="1" min="1" value="'+br.totalPending+'" style="border:none;padding:12px 8px;font-size:1.2rem;font-weight:700;width:150px;text-align:center;background:transparent;color:#0f172a;outline:none;"></div></div>';
+        html += '<button id="feeGpayBtn" style="width:100%;background:#f8fafc;border:1.5px solid rgba(100,116,139,.2);border-radius:60px;padding:14px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;font-weight:700;color:#0f172a;font-size:1rem;font-family:inherit;"><i class="fab fa-google-pay"></i> Google Pay-ൽ അടയ്ക്കുക</button>';
+        html += '<p style="font-size:.7rem;text-align:center;margin-top:14px;color:#94a3b8;"><i class="fas fa-shield-alt"></i> UPI: '+(settings.upiId||'')+'</p>';
+        html += '</div>';
+      } else {
+        html += '<div style="background:#ecfdf5;border:1.5px solid rgba(5,150,105,.3);border-radius:20px;padding:24px;text-align:center;"><i class="fas fa-check-circle" style="font-size:2.6rem;color:#059669;"></i><div style="color:#065f46;font-weight:800;font-size:1rem;margin-top:10px;">വരിസംഖ്യ പൂർണ്ണമായി അടച്ചു! 🤲</div></div>';
+      }
+      wrap.innerHTML = html;
+
+      var gpBtn = document.getElementById('feeGpayBtn');
+      if(gpBtn){
+        gpBtn.addEventListener('click', function(){
+          var amt = parseFloat(document.getElementById('feePayAmount').value);
+          if(isNaN(amt) || amt <= 0){ if(typeof showToast==='function') showToast('ശരിയായ തുക നൽകുക','error'); return; }
+          var pa = settings.upiId || '';
+          var pn = settings.payeeName || 'Noorussalam Madrasa';
+          var link = 'upi://pay?pa='+encodeURIComponent(pa)+'&pn='+encodeURIComponent(pn)+'&am='+amt.toFixed(2)+'&cu=INR&tn='+encodeURIComponent('Madrasa Fee - '+parentMobile);
+          var a = document.createElement('a'); a.href = link; a.target = '_blank';
+          document.body.appendChild(a); a.click();
+          setTimeout(function(){ document.body.removeChild(a); }, 300);
+        });
+      }
+    }catch(e){
+      wrap.innerHTML = '<div style="text-align:center;padding:40px;color:#dc2626;">❌ Error: '+escapeHtml(e.message)+'</div>';
+    }
+  };
+
+  // ============================================================
+  // 5. ADMIN — Fee Parents Management
+  // ============================================================
+  window.loadFeeParentsAdmin = async function(){
+    var wrap = document.getElementById('feeParentsWrap');
+    if(!wrap) return;
+    wrap.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm"></div></div>';
+    try{
+      var r = await window.supabaseClient.from('fee_parents').select('*').order('parent_name');
+      window.feeParentsData = r.data || [];
+      await window.loadFeeSettings();
+      window.renderFeeAdminSummary();
+      window.filterFeeParents();
+    }catch(e){
+      wrap.innerHTML = '<div style="padding:20px;color:#dc2626;">Error: '+escapeHtml(e.message)+'</div>';
+    }
+  };
+
+  window.renderFeeAdminSummary = function(){
+    var sum = document.getElementById('feeAdminSummary');
+    if(!sum) return;
+    var tp = 0, wb = 0, fp = 0;
+    (window.feeParentsData||[]).forEach(function(p){
+      var br = window.computeFeeBreakdown(p, window.FEE_SETTINGS_CACHE||{});
+      tp += br.totalPending;
+      if(br.totalPending > 0) wb++; else fp++;
+    });
+    sum.innerHTML = '<div style="background:#fff;border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(180,200,230,.5);"><div style="font-weight:900;font-size:1.2rem;color:#2563eb;">'+(window.feeParentsData||[]).length+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#64748b;margin-top:3px;letter-spacing:1px;">Total Parents</div></div>'+
+      '<div style="background:#fff;border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(180,200,230,.5);"><div style="font-weight:900;font-size:1.2rem;color:#b45309;">'+wb+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#64748b;margin-top:3px;letter-spacing:1px;">Pending</div></div>'+
+      '<div style="background:#fff;border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(180,200,230,.5);"><div style="font-weight:900;font-size:1.2rem;color:#059669;">'+fp+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#64748b;margin-top:3px;letter-spacing:1px;">Paid</div></div>'+
+      '<div style="background:#fff;border-radius:17px;padding:14px;text-align:center;border:1px solid rgba(180,200,230,.5);"><div style="font-weight:900;font-size:1.2rem;color:#b45309;">₹'+tp.toLocaleString()+'</div><div style="font-size:.55rem;text-transform:uppercase;color:#64748b;margin-top:3px;letter-spacing:1px;">Total Due</div></div>';
+  };
+
+  window.filterFeeParents = function(){
+    var q = (document.getElementById('feeParentSearch')?.value || '').toLowerCase().trim();
+    window.filteredFeeParents = (window.feeParentsData||[]).filter(function(p){
+      if(!q) return true;
+      var idsTxt = (p.student_ids||[]).join(' ').toLowerCase();
+      return (p.parent_name||'').toLowerCase().indexOf(q) > -1 || (p.mobile||'').indexOf(q) > -1 || idsTxt.indexOf(q) > -1;
+    });
+    window.renderFeeParentsTable();
+  };
+
+  window.renderFeeParentsTable = function(){
+    var wrap = document.getElementById('feeParentsWrap');
+    if(!wrap) return;
+    if((window.filteredFeeParents||[]).length === 0){
+      wrap.innerHTML = '<div style="text-align:center;padding:30px;color:#64748b;">No records</div>';
+      return;
+    }
+    var h = '<table><thead><tr><th>#</th><th>Parent</th><th>UID / Students</th><th>Mobile</th><th>Last Paid</th><th>Due</th><th>Actions</th></tr></thead><tbody>';
+    window.filteredFeeParents.forEach(function(p, i){
+      var br = window.computeFeeBreakdown(p, window.FEE_SETTINGS_CACHE||{});
+      var sc = br.totalPending > 0 ? '#dc2626' : br.totalPending < 0 ? '#0891b2' : '#059669';
+      var ids = p.student_ids || [];
+      var uidChips = ids.length === 0 ? '<span style="color:#94a3b8;font-size:.7rem;">No UID</span>' : ids.map(function(u){
+        return '<span style="display:inline-block;background:#ecfeff;color:#0891b2;padding:2px 8px;border-radius:20px;font-size:.65rem;font-weight:800;margin:1px 2px;">'+escapeHtml(u)+'</span>';
+      }).join('');
+      h += '<tr><td>'+(i+1)+'</td>';
+      h += '<td><strong>'+escapeHtml(p.parent_name)+'</strong></td>';
+      h += '<td><div style="max-width:220px;">'+uidChips+'</div></td>';
+      h += '<td>'+escapeHtml(p.mobile)+'</td>';
+      h += '<td>'+window.formatFeeMonthEN(p.last_paid_month)+'</td>';
+      h += '<td style="color:'+sc+';font-weight:900;">₹'+br.totalPending.toLocaleString()+'</td>';
+      h += '<td>';
+      h += '<button onclick="window.markFeePaid('+p.id+')" style="background:linear-gradient(100deg,#059669,#34d399);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;" title="Mark Paid">✅</button>';
+      h += '<button onclick="window.editFeeParent('+p.id+')" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">✏️</button>';
+      h += '<button onclick="window.deleteFeeParent('+p.id+')" style="background:linear-gradient(100deg,#b91c1c,#f87171);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;">🗑️</button>';
+      h += '</td></tr>';
+    });
+    h += '</tbody></table>';
+    wrap.innerHTML = h;
+  };
+
+  // ============================================================
+  // 6. ADD/EDIT Fee Parent
+  // ============================================================
+  window.openFeeParentForm = async function(id){
+    var p = id ? (window.feeParentsData||[]).find(function(x){ return x.id === id; }) : {};
+    var isEdit = !!id;
+    var studentsList = [];
+    try{
+      var sr = await window.supabaseClient.from('students').select('studentid, name, class').order('class').order('name');
+      studentsList = sr.data || [];
+    }catch(e){}
+    var selectedIds = p.student_ids || [];
+    if(typeof modalTitleSpan !== 'undefined') modalTitleSpan.innerText = isEdit ? '✏️ Edit Fee Record' : '➕ Add Fee Parent';
+
+    window.modalBodyDiv.innerHTML = '<form onsubmit="window.saveFeeParent(event,'+(id||'null')+')">'+
+      '<div class="row g-3">'+
+      '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Parent Name *</label><input type="text" id="fp_name" class="modal-form-input" value="'+escapeHtml(p.parent_name||'')+'" required></div>'+
+      '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Mobile *</label><input type="tel" id="fp_mobile" class="modal-form-input" maxlength="10" value="'+escapeHtml(p.mobile||'')+'" required></div>'+
+      '<div class="col-12"><label style="color:#475569;font-size:.78rem;">🎓 Student UID തിരഞ്ഞെടുക്കുക *</label>'+
+      '<input type="text" id="fp_student_search" class="modal-form-input mb-2" placeholder="🔍 Search..." oninput="window.filterFeeStudentPicker()" style="font-size:.82rem;">'+
+      '<div id="fp_student_picker" style="max-height:220px;overflow-y:auto;border:1.5px solid rgba(100,116,139,.25);border-radius:14px;padding:10px;background:#f8fafc;">'+
+      studentsList.map(function(s){
+        var checked = selectedIds.indexOf(s.studentid) > -1 ? 'checked' : '';
+        var searchText = (s.name+' '+s.studentid+' '+s.class).toLowerCase();
+        return '<label class="fee-student-item" data-search="'+escapeHtml(searchText)+'" style="display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:4px;background:#fff;border:1px solid rgba(180,200,230,.5);border-radius:10px;cursor:pointer;font-size:.82rem;">'+
+          '<input type="checkbox" class="fp-student-chk" value="'+escapeHtml(s.studentid)+'" '+checked+'>'+
+          '<span style="color:#0f172a;font-weight:700;">'+escapeHtml(s.name)+'</span>'+
+          '<span style="background:#ecfeff;color:#0891b2;padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:800;margin-left:auto;">'+escapeHtml(s.studentid)+'</span>'+
+          '<span style="background:#eff6ff;color:#1e40af;padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:800;">C'+escapeHtml(s.class)+'</span>'+
+        '</label>';
+      }).join('')+'</div></div>'+
+      '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Last Paid Month</label><input type="month" id="fp_lastmonth" class="modal-form-input" value="'+(p.last_paid_month||'')+'"></div>'+
+      '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Last Paid Date</label><input type="date" id="fp_lastdate" class="modal-form-input" value="'+(p.last_paid_date||'')+'"></div>'+
+      '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Months Paid</label><input type="number" id="fp_paid" class="modal-form-input" min="0" value="'+(p.paid_months||0)+'"></div>'+
+      '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Previous Balance (₹)</label><input type="number" id="fp_prev" class="modal-form-input" min="0" value="'+(p.previous_balance||0)+'"></div>'+
+      '</div>'+
+      '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>'+
+      '</form>';
+    if(typeof modal !== 'undefined') modal.style.display = 'flex';
+  };
+
+  window.filterFeeStudentPicker = function(){
+    var q = (document.getElementById('fp_student_search')?.value || '').toLowerCase().trim();
+    document.querySelectorAll('.fee-student-item').forEach(function(el){
+      el.style.display = (!q || el.dataset.search.indexOf(q) > -1) ? 'flex' : 'none';
+    });
+  };
+
+  window.editFeeParent = function(id){ window.openFeeParentForm(id); };
+
+  window.saveFeeParent = async function(e, id){
+    e.preventDefault();
+    var selectedStudentIds = Array.from(document.querySelectorAll('.fp-student-chk:checked')).map(function(c){ return c.value; });
+    if(selectedStudentIds.length === 0){ if(typeof showToast==='function') showToast('⚠️ കുറഞ്ഞത് ഒരു കുട്ടിയെ തിരഞ്ഞെടുക്കുക','error'); return; }
+    var studentNames = [];
+    try{
+      var sr = await window.supabaseClient.from('students').select('studentid, name').in('studentid', selectedStudentIds);
+      studentNames = (sr.data||[]).map(function(s){ return s.name; });
+    }catch(e){}
+    var obj = {
+      parent_name: document.getElementById('fp_name').value.trim(),
+      mobile: document.getElementById('fp_mobile').value.trim(),
+      student_ids: selectedStudentIds,
+      student_names: studentNames.join(', ') || null,
+      last_paid_month: document.getElementById('fp_lastmonth').value || null,
+      last_paid_date: document.getElementById('fp_lastdate').value || null,
+      paid_months: parseInt(document.getElementById('fp_paid').value) || 0,
+      previous_balance: parseFloat(document.getElementById('fp_prev').value) || 0,
+      updated_at: new Date().toISOString()
+    };
+    if(!obj.parent_name || obj.mobile.length !== 10){ if(typeof showToast==='function') showToast('Name & 10-digit mobile required','error'); return; }
+    try{
+      var savedId = id;
+      if(id){ await window.supabaseClient.from('fee_parents').update(obj).eq('id', id); }
+      else{ var ins = await window.supabaseClient.from('fee_parents').insert(obj).select().single(); if(ins.data) savedId = ins.data.id; }
+      if(savedId){
+        await window.supabaseClient.from('students').update({ fee_parent_id: null }).eq('fee_parent_id', savedId);
+        await window.supabaseClient.from('students').update({ fee_parent_id: savedId }).in('studentid', selectedStudentIds);
+      }
+      if(typeof showToast==='function') showToast(id ? '✅ Updated' : '✅ Added','success');
+      if(typeof closeModal==='function') closeModal('globalModal');
+      window.loadFeeParentsAdmin();
+    }catch(err){ if(typeof showToast==='function') showToast('❌ '+err.message,'error'); }
+  };
+
+  window.deleteFeeParent = async function(id){
+    if(!confirm('Delete this fee record?')) return;
+    try{
+      await window.supabaseClient.from('students').update({ fee_parent_id: null }).eq('fee_parent_id', id);
+      await window.supabaseClient.from('fee_parents').delete().eq('id', id);
+      if(typeof showToast==='function') showToast('🗑️ Deleted','info');
+      window.loadFeeParentsAdmin();
+    }catch(e){ if(typeof showToast==='function') showToast('❌ '+e.message,'error'); }
+  };
+
+  // ============================================================
+  // 7. MARK PAID
+  // ============================================================
+  window.markFeePaid = async function(id){
+    var p = (window.feeParentsData||[]).find(function(x){ return x.id === id; });
+    if(!p) return;
+    var month = prompt('ഏത് മാസത്തെ ഫീസ്? (YYYY-MM)', new Date().toISOString().slice(0,7));
+    if(!month) return;
+    var amt = prompt('തുക (₹):', (window.FEE_SETTINGS_CACHE?.monthlyFee) || 200);
+    if(!amt) return;
+    var entry = { month: month, amount: parseInt(amt), date: new Date().toISOString().split('T')[0], paidBy: 'Admin' };
+    var history = p.payment_history || [];
+    if(typeof history === 'string'){ try{ history = JSON.parse(history); }catch(e){ history = []; } }
+    history.push(entry);
+    try{
+      await window.supabaseClient.from('fee_parents').update({
+        last_paid_month: month,
+        last_paid_date: entry.date,
+        paid_months: (p.paid_months || 0) + 1,
+        payment_history: history,
+        updated_at: new Date().toISOString()
+      }).eq('id', id);
+      if(typeof showToast==='function') showToast('✅ Fee recorded','success');
+      if(typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+      window.loadFeeParentsAdmin();
+    }catch(e){ if(typeof showToast==='function') showToast('❌ '+e.message,'error'); }
+  };
+
+  // ============================================================
+  // 8. GO TO FEES (from Quick Action tile)
+  // ============================================================
+  window.goToFees = function(){
+    if(!window.currentUser){ if(typeof showToast==='function') showToast('Login first','error'); return; }
+    window.openStudentFees();
+  };
+
+  console.log('✅ FEE EMERGENCY PATCH v2 loaded');
+  console.log('   - formatFeeMonthML:', typeof window.formatFeeMonthML);
+  console.log('   - openStudentFees:', typeof window.openStudentFees);
+  console.log('   - loadFeeParentsAdmin:', typeof window.loadFeeParentsAdmin);
+  console.log('   - saveFeeParent:', typeof window.saveFeeParent);
+  console.log('   - markFeePaid:', typeof window.markFeePaid);
+})();
+</script>
 </body>
 </html>
