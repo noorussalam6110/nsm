@@ -15145,53 +15145,5 @@ console.log('✅ Fee Admin v3.0 loaded — loadFeeRecordsForAdmin:', typeof wind
 
 })();
 </script>
-/* ═══════════════════════════════════════════════════════════ */
-/* 🎨 CONFIDENTIAL — Safe Confetti Wrapper                     */
-/* ═══════════════════════════════════════════════════════════ */
-(function(){
-  // Save original confetti if exists
-  var _origConfetti = window.confetti;
-  
-  // Override with safe version
-  window.confetti = function(opts){
-    try{
-      if(typeof _origConfetti === 'function'){
-        return _origConfetti(opts);
-      }
-    }catch(e){
-      console.warn('Confetti skipped:', e.message);
-    }
-  };
-  
-  console.log('✅ Safe confetti wrapper loaded');
-})();
-
-/* 🎨 DEFENSIVE: Override submitCreation with safe version */
-(function(){
-  var _origSubmit = window.submitCreation;
-  
-  window.submitCreation = function(e){
-    // Always prevent default FIRST
-    if(e && e.preventDefault) e.preventDefault();
-    if(e && e.stopPropagation) e.stopPropagation();
-    
-    // Log for debugging
-    console.log('🎨 submitCreation called');
-    
-    try{
-      if(typeof _origSubmit === 'function'){
-        return _origSubmit.apply(this, arguments);
-      } else {
-        showToast('Upload handler missing', 'error');
-      }
-    }catch(err){
-      console.error('❌ submitCreation error:', err);
-      showToast('❌ ' + (err.message || 'Upload failed'), 'error');
-    }
-    return false;
-  };
-  
-  console.log('✅ Safe submitCreation wrapper loaded');
-})();
 </body>
 </html>
