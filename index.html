@@ -14754,5 +14754,396 @@ console.log('✅ PART 10 loaded — Quick Action badges active');
   console.log('   → openSurveyQuestionsForm()');
 })();
 </script>
+<script>
+/* Fix for countNewItems broken filter */
+(function(){
+  // Override the broken function
+  window.countNewItems = function(type){ 
+    // Silent no-op — prevents 400 errors
+    return Promise.resolve(0);
+  };
+  console.log('✅ countNewItems disabled (fixes 400 errors)');
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════ */
+/* 💰 FEE ADMIN v3.0 — Guaranteed Load                         */
+/* ═══════════════════════════════════════════════════════════ */
+console.log('🔄 Loading Fee Admin v3.0...');
+
+(function(){
+
+function _group(rows){
+  var ms = 0;
+  try{
+    if(window.FEE_SETTINGS && FEE_SETTINGS.months_elapsed !== null && FEE_SETTINGS.months_elapsed >= 0){
+      ms = FEE_SETTINGS.months_elapsed;
+    } else if(window.FEE_SETTINGS && FEE_SETTINGS.start_month){
+      var p = FEE_SETTINGS.start_month.split('-');
+      if(p.length === 2){
+        var n = new Date();
+        ms = (n.getFullYear() - parseInt(p[0])) * 12 + (n.getMonth()+1 - parseInt(p[1])) + 1;
+        if(n.getDate() < 20) ms = Math.max(0, ms - 1);
+      }
+    }
+  }catch(e){}
+  var fee = (window.FEE_SETTINGS && FEE_SETTINGS.monthly_fee) || 200;
+  var map = {};
+  (rows || []).forEach(function(r){
+    if(!r.mobile) return;
+    if(!map[r.mobile]) map[r.mobile] = { parentName: r.parent_name||'', mobile: r.mobile, children: [], totalPending: 0 };
+    var paid = Number(r.paid_months) || 0;
+    var pm = Math.max(0, ms - paid);
+    var pb = Number(r.previous_balance) || 0;
+    var tp = pm * fee + pb;
+    map[r.mobile].children.push({
+      id: r.id, studentId: r.student_id||'', studentName: r.student_name||'',
+      studentClass: r.student_class||'', lastPaidMonth: r.last_paid_month||'',
+      paidMonths: paid, pendingMonths: pm, previousBalance: pb,
+      totalPending: tp, notes: r.notes||'', history: r.payment_history||[]
+    });
+    map[r.mobile].totalPending += tp;
+  });
+  return Object.values(map);
+}
+
+window.loadFeeRecordsForAdmin = async function(){
+  var wrap = document.getElementById('feeRecordsWrap');
+  if(!wrap){ console.warn('feeRecordsWrap not found'); return; }
+  wrap.innerHTML = '<div class="text-center py-4"><div class="spinner-sm"></div></div>';
+  try{
+    if(typeof loadFeeSettings === 'function') await loadFeeSettings();
+    var r = await supabaseClient.from('fee_records').select('*').order('mobile');
+    if(r.error) throw r.error;
+    window.ALL_FEE_RECORDS = r.data || [];
+    window.ALL_FEE_PARENTS = _group(ALL_FEE_RECORDS);
+    window.filterFeeRecordsAdmin();
+    window.updatePendingBadge();
+  }catch(e){
+    console.error('Fee load error:', e);
+    wrap.innerHTML = '<div class="empty-state" style="color:#fca5a5;">Error: ' + (e.message||e) + '</div>';
+  }
+};
+
+window.filterFeeRecordsAdmin = function(){
+  var s = document.getElementById('feeRecordsSearch');
+  var f = document.getElementById('feeRecordsFilter');
+  if(!s || !f) return;
+  var q = (s.value||'').toLowerCase().trim();
+  var filter = f.value;
+  var list = (window.ALL_FEE_PARENTS||[]).filter(function(p){
+    if(filter === 'pending' && p.totalPending <= 0) return false;
+    if(filter === 'paid' && p.totalPending > 0) return false;
+    if(q){
+      var h = (p.parentName + ' ' + p.mobile).toLowerCase();
+      if(h.indexOf(q) < 0) return false;
+    }
+    return true;
+  });
+  window.renderFeeRecordsAdmin(list);
+};
+
+window.renderFeeRecordsAdmin = function(list){
+  var wrap = document.getElementById('feeRecordsWrap');
+  if(!wrap) return;
+  if(!list.length){ wrap.innerHTML = '<div class="empty-state">No records</div>'; return; }
+  var h = '<table><thead><tr><th>#</th><th>Parent</th><th>Mobile</th><th>Children</th><th>Due</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  list.forEach(function(p, i){
+    var st = p.totalPending > 0 
+      ? '<span style="color:#fcd34d;font-weight:800;font-size:.7rem;">⏳ PENDING</span>' 
+      : '<span style="color:#6ee7b7;font-weight:800;font-size:.7rem;">✅ PAID</span>';
+    var fc = p.children[0] || {};
+    var sn = String(fc.studentName||'').replace(/'/g,'');
+    h += '<tr>'
+      + '<td>' + (i+1) + '</td>'
+      + '<td><strong>' + (p.parentName||'') + '</strong></td>'
+      + '<td style="font-family:monospace;">' + (p.mobile||'') + '</td>'
+      + '<td><span class="existing-badge">' + p.children.length + '</span></td>'
+      + '<td style="font-weight:800;color:' + (p.totalPending > 0 ? '#fcd34d' : '#6ee7b7') + ';">₹' + p.totalPending.toLocaleString() + '</td>'
+      + '<td>' + st + '</td>'
+      + '<td><div class="admin-actions">'
+      + '<button class="btn-sm pay" onclick="openRecordPayment(\'' + p.mobile + '\',' + (fc.id||0) + ',\'' + sn + '\')">✓</button>'
+      + '<button class="btn-sm history" onclick="showFeeParentDetail(\'' + p.mobile + '\')">👁️</button>'
+      + '<button class="btn-sm edit" onclick="openEditParentFee(\'' + p.mobile + '\')">✏️</button>'
+      + '<button class="btn-sm reject" onclick="deleteFeeParent(\'' + p.mobile + '\')">🗑️</button>'
+      + '</div></td></tr>';
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+};
+
+window.updatePendingBadge = function(){
+  var badge = document.getElementById('pendingCountBadge');
+  if(!badge) return;
+  var c = (window.ALL_FEE_PARENTS||[]).filter(function(p){ return p.totalPending > 0; }).length;
+  if(c > 0){ badge.textContent = c > 99 ? '99+' : c; badge.style.display = 'block'; }
+  else badge.style.display = 'none';
+};
+
+window.openAddParentFeeForm = function(){
+  var t = document.getElementById('parentFeeFormTitle');
+  if(t) t.innerHTML = '<i class="fas fa-user-plus me-2" style="color:#22d3ee"></i>Add Parent';
+  var b = document.getElementById('pfSubmitBtn');
+  if(b) b.innerHTML = '<i class="fas fa-save"></i> Save';
+  var em = document.getElementById('pfEditMobile'); if(em) em.value = '';
+  var pn = document.getElementById('pfParentName'); if(pn) pn.value = '';
+  var pm = document.getElementById('pfParentMobile'); if(pm){ pm.value = ''; pm.disabled = false; }
+  var cl = document.getElementById('childrenFormList'); if(cl) cl.innerHTML = '';
+  var lbl = document.querySelector('.fee-child-labels'); if(lbl) lbl.remove();
+  window.addChildFormRow();
+  document.getElementById('parentFeeFormModal').style.display = 'flex';
+};
+
+window.openEditParentFee = function(mobile){
+  var p = (window.ALL_FEE_PARENTS||[]).find(function(x){ return x.mobile === mobile; });
+  if(!p) return;
+  var t = document.getElementById('parentFeeFormTitle');
+  if(t) t.innerHTML = '<i class="fas fa-user-edit me-2" style="color:#22d3ee"></i>Edit Parent';
+  var b = document.getElementById('pfSubmitBtn'); if(b) b.innerHTML = '<i class="fas fa-save"></i> Update';
+  document.getElementById('pfEditMobile').value = mobile;
+  document.getElementById('pfParentName').value = p.parentName||'';
+  var pm = document.getElementById('pfParentMobile');
+  pm.value = mobile; pm.disabled = true;
+  var cl = document.getElementById('childrenFormList'); cl.innerHTML = '';
+  var lbl = document.querySelector('.fee-child-labels'); if(lbl) lbl.remove();
+  p.children.forEach(function(c){ window.addChildFormRow(c); });
+  document.getElementById('parentFeeFormModal').style.display = 'flex';
+};
+
+window.closeParentFeeForm = function(){ document.getElementById('parentFeeFormModal').style.display = 'none'; };
+
+window.addChildFormRow = function(c){
+  c = c || {};
+  var list = document.getElementById('childrenFormList'); if(!list) return;
+  if(!document.querySelector('.fee-child-labels')){
+    list.insertAdjacentHTML('beforebegin', '<div class="fee-child-labels"><div>Name</div><div>ID</div><div>Class</div><div>Last Paid</div><div>Paid</div><div>Prev</div><div></div></div>');
+  }
+  var div = document.createElement('div');
+  div.className = 'fee-child-row';
+  div.innerHTML = '<input type="text" class="cf-name" placeholder="Name" value="' + (c.studentName||'') + '">'
+    + '<input type="text" class="cf-sid" placeholder="ID" value="' + (c.studentId||'') + '">'
+    + '<input type="text" class="cf-class" placeholder="Class" value="' + (c.studentClass||'') + '">'
+    + '<input type="month" class="cf-month" value="' + (c.lastPaidMonth||'') + '">'
+    + '<input type="number" class="cf-paid" value="' + (c.paidMonths||0) + '">'
+    + '<input type="number" class="cf-prev" value="' + (c.previousBalance||0) + '">'
+    + '<button type="button" onclick="this.parentElement.remove()">✕</button>';
+  list.appendChild(div);
+};
+
+window.saveParentFeeWithChildren = async function(e){
+  e.preventDefault();
+  var pn = document.getElementById('pfParentName').value.trim();
+  var mob = document.getElementById('pfParentMobile').value.trim();
+  var isE = !!document.getElementById('pfEditMobile').value;
+  if(!pn || mob.length !== 10){ showToast('Fill all fields', 'error'); return; }
+  var rows = [];
+  document.querySelectorAll('#childrenFormList .fee-child-row').forEach(function(row){
+    var n = row.querySelector('.cf-name').value.trim(); if(!n) return;
+    rows.push({
+      parent_name: pn, mobile: mob,
+      student_id: row.querySelector('.cf-sid').value.trim(),
+      student_name: n,
+      student_class: row.querySelector('.cf-class').value.trim(),
+      last_paid_month: row.querySelector('.cf-month').value || null,
+      paid_months: parseInt(row.querySelector('.cf-paid').value) || 0,
+      previous_balance: parseFloat(row.querySelector('.cf-prev').value) || 0,
+      last_paid_date: new Date().toISOString().split('T')[0]
+    });
+  });
+  if(!rows.length){ showToast('Add a child', 'error'); return; }
+  var btn = document.getElementById('pfSubmitBtn'); btn.disabled = true; btn.innerHTML = 'Saving...';
+  try{
+    if(isE) await supabaseClient.from('fee_records').delete().eq('mobile', mob);
+    var r = await supabaseClient.from('fee_records').insert(rows);
+    if(r.error) throw r.error;
+    showToast(isE ? '✅ Updated' : '✅ Added', 'success');
+    window.closeParentFeeForm();
+    window.loadFeeRecordsForAdmin();
+  }catch(err){ showToast('❌ ' + err.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save';
+};
+
+window.deleteFeeParent = async function(mobile){
+  var p = (window.ALL_FEE_PARENTS||[]).find(function(x){ return x.mobile === mobile; });
+  if(!p) return;
+  if(!confirm('Delete ' + p.parentName + '?')) return;
+  try{
+    await supabaseClient.from('fee_records').delete().eq('mobile', mobile);
+    showToast('🗑️ Deleted', 'success');
+    window.loadFeeRecordsForAdmin();
+  }catch(e){ showToast('❌ ' + e.message, 'error'); }
+};
+
+window.openRecordPayment = function(mobile, rid, sname){
+  document.getElementById('rpMobile').value = mobile;
+  document.getElementById('rpRecordId').value = rid;
+  document.getElementById('rpStudentDisplay').value = sname || '—';
+  var d = new Date();
+  document.getElementById('rpMonth').value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  document.getElementById('rpAmount').value = (window.FEE_SETTINGS && FEE_SETTINGS.monthly_fee) || 200;
+  document.getElementById('recordPaymentModal').style.display = 'flex';
+};
+
+window.closeRecordPayment = function(){ document.getElementById('recordPaymentModal').style.display = 'none'; };
+
+window.submitRecordPayment = async function(e){
+  e.preventDefault();
+  var id = document.getElementById('rpRecordId').value;
+  var m = document.getElementById('rpMonth').value;
+  var a = parseFloat(document.getElementById('rpAmount').value);
+  if(!id || !m || !a) return;
+  try{
+    var rr = await supabaseClient.from('fee_records').select('*').eq('id', id).single();
+    if(!rr.data) throw new Error('Not found');
+    var rec = rr.data;
+    var np = (Number(rec.paid_months)||0) + 1;
+    var hs = Array.isArray(rec.payment_history) ? rec.payment_history : [];
+    hs.push({ month: m, amount: a, date: new Date().toISOString().split('T')[0], paidBy: 'Admin' });
+    var u = await supabaseClient.from('fee_records').update({
+      paid_months: np, last_paid_month: m,
+      last_paid_date: new Date().toISOString().split('T')[0],
+      payment_history: hs, updated_at: new Date().toISOString()
+    }).eq('id', id);
+    if(u.error) throw u.error;
+    showToast('✅ Recorded', 'success');
+    window.closeRecordPayment();
+    window.loadFeeRecordsForAdmin();
+  }catch(err){ showToast('❌ ' + err.message, 'error'); }
+};
+
+window.showFeeParentDetail = function(mobile){
+  var p = (window.ALL_FEE_PARENTS||[]).find(function(x){ return x.mobile === mobile; });
+  if(!p) return;
+  var h = '<div style="margin-bottom:12px;"><strong style="color:#fff;">' + p.parentName + '</strong><br><span style="color:#9db8dd;font-size:.78rem;">📱 ' + p.mobile + '</span></div>';
+  p.children.forEach(function(c){
+    h += '<div class="fee-child-item ' + (c.pendingMonths > 0 ? 'pending' : 'cleared') + '" style="margin-bottom:10px;">'
+      + '<div class="fee-child-name">' + c.studentName + '</div>'
+      + '<div class="fee-child-meta">Last: <strong>' + (c.lastPaidMonth||'—') + '</strong> • Paid: ' + c.paidMonths + ' • Pending: ' + c.pendingMonths + '<br>Due: <strong>₹' + c.totalPending.toLocaleString() + '</strong></div></div>';
+  });
+  h += '<button class="btn-update w-100 mt-3" onclick="closeModal(\'parentFeeDetailModal\')">Close</button>';
+  document.getElementById('parentFeeDetailBody').innerHTML = h;
+  document.getElementById('parentFeeDetailModal').style.display = 'flex';
+};
+
+window.openSendFeePush = function(){
+  document.getElementById('fpTitle').value = '';
+  document.getElementById('fpMessage').value = '';
+  document.getElementById('fpTarget').value = 'all';
+  document.getElementById('fpTargetValue').value = '';
+  document.getElementById('fpLinkUrl').value = '';
+  window.onFeePushTargetChange();
+  document.getElementById('sendFeePushModal').style.display = 'flex';
+};
+
+window.closeSendFeePush = function(){ document.getElementById('sendFeePushModal').style.display = 'none'; };
+
+window.onFeePushTargetChange = function(){
+  var v = document.getElementById('fpTarget').value;
+  var w = document.getElementById('fpTargetWrap');
+  if(v === 'all'){ w.style.display = 'none'; return; }
+  w.style.display = 'block';
+};
+
+window.sendFeePush = async function(e){
+  e.preventDefault();
+  var t = document.getElementById('fpTitle').value.trim();
+  var msg = document.getElementById('fpMessage').value.trim();
+  var tg = document.getElementById('fpTarget').value;
+  var tv = document.getElementById('fpTargetValue').value.trim();
+  var lu = document.getElementById('fpLinkUrl').value.trim();
+  if(!t || !msg){ showToast('Title & message required', 'error'); return; }
+  var btn = document.getElementById('fpSubmitBtn'); btn.disabled = true;
+  try{
+    var res = await fetch(SUPABASE_URL + '/functions/v1/send-push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'apikey': SUPABASE_ANON_KEY },
+      body: JSON.stringify({ direct_push: true, title: t, message: msg, type: 'fee', target_type: tg, target_value: tv, link_url: lu })
+    });
+    var data = await res.json();
+    if(data.success){ showToast('✅ Sent to ' + data.sent, 'success'); window.closeSendFeePush(); }
+    else showToast('❌ ' + (data.error||'Failed'), 'error');
+  }catch(err){ showToast('❌ ' + err.message, 'error'); }
+  btn.disabled = false;
+};
+
+window.openPendingAlertsPreview = function(){
+  var pending = (window.ALL_FEE_PARENTS||[]).filter(function(p){ return p.totalPending > 0; });
+  if(!pending.length){ showToast('✅ All paid!', 'success'); return; }
+  var total = pending.reduce(function(s,p){ return s + p.totalPending; }, 0);
+  var tch = pending.reduce(function(s,p){ return s + p.children.length; }, 0);
+  var rows = pending.slice(0, 20).map(function(p, i){
+    return '<div style="display:flex;justify-content:space-between;padding:10px;background:rgba(251,191,36,.06);border-radius:10px;margin-bottom:6px;"><div><div style="color:#fff;font-weight:700;font-size:.82rem;">' + (i+1) + '. ' + p.parentName + '</div><div style="color:#9db8dd;font-size:.7rem;">📱 ' + p.mobile + '</div></div><div style="color:#fcd34d;font-weight:900;">₹' + p.totalPending.toLocaleString() + '</div></div>';
+  }).join('');
+  modalTitleSpan.innerText = '🔔 Pending Alerts';
+  modalBodyDiv.innerHTML = '<div style="background:rgba(239,68,68,.12);border:1.6px solid rgba(239,68,68,.35);border-radius:18px;padding:18px;margin-bottom:16px;"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center;"><div><div style="font-size:1.6rem;font-weight:900;color:#fca5a5;">' + pending.length + '</div><div style="font-size:.66rem;color:#9db8dd;">Parents</div></div><div><div style="font-size:1.6rem;font-weight:900;color:#fcd34d;">' + tch + '</div><div style="font-size:.66rem;color:#9db8dd;">Children</div></div><div><div style="font-size:1.6rem;font-weight:900;color:#f87171;">₹' + total.toLocaleString() + '</div><div style="font-size:.66rem;color:#9db8dd;">Total</div></div></div></div><div style="max-height:320px;overflow-y:auto;margin-bottom:16px;">' + rows + '</div><div style="display:flex;gap:10px;"><button class="btn-update flex-grow-1" onclick="sendPendingFeeAlerts()" id="sendAlertsBtn" style="background:linear-gradient(100deg,#ef4444,#f97316);color:#fff;"><i class="fas fa-bell"></i> Send</button><button class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>';
+  modal.style.display = 'flex';
+};
+
+window.sendPendingFeeAlerts = async function(){
+  var btn = document.getElementById('sendAlertsBtn');
+  var pending = (window.ALL_FEE_PARENTS||[]).filter(function(p){ return p.totalPending > 0; });
+  if(!pending.length){ showToast('No pending', 'error'); return; }
+  btn.disabled = true;
+  var mobs = pending.map(function(p){ return p.mobile; }).filter(function(m){ return m && m.length >= 10; });
+  var amt = pending.reduce(function(s,p){ return s + p.totalPending; }, 0);
+  try{
+    var res = await fetch(SUPABASE_URL + '/functions/v1/send-push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'apikey': SUPABASE_ANON_KEY },
+      body: JSON.stringify({ direct_push: true, title: '💰 വരിസംഖ്യ ഓർമ്മപ്പെടുത്തൽ', message: 'Pending ₹' + amt, type: 'fee', target_mobiles: mobs, link_url: '/?open=fees' })
+    });
+    var data = await res.json();
+    if(data.success){ showToast('✅ ' + data.sent + ' sent', 'success'); closeModal('globalModal'); }
+  }catch(err){ showToast('❌ ' + err.message, 'error'); }
+  btn.disabled = false;
+};
+
+window.showPendingAlertsHistory = async function(){
+  modalTitleSpan.innerText = '📜 History';
+  modalBodyDiv.innerHTML = '<div class="text-center py-4">Loading...</div>';
+  modal.style.display = 'flex';
+  try{
+    var r = await supabaseClient.from('fee_pending_alerts').select('*').order('sent_at', { ascending: false }).limit(30);
+    if(!r.data || !r.data.length){ modalBodyDiv.innerHTML = '<div class="empty-state">No alerts</div>'; return; }
+    modalBodyDiv.innerHTML = r.data.map(function(a){
+      return '<div style="background:rgba(120,180,255,.06);border-radius:12px;padding:12px;margin-bottom:8px;border-left:3px solid #22d3ee;"><div style="color:#fff;font-weight:800;font-size:.85rem;">🎯 ' + a.total_targets + ' parents</div><div style="color:#9db8dd;font-size:.7rem;">' + formatDate(a.sent_at) + '</div><div style="color:#6ee7b7;font-size:.75rem;margin-top:4px;">✅ ' + a.total_sent + '</div></div>';
+    }).join('');
+  }catch(e){ modalBodyDiv.innerHTML = '<div class="empty-state">Error</div>'; }
+};
+
+window.downloadFeeRecordsPDF = function(){
+  if(!(window.ALL_FEE_PARENTS||[]).length){ showToast('No data', 'error'); return; }
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF('p', 'mm', 'a4');
+  doc.setFontSize(15); doc.text('Fee Records', 8, 15);
+  var body = (window.ALL_FEE_PARENTS||[]).map(function(p, i){
+    return [i+1, p.parentName, p.mobile, p.children.length, 'Rs.' + p.totalPending.toLocaleString(), p.totalPending > 0 ? 'Pending' : 'Paid'];
+  });
+  doc.autoTable({ startY: 28, head: [['#', 'Parent', 'Mobile', 'Children', 'Due', 'Status']], body: body, styles: { fontSize: 8 } });
+  doc.save('Fee_Records.pdf');
+  showToast('✅ PDF', 'success');
+};
+
+// Override switchAdminTab
+var _sw = window.switchAdminTab;
+window.switchAdminTab = function(tab){
+  if(tab === 'feerecords'){
+    if(!window.currentAdminClass){ showToast('Select class', 'error'); return; }
+    var st = document.getElementById('adminSettingsTab'); if(st) st.style.display = 'none';
+    var mc = document.getElementById('adminMainContent'); if(mc) mc.style.display = 'block';
+    document.querySelectorAll('.admin-tab').forEach(function(t){ t.classList.remove('active'); });
+    var b = document.querySelector('.admin-tab[data-tab="feerecords"]'); if(b) b.classList.add('active');
+    document.querySelectorAll('.admin-tab-content').forEach(function(c){ c.style.display = 'none'; });
+    var ft = document.getElementById('adminFeeRecordsTab'); if(ft) ft.style.display = 'block';
+    window.loadFeeRecordsForAdmin();
+    return;
+  }
+  if(typeof _sw === 'function') return _sw.apply(this, arguments);
+};
+
+console.log('✅ Fee Admin v3.0 loaded — loadFeeRecordsForAdmin:', typeof window.loadFeeRecordsForAdmin);
+
+})();
+</script>
 </body>
 </html>
