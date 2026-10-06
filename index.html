@@ -1569,6 +1569,45 @@ async function setupMalayalamPDF(doc) {
 }
 setTimeout(loadMalayalamFontForPDF, 2000);
 </script>
+<style>
+/* Forgot Modal Mobile Polish */
+@media (max-width: 900px){
+  #forgotModal > .modal-glass{
+    padding: 22px 20px !important;
+    border-radius: 20px !important;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  #forgotModal h3{
+    font-size: 1rem !important;
+  }
+  #forgotModal .modal-form-input{
+    font-size: 16px !important;  /* iOS zoom prevent */
+    padding: 13px 16px;
+  }
+  #forgotModal .btn-gradient{
+    padding: 15px;
+    font-size: .92rem;
+    border-radius: 14px;
+  }
+}
+
+/* Forgot Modal Button Enhancement */
+#forgotSubmitBtn{
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+#forgotSubmitBtn:hover:not(:disabled){
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -10px rgba(34,211,238,.7);
+}
+#forgotSubmitBtn:active:not(:disabled){
+  transform: translateY(0) scale(.98);
+}
+#forgotSubmitBtn:disabled{
+  opacity: .6;
+  cursor: not-allowed;
+}
+</style>
 </head>
 <body>
 
@@ -16319,6 +16358,172 @@ window.resetStudentPassword = async function(sid, name) {
     showToast('❌ ' + e.message, 'error');
   }
 };
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════ */
+/* 🔑 FORGOT PASSWORD HELP — v25.0                        */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  window.showForgotPwdHelp = function(){
+    // Modal കാണിക്കുക
+    var m = document.getElementById('forgotModal');
+    if(m){
+      m.style.display = 'flex';
+      // Reset state
+      var s1 = document.getElementById('forgotStep1');
+      var s2 = document.getElementById('forgotStep2');
+      var ld = document.getElementById('forgotLoading');
+      if(s1) s1.style.display = 'block';
+      if(s2) s2.style.display = 'none';
+      if(ld) ld.style.display = 'none';
+      var inp = document.getElementById('forgotStudentId');
+      if(inp){
+        inp.value = '';
+        setTimeout(function(){ inp.focus(); }, 250);
+      }
+      var res = document.getElementById('forgotResult2');
+      if(res) res.innerHTML = '';
+    }
+
+    // Sprinkle effect
+    if(typeof window.spawnSparkles === 'function'){
+      window.spawnSparkles(4);
+    }
+  };
+
+  // Close button handlers (already exist but ensure they work)
+  var close1 = document.getElementById('closeForgotModalBtn');
+  if(close1){
+    close1.addEventListener('click', function(){
+      document.getElementById('forgotModal').style.display = 'none';
+    });
+  }
+  var close2 = document.getElementById('forgotCloseBtn');
+  if(close2){
+    close2.addEventListener('click', function(){
+      document.getElementById('forgotModal').style.display = 'none';
+    });
+  }
+
+  // Click outside to close
+  var fm = document.getElementById('forgotModal');
+  if(fm){
+    fm.addEventListener('click', function(e){
+      if(e.target === this) this.style.display = 'none';
+    });
+  }
+
+  console.log('✅ Forgot Password Help loaded');
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════ */
+/* 🔐 SECURE FORGOT PASSWORD FLOW — v25.0                 */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  // Override the old insecure handler
+  var newBtn = document.getElementById('forgotSubmitBtn');
+  if(!newBtn) return;
+
+  // Remove old listeners by cloning
+  var clone = newBtn.cloneNode(true);
+  newBtn.parentNode.replaceChild(clone, newBtn);
+
+  clone.addEventListener('click', async function(){
+    var inp = document.getElementById('forgotStudentId');
+    if(!inp) return;
+    var sid = inp.value.trim().toUpperCase();
+    if(!sid){
+      if(typeof showToast === 'function') showToast('Student ID നൽകുക','error');
+      return;
+    }
+
+    // Rate limit — 3 tries per 10 minutes
+    if(typeof window.rateLimit === 'function'){
+      if(!window.rateLimit('forgot_pwd_' + sid, 3, 10 * 60 * 1000)){
+        return;
+      }
+    }
+
+    document.getElementById('forgotStep1').style.display = 'none';
+    document.getElementById('forgotLoading').style.display = 'block';
+
+    try{
+      // Verify student exists (don't fetch password!)
+      var r = await supabaseClient
+        .from('students')
+        .select('studentid, name, class, is_blocked')
+        .eq('studentid', sid)
+        .maybeSingle();
+
+      document.getElementById('forgotLoading').style.display = 'none';
+      document.getElementById('forgotStep2').style.display = 'block';
+      var result = document.getElementById('forgotResult2');
+
+      if(r.error || !r.data){
+        result.innerHTML = 
+          '<div class="alert" style="background:#fee2e2;color:#dc2626;border:none;border-radius:12px;padding:16px;">' +
+            '<div style="font-weight:800;font-size:.94rem;margin-bottom:8px;">❌ Student ID കണ്ടെത്തിയില്ല</div>' +
+            '<div style="font-size:.82rem;line-height:1.6;">Student ID ശരിയാണോ എന്ന് പരിശോധിക്കുക.</div>' +
+          '</div>';
+        return;
+      }
+
+      // Check if blocked
+      if(r.data.is_blocked === true){
+        result.innerHTML = 
+          '<div class="alert" style="background:#fef3c7;color:#b45309;border:none;border-radius:12px;padding:16px;">' +
+            '<div style="font-weight:800;font-size:.94rem;margin-bottom:8px;">🚫 Account Blocked</div>' +
+            '<div style="font-size:.82rem;line-height:1.6;">ഈ account താൽക്കാലികമായി block ചെയ്തിരിക്കുന്നു. ദയവായി office-ൽ ബന്ധപ്പെടുക.</div>' +
+          '</div>';
+        return;
+      }
+
+      // Student found — show contact options (don't reveal password!)
+      var studentName = r.data.name || 'Student';
+      var studentClass = r.data.class || '—';
+
+      result.innerHTML = 
+        '<div style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1.5px solid rgba(5,150,105,.35);border-radius:16px;padding:18px;text-align:center;">' +
+          '<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(140deg,#059669,#34d399);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;box-shadow:0 8px 20px -8px rgba(5,150,105,.6);">' +
+            '<i class="fas fa-check-circle"></i>' +
+          '</div>' +
+          '<div style="color:#065f46;font-weight:800;font-size:1rem;margin-bottom:6px;">Student കണ്ടെത്തി ✅</div>' +
+          '<div style="color:#047857;font-size:.86rem;margin-bottom:14px;font-weight:600;">' +
+            studentName + ' • Class ' + studentClass +
+          '</div>' +
+        '</div>' +
+        '<div style="background:#ecfeff;border:1px solid rgba(8,145,178,.3);border-radius:14px;padding:14px;margin-top:14px;">' +
+          '<div style="color:#0891b2;font-weight:800;font-size:.88rem;margin-bottom:10px;">' +
+            '<i class="fas fa-phone-alt"></i> Password Reset ചെയ്യാൻ Office-ൽ ബന്ധപ്പെടുക' +
+          '</div>' +
+          '<div style="color:#0f172a;font-size:.82rem;line-height:1.7;">' +
+            '📞 <strong>+91 70346 78818</strong><br>' +
+            '🕐 ശനി മുതൽ വ്യാഴം വരെ: 6:00 AM – 10:00 AM<br>' +
+            '📧 noorussalam6110@gmail.com' +
+          '</div>' +
+        '</div>' +
+        '<div style="background:#fef3c7;border:1px solid rgba(180,83,9,.35);border-radius:14px;padding:12px 14px;margin-top:12px;font-size:.76rem;color:#b45309;line-height:1.6;">' +
+          '<i class="fas fa-shield-alt"></i> <b>Security കാരണം</b> password ഇവിടെ കാണിക്കുന്നില്ല. Admin office-ൽ വഴി reset ചെയ്യാം.' +
+        '</div>';
+
+    } catch(err){
+      console.error('Forgot password error:', err);
+      document.getElementById('forgotLoading').style.display = 'none';
+      document.getElementById('forgotStep2').style.display = 'block';
+      document.getElementById('forgotResult2').innerHTML = 
+        '<div style="background:#fee2e2;color:#dc2626;padding:14px;border-radius:12px;font-size:.86rem;">' +
+          '❌ Error: ' + (err.message || 'Something went wrong') +
+        '</div>';
+    }
+  });
+
+  console.log('✅ Secure Forgot Password flow loaded');
+})();
 </script>
 </body>
 </html>
