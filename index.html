@@ -1401,6 +1401,142 @@ body.light-mode .new-badge{
   border-color: #fff;
   box-shadow: 0 4px 12px -2px rgba(239,68,68,.5);
 }
+
+/* ============================================================ */
+/* 🔐 v25.0 — PASSWORD FIELD ANIMATIONS                        */
+/* ============================================================ */
+
+/* 1️⃣ Password field fade + slide in */
+#passwordField {
+  animation: pwdFieldSlide .5s cubic-bezier(.34, 1.56, .64, 1);
+}
+@keyframes pwdFieldSlide {
+  0%   { opacity: 0; transform: translateY(-12px); max-height: 0; }
+  100% { opacity: 1; transform: translateY(0);     max-height: 200px; }
+}
+
+/* 2️⃣ Shake animation for wrong password */
+@keyframes pwdShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 50% { transform: translateX(-8px); }
+  30%, 70% { transform: translateX(8px); }
+  90%      { transform: translateX(-2px); }
+}
+.shake-animation {
+  animation: pwdShake .55s cubic-bezier(.36, .07, .19, .97) !important;
+}
+
+/* 3️⃣ Eye icon hover effect */
+#loginPwdEye,
+#newPwdEye,
+#confirmPwdEye {
+  cursor: pointer;
+  transition: color .25s ease, transform .2s ease;
+}
+#loginPwdEye:hover,
+#newPwdEye:hover,
+#confirmPwdEye:hover {
+  color: #fff !important;
+  transform: scale(1.15);
+}
+#loginPwdEye:active,
+#newPwdEye:active,
+#confirmPwdEye:active {
+  transform: scale(.95);
+}
+
+/* 4️⃣ Password setup modal slide-in */
+#passwordSetupModal {
+  animation: modalBackdropIn .3s ease;
+}
+@keyframes modalBackdropIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+#passwordSetupModal > div {
+  animation: modalContentIn .55s cubic-bezier(.34, 1.56, .64, 1);
+}
+@keyframes modalContentIn {
+  0%   { opacity: 0; transform: translateY(40px) scale(.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 5️⃣ Password strength bar glow */
+#pwdStrengthBar {
+  box-shadow: 0 0 12px -2px currentColor;
+  transition: width .35s cubic-bezier(.34, 1.56, .64, 1), 
+              background .35s ease,
+              box-shadow .35s ease;
+}
+
+/* 6️⃣ Password field focus glow (login side) */
+#passwordField .nsm-input-wrap:focus-within {
+  border-color: #ffd966 !important;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, .2),
+              0 10px 30px -10px rgba(251, 191, 36, .7) !important;
+  transform: translateY(-2px);
+}
+
+/* 7️⃣ Password setup button hover lift */
+#pwdSetupBtn {
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+#pwdSetupBtn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -14px rgba(34, 211, 238, 1),
+              0 0 0 1.5px rgba(255, 215, 120, .8) inset !important;
+}
+#pwdSetupBtn:active:not(:disabled) {
+  transform: translateY(-1px) scale(.99);
+}
+#pwdSetupBtn:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+/* 8️⃣ Mobile optimization */
+@media (max-width: 900px) {
+  #passwordSetupModal > div {
+    padding: 26px 22px !important;
+    border-radius: 22px !important;
+  }
+  #passwordSetupModal h2 {
+    font-size: 1.15rem !important;
+  }
+  #passwordSetupModal > div > div:first-of-type > div:first-child {
+    width: 68px !important;
+    height: 68px !important;
+    font-size: 1.8rem !important;
+  }
+}
+
+/* 9️⃣ Password strength colors */
+.pwd-strength-weak   { color: #f87171 !important; }
+.pwd-strength-medium { color: #fbbf24 !important; }
+.pwd-strength-strong { color: #34d399 !important; }
+
+/* 🔟 Prevent iOS zoom on password inputs */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    #studentPassword,
+    #newPassword,
+    #confirmPassword {
+      font-size: 16px !important;
+    }
+  }
+}
+
+/* ⏸️ Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  #passwordField,
+  #passwordSetupModal,
+  #passwordSetupModal > div,
+  #pwdStrengthBar,
+  .shake-animation {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
 </style>
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 🔤 MALAYALAM FONT FOR PDF — v25.0                       -->
@@ -1556,6 +1692,26 @@ setTimeout(loadMalayalamFontForPDF, 2000);
               <i class="fas fa-keyboard"></i> ഡയറിയിലെ UID നമ്പർ ഉപയോഗിക്കുക
             </small>
           </div>
+                  <!-- 🆕 Password Field (First time: hidden, later: visible) -->
+        <div class="nsm-field" id="passwordField" style="display:none;">
+          <label class="nsm-label">Password <span>*</span></label>
+          <div class="nsm-input-wrap">
+            <i class="fas fa-lock nsm-input-icon"></i>
+            <input type="password" id="studentPassword" class="nsm-input"
+                   placeholder="Enter your password"
+                   autocomplete="current-password"
+                   style="text-transform:none;letter-spacing:1.5px;">
+            <i class="fas fa-eye" id="loginPwdEye"
+               onclick="window.togglePwd('studentPassword','loginPwdEye')"
+               style="cursor:pointer;color:#ffd966;padding:6px;font-size:.9rem;margin-left:4px;transition:color .2s;"
+               onmouseover="this.style.color='#fff'"
+               onmouseout="this.style.color='#ffd966'"></i>
+          </div>
+          <small class="nsm-hint" style="cursor:pointer;text-decoration:underline;"
+                 onclick="window.showForgotPwdHelp()">
+            <i class="fas fa-question-circle"></i> Password മറന്നോ? ഇവിടെ ക്ലിക്ക് ചെയ്യൂ
+          </small>
+        </div>
 
           <button type="submit" class="nsm-btn-primary" id="nsmLoginBtn">
             <i class="fas fa-arrow-right-to-bracket"></i>
@@ -3578,105 +3734,148 @@ if(studentIdInput)studentIdInput.addEventListener('input',function(){
   localStorage.setItem('noor_last_id',c);
 });
 
-document.getElementById('loginForm').addEventListener('submit',async function(e){
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  if(!supabaseClient){showToast('System loading. Refresh.','error');return;}
-  var raw=studentIdInput.value.trim().toUpperCase();
-  if(!raw){showToast('Enter Student ID','error');return;}
-  showLoading(true);
-  try{
-    var ap=localStorage.getItem('admin_password');
-    if(!ap){
-      try{
-        var sd=await supabaseClient.from('settings').select('value').eq('key','adminPassword').single();
-        if(sd.data&&sd.data.value){ap=sd.data.value;localStorage.setItem('admin_password',ap);}
-      }catch(e){}
-    }
-    if(!ap)ap=DEFAULT_ADMIN_PASSWORD;
+  if (!supabaseClient) { showToast('System loading. Refresh.', 'error'); return; }
 
-    if(raw===ap||raw===DEFAULT_ADMIN_PASSWORD){
-      isAdminMode=true;currentAdminClass='';
-      loginSection.style.display='none';
-      adminSection.style.display='block';
-      dashboardSection.style.display='none';
+  var raw = studentIdInput.value.trim().toUpperCase();
+  if (!raw) { showToast('Enter Student ID', 'error'); return; }
+
+  // If password field visible, verify password
+  var pwdField = document.getElementById('passwordField');
+  var isPwdMode = pwdField && pwdField.style.display !== 'none';
+
+  if (isPwdMode) {
+    var enteredPwd = document.getElementById('studentPassword').value;
+    if (!enteredPwd) { showToast('Password നൽകുക', 'error'); return; }
+    
+    showLoading(true);
+    try {
+      var r = await supabaseClient.from('students').select('*')
+        .eq('studentid', raw).single();
+      
+      if (r.error || !r.data) {
+        showToast('❌ Student ID കണ്ടെത്തിയില്ല', 'error');
+        showLoading(false);
+        return;
+      }
+
+      var student = r.data;
+      var storedPwd = student.password || 'noor123';
+
+      if (enteredPwd !== storedPwd) {
+        showToast('❌ തെറ്റായ Password', 'error');
+        showLoading(false);
+        
+        // Shake animation
+        pwdField.style.animation = 'shake .5s';
+        setTimeout(function() { pwdField.style.animation = ''; }, 500);
+        return;
+      }
+
+      // Password correct — check if blocked
+      if (student.is_blocked === true) {
+        showLoading(false);
+        showBlockedScreen(student);
+        return;
+      }
+
+      showLoading(false);
+      
+      // Complete login
+      if (typeof window.completeLogin === 'function') {
+        await window.completeLogin(student);
+      }
+
+    } catch(err) {
+      showToast('❌ ' + err.message, 'error');
+      showLoading(false);
+    }
+    return;
+  }
+
+  // First step: check Student ID
+  showLoading(true);
+  try {
+    // Admin check
+    var ap = localStorage.getItem('admin_password');
+    if (!ap) ap = DEFAULT_ADMIN_PASSWORD;
+
+    if (raw === ap || raw === DEFAULT_ADMIN_PASSWORD) {
+      // Admin login flow (existing code)
+      isAdminMode = true; currentAdminClass = '';
+      loginSection.style.display = 'none';
+      adminSection.style.display = 'block';
+      dashboardSection.style.display = 'none';
       document.getElementById('aiFab').classList.remove('show');
-      if(notifChannel){supabaseClient.removeChannel(notifChannel);notifChannel=null;}
+      if (notifChannel) { supabaseClient.removeChannel(notifChannel); notifChannel = null; }
       stopLeaderboardAutoScroll();
       await loadAllSettings();
-      document.getElementById('adminClassSelector').value='';
-      document.getElementById('adminMainContent').style.display='none';
-      document.getElementById('noClassMsg').style.display='block';
-      document.getElementById('selectedClassBadge').style.display='none';
-      document.getElementById('adminSettingsTab').style.display='none';
-      localStorage.setItem('noor_last_id',raw);
-      showToast('🔐 Admin Panel','success');
+      document.getElementById('adminClassSelector').value = '';
+      document.getElementById('adminMainContent').style.display = 'none';
+      document.getElementById('noClassMsg').style.display = 'block';
+      document.getElementById('selectedClassBadge').style.display = 'none';
+      document.getElementById('adminSettingsTab').style.display = 'none';
+      localStorage.setItem('noor_last_id', raw);
+      showToast('🔐 Admin Panel', 'success');
       enableBodyScroll();
       showLoading(false);
       return;
     }
 
-    var r=await supabaseClient.from('students').select('*').eq('studentid',raw).single();
-    if(r.error||!r.data){showToast('Invalid Student ID','error');showLoading(false);return;}
-    if(r.data.is_blocked===true){showLoading(false);showBlockedScreen(r.data);return;}
-    var student=r.data;
-    await loadAllSettings();
-    currentUser={
-      studentId:student.studentid,name:student.name||'Student',class:student.class||'N/A',roll:student.roll||'',
-      overallGrade:student.overallgrade||null,attendance:0,rank:student.rank||null,
-      moralValuesGrade:student.moralvaluesgrade||null,moralValuesSub:student.moralvaluessub||null,
-      performance:student.performance||0,avatar:student.name?student.name.charAt(0).toUpperCase():'S',
-      email:student.email||'',phone:student.phone||'',fatherName:student.fathername||'',dob:student.dob||'',
-      photo:student.photo||'',password:student.password||'noor123',bloodGroup:student.bloodgroup||'',
-      address:student.address||'',trendAttendance:student.trendattendance||null,rankChange:student.rankchange||null,
-      isBestStudent:student.isbeststudent||false,extraCurricularGrade:student.extracurriculargrade||null,
-      totalMarks:student.totalmarks||0,madrasaRank:student.madrasarank||null,
-      parentMobile:student.parent_mobile||student.phone||''
-    };
-    isAdminMode=false;
-    localStorage.setItem('noor_session',JSON.stringify(currentUser));
-    localStorage.setItem('noor_last_id',raw);
-    loginSection.style.display='none';
-    adminSection.style.display='none';
-    dashboardSection.style.display='block';
-    document.body.classList.add('logged-in');
-    updateDashboardUI();
-    loadActivitiesAndCalendar();
-    loadStudentBalance();
-    loadStudentNotifications();
-    await refreshStudentAttendance();
-    loadOverallMadrasaRank();
-    loadTopWinners();
-    applyStudentPortalVisibility();
-    subscribeNotifications();
-    showAIAssistant();
-    await initNewFeatures();
-    enableBodyScroll();
-    setTimeout(async function(){
-      if(Notification.permission==='granted'){
-        await subscribePushNotifications();
-      }else if(Notification.permission==='default'){
-        var perm=await Notification.requestPermission();
-        if(perm==='granted'){
-          await subscribePushNotifications();
-        }
-      }
-    },2500);
+    // Student lookup
+    var r = await supabaseClient.from('students').select('*')
+      .eq('studentid', raw).single();
 
-    try {
-      if (typeof trackLogin === 'function') {
-        await trackLogin(student);
-        console.log('✅ Login tracked for', student.studentid);
-      }
-    } catch(trackErr) {
-      console.warn('⚠️ trackLogin failed:', trackErr);
+    if (r.error || !r.data) {
+      showToast('❌ Student ID കണ്ടെത്തിയില്ല', 'error');
+      showLoading(false);
+      return;
     }
 
-    showToast('Welcome '+currentUser.name+' ✨','success');
-  }catch(err){
-    console.error('Login error:',err);
-    showToast('❌ '+(err.message||'Error'),'error');
+    var student = r.data;
+
+    // Check if blocked
+    if (student.is_blocked === true) {
+      showLoading(false);
+      showBlockedScreen(student);
+      return;
+    }
+
+    // 🆕 FIRST-TIME: Check if password needs to be set
+    var needsSetup = !student.password_set || 
+                     student.password === 'noor123' || 
+                     !student.password;
+
+    if (needsSetup) {
+      showLoading(false);
+      // Show password creation screen
+      window.showPasswordSetup(student);
+      return;
+    }
+
+    // Password already set — show password field
+    showLoading(false);
+    var pwdField = document.getElementById('passwordField');
+    if (pwdField) pwdField.style.display = 'block';
+    
+    // Hide the main login button, focus on password
+    var pwdInput = document.getElementById('studentPassword');
+    if (pwdInput) setTimeout(function() { pwdInput.focus(); }, 200);
+
+    // Change button text
+    var loginBtn = document.getElementById('nsmLoginBtn');
+    if (loginBtn) {
+      loginBtn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i><span>Login ചെയ്യുക</span>';
+    }
+
+    showToast('🔐 Password നൽകുക', 'info');
+
+  } catch(err) {
+    console.error('Login error:', err);
+    showToast('❌ ' + (err.message || 'Error'), 'error');
+    showLoading(false);
   }
-  showLoading(false);
 });
 
 document.getElementById('logoutBtn').addEventListener('click',logout);
@@ -6032,6 +6231,7 @@ function renderStudentsAdmin(){
     }
     h += '<button class="btn-sm" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;padding:5px 10px;" onclick="impersonateStudent(\'' + s.studentid + '\')" title="View as">👁️</button> ';
     h += '<button class="btn-sm approve" onclick="editStudent(\'' + s.studentid + '\')">✏️</button>';
+    h += '<button class="btn-sm" style="background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#fff;padding:5px 10px;" onclick="resetStudentPassword(\'' + s.studentid + '\', \'' + escapeHtml(s.name) + '\')" title="Reset Password">🔑</button> ';
     h += '<button class="btn-sm reject" onclick="deleteStudent(\'' + s.studentid + '\')">🗑️</button>';
     h += '</td></tr>';
   });
@@ -15612,6 +15812,513 @@ console.log('✅ Fee Admin v3.0 loaded — loadFeeRecordsForAdmin:', typeof wind
   console.log('   → window.logAudit()');
   console.log('   → window.rateLimit()');
 })();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔐 PASSWORD CREATION MODAL — First Time Setup           -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="passwordSetupModal" style="display:none;position:fixed;inset:0;
+     background:linear-gradient(135deg,rgba(5,14,43,.95),rgba(3,8,28,.98));
+     backdrop-filter:blur(20px);z-index:9999999;
+     align-items:center;justify-content:center;padding:20px;">
+
+  <div style="max-width:440px;width:100%;
+       background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.05));
+       border:1.5px solid rgba(255,255,255,.3);
+       border-radius:26px;padding:32px 26px;
+       box-shadow:0 40px 90px -30px rgba(0,0,0,.9),
+                  0 0 60px -20px rgba(212,175,55,.5);
+       position:relative;overflow:hidden;">
+
+    <div style="position:absolute;top:-1.5px;left:12%;right:12%;height:2.5px;
+         border-radius:3px;background:linear-gradient(90deg,transparent,#d4af37,#ffd966,#fff,#ffd966,#d4af37,transparent);
+         background-size:250% 100%;animation:cardGoldenFlow 4s linear infinite;
+         filter:drop-shadow(0 0 10px rgba(251,191,36,.9));"></div>
+
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="width:80px;height:80px;margin:0 auto 14px;border-radius:50%;
+           background:linear-gradient(140deg,#1547a8,#22d3ee);
+           display:flex;align-items:center;justify-content:center;
+           font-size:2.2rem;color:#fff;
+           box-shadow:0 12px 30px -10px rgba(34,211,238,.8),
+                      0 0 0 8px rgba(34,211,238,.15);">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <h2 style="color:#fff;font-size:1.3rem;font-weight:800;
+           margin:0 0 6px;text-shadow:0 2px 10px rgba(0,0,0,.8);">
+        സ്വാഗതം, <span id="pwdSetupName" style="color:#ffd966;">Student</span>! 👋
+      </h2>
+      <p style="color:#a9cdff;font-size:.84rem;margin:0;line-height:1.55;">
+        ആദ്യമായി login ചെയ്യുന്നു!<br>
+        നിങ്ങളുടെ <b style="color:#ffd966;">സ്വന്തം password</b> create ചെയ്യൂ.
+      </p>
+    </div>
+
+    <div style="background:rgba(251,191,36,.12);
+         border:1px solid rgba(251,191,36,.35);
+         border-radius:14px;padding:12px 16px;margin-bottom:20px;
+         display:flex;gap:10px;align-items:flex-start;">
+      <i class="fas fa-lightbulb" style="color:#fbbf24;font-size:1.1rem;margin-top:2px;"></i>
+      <div style="font-size:.74rem;color:#fff;line-height:1.6;">
+        <b>Password rules:</b><br>
+        • കുറഞ്ഞത് <b>6 അക്ഷരം</b><br>
+        • എളുപ്പം ഓർക്കാൻ പറ്റുന്നത്<br>
+        • ജനനത്തീയതി, ഫോൺ നമ്പർ ഒഴിവാക്കുക
+      </div>
+    </div>
+
+    <form id="passwordSetupForm" onsubmit="event.preventDefault();window.saveNewPassword();">
+      
+      <div style="margin-bottom:14px;">
+        <label style="color:#fff;font-size:.78rem;font-weight:800;
+               display:block;margin-bottom:6px;
+               text-shadow:0 2px 6px rgba(0,0,0,.7);">
+          🔐 പുതിയ Password <span style="color:#ef4444;">*</span>
+        </label>
+        <div style="position:relative;display:flex;align-items:center;
+             background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.28);
+             border-radius:14px;padding:0 14px;transition:.3s;"
+             id="newPwdWrap">
+          <i class="fas fa-lock" style="color:#ffd966;margin-right:10px;font-size:.95rem;"></i>
+          <input type="password" id="newPassword" 
+                 placeholder="നിങ്ങളുടെ password"
+                 autocomplete="new-password"
+                 oninput="window.checkPwdStrength(this.value)"
+                 style="flex:1;border:none;outline:none;background:transparent;
+                        padding:13px 0;color:#fff;font-family:inherit;
+                        font-size:16px;font-weight:700;letter-spacing:.5px;">
+          <i class="fas fa-eye" id="newPwdEye" onclick="window.togglePwd('newPassword','newPwdEye')"
+             style="cursor:pointer;color:#ffd966;padding:6px;font-size:.9rem;"></i>
+        </div>
+        
+        <div style="height:4px;background:rgba(255,255,255,.1);
+             border-radius:4px;margin-top:8px;overflow:hidden;">
+          <div id="pwdStrengthBar" style="height:100%;width:0%;
+               transition:width .3s,background .3s;border-radius:4px;"></div>
+        </div>
+        <div id="pwdStrengthText" style="font-size:.68rem;color:#a9cdff;
+             margin-top:5px;font-weight:700;min-height:14px;"></div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="color:#fff;font-size:.78rem;font-weight:800;
+               display:block;margin-bottom:6px;
+               text-shadow:0 2px 6px rgba(0,0,0,.7);">
+          🔁 Password വീണ്ടും <span style="color:#ef4444;">*</span>
+        </label>
+        <div style="position:relative;display:flex;align-items:center;
+             background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.28);
+             border-radius:14px;padding:0 14px;transition:.3s;"
+             id="confirmPwdWrap">
+          <i class="fas fa-lock" style="color:#ffd966;margin-right:10px;font-size:.95rem;"></i>
+          <input type="password" id="confirmPassword"
+                 placeholder="അതേ password വീണ്ടും"
+                 autocomplete="new-password"
+                 style="flex:1;border:none;outline:none;background:transparent;
+                        padding:13px 0;color:#fff;font-family:inherit;
+                        font-size:16px;font-weight:700;letter-spacing:.5px;">
+          <i class="fas fa-eye" id="confirmPwdEye" onclick="window.togglePwd('confirmPassword','confirmPwdEye')"
+             style="cursor:pointer;color:#ffd966;padding:6px;font-size:.9rem;"></i>
+        </div>
+        <div id="pwdMatchText" style="font-size:.68rem;margin-top:5px;
+             font-weight:700;min-height:14px;"></div>
+      </div>
+
+      <button type="submit" id="pwdSetupBtn"
+              style="width:100%;border:none;padding:15px;border-radius:14px;
+                     background:linear-gradient(100deg,#1547a8,#2b7cf0 40%,#22d3ee 75%,#3b8bff);
+                     background-size:220% 100%;animation:btnBlueFlow 6s ease infinite;
+                     color:#fff;font-family:inherit;font-weight:800;font-size:.94rem;
+                     letter-spacing:.8px;cursor:pointer;
+                     box-shadow:0 16px 34px -14px rgba(34,211,238,.95);
+                     display:flex;align-items:center;justify-content:center;gap:10px;">
+        <i class="fas fa-check-circle" style="color:#ffd966;"></i>
+        <span>Password സേവ് ചെയ്ത് Login ചെയ്യുക</span>
+      </button>
+
+      <button type="button" onclick="window.cancelPasswordSetup()"
+              style="width:100%;margin-top:10px;border:none;padding:12px;
+                     border-radius:14px;background:rgba(255,255,255,.1);
+                     border:1.5px solid rgba(255,255,255,.2);
+                     color:#fff;font-family:inherit;font-weight:700;font-size:.82rem;
+                     cursor:pointer;">
+        <i class="fas fa-arrow-left"></i> തിരികെ പോകുക
+      </button>
+    </form>
+  </div>
+</div>
+<script>
+/* ═══════════════════════════════════════════════════════ */
+/* 🔐 FIRST-TIME PASSWORD SETUP SYSTEM                     */
+/* ═══════════════════════════════════════════════════════ */
+(function() {
+  'use strict';
+
+  // Store student being set up
+  window._pendingStudent = null;
+
+  /* ─────────────────────────────────────────────────── */
+  /* Check password strength                            */
+  /* ─────────────────────────────────────────────────── */
+  window.checkPwdStrength = function(val) {
+    var bar = document.getElementById('pwdStrengthBar');
+    var txt = document.getElementById('pwdStrengthText');
+    if (!bar || !txt) return;
+
+    if (!val) {
+      bar.style.width = '0%';
+      txt.textContent = '';
+      return;
+    }
+
+    var score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[a-z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    var percent = Math.min(100, score * 17);
+    var color, label;
+    if (score <= 2) {
+      color = 'linear-gradient(90deg,#ef4444,#f87171)';
+      label = '⚠️ ദുർബലം';
+    } else if (score <= 4) {
+      color = 'linear-gradient(90deg,#f59e0b,#fbbf24)';
+      label = '👍 മിതം';
+    } else {
+      color = 'linear-gradient(90deg,#059669,#34d399)';
+      label = '💪 ശക്തം';
+    }
+
+    bar.style.width = percent + '%';
+    bar.style.background = color;
+    txt.style.color = score <= 2 ? '#f87171' : score <= 4 ? '#fbbf24' : '#34d399';
+    txt.textContent = label;
+
+    // Check match if confirm has value
+    var confirm = document.getElementById('confirmPassword');
+    if (confirm && confirm.value) {
+      window.checkPwdMatch();
+    }
+  };
+
+  /* ─────────────────────────────────────────────────── */
+  /* Check passwords match                              */
+  /* ─────────────────────────────────────────────────── */
+  window.checkPwdMatch = function() {
+    var pwd = document.getElementById('newPassword');
+    var confirm = document.getElementById('confirmPassword');
+    var txt = document.getElementById('pwdMatchText');
+    if (!pwd || !confirm || !txt) return;
+
+    if (!confirm.value) {
+      txt.textContent = '';
+      return;
+    }
+
+    if (pwd.value === confirm.value) {
+      txt.textContent = '✅ Password ഒത്തു';
+      txt.style.color = '#34d399';
+    } else {
+      txt.textContent = '❌ Password ഒത്തിട്ടില്ല';
+      txt.style.color = '#f87171';
+    }
+  };
+
+  /* ─────────────────────────────────────────────────── */
+  /* Toggle password visibility                         */
+  /* ─────────────────────────────────────────────────── */
+  window.togglePwd = function(inputId, eyeId) {
+    var inp = document.getElementById(inputId);
+    var eye = document.getElementById(eyeId);
+    if (!inp || !eye) return;
+
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      eye.className = 'fas fa-eye-slash';
+    } else {
+      inp.type = 'password';
+      eye.className = 'fas fa-eye';
+    }
+  };
+
+  /* ─────────────────────────────────────────────────── */
+  /* Show password setup modal                          */
+  /* ─────────────────────────────────────────────────── */
+  window.showPasswordSetup = function(student) {
+    window._pendingStudent = student;
+
+    // Set name
+    var nameEl = document.getElementById('pwdSetupName');
+    if (nameEl) {
+      var firstName = (student.name || 'Student').split(' ')[0];
+      nameEl.textContent = firstName;
+    }
+
+    // Clear fields
+    var pwd = document.getElementById('newPassword');
+    var confirm = document.getElementById('confirmPassword');
+    if (pwd) pwd.value = '';
+    if (confirm) confirm.value = '';
+
+    var bar = document.getElementById('pwdStrengthBar');
+    if (bar) bar.style.width = '0%';
+    var txt1 = document.getElementById('pwdStrengthText');
+    if (txt1) txt1.textContent = '';
+    var txt2 = document.getElementById('pwdMatchText');
+    if (txt2) txt2.textContent = '';
+
+    // Show modal
+    document.getElementById('passwordSetupModal').style.display = 'flex';
+
+    // Focus on password
+    setTimeout(function() {
+      if (pwd) pwd.focus();
+    }, 300);
+  };
+
+  /* ─────────────────────────────────────────────────── */
+  /* Cancel / Go back                                   */
+  /* ─────────────────────────────────────────────────── */
+  window.cancelPasswordSetup = function() {
+    document.getElementById('passwordSetupModal').style.display = 'none';
+    window._pendingStudent = null;
+    // Focus back on login
+    var sid = document.getElementById('studentId');
+    if (sid) {
+      sid.value = '';
+      sid.focus();
+    }
+  };
+
+  /* ─────────────────────────────────────────────────── */
+  /* Save new password                                  */
+  /* ─────────────────────────────────────────────────── */
+  window.saveNewPassword = async function() {
+    var student = window._pendingStudent;
+    if (!student) return;
+
+    var pwd = document.getElementById('newPassword').value;
+    var confirm = document.getElementById('confirmPassword').value;
+
+    // Validation
+    if (!pwd || pwd.length < 6) {
+      if (typeof showToast === 'function') {
+        showToast('⚠️ കുറഞ്ഞത് 6 അക്ഷരം വേണം', 'error');
+      }
+      return;
+    }
+
+    if (pwd !== confirm) {
+      if (typeof showToast === 'function') {
+        showToast('⚠️ Passwords ഒത്തിട്ടില്ല', 'error');
+      }
+      return;
+    }
+
+    // Common passwords check
+    var weakPasswords = ['123456', 'password', 'noor123', 'qwerty', '111111', 'abc123'];
+    if (weakPasswords.indexOf(pwd.toLowerCase()) > -1) {
+      if (typeof showToast === 'function') {
+        showToast('⚠️ ഈ password ഉപയോഗിക്കരുത്', 'error');
+      }
+      return;
+    }
+
+    var btn = document.getElementById('pwdSetupBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> സേവ് ചെയ്യുന്നു...';
+    }
+
+    try {
+      // Save to database
+      var r = await supabaseClient
+        .from('students')
+        .update({
+          password: pwd,
+          password_set: true,
+          password_set_at: new Date().toISOString()
+        })
+        .eq('studentid', student.studentid);
+
+      if (r.error) throw r.error;
+
+      // Success celebration
+      if (typeof confetti !== 'undefined') {
+        confetti({
+          particleCount: 150,
+          spread: 90,
+          origin: { y: 0.6 },
+          colors: ['#6C5CE7', '#00cec9', '#fd79a8', '#fdcb6e']
+        });
+      }
+
+      if (typeof window.showAchievement === 'function') {
+        window.showAchievement('🔐', 'Password സേവ് ചെയ്തു!', 'ഇനി login ചെയ്യാം');
+      } else if (typeof showToast === 'function') {
+        showToast('✅ Password സേവ് ചെയ്തു!', 'success');
+      }
+
+      // Close modal
+      document.getElementById('passwordSetupModal').style.display = 'none';
+
+      // Log the student in
+      setTimeout(function() {
+        if (typeof window.completeLogin === 'function') {
+          window.completeLogin(student);
+        }
+      }, 800);
+
+      window._pendingStudent = null;
+
+    } catch(err) {
+      console.error('Password save error:', err);
+      if (typeof showToast === 'function') {
+        showToast('❌ ' + err.message, 'error');
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle" style="color:#ffd966;"></i><span>Password സേവ് ചെയ്ത് Login ചെയ്യുക</span>';
+      }
+    }
+  };
+
+  // Live match check
+  document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'confirmPassword') {
+      window.checkPwdMatch();
+    }
+  });
+
+  console.log('✅ Password Setup System loaded');
+
+})();
+</script>
+<script>
+window.completeLogin = async function(student) {
+  try {
+    await loadAllSettings();
+    currentUser = {
+      studentId: student.studentid,
+      name: student.name || 'Student',
+      class: student.class || 'N/A',
+      roll: student.roll || '',
+      overallGrade: student.overallgrade || null,
+      attendance: 0,
+      rank: student.rank || null,
+      moralValuesGrade: student.moralvaluesgrade || null,
+      moralValuesSub: student.moralvaluessub || null,
+      performance: student.performance || 0,
+      avatar: student.name ? student.name.charAt(0).toUpperCase() : 'S',
+      email: student.email || '',
+      phone: student.phone || '',
+      fatherName: student.fathername || '',
+      dob: student.dob || '',
+      photo: student.photo || '',
+      password: student.password || '',
+      bloodGroup: student.bloodgroup || '',
+      address: student.address || '',
+      trendAttendance: student.trendattendance || null,
+      rankChange: student.rankchange || null,
+      isBestStudent: student.isbeststudent || false,
+      extraCurricularGrade: student.extracurriculargrade || null,
+      totalMarks: student.totalmarks || 0,
+      madrasaRank: student.madrasarank || null,
+      parentMobile: student.parent_mobile || student.phone || ''
+    };
+
+    isAdminMode = false;
+    localStorage.setItem('noor_session', JSON.stringify(currentUser));
+    localStorage.setItem('noor_last_id', student.studentid);
+    
+    loginSection.style.display = 'none';
+    adminSection.style.display = 'none';
+    dashboardSection.style.display = 'block';
+    document.body.classList.add('logged-in');
+
+    updateDashboardUI();
+    loadActivitiesAndCalendar();
+    loadStudentBalance();
+    loadStudentNotifications();
+    await refreshStudentAttendance();
+    loadOverallMadrasaRank();
+    loadTopWinners();
+    applyStudentPortalVisibility();
+    subscribeNotifications();
+    showAIAssistant();
+    await initNewFeatures();
+    enableBodyScroll();
+
+    // Push notifications
+    setTimeout(async function() {
+      if (Notification.permission === 'granted') {
+        await subscribePushNotifications();
+      } else if (Notification.permission === 'default') {
+        var perm = await Notification.requestPermission();
+        if (perm === 'granted') await subscribePushNotifications();
+      }
+    }, 2500);
+
+    // Track login
+    try {
+      if (typeof trackLogin === 'function') {
+        await trackLogin(student);
+      }
+    } catch(e) {}
+
+    showToast('Welcome ' + currentUser.name + ' ✨', 'success');
+
+  } catch(err) {
+    console.error('completeLogin error:', err);
+    showToast('❌ ' + err.message, 'error');
+  }
+};
+
+// Shake animation
+var shakeStyle = document.createElement('style');
+shakeStyle.textContent = '@keyframes shake {0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}';
+document.head.appendChild(shakeStyle);
+</script>
+<script>
+window.resetStudentPassword = async function(sid, name) {
+  var newPwd = prompt(
+    '🔑 ' + name + ' — പുതിയ password നൽകുക\n\n' +
+    '(അല്ലെങ്കിൽ OK അമർത്തിയാൽ default "noor123" ആകും)',
+    ''
+  );
+  
+  if (newPwd === null) return; // cancelled
+  
+  var finalPwd = newPwd.trim() || 'noor123';
+  var wasDefault = finalPwd === 'noor123';
+
+  if (!confirm('✅ Confirm: ' + name + '\n\nNew password: ' + finalPwd + 
+               (wasDefault ? '\n\n⚠️ അടുത്ത login-ൽ student തന്നെ പുതിയ password create ചെയ്യേണ്ടതാണ്.' : ''))) {
+    return;
+  }
+
+  try {
+    var r = await supabaseClient.from('students').update({
+      password: finalPwd,
+      password_set: !wasDefault,
+      password_set_at: wasDefault ? null : new Date().toISOString(),
+      password_reset_by: 'Admin'
+    }).eq('studentid', sid);
+
+    if (r.error) throw r.error;
+
+    showToast('✅ Password reset ചെയ്തു', 'success');
+    if (typeof confetti !== 'undefined') {
+      confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+    }
+    loadStudentsForAdmin();
+
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
+  }
+};
 </script>
 </body>
 </html>
