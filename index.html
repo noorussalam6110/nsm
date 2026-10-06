@@ -1152,6 +1152,818 @@ body.light-mode .new-badge{border-color:#fff;box-shadow:0 4px 12px -2px rgba(239
     animation-duration: .01ms !important;transition-duration: .01ms !important;
   }
 }
+/* ═══════════════════════════════════════════════════ */
+/* 📱 ADMIN PANEL — COMPLETE MOBILE FIX              */
+/* ═══════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+
+  /* Container padding */
+  #adminSection {
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+  #adminSection .container {
+    padding: 8px !important;
+    max-width: 100% !important;
+  }
+
+  /* Header — sticky compact */
+  #adminSection .dashboard-header-glow {
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+    margin-bottom: 12px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+  #adminSection .dashboard-header-glow h2 {
+    font-size: 1rem !important;
+  }
+  #adminSection .dashboard-header-glow .header-meta {
+    font-size: .68rem !important;
+  }
+
+  /* Class selector — full width big touch */
+  .class-selector-panel {
+    padding: 16px 14px !important;
+    border-radius: 18px !important;
+    margin-bottom: 14px !important;
+  }
+  .class-selector-panel h3 {
+    font-size: 1rem !important;
+    margin-bottom: 6px !important;
+  }
+  .class-selector-panel p {
+    font-size: .76rem !important;
+    margin-bottom: 12px !important;
+  }
+  .class-selector-panel select {
+    width: 100% !important;
+    min-width: 100% !important;
+    padding: 14px 40px 14px 16px !important;
+    font-size: 16px !important;
+    min-height: 52px !important;
+    background-position: right 14px center !important;
+  }
+  .class-info-badge {
+    font-size: .82rem !important;
+    padding: 10px 18px !important;
+    margin-top: 10px !important;
+  }
+
+  /* TABS — Horizontal scroll with snap */
+  .admin-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 6px !important;
+    padding: 6px 0 12px !important;
+    margin-bottom: 8px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    scroll-snap-type: x proximity !important;
+    scroll-padding-left: 8px !important;
+  }
+  .admin-tabs::-webkit-scrollbar { display: none !important; }
+  .admin-tab {
+    flex-shrink: 0 !important;
+    scroll-snap-align: start !important;
+    padding: 10px 16px !important;
+    font-size: .76rem !important;
+    min-height: 42px !important;
+    white-space: nowrap !important;
+    border-radius: 30px !important;
+  }
+
+  /* Tab content container */
+  .admin-tab-content {
+    padding: 0 !important;
+    margin-top: 6px !important;
+  }
+
+  /* Toolbar — Stack vertically */
+  .admin-toolbar {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 12px !important;
+    background: #fff !important;
+    border-radius: 16px !important;
+    margin-bottom: 14px !important;
+    border: 1px solid rgba(180,200,230,.5) !important;
+  }
+  .admin-toolbar label {
+    font-size: .76rem !important;
+    margin-bottom: 2px !important;
+    display: block !important;
+  }
+  .admin-toolbar input,
+  .admin-toolbar select,
+  .admin-toolbar .modal-form-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 46px !important;
+    font-size: 16px !important;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+  }
+  .admin-toolbar .btn-load,
+  .admin-toolbar .btn-update,
+  .admin-toolbar .btn-pdf,
+  .admin-toolbar .btn-cancel {
+    width: 100% !important;
+    min-height: 48px !important;
+    justify-content: center !important;
+    font-size: .86rem !important;
+    border-radius: 12px !important;
+  }
+  /* Button rows — horizontal wrap for pairs */
+  .admin-toolbar > div {
+    display: flex !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+  .admin-toolbar > div > * {
+    flex: 1 1 auto !important;
+    min-width: 140px !important;
+  }
+
+  /* Summary cards — grid 2 columns */
+  .admin-summary {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    margin-bottom: 12px !important;
+  }
+  .admin-summary .stat {
+    padding: 12px 10px !important;
+    border-radius: 14px !important;
+  }
+  .admin-summary .stat .num {
+    font-size: 1.1rem !important;
+  }
+  .admin-summary .stat .label {
+    font-size: .56rem !important;
+    margin-top: 4px !important;
+  }
+
+  /* ═══ TABLES → CARD VIEW ═══ */
+  .admin-table-wrap {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 8px 0 !important;
+    overflow-x: visible !important;
+    border-radius: 0 !important;
+  }
+  .admin-table-wrap table {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    background: transparent !important;
+    border-collapse: separate !important;
+  }
+  .admin-table-wrap thead { display: none !important; }
+  .admin-table-wrap tbody { display: block !important; width: 100% !important; }
+
+  .admin-table-wrap tr {
+    display: block !important;
+    background: #fff !important;
+    border: 1px solid rgba(180,200,230,.6) !important;
+    border-radius: 16px !important;
+    padding: 14px !important;
+    margin-bottom: 10px !important;
+    box-shadow: 0 4px 14px -8px rgba(0,0,0,.1) !important;
+    position: relative !important;
+  }
+
+  .admin-table-wrap td {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 7px 0 !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(100,116,139,.08) !important;
+    font-size: .85rem !important;
+    text-align: right !important;
+    min-height: 36px !important;
+    word-break: break-word !important;
+    color: #0f172a !important;
+  }
+  .admin-table-wrap td:last-child {
+    border-bottom: none !important;
+    border-top: 1px solid rgba(100,116,139,.12) !important;
+    padding-top: 12px !important;
+    margin-top: 6px !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  .admin-table-wrap td::before {
+    content: attr(data-label) !important;
+    font-weight: 800 !important;
+    font-size: .66rem !important;
+    color: #1e40af !important;
+    text-transform: uppercase !important;
+    letter-spacing: .6px !important;
+    text-align: left !important;
+    flex-shrink: 0 !important;
+    padding-right: 8px !important;
+  }
+  .admin-table-wrap td:not([data-label])::before { content: none !important; }
+
+  .admin-table-wrap td input[type="number"],
+  .admin-table-wrap td input[type="text"],
+  .admin-table-wrap td select {
+    width: 100px !important;
+    max-width: 120px !important;
+    margin-left: auto !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    padding: 8px 10px !important;
+    min-height: 40px !important;
+  }
+
+  .admin-table-wrap td .btn-sm {
+    min-height: 40px !important;
+    min-width: 42px !important;
+    font-size: .8rem !important;
+    padding: 8px 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .admin-table-wrap td img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  /* Class header rows */
+  .admin-table-wrap tr[style*="background:linear-gradient"] {
+    padding: 12px 14px !important;
+    background: linear-gradient(100deg,#1e40af,#2563eb) !important;
+    border-radius: 12px !important;
+    margin: 12px 0 8px !important;
+  }
+  .admin-table-wrap tr[style*="background:linear-gradient"] td {
+    display: block !important;
+    padding: 0 !important;
+    text-align: left !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: .88rem !important;
+  }
+
+  /* Marks entry — keep scrollable */
+  #marksWrap .admin-table-wrap {
+    overflow-x: auto !important;
+    padding: 4px !important;
+    border: 1px solid rgba(180,200,230,.5) !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+  }
+  #marksWrap .admin-table-wrap table {
+    display: table !important;
+    min-width: max-content !important;
+  }
+  #marksWrap .admin-table-wrap thead { display: table-header-group !important; }
+  #marksWrap .admin-table-wrap tr {
+    display: table-row !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  #marksWrap .admin-table-wrap td {
+    display: table-cell !important;
+    padding: 8px !important;
+    text-align: center !important;
+    min-height: 0 !important;
+  }
+  #marksWrap .admin-table-wrap td::before { content: none !important; }
+
+  /* Settings Panel */
+  #adminSettingsTab {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #adminSettingsTab > div {
+    padding: 14px !important;
+    border-radius: 16px !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Settings — all cards */
+  #adminSettingsTab .mb-4 {
+    padding: 14px !important;
+    border-radius: 14px !important;
+    margin-bottom: 12px !important;
+  }
+  #adminSettingsTab h5 {
+    font-size: .9rem !important;
+    margin-bottom: 10px !important;
+  }
+  #adminSettingsTab input,
+  #adminSettingsTab textarea,
+  #adminSettingsTab select {
+    font-size: 16px !important;
+    min-height: 46px !important;
+    width: 100% !important;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+  }
+  #adminSettingsTab textarea {
+    min-height: 100px !important;
+  }
+  #adminSettingsTab .btn-update,
+  #adminSettingsTab .btn-load,
+  #adminSettingsTab .btn-cancel {
+    width: 100% !important;
+    min-height: 48px !important;
+    justify-content: center !important;
+    font-size: .86rem !important;
+    border-radius: 12px !important;
+    margin-top: 8px !important;
+  }
+  #adminSettingsTab .row > [class*="col-"] {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+  /* Vis toggle grid */
+  .visibility-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+  .vis-toggle {
+    padding: 10px 12px !important;
+    min-height: 46px !important;
+    border-radius: 12px !important;
+  }
+  .vis-toggle .vis-name {
+    font-size: .72rem !important;
+  }
+
+  /* Back/Exit buttons — sticky */
+  #adminSection .btn-exit,
+  #adminSection .btn-load {
+    min-height: 42px !important;
+    font-size: .8rem !important;
+    padding: 10px 16px !important;
+  }
+
+  /* Alert banner */
+  .admin-view-banner {
+    top: 8px !important;
+    font-size: .74rem !important;
+    padding: 8px 14px !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+
+  /* Fee parents — special grid */
+  .fee-child-row {
+    display: block !important;
+    padding: 14px !important;
+    background: #f8fafc !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(100,116,139,.15) !important;
+    margin-bottom: 10px !important;
+    position: relative !important;
+  }
+  .fee-child-row input {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+  .fee-child-row button {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 400px) {
+  .admin-summary { grid-template-columns: 1fr !important; }
+  .admin-tab { padding: 8px 12px !important; font-size: .7rem !important; }
+  .class-selector-panel select { font-size: 15px !important; }
+}
+/* Friend Search Chips */
+.friend-class-chip {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 30px;
+  background: #f1f5f9;
+  border: 1.5px solid rgba(100,116,139,.2);
+  color: #475569;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .72rem;
+  cursor: pointer;
+  transition: .2s;
+  white-space: nowrap;
+}
+.friend-class-chip.active {
+  background: linear-gradient(100deg, #22c55e, #10b981);
+  color: #fff;
+  border-color: transparent;
+}
+.friend-class-chip:hover:not(.active) {
+  background: #e2e8f0;
+}
+
+/* Friend result card */
+.friend-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #fff;
+  border: 1.4px solid rgba(100,116,139,.15);
+  border-radius: 14px;
+  margin-bottom: 8px;
+  transition: .2s;
+}
+.friend-result-item:hover {
+  border-color: rgba(34,197,94,.4);
+  background: #f0fdf4;
+  transform: translateX(3px);
+}
+.friend-result-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #3b8bff, #22d3ee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.friend-result-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.friend-result-info { flex: 1; min-width: 0; }
+.friend-result-name {
+  font-size: .88rem;
+  font-weight: 800;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.friend-result-meta {
+  font-size: .72rem;
+  color: #64748b;
+  margin-top: 3px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.friend-result-meta span {
+  background: #eff6ff;
+  color: #1e40af;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: .66rem;
+}
+.friend-add-btn {
+  padding: 8px 14px;
+  border-radius: 30px;
+  border: none;
+  background: linear-gradient(100deg, #22c55e, #10b981);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .74rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.friend-add-btn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+.friend-add-btn.friends {
+  background: linear-gradient(100deg, #0891b2, #22d3ee);
+}
+.friend-add-btn.pending {
+  background: linear-gradient(100deg, #f59e0b, #fbbf24);
+}
+/* ═══════════════════════════════════════════════════ */
+/* 📱 LOGIN PAGE — MOBILE FRIENDLY v2                */
+/* ═══════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Login wrapper — full height scroll */
+  .nsm-login-wrapper {
+    height: auto !important;
+    min-height: 100dvh !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Navbar hidden on mobile */
+  .nsm-navbar { display: none !important; }
+
+  /* Ticker */
+  .nsm-ticker {
+    height: 38px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Body wrapper */
+  .nsm-body {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* HERO — Compact but visible */
+  .nsm-hero {
+    flex: 0 0 auto !important;
+    min-height: 220px !important;
+    height: 220px !important;
+    max-height: 220px !important;
+    padding: 24px 22px !important;
+    border-radius: 0 0 28px 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    overflow: hidden !important;
+    position: relative !important;
+    background:
+      linear-gradient(135deg, rgba(5,14,43,.5), rgba(3,8,28,.65)),
+      url('https://i.postimg.cc/BQvBmzbf/madrasa.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    margin-bottom: 0 !important;
+  }
+
+  .nsm-hero-content {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    position: relative !important;
+    z-index: 3 !important;
+  }
+
+  .nsm-hero-quote-mark { display: none !important; }
+
+  .nsm-hero-content::before {
+    content: '"' !important;
+    display: block !important;
+    font-family: Georgia, serif !important;
+    font-size: 3.5rem !important;
+    line-height: .7 !important;
+    color: rgba(251,191,36,.7) !important;
+    font-weight: 900 !important;
+    margin: 0 0 6px 0 !important;
+    text-shadow: 0 0 24px rgba(251,191,36,.6), 0 2px 8px rgba(0,0,0,.8) !important;
+  }
+
+  .nsm-hero-title {
+    font-size: 1.4rem !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    text-shadow: 0 2px 12px rgba(0,0,0,.95) !important;
+  }
+  .nsm-hero-highlight {
+    font-size: 1.4rem !important;
+    color: #ffd966 !important;
+  }
+
+  .nsm-hero-sub,
+  .nsm-hero-chips { display: none !important; }
+
+  .nsm-hero-deco {
+    font-size: 5rem !important;
+    bottom: -15px !important;
+    right: -10px !important;
+    opacity: .12 !important;
+  }
+
+  .nsm-hero::after {
+    content: '' !important;
+    position: absolute !important;
+    left: 8% !important;
+    right: 8% !important;
+    bottom: 8px !important;
+    height: 2.5px !important;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.9) 12%, #fff 50%, rgba(255,255,255,.9) 88%, transparent) !important;
+    box-shadow: 0 0 14px rgba(255,255,255,.7), 0 0 30px rgba(212,175,55,.5) !important;
+    border-radius: 3px !important;
+    z-index: 20 !important;
+  }
+
+  /* LOGIN SIDE */
+  .nsm-login-side {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 22px 16px 30px !important;
+    margin-top: -20px !important;
+    z-index: 5 !important;
+    position: relative !important;
+    background:
+      linear-gradient(135deg, rgba(5,14,43,.65), rgba(3,8,28,.8)),
+      url('https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=1600&q=80') !important;
+    background-size: cover !important;
+    background-position: center !important;
+  }
+  .nsm-login-side::before,
+  .nsm-login-side::after { display: none !important; }
+
+  /* CARD — full width, clean */
+  .nsm-card {
+    width: 100% !important;
+    max-width: 440px !important;
+    padding: 22px 20px 18px !important;
+    border-radius: 24px !important;
+    margin: 0 auto !important;
+    max-height: none !important;
+    background: linear-gradient(155deg, rgba(255,255,255,.2), rgba(255,255,255,.08)) !important;
+  }
+
+  .nsm-card-header {
+    margin-bottom: 14px !important;
+  }
+  .nsm-card-logo {
+    width: 62px !important;
+    height: 62px !important;
+    margin-bottom: 10px !important;
+  }
+  .nsm-card-title {
+    font-size: 1rem !important;
+    letter-spacing: 1px !important;
+  }
+  .nsm-card-sub {
+    font-size: .62rem !important;
+    letter-spacing: 2.5px !important;
+  }
+
+  /* Tabs */
+  .nsm-tabs {
+    padding: 3px !important;
+    margin-bottom: 14px !important;
+  }
+  .nsm-tab {
+    padding: 10px 6px !important;
+    font-size: .72rem !important;
+    min-height: 40px !important;
+  }
+  .nsm-tab i { font-size: .82rem !important; }
+
+  /* Form */
+  .nsm-form { gap: 12px !important; }
+  .nsm-field { gap: 6px !important; }
+  .nsm-label { font-size: .8rem !important; }
+
+  .nsm-input-wrap {
+    min-height: 50px !important;
+    padding: 0 14px !important;
+    border-radius: 14px !important;
+  }
+  .nsm-input {
+    padding: 13px 0 !important;
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100% !important;
+  }
+  .nsm-input::placeholder {
+    font-size: 14px !important;
+  }
+  .nsm-input#studentId {
+    font-size: 16px !important;
+    letter-spacing: 2px !important;
+  }
+
+  .nsm-hint {
+    font-size: .68rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .nsm-btn-primary {
+    padding: 14px 20px !important;
+    font-size: .9rem !important;
+    min-height: 52px !important;
+    border-radius: 14px !important;
+  }
+  .nsm-btn-secondary {
+    padding: 12px 16px !important;
+    font-size: .84rem !important;
+    min-height: 48px !important;
+    border-radius: 14px !important;
+  }
+
+  .nsm-divider { margin: 8px 0 !important; }
+
+  .nsm-card-footer {
+    margin-top: 14px !important;
+    padding-top: 12px !important;
+  }
+  .nsm-footer-chips {
+    gap: 6px !important;
+  }
+  .nsm-footer-chips span {
+    font-size: .56rem !important;
+    padding: 4px 10px !important;
+  }
+
+  .nsm-copyright {
+    margin-top: 12px !important;
+    font-size: .62rem !important;
+  }
+}
+
+/* Small phones */
+@media (max-width: 400px) {
+  .nsm-hero {
+    height: 180px !important;
+    min-height: 180px !important;
+    max-height: 180px !important;
+    padding: 20px 18px !important;
+  }
+  .nsm-hero-title,
+  .nsm-hero-highlight {
+    font-size: 1.15rem !important;
+  }
+  .nsm-hero-content::before {
+    font-size: 3rem !important;
+  }
+  .nsm-card {
+    padding: 18px 16px 14px !important;
+  }
+  .nsm-card-logo {
+    width: 54px !important;
+    height: 54px !important;
+  }
+  .nsm-card-title {
+    font-size: .92rem !important;
+  }
+  .nsm-tab {
+    font-size: .66rem !important;
+    padding: 8px 4px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* 📱 ADMIN MOBILE — Additional Fixes               */
+/* ═══════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Admin header compact */
+  #adminSection .dashboard-header-glow {
+    padding: 12px 14px !important;
+    border-radius: 0 0 24px 24px !important;
+    margin: -8px -8px 14px -8px !important;
+  }
+
+  /* Admin FAB hidden */
+  #adminSection ~ .ai-fab,
+  body:has(#adminSection[style*="block"]) .ai-fab {
+    display: none !important;
+  }
+
+  /* Admin view banner mobile */
+  .admin-view-banner {
+    left: 10px !important;
+    right: 10px !important;
+    transform: none !important;
+    padding: 10px 14px !important;
+    font-size: .74rem !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    text-align: center !important;
+  }
+  .admin-view-banner button {
+    width: 100% !important;
+  }
+
+  /* Settings section— fix padding */
+  #adminSettingsTab > div {
+    padding: 12px !important;
+  }
+}
 </style>
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 🔤 MALAYALAM FONT FOR PDF — v25.0                       -->
@@ -3935,230 +4747,226 @@ setTimeout(loadMalayalamFontForPDF, 2000);
 </div>
 
   <!-- Settings Tab -->
-  <div id="adminSettingsTab" class="admin-tab-content" style="display:none;margin-top:24px;">
-    <div style="padding:20px;background:#f8fafc;border-radius:20px;max-width:920px;margin:0 auto;border:1px solid rgba(180,200,230,.5);">
+<div id="adminSettingsTab" class="admin-tab-content" style="display:none;margin-top:24px;">
+<div style="padding:20px;background:#f8fafc;border-radius:20px;max-width:920px;margin:0 auto;border:1px solid rgba(180,200,230,.5);">
 
-      <div class="d-flex justify-content-between mb-4 flex-wrap gap-2">
-        <h4 class="text-white mb-0" style="font-size:1.1rem;color:#0f172a!important;"><i class="fas fa-cog" style="color:#0891b2"></i> Settings</h4>
-        <button class="btn-cancel" style="padding:8px 18px;font-size:.8rem;" onclick="closeSettingsTab()"><i class="fas fa-arrow-left"></i> Back</button>
-      </div>
+  <!-- Header -->
+  <div class="d-flex justify-content-between mb-4 flex-wrap gap-2">
+    <h4 style="font-size:1.1rem;color:#0f172a;margin:0;"><i class="fas fa-cog" style="color:#0891b2"></i> Settings</h4>
+    <button class="btn-cancel" style="padding:8px 18px;font-size:.8rem;" onclick="closeSettingsTab()"><i class="fas fa-arrow-left"></i> Back</button>
+  </div>
 
-      <!-- Admin Password -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🔑 Admin Password</h5>
-        <input type="text" id="newAdminPassword" class="modal-form-input mb-2" placeholder="New password" />
-        <small style="color:#64748b;">Current: <span id="currentAdminPwd" style="color:#0891b2;font-weight:800;">MADRASA2026</span></small>
-        <button class="btn-update mt-3" onclick="changeAdminPassword()"><i class="fas fa-key"></i> Change</button>
-      </div>
+  <!-- 🔐 1. ADMIN PASSWORD -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🔑 Admin Password</h5>
+    <input type="text" id="newAdminPassword" class="modal-form-input mb-2" placeholder="New password (min 6 chars)">
+    <small style="color:#64748b;display:block;margin-bottom:10px;">Current: <span id="currentAdminPwd" style="color:#0891b2;font-weight:800;">MADRASA2026</span></small>
+    <button class="btn-update" onclick="changeAdminPassword()"><i class="fas fa-key"></i> Change Password</button>
+  </div>
 
-      <!-- Swadar Name -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">👨‍🏫 Swadar Muallim Name</h5>
-        <input type="text" id="settingsSwadarName" class="modal-form-input" />
-        <button class="btn-update mt-3" onclick="saveSwadarName()">Save</button>
-      </div>
+  <!-- 👨‍🏫 2. SWADAR MUALLIM -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">👨‍🏫 Swadar Muallim Name</h5>
+    <input type="text" id="settingsSwadarName" class="modal-form-input" placeholder="Full name">
+    <button class="btn-update mt-3" onclick="saveSwadarName()"><i class="fas fa-save"></i> Save</button>
+  </div>
 
-      <!-- Class Teachers -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📚 Class-wise Teachers</h5>
-        <p style="color:#64748b;font-size:.78rem;margin-bottom:8px;">Format: <code style="color:#1e40af;">class: teacher_name</code></p>
-        <textarea id="settingsClassTeachers" class="modal-form-input" style="min-height:180px;font-family:monospace;font-size:.85rem;"></textarea>
-        <button class="btn-update mt-3" onclick="saveClassTeachers()">Save</button>
-      </div>
+  <!-- 📚 3. CLASS TEACHERS -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📚 Class-wise Teachers</h5>
+    <p style="color:#64748b;font-size:.76rem;margin-bottom:8px;">Format: <code style="color:#1e40af;">class: teacher_name</code> (one per line)</p>
+    <textarea id="settingsClassTeachers" class="modal-form-input" style="min-height:160px;font-family:monospace;font-size:.82rem;" placeholder="1: Teacher Name&#10;2: Teacher Name"></textarea>
+    <button class="btn-update mt-3" onclick="saveClassTeachers()"><i class="fas fa-save"></i> Save</button>
+  </div>
 
-      <!-- Class + Exam Subjects -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📚 Class + Exam-wise Subjects</h5>
-        <div style="background:#eff6ff;border:1px solid rgba(59,130,246,.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:.74rem;color:#1e40af;line-height:1.7;">
-          <i class="fas fa-lightbulb"></i> <b>എങ്ങനെ ഉപയോഗിക്കാം:</b><br>
-          1️⃣ Class തിരഞ്ഞെടുക്കുക<br>
-          2️⃣ 📝 Exams list-ൽ നിന്ന് exams auto-ആയി ഇവിടെ വരും<br>
-          3️⃣ ഓരോ പരീക്ഷയ്ക്കും വിഷയങ്ങൾ comma-ൽ നൽകുക<br>
-          4️⃣ <b>Default</b> row = എല്ലാ പരീക്ഷകൾക്കും common subjects
-        </div>
-        <div class="row g-2 mb-3">
-          <div class="col-md-6">
-            <label style="color:#475569;font-size:.78rem;">🎓 Class</label>
-            <select id="settingsSubjectClassSelect" class="modal-form-input" onchange="renderClassExamSubjectsUI()"></select>
-          </div>
-          <div class="col-md-6">
-            <label style="color:#475569;font-size:.78rem;">📋 Bulk Copy (optional)</label>
-            <div class="d-flex gap-2">
-              <select id="settingsSubjectCopyFrom" class="modal-form-input" style="flex:1;">
-                <option value="">Copy from class...</option>
-              </select>
-              <button type="button" class="btn-load" onclick="copyClassSubjectsFrom()" style="padding:9px 14px;"><i class="fas fa-copy"></i></button>
-            </div>
-          </div>
-        </div>
-        <div id="settingsSubjectExamsArea" style="background:#f8fafc;padding:14px;border-radius:14px;border:1px solid rgba(180,200,230,.5);min-height:100px;">
-          <div style="color:#64748b;text-align:center;padding:20px;font-size:.82rem;">Class തിരഞ്ഞെടുക്കുക...</div>
-        </div>
-        <div class="d-flex gap-2 mt-3 flex-wrap">
-          <button class="btn-update" onclick="saveClassSubjectsUI()"><i class="fas fa-save"></i> Save Subjects</button>
-          <button class="btn-load" onclick="previewSubjectMatrix()"><i class="fas fa-eye"></i> Preview Matrix</button>
-        </div>
-        <textarea id="settingsClassSubjects" style="display:none;"></textarea>
-      </div>
+  <!-- 📝 4. EXAMS LIST -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📝 Exam Names (comma separated)</h5>
+    <input type="text" id="settingsExams" class="modal-form-input" placeholder="First Term,Second Term,Annual">
+    <button class="btn-update mt-3" onclick="saveSetting('examsList','settingsExams')"><i class="fas fa-save"></i> Save</button>
+  </div>
 
-      <!-- Exams -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📝 Exams (comma separated)</h5>
-        <input type="text" id="settingsExams" class="modal-form-input" />
-        <button class="btn-update mt-3" onclick="saveSetting('examsList','settingsExams')">Save</button>
-      </div>
-
-      <!-- Moral Traits -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🌟 Moral Traits</h5>
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">🌐 Default</label>
-        <input type="text" id="settingsTraits" class="modal-form-input mb-2" placeholder="Discipline,Respect,Honesty,Punctuality,Cleanliness">
-        <button class="btn-update mb-3" onclick="saveSetting('traitsList','settingsTraits')"><i class="fas fa-save"></i> Save Default</button>
-        <hr style="border-color:rgba(100,116,139,.15);margin:14px 0;">
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">🎯 Per-Class Override</label>
-        <textarea id="settingsClassTraits" class="modal-form-input" style="min-height:140px;font-family:monospace;font-size:.82rem;"></textarea>
-        <button class="btn-update mt-3" onclick="saveClassTraits()"><i class="fas fa-save"></i> Save Class Traits</button>
-      </div>
-
-      <!-- Min Withdrawal -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">💰 Minimum Withdrawal</h5>
-        <input type="number" id="settingsMinWithdraw" class="modal-form-input" />
-        <button class="btn-update mt-3" onclick="saveSetting('minWithdraw','settingsMinWithdraw')">Save</button>
-      </div>
-
-      <!-- Headings -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📝 Custom Headings</h5>
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">Extra-Curricular Title</label>
-        <input type="text" id="settingsHeadingExtra" class="modal-form-input mb-2">
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">Overall Rank Title</label>
-        <input type="text" id="settingsHeadingOverallRank" class="modal-form-input mb-2">
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">Monthly Progress Title</label>
-        <input type="text" id="settingsHeadingMonthly" class="modal-form-input mb-2">
-        <button class="btn-update mt-2" onclick="saveHeadings()"><i class="fas fa-save"></i> Save Headings</button>
-      </div>
-
-      <!-- Exam Countdown -->
-      <div class="mb-4" style="background:linear-gradient(135deg,#fef2f2,#fffbeb);padding:16px;border-radius:16px;border:1px solid rgba(239,68,68,.3);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">⏰ Exam Countdown Setting</h5>
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">Exam Name</label>
-        <input type="text" id="settingsExamName" class="modal-form-input mb-2" placeholder="e.g., Annual Exam 2026">
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">Exam Date</label>
-        <input type="date" id="settingsExamDate" class="modal-form-input mb-2">
-        <div class="d-flex gap-2 mt-2">
-          <button class="btn-update" onclick="saveExamCountdown()"><i class="fas fa-save"></i> Save</button>
-          <button class="btn-cancel" onclick="clearExamCountdown()"><i class="fas fa-trash"></i> Clear</button>
-        </div>
-      </div>
-
-      <!-- Daily Greeting -->
-      <div class="mb-4" style="background:linear-gradient(135deg,#ecfeff,#eff6ff);padding:16px;border-radius:16px;border:1.5px solid rgba(34,211,238,.35);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:8px;">🌅 Daily Greeting Message</h5>
-        <p style="color:#64748b;font-size:.78rem;margin-bottom:8px;">എല്ലാ ദിവസവും രാവിലെ 6-ന് students-ന് അയക്കുന്ന message</p>
-        <textarea id="settingsGreetingMsg" class="modal-form-input mb-2" style="min-height:100px;font-size:.86rem;" maxlength="200" placeholder="Blank ആയാൽ default greetings rotate ചെയ്യും..."></textarea>
-        <small style="color:#64748b;display:block;margin-bottom:10px;font-size:.68rem;">
-          <i class="fas fa-lightbulb" style="color:#b45309;"></i> Blank ആയാൽ 7 default greetings ഓരോ ദിവസവും rotate ആകും
-        </small>
-        <button class="btn-update" onclick="saveDailyGreeting()"><i class="fas fa-save"></i> Save</button>
-        <button class="btn-cancel" style="padding:11px 22px;font-size:.85rem;margin-left:6px;" onclick="clearDailyGreeting()"><i class="fas fa-eraser"></i> Clear</button>
-      </div>
-
-      <!-- Per-Class Extra Categories -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📊 Per-Class Extra-Curricular Categories</h5>
-        <textarea id="settingsClassExtraCategories" class="modal-form-input" style="min-height:180px;font-family:monospace;font-size:.85rem;"></textarea>
-        <button class="btn-update mt-3" onclick="saveClassExtraCategories()"><i class="fas fa-save"></i> Save Categories</button>
-      </div>
-
-      <!-- Result Publish Time -->
-      <div class="mb-4" style="background:linear-gradient(135deg,#fef3c7,#eff6ff);padding:16px;border-radius:16px;border:1px solid rgba(180,83,9,.3);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">⏰ Result Publish Time</h5>
-        <input type="datetime-local" id="settingsResultTime" class="modal-form-input" />
-        <small style="color:#64748b;display:block;margin-top:8px;">Current: <span id="currentResultTime">Not set</span></small>
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn-update" onclick="saveResultPublishTime()"><i class="fas fa-clock"></i> Set</button>
-          <button class="btn-cancel" onclick="clearResultPublishTime()"><i class="fas fa-trash"></i> Clear</button>
-        </div>
-      </div>
-
-      <!-- Signatures -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">✍️ Digital Signatures</h5>
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">Swadar Muallim Signature</label>
-        <input type="file" id="swadarSignUpload" accept="image/*" class="modal-form-input mb-2" style="padding:.55rem;">
-        <div id="swadarSignPreview" class="mb-3"></div>
-        <div class="d-flex gap-2 mb-3">
-          <button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="uploadSignature('swadar')">Save</button>
-          <button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearSignature('swadar')">Clear</button>
-        </div>
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">Class Teacher Signatures</label>
-        <div class="row g-2">
-          <div class="col-md-4">
-            <select id="classSignSelect" class="modal-form-input">
-              <option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option>
-              <option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option>
-              <option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option>
-              <option value="10">Class 10</option>
-            </select>
-          </div>
-          <div class="col-md-8">
-            <input type="file" id="classSignUpload" accept="image/*" class="modal-form-input" style="padding:.55rem;">
-          </div>
-        </div>
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="uploadClassSignature()">Save</button>
-          <button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearClassSignature()">Clear This Class</button>
-        </div>
-      </div>
-
-      <!-- Background Images -->
-      <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🖼️ Background Images</h5>
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">ID Card Background URL</label>
-        <input type="url" id="settingsIdBgUrl" class="modal-form-input mb-2" placeholder="https://...">
-        <div class="d-flex gap-2 mb-3">
-          <button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="saveBgUrl('id')">Save</button>
-          <button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearBgUrl('id')">Clear</button>
-        </div>
-        <label style="color:#475569;font-size:.78rem;display:block;margin-bottom:4px;">Topper Poster Background URL</label>
-        <input type="url" id="settingsTopperBgUrl" class="modal-form-input mb-2" placeholder="https://...">
-        <div class="d-flex gap-2">
-          <button class="btn-update" style="padding:8px 20px;font-size:.8rem;" onclick="saveBgUrl('topper')">Save</button>
-          <button class="btn-cancel" style="padding:8px 20px;font-size:.8rem;" onclick="clearBgUrl('topper')">Clear</button>
-        </div>
-      </div>
-
-      <!-- Portal Visibility -->
-      <div class="mb-4" style="background:linear-gradient(135deg,#fef3c7,#eff6ff);padding:16px;border-radius:16px;border:1.5px solid rgba(180,83,9,.35);">
-        <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🎛️ Student Portal Visibility</h5>
-        <div style="background:#fff;padding:14px;border-radius:14px;border:1px solid rgba(180,200,230,.5);margin-bottom:12px;">
-          <div style="font-weight:800;color:#0891b2;font-size:.82rem;margin-bottom:10px;"><i class="fas fa-layer-group"></i> Main Sections</div>
-          <div class="visibility-grid" id="visSectionsGrid"></div>
-        </div>
-        <div style="background:#fff;padding:14px;border-radius:14px;border:1px solid rgba(180,200,230,.5);margin-bottom:12px;">
-          <div style="font-weight:800;color:#b45309;font-size:.82rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
-            <span><i class="fas fa-bolt"></i> Quick Actions</span>
-            <span style="display:flex;gap:6px;flex-wrap:wrap;">
-              <button type="button" class="btn-load" style="padding:4px 10px;font-size:.68rem;" onclick="toggleAllQuickActions(true)">All ON</button>
-              <button type="button" class="btn-cancel" style="padding:4px 10px;font-size:.68rem;" onclick="toggleAllQuickActions(false)">All OFF</button>
-            </span>
-          </div>
-          <div class="visibility-grid" id="visActionsGrid"></div>
-        </div>
-        <div class="d-flex gap-2 flex-wrap mt-2">
-          <button class="btn-update" onclick="saveStudentPortalVisibility()"><i class="fas fa-save"></i> Save</button>
-          <button class="btn-cancel" onclick="resetStudentPortalVisibility()"><i class="fas fa-rotate-left"></i> Reset</button>
-          <button class="btn-load" onclick="applyStudentPortalVisibility(true)"><i class="fas fa-eye"></i> Preview</button>
-        </div>
-      </div>
-
-      <!-- DB Stats -->
-      <h5 style="color:#0f172a;margin-top:24px;margin-bottom:12px;font-size:.95rem;"><i class="fas fa-database" style="color:#0891b2"></i> Database Stats</h5>
-      <div id="dbStatsContent"></div>
-      <button class="btn-load mt-3" onclick="loadDBStats()"><i class="fas fa-sync-alt"></i> Refresh</button>
-
+  <!-- 📚 5. CLASS + EXAM SUBJECTS -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📚 Class + Exam-wise Subjects</h5>
+    <div style="background:#eff6ff;border:1px solid rgba(59,130,246,.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:.72rem;color:#1e40af;line-height:1.6;">
+      <i class="fas fa-lightbulb"></i> Class തിരഞ്ഞെടുക്കുക → Exams list-ൽ നിന്ന് subjects auto-ആയി വരും
     </div>
+    <div class="row g-2 mb-3">
+      <div class="col-12">
+        <label style="color:#475569;font-size:.78rem;">🎓 Select Class</label>
+        <select id="settingsSubjectClassSelect" class="modal-form-input" onchange="renderClassExamSubjectsUI()"></select>
+      </div>
+      <div class="col-12">
+        <label style="color:#475569;font-size:.78rem;">📋 Copy From (optional)</label>
+        <div class="d-flex gap-2">
+          <select id="settingsSubjectCopyFrom" class="modal-form-input" style="flex:1;"></select>
+          <button type="button" class="btn-load" onclick="copyClassSubjectsFrom()"><i class="fas fa-copy"></i></button>
+        </div>
+      </div>
+    </div>
+    <div id="settingsSubjectExamsArea" style="background:#f8fafc;padding:14px;border-radius:14px;border:1px solid rgba(180,200,230,.5);min-height:100px;">
+      <div style="color:#64748b;text-align:center;padding:20px;font-size:.82rem;">Class തിരഞ്ഞെടുക്കുക...</div>
+    </div>
+    <div class="d-flex gap-2 mt-3 flex-wrap">
+      <button class="btn-update" onclick="saveClassSubjectsUI()"><i class="fas fa-save"></i> Save</button>
+      <button class="btn-load" onclick="previewSubjectMatrix()"><i class="fas fa-eye"></i> Preview</button>
+    </div>
+    <textarea id="settingsClassSubjects" style="display:none;"></textarea>
+  </div>
+
+  <!-- 🌟 6. MORAL VALUES -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🌟 Moral Traits</h5>
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">🌐 Default Traits</label>
+    <input type="text" id="settingsTraits" class="modal-form-input mb-3" placeholder="Discipline,Respect,Honesty,Punctuality,Cleanliness">
+    <button class="btn-update mb-3" onclick="saveSetting('traitsList','settingsTraits')"><i class="fas fa-save"></i> Save Default</button>
+    <hr style="border-color:rgba(100,116,139,.15);margin:14px 0;">
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">🎯 Per-Class Override</label>
+    <textarea id="settingsClassTraits" class="modal-form-input" style="min-height:120px;font-family:monospace;font-size:.82rem;" placeholder="1: Discipline,Respect&#10;5: Discipline,Respect,Honesty"></textarea>
+    <button class="btn-update mt-3" onclick="saveClassTraits()"><i class="fas fa-save"></i> Save Class Traits</button>
+  </div>
+
+  <!-- 🎨 7. EXTRA CURRICULAR CATEGORIES -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🎨 Extra-Curricular Categories</h5>
+    <p style="color:#64748b;font-size:.76rem;margin-bottom:8px;">Format: <code style="color:#1e40af;">class: cat1,cat2,cat3</code></p>
+    <textarea id="settingsClassExtraCategories" class="modal-form-input" style="min-height:140px;font-family:monospace;font-size:.82rem;" placeholder="5: writing,reading,speech&#10;6: writing,reading,speech,art"></textarea>
+    <button class="btn-update mt-3" onclick="saveClassExtraCategories()"><i class="fas fa-save"></i> Save Categories</button>
+  </div>
+
+  <!-- 💰 8. MIN WITHDRAWAL -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">💰 Minimum Withdrawal (₹)</h5>
+    <input type="number" id="settingsMinWithdraw" class="modal-form-input" placeholder="100">
+    <button class="btn-update mt-3" onclick="saveSetting('minWithdraw','settingsMinWithdraw')"><i class="fas fa-save"></i> Save</button>
+  </div>
+
+  <!-- 📝 9. CUSTOM HEADINGS -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">📝 Custom Section Headings</h5>
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">Extra-Curricular Title</label>
+    <input type="text" id="settingsHeadingExtra" class="modal-form-input mb-3">
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">Overall Rank Title</label>
+    <input type="text" id="settingsHeadingOverallRank" class="modal-form-input mb-3">
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">Monthly Progress Title</label>
+    <input type="text" id="settingsHeadingMonthly" class="modal-form-input mb-3">
+    <button class="btn-update" onclick="saveHeadings()"><i class="fas fa-save"></i> Save Headings</button>
+  </div>
+
+  <!-- ⏰ 10. EXAM COUNTDOWN -->
+  <div class="mb-4" style="background:linear-gradient(135deg,#fef2f2,#fffbeb);padding:16px;border-radius:16px;border:1px solid rgba(239,68,68,.3);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">⏰ Exam Countdown</h5>
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">Exam Name</label>
+    <input type="text" id="settingsExamName" class="modal-form-input mb-3" placeholder="e.g., Annual Exam 2026">
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">Exam Date</label>
+    <input type="date" id="settingsExamDate" class="modal-form-input mb-3">
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn-update" onclick="saveExamCountdown()"><i class="fas fa-save"></i> Save</button>
+      <button class="btn-cancel" onclick="clearExamCountdown()"><i class="fas fa-trash"></i> Clear</button>
+    </div>
+  </div>
+
+  <!-- 🌅 11. DAILY GREETING -->
+  <div class="mb-4" style="background:linear-gradient(135deg,#ecfeff,#eff6ff);padding:16px;border-radius:16px;border:1.5px solid rgba(34,211,238,.35);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:8px;">🌅 Daily Greeting Message</h5>
+    <p style="color:#64748b;font-size:.76rem;margin-bottom:8px;">Students-ന് daily message</p>
+    <textarea id="settingsGreetingMsg" class="modal-form-input mb-2" style="min-height:90px;" maxlength="200" placeholder="Blank ആയാൽ default greetings rotate ചെയ്യും"></textarea>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn-update" onclick="saveDailyGreeting()"><i class="fas fa-save"></i> Save</button>
+      <button class="btn-cancel" onclick="clearDailyGreeting()"><i class="fas fa-eraser"></i> Clear</button>
+    </div>
+  </div>
+
+  <!-- ⏰ 12. RESULT PUBLISH TIME -->
+  <div class="mb-4" style="background:linear-gradient(135deg,#fef3c7,#eff6ff);padding:16px;border-radius:16px;border:1px solid rgba(180,83,9,.3);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">⏰ Result Publish Time</h5>
+    <input type="datetime-local" id="settingsResultTime" class="modal-form-input mb-2">
+    <small style="color:#64748b;display:block;margin-bottom:10px;">Current: <span id="currentResultTime">Not set</span></small>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn-update" onclick="saveResultPublishTime()"><i class="fas fa-clock"></i> Set</button>
+      <button class="btn-cancel" onclick="clearResultPublishTime()"><i class="fas fa-trash"></i> Clear</button>
+    </div>
+  </div>
+
+  <!-- ✍️ 13. SIGNATURES -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">✍️ Digital Signatures</h5>
+
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">Swadar Muallim Signature</label>
+    <input type="file" id="swadarSignUpload" accept="image/*" class="modal-form-input mb-2" style="padding:10px;">
+    <div id="swadarSignPreview" class="mb-3"></div>
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+      <button class="btn-update" onclick="uploadSignature('swadar')"><i class="fas fa-upload"></i> Save</button>
+      <button class="btn-cancel" onclick="clearSignature('swadar')"><i class="fas fa-trash"></i> Clear</button>
+    </div>
+
+    <hr style="border-color:rgba(100,116,139,.15);margin:14px 0;">
+
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">Class Teacher Signatures</label>
+    <select id="classSignSelect" class="modal-form-input mb-2">
+      <option value="1">Class 1</option><option value="2">Class 2</option>
+      <option value="3">Class 3</option><option value="4">Class 4</option>
+      <option value="5">Class 5</option><option value="6">Class 6</option>
+      <option value="7">Class 7</option><option value="8">Class 8</option>
+      <option value="9">Class 9</option><option value="10">Class 10</option>
+    </select>
+    <input type="file" id="classSignUpload" accept="image/*" class="modal-form-input mb-2" style="padding:10px;">
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn-update" onclick="uploadClassSignature()"><i class="fas fa-upload"></i> Save</button>
+      <button class="btn-cancel" onclick="clearClassSignature()"><i class="fas fa-trash"></i> Clear</button>
+    </div>
+  </div>
+
+  <!-- 🖼️ 14. BACKGROUND IMAGES -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🖼️ Background Images</h5>
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">ID Card Background URL</label>
+    <input type="url" id="settingsIdBgUrl" class="modal-form-input mb-2" placeholder="https://...">
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+      <button class="btn-update" onclick="saveBgUrl('id')"><i class="fas fa-save"></i> Save</button>
+      <button class="btn-cancel" onclick="clearBgUrl('id')"><i class="fas fa-trash"></i> Clear</button>
+    </div>
+    <label style="color:#475569;font-size:.76rem;display:block;margin-bottom:4px;">Topper Poster Background URL</label>
+    <input type="url" id="settingsTopperBgUrl" class="modal-form-input mb-2" placeholder="https://...">
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn-update" onclick="saveBgUrl('topper')"><i class="fas fa-save"></i> Save</button>
+      <button class="btn-cancel" onclick="clearBgUrl('topper')"><i class="fas fa-trash"></i> Clear</button>
+    </div>
+  </div>
+
+  <!-- 🎛️ 15. PORTAL VISIBILITY -->
+  <div class="mb-4" style="background:linear-gradient(135deg,#fef3c7,#eff6ff);padding:16px;border-radius:16px;border:1.5px solid rgba(180,83,9,.35);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;">🎛️ Student Portal Visibility</h5>
+
+    <div style="background:#fff;padding:14px;border-radius:14px;border:1px solid rgba(180,200,230,.5);margin-bottom:12px;">
+      <div style="font-weight:800;color:#0891b2;font-size:.82rem;margin-bottom:10px;"><i class="fas fa-layer-group"></i> Main Sections</div>
+      <div class="visibility-grid" id="visSectionsGrid"></div>
+    </div>
+
+    <div style="background:#fff;padding:14px;border-radius:14px;border:1px solid rgba(180,200,230,.5);margin-bottom:12px;">
+      <div style="font-weight:800;color:#b45309;font-size:.82rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+        <span><i class="fas fa-bolt"></i> Quick Actions</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button type="button" class="btn-load" style="padding:4px 10px;font-size:.68rem;" onclick="toggleAllQuickActions(true)">All ON</button>
+          <button type="button" class="btn-cancel" style="padding:4px 10px;font-size:.68rem;" onclick="toggleAllQuickActions(false)">All OFF</button>
+        </span>
+      </div>
+      <div class="visibility-grid" id="visActionsGrid"></div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn-update" onclick="saveStudentPortalVisibility()"><i class="fas fa-save"></i> Save</button>
+      <button class="btn-cancel" onclick="resetStudentPortalVisibility()"><i class="fas fa-rotate-left"></i> Reset</button>
+      <button class="btn-load" onclick="applyStudentPortalVisibility(true)"><i class="fas fa-eye"></i> Preview</button>
+    </div>
+  </div>
+
+  <!-- 📊 16. DB STATS -->
+  <div class="mb-4" style="background:#fff;padding:16px;border-radius:16px;border:1px solid rgba(180,200,230,.5);">
+    <h5 style="color:#0f172a;font-size:.95rem;margin-bottom:12px;"><i class="fas fa-database" style="color:#0891b2"></i> Database Stats</h5>
+    <div id="dbStatsContent"></div>
+    <button class="btn-load mt-3" onclick="loadDBStats()"><i class="fas fa-sync-alt"></i> Refresh</button>
   </div>
 
 </div>
@@ -18067,26 +18875,59 @@ body.modal-open .chat-fab { display: none !important; }
 <!-- 👥 ADD FRIEND MODAL                                      -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <div id="addFriendModal" class="add-friend-modal">
-  <div class="add-friend-card">
-    <h3><i class="fas fa-user-plus"></i> Add Friend</h3>
-    <p class="add-friend-sub">Student ID നൽകി friend request അയക്കൂ</p>
-    
-    <input type="text" id="addFriendInput" class="add-friend-input" 
-           placeholder="e.g., NSM001" maxlength="20"
-           oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');">
-    
-    <button class="add-friend-btn" onclick="window.sendFriendRequest()">
-      <i class="fas fa-paper-plane"></i> Send Request
-    </button>
+  <div class="add-friend-card" style="position:relative;">
+    <button onclick="closeAddFriendModal()" style="position:absolute;top:16px;right:16px;background:#f1f5f9;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1rem;color:#475569;z-index:5;">✕</button>
+
+    <h3><i class="fas fa-user-plus"></i> കൂട്ടുകാരെ കണ്ടെത്തുക</h3>
+    <p class="add-friend-sub">പേര്, ക്ലാസ്, അല്ലെങ്കിൽ ID ഉപയോഗിച്ച് search ചെയ്യൂ</p>
+
+    <!-- 🔍 SEARCH BOX -->
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div style="flex:1;position:relative;">
+        <i class="fas fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;"></i>
+        <input type="text" id="friendSearchInput" class="add-friend-input"
+               placeholder="പേര് / ID / ക്ലാസ്..."
+               style="padding-left:42px;text-transform:none;letter-spacing:0;margin-bottom:0;"
+               oninput="searchStudentsForFriend(this.value)"
+               autocomplete="off">
+      </div>
+      <button onclick="clearFriendSearch()" style="background:#f1f5f9;border:none;width:52px;border-radius:14px;color:#475569;font-size:1rem;cursor:pointer;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Class filter chips -->
+    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;-webkit-overflow-scrolling:touch;scrollbar-width:none;" id="classFilterChips">
+      <button class="friend-class-chip active" data-class="all" onclick="filterByClass('all')">🌟 All</button>
+      <button class="friend-class-chip" data-class="1" onclick="filterByClass('1')">C1</button>
+      <button class="friend-class-chip" data-class="2" onclick="filterByClass('2')">C2</button>
+      <button class="friend-class-chip" data-class="3" onclick="filterByClass('3')">C3</button>
+      <button class="friend-class-chip" data-class="4" onclick="filterByClass('4')">C4</button>
+      <button class="friend-class-chip" data-class="5" onclick="filterByClass('5')">C5</button>
+      <button class="friend-class-chip" data-class="6" onclick="filterByClass('6')">C6</button>
+      <button class="friend-class-chip" data-class="7" onclick="filterByClass('7')">C7</button>
+      <button class="friend-class-chip" data-class="8" onclick="filterByClass('8')">C8</button>
+      <button class="friend-class-chip" data-class="9" onclick="filterByClass('9')">C9</button>
+      <button class="friend-class-chip" data-class="10" onclick="filterByClass('10')">C10</button>
+    </div>
+
+    <!-- Results -->
+    <div id="friendSearchResults" style="max-height:380px;overflow-y:auto;padding-right:4px;">
+      <div style="text-align:center;padding:30px 20px;color:#94a3b8;font-size:.84rem;">
+        <i class="fas fa-users" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i>
+        <div style="font-weight:800;color:#475569;">Search ചെയ്യൂ</div>
+        <div style="font-size:.76rem;margin-top:4px;">പേരിന്റെ ആദ്യ അക്ഷരം type ചെയ്താൽ results വരും</div>
+      </div>
+    </div>
 
     <div id="addFriendResult" class="add-friend-result"></div>
 
     <div style="margin-top:16px;text-align:center;">
-      <button onclick="window.closeAddFriendModal()" class="btn-cancel" style="padding:10px 24px;border-radius:60px;font-size:.82rem;">Close</button>
+      <button onclick="closeAddFriendModal()" class="btn-cancel" style="padding:10px 24px;border-radius:60px;font-size:.82rem;">Close</button>
     </div>
   </div>
 </div>
-
+  
 <script id="social-pack-js">
 /* ═══════════════════════════════════════════════════════ */
 /* 🎨 AVATAR CUSTOMIZER + 👥 CLASS CHAT v29.0               */
@@ -19961,6 +20802,291 @@ Object.assign(window, {
 });
 
 console.log('✅ Admin Management Extended — Quiz, Rewards, Missions, Survey, Security');
+</script>
+<script>
+// ═══════════════════════════════════════════════════
+// 👥 FRIEND SEARCH — Name / Class / ID
+// ═══════════════════════════════════════════════════
+var _allStudentsCache = [];
+var _filteredStudents = [];
+var _selectedClassFilter = 'all';
+var _friendshipsCache = [];
+
+window.openAddFriendModal = async function() {
+  document.getElementById('addFriendModal').classList.add('open');
+  document.getElementById('friendSearchInput').value = '';
+  _selectedClassFilter = 'all';
+  document.getElementById('friendSearchResults').innerHTML = 
+    '<div style="text-align:center;padding:20px;color:#64748b;"><div class="spinner-sm"></div></div>';
+  
+  // Reset class chips
+  document.querySelectorAll('.friend-class-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.class === 'all');
+  });
+
+  try {
+    // Load all students except self
+    var r = await supabaseClient.from('students')
+      .select('studentid, name, class, roll, photo')
+      .neq('studentid', currentUser.studentId)
+      .order('name');
+    _allStudentsCache = r.data || [];
+
+    // Load existing friendships
+    var fr = await supabaseClient.from('friendships')
+      .select('*')
+      .or('student_a.eq.' + currentUser.studentId + ',student_b.eq.' + currentUser.studentId);
+    _friendshipsCache = fr.data || [];
+
+    // Show all initially
+    _filteredStudents = _allStudentsCache.slice(0, 20);
+    renderFriendResults();
+  } catch(e) {
+    document.getElementById('friendSearchResults').innerHTML = 
+      '<div style="text-align:center;padding:20px;color:#dc2626;font-size:.82rem;">Error: ' + e.message + '</div>';
+  }
+};
+
+window.clearFriendSearch = function() {
+  document.getElementById('friendSearchInput').value = '';
+  _filteredStudents = _allStudentsCache.slice(0, 20);
+  renderFriendResults();
+};
+
+window.filterByClass = function(cls) {
+  _selectedClassFilter = cls;
+  document.querySelectorAll('.friend-class-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.class === cls);
+  });
+  applyFriendFilters();
+};
+
+window.searchStudentsForFriend = function(query) {
+  applyFriendFilters();
+};
+
+function applyFriendFilters() {
+  var q = (document.getElementById('friendSearchInput').value || '').toLowerCase().trim();
+  var cls = _selectedClassFilter;
+
+  _filteredStudents = _allStudentsCache.filter(function(s) {
+    // Class filter
+    if (cls !== 'all' && String(s.class) !== cls) return false;
+
+    // Text search
+    if (!q) return true;
+
+    var searchText = (s.name || '').toLowerCase() + ' ' +
+                     (s.studentid || '').toLowerCase() + ' ' +
+                     (s.class || '');
+    return searchText.indexOf(q) > -1;
+  }).slice(0, 50);
+
+  renderFriendResults();
+}
+
+function renderFriendResults() {
+  var wrap = document.getElementById('friendSearchResults');
+  if (!_filteredStudents.length) {
+    wrap.innerHTML = 
+      '<div style="text-align:center;padding:30px 20px;color:#94a3b8;">' +
+      '<i class="fas fa-search" style="font-size:2rem;opacity:.4;display:block;margin-bottom:10px;"></i>' +
+      '<div style="font-weight:800;color:#475569;">ആരും കണ്ടെത്തിയില്ല</div>' +
+      '<div style="font-size:.76rem;margin-top:4px;">വേറെ പേര് try ചെയ്യൂ</div></div>';
+    return;
+  }
+
+  wrap.innerHTML = _filteredStudents.map(function(s) {
+    var initial = (s.name || 'S').charAt(0).toUpperCase();
+    var hasPhoto = s.photo && (s.photo.startsWith('http') || s.photo.startsWith('data:'));
+    var avatarHtml = hasPhoto ? '<img src="' + s.photo + '" alt="">' : initial;
+
+    // Check friendship status
+    var status = getFriendshipStatus(s.studentid);
+    var btnHtml = '';
+    if (status === 'friends') {
+      btnHtml = '<button class="friend-add-btn friends" disabled><i class="fas fa-check"></i> Friends</button>';
+    } else if (status === 'sent') {
+      btnHtml = '<button class="friend-add-btn pending" disabled><i class="fas fa-clock"></i> Sent</button>';
+    } else if (status === 'received') {
+      btnHtml = '<button class="friend-add-btn" onclick="event.stopPropagation();acceptFriendById(\'' + s.studentid + '\')"><i class="fas fa-check"></i> Accept</button>';
+    } else {
+      btnHtml = '<button class="friend-add-btn" onclick="event.stopPropagation();sendFriendRequestById(\'' + s.studentid + '\',\'' + escapeHtml(s.name).replace(/'/g, "\\'") + '\')"><i class="fas fa-plus"></i> Add</button>';
+    }
+
+    return '<div class="friend-result-item">' +
+      '<div class="friend-result-avatar">' + avatarHtml + '</div>' +
+      '<div class="friend-result-info">' +
+        '<div class="friend-result-name">' + escapeHtml(s.name || 'Student') + '</div>' +
+        '<div class="friend-result-meta">' +
+          '<span>Class ' + escapeHtml(s.class || '—') + '</span>' +
+          (s.roll ? '<span>Roll ' + escapeHtml(s.roll) + '</span>' : '') +
+          '<span>' + escapeHtml(s.studentid) + '</span>' +
+        '</div>' +
+      '</div>' +
+      btnHtml +
+      '</div>';
+  }).join('');
+}
+
+function getFriendshipStatus(studentId) {
+  var f = _friendshipsCache.find(function(x) {
+    return (x.student_a === currentUser.studentId && x.student_b === studentId) ||
+           (x.student_b === currentUser.studentId && x.student_a === studentId);
+  });
+  if (!f) return 'none';
+  if (f.status === 'accepted') return 'friends';
+  if (f.status === 'pending') {
+    return f.requested_by === currentUser.studentId ? 'sent' : 'received';
+  }
+  return 'none';
+}
+
+window.sendFriendRequestById = async function(targetId, targetName) {
+  try {
+    var a = currentUser.studentId < targetId ? currentUser.studentId : targetId;
+    var b = currentUser.studentId < targetId ? targetId : currentUser.studentId;
+
+    var r = await supabaseClient.from('friendships').insert({
+      student_a: a,
+      student_b: b,
+      status: 'pending',
+      requested_by: currentUser.studentId
+    });
+    if (r.error) throw r.error;
+
+    // Update local cache
+    _friendshipsCache.push({
+      student_a: a, student_b: b,
+      status: 'pending',
+      requested_by: currentUser.studentId
+    });
+    renderFriendResults();
+
+    showToast('✅ ' + targetName + '-ന് request അയച്ചു!', 'success');
+    if (typeof confetti !== 'undefined') {
+      confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
+    }
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
+  }
+};
+
+window.acceptFriendById = async function(friendId) {
+  try {
+    var a = currentUser.studentId < friendId ? currentUser.studentId : friendId;
+    var b = currentUser.studentId < friendId ? friendId : currentUser.studentId;
+
+    var r = await supabaseClient.from('friendships')
+      .update({ status: 'accepted', accepted_at: new Date().toISOString() })
+      .eq('student_a', a).eq('student_b', b);
+    if (r.error) throw r.error;
+
+    // Update local
+    var f = _friendshipsCache.find(function(x) {
+      return x.student_a === a && x.student_b === b;
+    });
+    if (f) f.status = 'accepted';
+    renderFriendResults();
+
+    showToast('✅ Friend added!', 'success');
+    if (typeof confetti !== 'undefined') confetti({ particleCount: 80 });
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
+  }
+};
+
+console.log('✅ Friend Search System ready');
+</script>
+<script>
+// ═══════════════════════════════════════════════════
+// 📱 LOGIN MOBILE OPTIMIZATION
+// ═══════════════════════════════════════════════════
+(function() {
+  function fixLoginScroll() {
+    var wrapper = document.querySelector('.nsm-login-wrapper');
+    if (!wrapper) return;
+    if (window.innerWidth <= 900) {
+      wrapper.style.height = 'auto';
+      wrapper.style.maxHeight = 'none';
+      wrapper.style.overflowY = 'auto';
+      document.body.classList.remove('login-active');
+      document.documentElement.style.overflowY = 'auto';
+      document.body.style.overflowY = 'auto';
+      document.body.style.position = '';
+      document.body.style.height = '';
+      document.body.style.maxHeight = '';
+    }
+  }
+  fixLoginScroll();
+  window.addEventListener('resize', fixLoginScroll);
+  window.addEventListener('orientationchange', function() {
+    setTimeout(fixLoginScroll, 200);
+  });
+  setTimeout(fixLoginScroll, 500);
+
+  console.log('✅ Login mobile fix applied');
+})();
+
+// ═══════════════════════════════════════════════════
+// 📱 ADMIN MOBILE — Auto-inject data-labels
+// ═══════════════════════════════════════════════════
+(function() {
+  function autoLabelAdminTables() {
+    if (window.innerWidth > 900) return;
+    document.querySelectorAll('#adminSection .admin-table-wrap table').forEach(function(table) {
+      var headers = [];
+      table.querySelectorAll('thead th').forEach(function(h) {
+        headers.push((h.textContent || '').trim());
+      });
+      if (!headers.length) return;
+      table.querySelectorAll('tbody tr').forEach(function(row) {
+        if (row.querySelector('td[colspan]')) return;
+        row.querySelectorAll('td').forEach(function(cell, i) {
+          if (!cell.hasAttribute('data-label') && headers[i]) {
+            cell.setAttribute('data-label', headers[i]);
+          }
+        });
+      });
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(autoLabelAdminTables, 500); });
+  } else {
+    setTimeout(autoLabelAdminTables, 500);
+  }
+  setTimeout(autoLabelAdminTables, 2000);
+  setTimeout(autoLabelAdminTables, 5000);
+
+  // Watch for table changes
+  if (typeof MutationObserver !== 'undefined') {
+    var obs = new MutationObserver(function() {
+      setTimeout(autoLabelAdminTables, 300);
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+      var adminSection = document.getElementById('adminSection');
+      if (adminSection) {
+        obs.observe(adminSection, { childList: true, subtree: true });
+      }
+    });
+  }
+
+  console.log('✅ Admin table auto-label ready');
+})();
+
+// ═══════════════════════════════════════════════════
+// 📱 ADMIN TABS — Auto scroll active into view
+// ═══════════════════════════════════════════════════
+(function() {
+  document.addEventListener('click', function(e) {
+    var tab = e.target.closest('.admin-tab');
+    if (!tab) return;
+    setTimeout(function() {
+      tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }, 100);
+  });
+  console.log('✅ Admin tab scroll ready');
+})();
 </script>
 </body>
 </html>
