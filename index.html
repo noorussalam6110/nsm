@@ -4412,59 +4412,6 @@ async function aiRespond(q){
 /* ============================================================ */
 /* 🆕 GEMINI-STYLE AI — FULL SCREEN + KEYBOARD HANDLING        */
 /* ============================================================ */
-var _vvListenerAttached=false;
-
-function setupAIKeyboardHandler(){
-  if(_vvListenerAttached)return;
-  var vv=window.visualViewport;
-  if(!vv)return;
-  _vvListenerAttached=true;
-
-  function onVVResize(){
-    var panel=document.getElementById('aiPanel');
-    var foot=document.getElementById('aiFoot');
-    if(!panel||!panel.classList.contains('open'))return;
-    if(window.innerWidth>900)return;
-
-    var vh=vv.height;
-    var offsetTop=vv.offsetTop;
-    var winH=window.innerHeight;
-    var keyboardOpen=(winH-vh)>120;
-
-    if(keyboardOpen){
-      panel.style.height=vh+'px';
-      panel.style.maxHeight=vh+'px';
-      panel.style.top=offsetTop+'px';
-      panel.style.bottom='auto';
-      if(foot){
-        foot.style.position='absolute';
-        foot.style.top=vh+'px';
-        foot.style.transform='translateY(-100%)';
-        foot.style.bottom='auto';
-      }
-      var body=document.getElementById('aiBody');
-      if(body)setTimeout(function(){body.scrollTop=body.scrollHeight;},80);
-    }else{
-      panel.style.height='';
-      panel.style.maxHeight='';
-      panel.style.top='';
-      panel.style.bottom='';
-      if(foot){
-        foot.style.position='absolute';
-        foot.style.top='';
-        foot.style.transform='';
-        foot.style.bottom='0';
-      }
-    }
-  }
-
-  vv.addEventListener('resize',onVVResize);
-  vv.addEventListener('scroll',onVVResize);
-  window.addEventListener('orientationchange',function(){setTimeout(onVVResize,300);});
-}
-
-document.addEventListener('DOMContentLoaded',setupAIKeyboardHandler);
-setTimeout(setupAIKeyboardHandler,1000);
 
 /* ============================================================ */
 /* 💰 PALATHULLI                                                */
@@ -14804,17 +14751,6 @@ console.log('✅ PART 10 loaded — Quick Action badges active');
   console.log('   → loadSurveyAdmin()');
   console.log('   → toggleSurvey()');
   console.log('   → openSurveyQuestionsForm()');
-})();
-</script>
-<script>
-/* Fix for countNewItems broken filter */
-(function(){
-  // Override the broken function
-  window.countNewItems = function(type){ 
-    // Silent no-op — prevents 400 errors
-    return Promise.resolve(0);
-  };
-  console.log('✅ countNewItems disabled (fixes 400 errors)');
 })();
 </script>
 <script>
