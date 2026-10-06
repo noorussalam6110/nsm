@@ -15961,7 +15961,113 @@ console.log('✅ Fee Admin v3.0 loaded — loadFeeRecordsForAdmin:', typeof wind
         <div id="pwdMatchText" style="font-size:.68rem;margin-top:5px;
              font-weight:700;min-height:14px;"></div>
       </div>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🛡️ SECURITY QUESTION SECTION                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="securityQuestionSection" style="margin-bottom:20px;">
 
+  <div style="background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(59,139,255,.1));
+       border:1.5px solid rgba(34,211,238,.35);
+       border-radius:16px;padding:14px 16px;margin-bottom:16px;">
+    <div style="display:flex;gap:10px;align-items:flex-start;">
+      <i class="fas fa-shield-alt" style="color:#22d3ee;font-size:1.3rem;margin-top:2px;"></i>
+      <div>
+        <div style="color:#fff;font-weight:800;font-size:.88rem;margin-bottom:4px;">
+          🛡️ Security Question
+        </div>
+        <div style="color:#a9cdff;font-size:.74rem;line-height:1.55;">
+          Password മറന്നാൽ ഇത് ഉപയോഗിച്ച് വീണ്ടെടുക്കാം.<br>
+          എളുപ്പം ഓർക്കാൻ പറ്റുന്നതും മറ്റുള്ളവർക്ക് അറിയാത്തതും തിരഞ്ഞെടുക്കുക.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question Selector -->
+  <div style="margin-bottom:14px;">
+    <label style="color:#fff;font-size:.78rem;font-weight:800;
+           display:block;margin-bottom:6px;
+           text-shadow:0 2px 6px rgba(0,0,0,.7);">
+      ❓ Question തിരഞ്ഞെടുക്കുക <span style="color:#ef4444;">*</span>
+    </label>
+    <div style="position:relative;display:flex;align-items:center;
+         background:rgba(255,255,255,.16);
+         border:1.5px solid rgba(255,255,255,.28);
+         border-radius:14px;padding:0 14px;">
+      <i class="fas fa-question-circle" style="color:#ffd966;margin-right:10px;"></i>
+      <select id="secQuestionSelect" 
+              style="flex:1;border:none;outline:none;background:transparent;
+                     padding:13px 0;color:#fff;font-family:inherit;
+                     font-size:.94rem;font-weight:700;cursor:pointer;
+                     -webkit-appearance:none;">
+        <option value="" style="background:#0a1a3f;color:#fff;">-- Question തിരഞ്ഞെടുക്കുക --</option>
+        <option value="മാതാവിന്റെ പേര് എന്താണ്?" style="background:#0a1a3f;color:#fff;">👩 മാതാവിന്റെ പേര് എന്താണ്?</option>
+        <option value="പിതാവിന്റെ പേര് എന്താണ്?" style="background:#0a1a3f;color:#fff;">👨 പിതാവിന്റെ പേര് എന്താണ്?</option>
+        <option value="ജനനസ്ഥലം എവിടെയാണ്?" style="background:#0a1a3f;color:#fff;">🏠 ജനനസ്ഥലം എവിടെയാണ്?</option>
+        <option value="പ്രിയപ്പെട്ട വിഷയം ഏതാണ്?" style="background:#0a1a3f;color:#fff;">📚 പ്രിയപ്പെട്ട വിഷയം ഏതാണ്?</option>
+        <option value="പ്രിയപ്പെട്ട ഭക്ഷണം ഏതാണ്?" style="background:#0a1a3f;color:#fff;">🍛 പ്രിയപ്പെട്ട ഭക്ഷണം ഏതാണ്?</option>
+        <option value="പ്രിയപ്പെട്ട കളി ഏതാണ്?" style="background:#0a1a3f;color:#fff;">⚽ പ്രിയപ്പെട്ട കളി ഏതാണ്?</option>
+        <option value="പ്രിയപ്പെട്ട നിറം ഏതാണ്?" style="background:#0a1a3f;color:#fff;">🎨 പ്രിയപ്പെട്ട നിറം ഏതാണ്?</option>
+        <option value="വീട്ടിലെ വിലാസം എന്താണ്?" style="background:#0a1a3f;color:#fff;">🏡 വീട്ടിലെ വിലാസം എന്താണ്?</option>
+        <option value="__custom__" style="background:#0a1a3f;color:#ffd966;">✨ Custom Question...</option>
+      </select>
+      <i class="fas fa-chevron-down" style="color:#ffd966;pointer-events:none;"></i>
+    </div>
+
+    <!-- Custom Question Input (hidden by default) -->
+    <div id="customQuestionWrap" style="display:none;margin-top:10px;">
+      <div style="position:relative;display:flex;align-items:center;
+           background:rgba(255,255,255,.16);
+           border:1.5px solid rgba(255,255,255,.28);
+           border-radius:14px;padding:0 14px;">
+        <i class="fas fa-pen" style="color:#ffd966;margin-right:10px;"></i>
+        <input type="text" id="customQuestionInput" 
+               placeholder="നിങ്ങളുടെ സ്വന്തം question"
+               maxlength="100"
+               style="flex:1;border:none;outline:none;background:transparent;
+                      padding:13px 0;color:#fff;font-family:inherit;
+                      font-size:16px;font-weight:700;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Answer Input -->
+  <div style="margin-bottom:14px;">
+    <label style="color:#fff;font-size:.78rem;font-weight:800;
+           display:block;margin-bottom:6px;
+           text-shadow:0 2px 6px rgba(0,0,0,.7);">
+      ✍️ Answer <span style="color:#ef4444;">*</span>
+    </label>
+    <div style="position:relative;display:flex;align-items:center;
+         background:rgba(255,255,255,.16);
+         border:1.5px solid rgba(255,255,255,.28);
+         border-radius:14px;padding:0 14px;">
+      <i class="fas fa-key" style="color:#ffd966;margin-right:10px;"></i>
+      <input type="text" id="secAnswerInput" 
+             placeholder="ഉത്തരം (ഓർക്കാൻ എളുപ്പമുള്ളത്)"
+             autocomplete="off"
+             maxlength="80"
+             style="flex:1;border:none;outline:none;background:transparent;
+                    padding:13px 0;color:#fff;font-family:inherit;
+                    font-size:16px;font-weight:700;">
+    </div>
+    <small style="color:#a9cdff;font-size:.68rem;display:block;margin-top:5px;">
+      <i class="fas fa-info-circle"></i> Capital/Small letters വ്യത്യാസമില്ല — "Kerala" = "kerala"
+    </small>
+  </div>
+
+  <!-- Warning -->
+  <div style="background:rgba(251,191,36,.12);
+       border:1px solid rgba(251,191,36,.35);
+       border-radius:12px;padding:10px 14px;
+       display:flex;gap:10px;align-items:flex-start;">
+    <i class="fas fa-exclamation-triangle" style="color:#fbbf24;margin-top:2px;"></i>
+    <div style="color:#fff;font-size:.72rem;line-height:1.6;">
+      <b>ഓർമ്മയുണ്ടാകണം:</b> ഈ ഉത്തരം പിന്നീട് password recover ചെയ്യാൻ വേണ്ടിവരും. 
+      മറ്റുള്ളവർക്ക് ഊഹിക്കാൻ പറ്റാത്തതും നിങ്ങൾക്ക് ഓർക്കാൻ എളുപ്പമുള്ളതും നൽകുക.
+    </div>
+  </div>
+</div>
       <button type="submit" id="pwdSetupBtn"
               style="width:100%;border:none;padding:15px;border-radius:14px;
                      background:linear-gradient(100deg,#1547a8,#2b7cf0 40%,#22d3ee 75%,#3b8bff);
@@ -16987,6 +17093,855 @@ window.resetStudentPassword = async function(sid, name) {
   });
 
   console.log('✅ Password Reset System v25.0 loaded');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔐 SECURITY QUESTION SYSTEM v25.0                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+
+  console.log('🔐 Loading Security Question System...');
+
+  /* ─────────────────────────────────────────────── */
+  /* 1️⃣ HASHING UTILITY — SHA-256 with Salt          */
+  /* ─────────────────────────────────────────────── */
+  
+  // Generate random salt
+  function generateSalt(length){
+    length = length || 16;
+    var arr = new Uint8Array(length);
+    crypto.getRandomValues(arr);
+    return Array.from(arr, function(b){
+      return b.toString(16).padStart(2, '0');
+    }).join('');
+  }
+
+  // Hash with salt
+  async function hashAnswer(answer, salt){
+    // Normalize: lowercase, trim, remove extra spaces
+    var normalized = String(answer)
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, ' ');
+    
+    var data = new TextEncoder().encode(normalized + '::' + salt);
+    var hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(function(b){
+      return b.toString(16).padStart(2, '0');
+    }).join('');
+  }
+
+  // Compare answer with stored hash
+  async function verifyAnswer(answer, salt, storedHash){
+    var computed = await hashAnswer(answer, salt);
+    return computed === storedHash;
+  }
+
+  // Expose globally
+  window._secHash = { generateSalt: generateSalt, hash: hashAnswer, verify: verifyAnswer };
+
+  /* ─────────────────────────────────────────────── */
+  /* 2️⃣ CUSTOM QUESTION TOGGLE                        */
+  /* ─────────────────────────────────────────────── */
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.id === 'secQuestionSelect'){
+      var wrap = document.getElementById('customQuestionWrap');
+      if(!wrap) return;
+      
+      if(e.target.value === '__custom__'){
+        wrap.style.display = 'block';
+        setTimeout(function(){
+          var inp = document.getElementById('customQuestionInput');
+          if(inp) inp.focus();
+        }, 200);
+      } else {
+        wrap.style.display = 'none';
+      }
+    }
+  });
+
+  /* ─────────────────────────────────────────────── */
+  /* 3️⃣ OVERRIDE saveNewPassword — Add security Q   */
+  /* ─────────────────────────────────────────────── */
+  var _originalSavePwd = window.saveNewPassword;
+  
+  window.saveNewPassword = async function(){
+    var student = window._pendingStudent;
+    if(!student) return;
+
+    // Get password values
+    var pwdInput = document.getElementById('newPassword');
+    var confirmInput = document.getElementById('confirmPassword');
+    var pwd = pwdInput ? pwdInput.value : '';
+    var confirm = confirmInput ? confirmInput.value : '';
+
+    // Password validation
+    if(!pwd || pwd.length < 6){
+      showToast('⚠️ കുറഞ്ഞത് 6 അക്ഷരം വേണം','error');
+      return;
+    }
+    if(pwd !== confirm){
+      showToast('⚠️ Passwords ഒത്തിട്ടില്ല','error');
+      return;
+    }
+
+    var weakPasswords = ['123456', 'password', 'noor123', 'qwerty', '111111', 'abc123'];
+    if(weakPasswords.indexOf(pwd.toLowerCase()) > -1){
+      showToast('⚠️ ഈ password ഉപയോഗിക്കരുത്','error');
+      return;
+    }
+
+    // Security question validation
+    var qSelect = document.getElementById('secQuestionSelect');
+    var customQ = document.getElementById('customQuestionInput');
+    var answerInput = document.getElementById('secAnswerInput');
+
+    if(!qSelect || !answerInput){
+      // Modal-ൽ security section ഇല്ലെങ്കിൽ പഴയ flow use ചെയ്യുക
+      if(typeof _originalSavePwd === 'function'){
+        return _originalSavePwd.apply(this, arguments);
+      }
+      return;
+    }
+
+    var selectedQ = qSelect.value;
+    if(selectedQ === '__custom__'){
+      selectedQ = customQ ? customQ.value.trim() : '';
+    }
+
+    var answer = answerInput.value.trim();
+
+    if(!selectedQ){
+      showToast('⚠️ Security Question തിരഞ്ഞെടുക്കുക','error');
+      qSelect.focus();
+      return;
+    }
+
+    if(!answer || answer.length < 2){
+      showToast('⚠️ Answer നൽകുക (കുറഞ്ഞത് 2 അക്ഷരം)','error');
+      answerInput.focus();
+      return;
+    }
+
+    // Disable button
+    var btn = document.getElementById('pwdSetupBtn');
+    if(btn){
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> സേവ് ചെയ്യുന്നു...';
+    }
+
+    try{
+      // Generate salt & hash answer
+      var salt = generateSalt(16);
+      var answerHash = await hashAnswer(answer, salt);
+
+      // Save everything
+      var r = await supabaseClient.from('students').update({
+        password: pwd,
+        password_set: true,
+        password_set_at: new Date().toISOString(),
+        security_question: selectedQ,
+        security_answer_hash: answerHash,
+        security_answer_salt: salt,
+        security_set_at: new Date().toISOString()
+      }).eq('studentid', student.studentid);
+
+      if(r.error) throw r.error;
+
+      // Success celebration
+      if(typeof confetti !== 'undefined'){
+        confetti({
+          particleCount: 200,
+          spread: 100,
+          origin: { y: .6 },
+          colors: ['#6C5CE7', '#00cec9', '#fd79a8', '#fdcb6e']
+        });
+      }
+
+      if(typeof window.showAchievement === 'function'){
+        window.showAchievement('🛡️', 'Password + Security Setup!', 
+          'ഇനി password മറന്നാലും recover ചെയ്യാം!');
+      } else {
+        showToast('✅ Password + Security Question saved!','success');
+      }
+
+      if(typeof window.spawnSparkles === 'function'){
+        window.spawnSparkles(15);
+      }
+
+      document.getElementById('passwordSetupModal').style.display = 'none';
+
+      setTimeout(function(){
+        if(typeof window.completeLogin === 'function'){
+          window.completeLogin(student);
+        }
+      }, 1000);
+
+      window._pendingStudent = null;
+
+    }catch(err){
+      console.error('Save error:', err);
+      showToast('❌ ' + err.message,'error');
+      if(btn){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle" style="color:#ffd966;"></i><span>Password സേവ് ചെയ്ത് Login ചെയ്യുക</span>';
+      }
+    }
+  };
+
+  /* ─────────────────────────────────────────────── */
+  /* 4️⃣ FORGOT PASSWORD — Security Q Verification   */
+  /* ─────────────────────────────────────────────── */
+  
+  window.showForgotPwdHelp = function(){
+    var m = document.getElementById('forgotModal');
+    if(!m){
+      showToast('Modal loading...','error');
+      return;
+    }
+
+    // Build new UI inside the modal
+    var step1 = document.getElementById('forgotStep1');
+    var step2 = document.getElementById('forgotStep2');
+    var loading = document.getElementById('forgotLoading');
+
+    if(step1){
+      step1.style.display = 'block';
+      step1.innerHTML = 
+        '<div style="text-align:center;margin-bottom:16px;">' +
+          '<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;' +
+               'background:linear-gradient(140deg,#1547a8,#22d3ee);' +
+               'display:flex;align-items:center;justify-content:center;' +
+               'font-size:1.8rem;color:#fff;' +
+               'box-shadow:0 12px 30px -10px rgba(34,211,238,.7);">' +
+            '<i class="fas fa-key"></i>' +
+          '</div>' +
+          '<h4 style="color:#0f172a;font-size:1rem;font-weight:800;margin:0 0 6px;">' +
+            '🔑 Password Recovery' +
+          '</h4>' +
+          '<p style="color:#64748b;font-size:.78rem;margin:0;">' +
+            'Security Question വഴി password വീണ്ടെടുക്കാം' +
+          '</p>' +
+        '</div>' +
+        '<label style="color:#475569;font-size:.78rem;font-weight:700;display:block;margin-bottom:6px;">' +
+          '🆔 Student ID' +
+        '</label>' +
+        '<input type="text" id="forgotStudentId" class="modal-form-input mb-3" ' +
+               'placeholder="ഉദാ: NSM001" autocomplete="off" ' +
+               'oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,\'\')" ' +
+               'style="text-transform:uppercase;letter-spacing:1.5px;font-weight:800;font-size:16px;">' +
+        '<button type="button" id="forgotSubmitBtn" class="btn-gradient w-100" ' +
+                'style="padding:14px;font-size:.9rem;">' +
+          '<i class="fas fa-search"></i> Find Account' +
+        '</button>';
+    }
+    
+    if(step2) step2.style.display = 'none';
+    if(loading) loading.style.display = 'none';
+    
+    m.style.display = 'flex';
+
+    // Attach handler (fresh each time)
+    setTimeout(attachForgotHandler, 100);
+  };
+
+  function attachForgotHandler(){
+    var btn = document.getElementById('forgotSubmitBtn');
+    if(!btn) return;
+
+    // Remove old listeners by cloning
+    var fresh = btn.cloneNode(true);
+    btn.parentNode.replaceChild(fresh, btn);
+
+    fresh.addEventListener('click', handleForgotSubmit);
+  }
+
+  async function handleForgotSubmit(){
+    var inp = document.getElementById('forgotStudentId');
+    if(!inp) return;
+
+    var sid = inp.value.trim().toUpperCase();
+    if(!sid){
+      showToast('Student ID നൽകുക','error');
+      inp.focus();
+      return;
+    }
+
+    // Rate limit
+    if(typeof window.rateLimit === 'function'){
+      if(!window.rateLimit('forgot_' + sid, 5, 10*60*1000)) return;
+    }
+
+    var step1 = document.getElementById('forgotStep1');
+    var loading = document.getElementById('forgotLoading');
+    var step2 = document.getElementById('forgotStep2');
+
+    if(step1) step1.style.display = 'none';
+    if(loading) loading.style.display = 'block';
+
+    try{
+      var r = await supabaseClient
+        .from('students')
+        .select('studentid, name, class, is_blocked, security_question')
+        .eq('studentid', sid)
+        .maybeSingle();
+
+      if(loading) loading.style.display = 'none';
+
+      if(r.error || !r.data){
+        if(step1) step1.style.display = 'block';
+        showToast('❌ Student ID കണ്ടെത്തിയില്ല','error');
+        return;
+      }
+
+      if(r.data.is_blocked === true){
+        if(step1) step1.style.display = 'block';
+        showToast('🚫 Account blocked','error');
+        return;
+      }
+
+      if(!r.data.security_question){
+        if(step1) step1.style.display = 'block';
+        showToast('⚠️ ഈ account-ൽ security question set ചെയ്തിട്ടില്ല','error');
+        setTimeout(function(){
+          alert('🔒 Security Question ലഭ്യമല്ല\n\n' + 
+                r.data.name + '-ന്റെ security question set ചെയ്തിട്ടില്ല.\n\n' +
+                'Password reset ചെയ്യാൻ ഓഫീസിൽ ബന്ധപ്പെടുക:\n📞 +91 70346 78818');
+        }, 400);
+        return;
+      }
+
+      // Student found — show security question
+      showSecurityQuestionStep(r.data, sid);
+
+    }catch(err){
+      if(loading) loading.style.display = 'none';
+      if(step1) step1.style.display = 'block';
+      showToast('❌ ' + err.message,'error');
+    }
+  }
+
+  function showSecurityQuestionStep(student, sid){
+    var step2 = document.getElementById('forgotStep2');
+    if(!step2) return;
+
+    step2.style.display = 'block';
+    step2.innerHTML = 
+      // Student info
+      '<div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);' +
+           'border:1.5px solid rgba(59,130,246,.35);' +
+           'border-radius:14px;padding:12px 14px;margin-bottom:14px;">' +
+        '<div style="display:flex;align-items:center;gap:10px;">' +
+          '<div style="width:42px;height:42px;border-radius:50%;' +
+               'background:linear-gradient(140deg,#1e6be0,#22d3ee);' +
+               'display:flex;align-items:center;justify-content:center;' +
+               'color:#fff;font-weight:900;font-size:1.1rem;flex-shrink:0;">' +
+            (student.name || 'S').charAt(0).toUpperCase() +
+          '</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="color:#0f172a;font-weight:800;font-size:.9rem;">' +
+              escapeHtml(student.name) +
+            '</div>' +
+            '<div style="color:#0891b2;font-size:.72rem;font-weight:700;margin-top:2px;">' +
+              'Class ' + escapeHtml(student.class) + ' • ' + escapeHtml(sid) +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // Security question
+      '<div style="background:linear-gradient(135deg,#fef3c7,#fde68a);' +
+           'border:1.5px solid rgba(180,83,9,.35);' +
+           'border-radius:14px;padding:14px 16px;margin-bottom:14px;">' +
+        '<div style="color:#b45309;font-size:.7rem;font-weight:800;' +
+             'text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">' +
+          '🛡️ Security Question' +
+        '</div>' +
+        '<div style="color:#0f172a;font-weight:800;font-size:.92rem;line-height:1.5;">' +
+          escapeHtml(student.security_question) +
+        '</div>' +
+      '</div>' +
+
+      // Answer input
+      '<label style="color:#475569;font-size:.78rem;font-weight:700;' +
+             'display:block;margin-bottom:6px;">' +
+        '✍️ ഉത്തരം' +
+      '</label>' +
+      '<div style="position:relative;display:flex;align-items:center;' +
+           'background:#f8fafc;border:1.5px solid rgba(100,116,139,.25);' +
+           'border-radius:14px;padding:0 14px;margin-bottom:14px;">' +
+        '<i class="fas fa-key" style="color:#0891b2;margin-right:10px;"></i>' +
+        '<input type="text" id="forgotAnswerInput" ' +
+               'placeholder="ഉത്തരം ടൈപ്പ് ചെയ്യുക" ' +
+               'autocomplete="off" maxlength="80" ' +
+               'style="flex:1;border:none;outline:none;background:transparent;' +
+                      'padding:13px 0;font-family:inherit;font-size:16px;' +
+                      'font-weight:700;color:#0f172a;" ' +
+               'onkeydown="if(event.key===\'Enter\'){event.preventDefault();document.getElementById(\'forgotVerifyBtn\').click();}">' +
+      '</div>' +
+
+      // Buttons
+      '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
+        '<button type="button" onclick="window.showForgotPwdHelp()" ' +
+                'style="flex:0.5;padding:13px;border-radius:12px;' +
+                       'background:#f1f5f9;color:#475569;' +
+                       'border:1.5px solid rgba(100,116,139,.2);' +
+                       'font-family:inherit;font-weight:800;font-size:.82rem;' +
+                       'cursor:pointer;">' +
+          '<i class="fas fa-arrow-left"></i> Back' +
+        '</button>' +
+        '<button type="button" id="forgotVerifyBtn" ' +
+                'style="flex:1;padding:13px;border-radius:12px;' +
+                       'background:linear-gradient(100deg,#059669,#34d399);' +
+                       'color:#fff;border:none;font-family:inherit;' +
+                       'font-weight:800;font-size:.88rem;cursor:pointer;' +
+                       'box-shadow:0 12px 28px -10px rgba(5,150,105,.6);' +
+                       'display:flex;align-items:center;justify-content:center;gap:8px;">' +
+          '<i class="fas fa-check-circle"></i> Verify Answer' +
+        '</button>' +
+      '</div>' +
+
+      '<div id="forgotVerifyResult"></div>' +
+
+      // Attempts counter
+      '<div id="forgotAttemptsInfo" style="text-align:center;' +
+           'font-size:.7rem;color:#94a3b8;margin-top:10px;">' +
+        '<i class="fas fa-shield-alt"></i> ' +
+        'Attempts: <span id="forgotAttemptsLeft">3</span> / 3' +
+      '</div>';
+
+    // Attach verify button
+    setTimeout(function(){
+      var vBtn = document.getElementById('forgotVerifyBtn');
+      if(!vBtn) return;
+
+      vBtn.addEventListener('click', function(){
+        verifySecurityAnswer(student, sid);
+      });
+
+      var aInp = document.getElementById('forgotAnswerInput');
+      if(aInp) setTimeout(function(){ aInp.focus(); }, 250);
+    }, 100);
+  }
+
+  var _verifyAttempts = {};
+
+  async function verifySecurityAnswer(student, sid){
+    var aInput = document.getElementById('forgotAnswerInput');
+    var btn = document.getElementById('forgotVerifyBtn');
+    var result = document.getElementById('forgotVerifyResult');
+    var attemptsEl = document.getElementById('forgotAttemptsLeft');
+
+    if(!aInput || !btn || !result) return;
+
+    var answer = aInput.value.trim();
+    if(!answer){
+      showToast('⚠️ ഉത്തരം നൽകുക','error');
+      aInput.focus();
+      return;
+    }
+
+    // Track attempts
+    var key = 'forgot_verify_' + sid;
+    if(!_verifyAttempts[key]) _verifyAttempts[key] = 0;
+    _verifyAttempts[key]++;
+
+    if(_verifyAttempts[key] > 3){
+      result.innerHTML = 
+        '<div style="background:#fee2e2;color:#dc2626;padding:14px;' +
+             'border-radius:12px;text-align:center;font-size:.84rem;">' +
+          '<i class="fas fa-ban" style="font-size:1.3rem;display:block;margin-bottom:6px;"></i>' +
+          '<b>Too many attempts</b><br>' +
+          '<span style="font-size:.76rem;">10 മിനിറ്റ് കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക</span>' +
+        '</div>';
+      btn.disabled = true;
+      aInput.disabled = true;
+      return;
+    }
+
+    if(attemptsEl) attemptsEl.textContent = Math.max(0, 3 - _verifyAttempts[key]);
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+    try{
+      // Fetch salt & hash
+      var r = await supabaseClient
+        .from('students')
+        .select('security_answer_hash, security_answer_salt')
+        .eq('studentid', sid)
+        .single();
+
+      if(r.error || !r.data){
+        throw new Error('Data fetch failed');
+      }
+
+      var isValid = await verifyAnswer(answer, r.data.security_answer_salt, r.data.security_answer_hash);
+
+      if(!isValid){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify Answer';
+        result.innerHTML = 
+          '<div style="background:#fee2e2;color:#dc2626;padding:12px 14px;' +
+               'border-radius:12px;font-size:.82rem;font-weight:700;' +
+               'display:flex;align-items:center;gap:8px;">' +
+            '<i class="fas fa-times-circle"></i> ❌ ഉത്തരം തെറ്റാണ്. വീണ്ടും ശ്രമിക്കുക.' +
+          '</div>';
+        aInput.value = '';
+        aInput.focus();
+        if(typeof showToast === 'function') showToast('❌ ഉത്തരം തെറ്റാണ്','error');
+        return;
+      }
+
+      // ✅ Answer correct!
+      _verifyAttempts[key] = 0; // Reset
+
+      if(typeof confetti !== 'undefined'){
+        confetti({ particleCount: 100, spread: 80, origin: { y: .6 } });
+      }
+      if(typeof window.spawnSparkles === 'function') window.spawnSparkles(8);
+
+      // Show recovery options
+      result.innerHTML = '';
+      showRecoveryOptions(student, sid);
+
+    }catch(err){
+      console.error(err);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify Answer';
+      result.innerHTML = 
+        '<div style="background:#fee2e2;color:#dc2626;padding:12px;' +
+             'border-radius:12px;font-size:.8rem;">❌ ' + escapeHtml(err.message) + '</div>';
+    }
+  }
+
+  function showRecoveryOptions(student, sid){
+    var step2 = document.getElementById('forgotStep2');
+    if(!step2) return;
+
+    step2.innerHTML = 
+      // Success badge
+      '<div style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);' +
+           'border:1.5px solid rgba(5,150,105,.35);' +
+           'border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;">' +
+        '<div style="width:70px;height:70px;margin:0 auto 12px;border-radius:50%;' +
+             'background:linear-gradient(140deg,#059669,#34d399);' +
+             'display:flex;align-items:center;justify-content:center;' +
+             'font-size:2rem;color:#fff;' +
+             'box-shadow:0 12px 30px -10px rgba(5,150,105,.7);">' +
+          '<i class="fas fa-check-circle"></i>' +
+        '</div>' +
+        '<div style="color:#065f46;font-weight:800;font-size:1rem;margin-bottom:4px;">' +
+          '✅ Verified Successfully!' +
+        '</div>' +
+        '<div style="color:#047857;font-size:.82rem;">' +
+          'ഉത്തരം ശരിയാണ്. ഇനി എന്ത് ചെയ്യണം?' +
+        '</div>' +
+      '</div>' +
+
+      // Option A: Show password
+      '<div style="background:#fff;border:1.5px solid rgba(180,200,230,.6);' +
+           'border-radius:16px;padding:16px;margin-bottom:12px;">' +
+        '<div style="color:#0f172a;font-weight:800;font-size:.9rem;margin-bottom:10px;">' +
+          '🔓 Option A: Password കാണുക' +
+        '</div>' +
+        '<div id="showPasswordArea" style="display:none;background:#fef3c7;' +
+             'border:1px solid rgba(180,83,9,.35);' +
+             'border-radius:12px;padding:12px;margin-bottom:10px;text-align:center;">' +
+          '<div style="color:#b45309;font-size:.7rem;font-weight:800;' +
+               'text-transform:uppercase;margin-bottom:6px;">Your Password</div>' +
+          '<div id="revealedPassword" style="font-family:monospace;font-size:1.2rem;' +
+               'font-weight:900;color:#0f172a;letter-spacing:1px;padding:8px;' +
+               'background:#fff;border-radius:8px;user-select:all;cursor:text;"></div>' +
+          '<button type="button" onclick="window._copyRevealedPwd()" ' +
+                  'style="margin-top:10px;padding:8px 16px;border-radius:20px;' +
+                         'background:#0891b2;color:#fff;border:none;font-weight:800;' +
+                         'font-size:.74rem;cursor:pointer;font-family:inherit;">' +
+            '<i class="fas fa-copy"></i> Copy' +
+          '</button>' +
+        '</div>' +
+        '<button type="button" onclick="window._revealPassword(\'' + sid + '\')" ' +
+                'id="revealPwdBtn" ' +
+                'style="width:100%;padding:12px;border-radius:12px;' +
+                       'background:linear-gradient(100deg,#f59e0b,#fbbf24);' +
+                       'color:#fff;border:none;font-family:inherit;' +
+                       'font-weight:800;font-size:.86rem;cursor:pointer;' +
+                       'display:flex;align-items:center;justify-content:center;gap:8px;">' +
+          '<i class="fas fa-eye"></i> Show Current Password' +
+        '</button>' +
+      '</div>' +
+
+      // Option B: Reset password
+      '<div style="background:#fff;border:1.5px solid rgba(180,200,230,.6);' +
+           'border-radius:16px;padding:16px;margin-bottom:12px;">' +
+        '<div style="color:#0f172a;font-weight:800;font-size:.9rem;margin-bottom:10px;">' +
+          '🔑 Option B: പുതിയ Password സെറ്റ് ചെയ്യുക' +
+        '</div>' +
+        '<div id="resetPwdArea" style="display:none;">' +
+          '<label style="color:#475569;font-size:.76rem;font-weight:700;' +
+                 'display:block;margin-bottom:6px;">പുതിയ Password</label>' +
+          '<div style="position:relative;display:flex;align-items:center;' +
+               'background:#f8fafc;border:1.5px solid rgba(100,116,139,.25);' +
+               'border-radius:12px;padding:0 14px;margin-bottom:10px;">' +
+            '<i class="fas fa-lock" style="color:#0891b2;margin-right:8px;"></i>' +
+            '<input type="password" id="resetNewPwd" placeholder="കുറഞ്ഞത് 6 അക്ഷരം" ' +
+                   'style="flex:1;border:none;outline:none;background:transparent;' +
+                          'padding:12px 0;font-size:16px;font-weight:700;">' +
+            '<i class="fas fa-eye" onclick="(function(e){' +
+                 'var i=document.getElementById(\'resetNewPwd\');' +
+                 'i.type=i.type===\'password\'?\'text\':\'password\';' +
+                 'e.className=i.type===\'text\'?\'fas fa-eye-slash\':\'fas fa-eye\';' +
+               '})(this)" ' +
+               'style="cursor:pointer;color:#0891b2;padding:4px;"></i>' +
+          '</div>' +
+          '<label style="color:#475569;font-size:.76rem;font-weight:700;' +
+                 'display:block;margin-bottom:6px;">Confirm Password</label>' +
+          '<div style="position:relative;display:flex;align-items:center;' +
+               'background:#f8fafc;border:1.5px solid rgba(100,116,139,.25);' +
+               'border-radius:12px;padding:0 14px;margin-bottom:12px;">' +
+            '<i class="fas fa-lock" style="color:#0891b2;margin-right:8px;"></i>' +
+            '<input type="password" id="resetConfirmPwd" placeholder="അതേ password വീണ്ടും" ' +
+                   'style="flex:1;border:none;outline:none;background:transparent;' +
+                          'padding:12px 0;font-size:16px;font-weight:700;">' +
+          '</div>' +
+          '<button type="button" onclick="window._doResetPwd(\'' + sid + '\')" ' +
+                  'id="resetPwdSubmitBtn" ' +
+                  'style="width:100%;padding:12px;border-radius:12px;' +
+                         'background:linear-gradient(100deg,#6C5CE7,#a29bfe);' +
+                         'color:#fff;border:none;font-family:inherit;' +
+                         'font-weight:800;font-size:.86rem;cursor:pointer;' +
+                         'display:flex;align-items:center;justify-content:center;gap:8px;">' +
+            '<i class="fas fa-save"></i> Save New Password' +
+          '</button>' +
+        '</div>' +
+        '<button type="button" onclick="window._toggleResetArea()" ' +
+                'id="resetPwdToggleBtn" ' +
+                'style="width:100%;padding:12px;border-radius:12px;' +
+                       'background:linear-gradient(100deg,#6C5CE7,#4834d4);' +
+                       'color:#fff;border:none;font-family:inherit;' +
+                       'font-weight:800;font-size:.86rem;cursor:pointer;' +
+                       'display:flex;align-items:center;justify-content:center;gap:8px;">' +
+          '<i class="fas fa-redo"></i> Reset Password' +
+        '</button>' +
+      '</div>' +
+
+      // Info
+      '<div style="background:#ecfeff;border:1px solid rgba(8,145,178,.3);' +
+           'border-radius:12px;padding:10px 14px;font-size:.72rem;' +
+           'color:#0891b2;line-height:1.6;margin-bottom:12px;">' +
+        '<i class="fas fa-info-circle"></i> ' +
+        'Security കാരണം ഈ section 5 മിനിറ്റിനുശേഷം close ആകും. ' +
+        'Password പെട്ടെന്ന് save ചെയ്യുക.' +
+      '</div>' +
+
+      '<button type="button" onclick="window._closeForgotAll()" ' +
+              'style="width:100%;padding:12px;border-radius:12px;' +
+                     'background:#f1f5f9;color:#475569;' +
+                     'border:1.5px solid rgba(100,116,139,.2);' +
+                     'font-family:inherit;font-weight:800;font-size:.82rem;' +
+                     'cursor:pointer;">' +
+        '<i class="fas fa-check"></i> Done' +
+      '</button>';
+  }
+
+  /* ─────────────────────────────────────────────── */
+  /* 5️⃣ HELPER — Reveal Password                    */
+  /* ─────────────────────────────────────────────── */
+  var _revealedPwd = null;
+
+  window._revealPassword = async function(sid){
+    var btn = document.getElementById('revealPwdBtn');
+    if(btn){
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    }
+
+    try{
+      var r = await supabaseClient.from('students')
+        .select('password').eq('studentid', sid).single();
+
+      if(r.error || !r.data){
+        throw new Error('Password fetch failed');
+      }
+
+      _revealedPwd = r.data.password || 'noor123';
+
+      var area = document.getElementById('showPasswordArea');
+      var disp = document.getElementById('revealedPassword');
+      if(area) area.style.display = 'block';
+      if(disp) disp.textContent = _revealedPwd;
+
+      if(btn){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Password';
+        btn.onclick = function(){ window._hideRevealedPwd(); };
+      }
+
+      if(typeof showToast === 'function') showToast('🔓 Password revealed','info');
+      if(typeof window.logAudit === 'function'){
+        window.logAudit('REVEAL_PASSWORD', 'students', sid, null, { via: 'security_question' });
+      }
+
+    }catch(err){
+      console.error(err);
+      if(typeof showToast === 'function') showToast('❌ ' + err.message,'error');
+      if(btn){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-eye"></i> Show Current Password';
+      }
+    }
+  };
+
+  window._hideRevealedPwd = function(){
+    var area = document.getElementById('showPasswordArea');
+    var btn = document.getElementById('revealPwdBtn');
+    if(area) area.style.display = 'none';
+    if(btn){
+      btn.innerHTML = '<i class="fas fa-eye"></i> Show Current Password';
+      btn.onclick = function(){
+        var sid = document.getElementById('forgotStudentId') ? 
+                  document.getElementById('forgotStudentId').value.toUpperCase() : '';
+        if(sid) window._revealPassword(sid);
+      };
+    }
+    _revealedPwd = null;
+  };
+
+  window._copyRevealedPwd = function(){
+    if(!_revealedPwd) return;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(_revealedPwd).then(function(){
+        if(typeof showToast === 'function') showToast('📋 Copied!','success');
+      });
+    } else {
+      // Fallback
+      var tmp = document.createElement('textarea');
+      tmp.value = _revealedPwd;
+      document.body.appendChild(tmp);
+      tmp.select();
+      document.execCommand('copy');
+      document.body.removeChild(tmp);
+      if(typeof showToast === 'function') showToast('📋 Copied!','success');
+    }
+  };
+
+  /* ─────────────────────────────────────────────── */
+  /* 6️⃣ HELPER — Reset Password                     */
+  /* ─────────────────────────────────────────────── */
+  window._toggleResetArea = function(){
+    var area = document.getElementById('resetPwdArea');
+    var btn = document.getElementById('resetPwdToggleBtn');
+    if(!area) return;
+
+    if(area.style.display === 'none'){
+      area.style.display = 'block';
+      btn.style.display = 'none';
+      setTimeout(function(){
+        var inp = document.getElementById('resetNewPwd');
+        if(inp) inp.focus();
+      }, 200);
+    } else {
+      area.style.display = 'none';
+      btn.style.display = 'flex';
+    }
+  };
+
+  window._doResetPwd = async function(sid){
+    var newPwd = document.getElementById('resetNewPwd');
+    var confirmPwd = document.getElementById('resetConfirmPwd');
+    var btn = document.getElementById('resetPwdSubmitBtn');
+
+    if(!newPwd || !confirmPwd) return;
+
+    var p1 = newPwd.value.trim();
+    var p2 = confirmPwd.value.trim();
+
+    if(!p1 || p1.length < 6){
+      showToast('⚠️ കുറഞ്ഞത് 6 അക്ഷരം','error');
+      newPwd.focus();
+      return;
+    }
+
+    if(p1 !== p2){
+      showToast('⚠️ Passwords ഒത്തിട്ടില്ല','error');
+      confirmPwd.focus();
+      return;
+    }
+
+    var weak = ['123456','password','noor123','qwerty','111111'];
+    if(weak.indexOf(p1.toLowerCase()) > -1){
+      showToast('⚠️ ഈ password ഉപയോഗിക്കരുത്','error');
+      return;
+    }
+
+    if(btn){
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    }
+
+    try{
+      var r = await supabaseClient.from('students').update({
+        password: p1,
+        password_set: true,
+        password_set_at: new Date().toISOString(),
+        password_reset_by: 'Self-Security-Question'
+      }).eq('studentid', sid);
+
+      if(r.error) throw r.error;
+
+      if(typeof confetti !== 'undefined'){
+        confetti({ particleCount: 150, spread: 90, origin: { y: .6 } });
+      }
+
+      if(typeof window.showAchievement === 'function'){
+        window.showAchievement('✅', 'Password Reset ചെയ്തു!', 'പുതിയ password ഉപയോഗിച്ച് login ചെയ്യുക');
+      } else {
+        showToast('✅ Password reset ചെയ്തു!','success');
+      }
+
+      if(typeof window.logAudit === 'function'){
+        window.logAudit('SELF_RESET_PASSWORD', 'students', sid, null, { via: 'security_question' });
+      }
+
+      setTimeout(function(){
+        window._closeForgotAll();
+        // Focus login form
+        var sidInput = document.getElementById('studentId');
+        var pwdInput = document.getElementById('studentPassword');
+        var pwdField = document.getElementById('passwordField');
+
+        if(sidInput){
+          sidInput.value = sid;
+          if(pwdField) pwdField.style.display = 'block';
+          if(pwdInput) setTimeout(function(){ pwdInput.focus(); }, 300);
+        }
+      }, 1500);
+
+    }catch(err){
+      console.error(err);
+      showToast('❌ ' + err.message,'error');
+      if(btn){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Save New Password';
+      }
+    }
+  };
+
+  window._closeForgotAll = function(){
+    var m = document.getElementById('forgotModal');
+    if(m) m.style.display = 'none';
+    _revealedPwd = null;
+    if(typeof confetti !== 'undefined') confetti({ particleCount: 0 });
+  };
+
+  console.log('✅ Security Question System loaded');
+  console.log('   → saveNewPassword: with security Q');
+  console.log('   → showForgotPwdHelp: with verification');
+  console.log('   → _revealPassword: view saved password');
+  console.log('   → _doResetPwd: set new password');
 })();
 </script>
 </body>
