@@ -1608,6 +1608,1017 @@ setTimeout(loadMalayalamFontForPDF, 2000);
   cursor: not-allowed;
 }
 </style>
+/* ═══════════════════════════════════════════════════════ */
+/* 🛡️ SECURITY QUESTION — RESPONSIVE v25.0                */
+/* ═══════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────── */
+/* Modal Container                              */
+/* ─────────────────────────────────────────── */
+#securityModal,
+#forgotModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(3,8,28,.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  z-index: 9999999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+#securityModal.open,
+#forgotModal.open {
+  display: flex;
+}
+
+/* ─────────────────────────────────────────── */
+/* Modal Card — Desktop: centered 480px         */
+/*              Mobile: full-width bottom       */
+/* ─────────────────────────────────────────── */
+.sec-modal-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  background: linear-gradient(155deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 24px;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.9),
+              0 0 0 1px rgba(108,92,231,.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: secModalIn .4s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+}
+
+@keyframes secModalIn {
+  from { opacity: 0; transform: translateY(30px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Golden top line */
+.sec-modal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent, #d4af37, #ffd966, #fff, #ffd966, #d4af37, transparent);
+  background-size: 250% 100%;
+  animation: secGoldenFlow 4s linear infinite;
+  z-index: 5;
+}
+
+@keyframes secGoldenFlow {
+  0%   { background-position: 250% 0; }
+  100% { background-position: -250% 0; }
+}
+
+/* ─────────────────────────────────────────── */
+/* Header (sticky)                              */
+/* ─────────────────────────────────────────── */
+.sec-modal-header {
+  padding: 20px 24px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid rgba(100,116,139,.1);
+  background: #fff;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.sec-modal-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(140deg, #1547a8, #22d3ee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px -8px rgba(34,211,238,.7);
+}
+
+.sec-modal-icon.success {
+  background: linear-gradient(140deg, #059669, #34d399);
+  box-shadow: 0 8px 20px -8px rgba(5,150,105,.7);
+}
+
+.sec-modal-icon.warning {
+  background: linear-gradient(140deg, #f59e0b, #fbbf24);
+  box-shadow: 0 8px 20px -8px rgba(251,191,36,.7);
+}
+
+.sec-modal-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.sec-modal-title h2 {
+  margin: 0 0 3px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.sec-modal-title p {
+  margin: 0;
+  font-size: .74rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.sec-modal-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1px solid rgba(100,116,139,.2);
+  color: #475569;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sec-modal-close:hover {
+  background: #e2e8f0;
+  transform: scale(1.05);
+}
+
+.sec-modal-close:active {
+  transform: scale(.95);
+}
+
+/* ─────────────────────────────────────────── */
+/* Body (scrollable)                            */
+/* ─────────────────────────────────────────── */
+.sec-modal-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 24px;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* ─────────────────────────────────────────── */
+/* Form Fields                                  */
+/* ─────────────────────────────────────────── */
+.sec-field {
+  margin-bottom: 18px;
+}
+
+.sec-label {
+  display: block;
+  color: #0f172a;
+  font-size: .82rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.sec-label .required {
+  color: #ef4444;
+  margin-left: 3px;
+}
+
+.sec-label-hint {
+  display: block;
+  color: #64748b;
+  font-size: .72rem;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+/* Input wrapper */
+.sec-input-wrap {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1.5px solid rgba(100,116,139,.25);
+  border-radius: 14px;
+  padding: 0 14px;
+  transition: all .25s;
+  min-height: 50px;
+  width: 100%;
+}
+
+.sec-input-wrap:focus-within {
+  background: #fff;
+  border-color: #6C5CE7;
+  box-shadow: 0 0 0 4px rgba(108,92,231,.12);
+}
+
+.sec-input-wrap > i.fa {
+  color: #6C5CE7;
+  font-size: .95rem;
+  margin-right: 10px;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+
+.sec-input-wrap input,
+.sec-input-wrap select {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 13px 0;
+  color: #0f172a;
+  font-family: 'Anek Malayalam', inherit;
+  font-size: 16px; /* iOS zoom fix */
+  font-weight: 600;
+  min-width: 0;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Native select — better mobile support */
+.sec-input-wrap select {
+  cursor: pointer;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236C5CE7' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 12px;
+}
+
+.sec-input-wrap select option {
+  padding: 12px;
+  font-size: 16px;
+  line-height: 1.5;
+  background: #fff;
+  color: #0f172a;
+}
+
+.sec-input-wrap input::placeholder {
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Textarea (custom question) */
+.sec-textarea-wrap {
+  display: flex;
+  background: #f8fafc;
+  border: 1.5px solid rgba(100,116,139,.25);
+  border-radius: 14px;
+  padding: 12px 14px;
+  transition: all .25s;
+  width: 100%;
+}
+
+.sec-textarea-wrap:focus-within {
+  background: #fff;
+  border-color: #6C5CE7;
+  box-shadow: 0 0 0 4px rgba(108,92,231,.12);
+}
+
+.sec-textarea-wrap textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #0f172a;
+  font-family: 'Anek Malayalam', inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 60px;
+  max-height: 120px;
+  width: 100%;
+}
+
+/* Eye toggle button */
+.sec-eye-btn {
+  background: transparent;
+  border: none;
+  color: #6C5CE7;
+  padding: 8px;
+  cursor: pointer;
+  font-size: .95rem;
+  flex-shrink: 0;
+  border-radius: 8px;
+  transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sec-eye-btn:hover {
+  background: rgba(108,92,231,.1);
+  color: #4834d4;
+}
+
+.sec-eye-btn:active {
+  transform: scale(.9);
+}
+
+/* ─────────────────────────────────────────── */
+/* Info Box                                     */
+/* ─────────────────────────────────────────── */
+.sec-info-box {
+  background: linear-gradient(135deg, #ecfeff, #e0f2fe);
+  border: 1px solid rgba(8,145,178,.3);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: .78rem;
+  color: #0891b2;
+  line-height: 1.6;
+}
+
+.sec-info-box.warning {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-color: rgba(180,83,9,.35);
+  color: #b45309;
+}
+
+.sec-info-box.success {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border-color: rgba(5,150,105,.35);
+  color: #047857;
+}
+
+.sec-info-box i.fa {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.sec-info-box strong {
+  font-weight: 800;
+}
+
+/* ─────────────────────────────────────────── */
+/* Question Preview Card                        */
+/* ─────────────────────────────────────────── */
+.sec-question-preview {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1.5px solid rgba(180,83,9,.4);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.sec-question-preview .label {
+  color: #b45309;
+  font-size: .68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sec-question-preview .text {
+  color: #0f172a;
+  font-size: .95rem;
+  font-weight: 800;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* ─────────────────────────────────────────── */
+/* Student Info Card                            */
+/* ─────────────────────────────────────────── */
+.sec-student-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1.5px solid rgba(59,130,246,.3);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.sec-student-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #1e6be0, #22d3ee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px -4px rgba(30,107,224,.5);
+}
+
+.sec-student-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sec-student-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sec-student-name {
+  color: #0f172a;
+  font-weight: 800;
+  font-size: .94rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.sec-student-meta {
+  color: #0891b2;
+  font-size: .74rem;
+  font-weight: 700;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sec-student-meta .chip {
+  background: rgba(8,145,178,.12);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: .68rem;
+}
+
+/* ─────────────────────────────────────────── */
+/* Action Buttons                               */
+/* ─────────────────────────────────────────── */
+.sec-btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.sec-btn-row .sec-btn {
+  flex: 1;
+}
+
+.sec-btn {
+  width: 100%;
+  min-height: 50px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .92rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+  line-height: 1.2;
+  letter-spacing: .2px;
+}
+
+.sec-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(.98);
+}
+
+.sec-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* Primary — Blue gradient */
+.sec-btn-primary {
+  background: linear-gradient(100deg, #1547a8, #2b7cf0 40%, #22d3ee 75%, #3b8bff);
+  background-size: 220% 100%;
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(34,211,238,.85),
+              inset 0 1px 0 rgba(255,255,255,.3);
+  animation: secBtnFlow 6s ease infinite;
+}
+
+@keyframes secBtnFlow {
+  0%,100% { background-position: 0% 50%; }
+  50%     { background-position: 100% 50%; }
+}
+
+.sec-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -12px rgba(34,211,238,1);
+}
+
+/* Success — Green */
+.sec-btn-success {
+  background: linear-gradient(100deg, #059669, #34d399);
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(5,150,105,.7);
+}
+
+.sec-btn-success:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -12px rgba(5,150,105,.9);
+}
+
+/* Warning — Amber */
+.sec-btn-warning {
+  background: linear-gradient(100deg, #f59e0b, #fbbf24);
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(251,191,36,.7);
+}
+
+.sec-btn-warning:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -12px rgba(251,191,36,.9);
+}
+
+/* Danger — Red */
+.sec-btn-danger {
+  background: linear-gradient(100deg, #dc2626, #ef4444);
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(239,68,68,.7);
+}
+
+/* Secondary — Gray */
+.sec-btn-secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1.5px solid rgba(100,116,139,.25);
+}
+
+.sec-btn-secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+/* Purple — Reset */
+.sec-btn-purple {
+  background: linear-gradient(100deg, #6C5CE7, #a29bfe);
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(108,92,231,.7);
+}
+
+.sec-btn-purple:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -12px rgba(108,92,231,.9);
+}
+
+/* ─────────────────────────────────────────── */
+/* Password Reveal Area                         */
+/* ─────────────────────────────────────────── */
+.sec-revealed-area {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1.5px solid rgba(180,83,9,.4);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  text-align: center;
+  animation: secRevealIn .4s ease;
+}
+
+@keyframes secRevealIn {
+  from { opacity: 0; transform: scale(.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.sec-revealed-label {
+  color: #b45309;
+  font-size: .68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.sec-revealed-value {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: 1.5px;
+  word-break: break-all;
+  user-select: all;
+  -webkit-user-select: all;
+  cursor: text;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.05);
+  line-height: 1.3;
+}
+
+.sec-copy-btn {
+  margin-top: 12px;
+  padding: 10px 20px;
+  border-radius: 30px;
+  background: #0891b2;
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .78rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+  transition: all .2s;
+}
+
+.sec-copy-btn:hover {
+  background: #0e7490;
+  transform: translateY(-1px);
+}
+
+.sec-copy-btn:active {
+  transform: translateY(0);
+}
+
+/* ─────────────────────────────────────────── */
+/* Option Cards (Recovery)                      */
+/* ─────────────────────────────────────────── */
+.sec-option-card {
+  background: #fff;
+  border: 1.5px solid rgba(180,200,230,.6);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all .25s;
+}
+
+.sec-option-card:hover {
+  border-color: rgba(108,92,231,.4);
+  box-shadow: 0 8px 20px -10px rgba(108,92,231,.3);
+}
+
+.sec-option-title {
+  color: #0f172a;
+  font-weight: 800;
+  font-size: .9rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.35;
+}
+
+.sec-option-title i.fa {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .82rem;
+  flex-shrink: 0;
+}
+
+.sec-option-title i.reveal-icon {
+  background: linear-gradient(140deg, #f59e0b, #fbbf24);
+  color: #fff;
+}
+
+.sec-option-title i.reset-icon {
+  background: linear-gradient(140deg, #6C5CE7, #a29bfe);
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────── */
+/* Result Messages                              */
+/* ─────────────────────────────────────────── */
+.sec-result {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: .82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  line-height: 1.45;
+  animation: secResultIn .3s ease;
+}
+
+@keyframes secResultIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sec-result.success {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid rgba(5,150,105,.3);
+}
+
+.sec-result.error {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid rgba(220,38,38,.3);
+}
+
+.sec-result.info {
+  background: #ecfeff;
+  color: #0891b2;
+  border: 1px solid rgba(8,145,178,.3);
+}
+
+.sec-result.warning {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid rgba(180,83,9,.3);
+}
+
+/* ─────────────────────────────────────────── */
+/* Attempt Counter                              */
+/* ─────────────────────────────────────────── */
+.sec-attempts {
+  text-align: center;
+  font-size: .72rem;
+  color: #94a3b8;
+  margin-top: 12px;
+  padding: 8px;
+  background: #f8fafc;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.sec-attempts .count {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.sec-attempts.safe .count {
+  color: #059669;
+}
+
+/* ─────────────────────────────────────────── */
+/* Loading Spinner                              */
+/* ─────────────────────────────────────────── */
+.sec-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: secSpin .7s linear infinite;
+}
+
+.sec-spinner.dark {
+  border-color: rgba(108,92,231,.2);
+  border-top-color: #6C5CE7;
+}
+
+@keyframes secSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─────────────────────────────────────────── */
+/* Streak Progress                              */
+/* ─────────────────────────────────────────── */
+.sec-strength {
+  height: 5px;
+  background: rgba(100,116,139,.15);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.sec-strength-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width .35s, background .35s;
+  width: 0%;
+}
+
+/* ─────────────────────────────────────────── */
+/* Mobile Responsive — Small screens             */
+/* ─────────────────────────────────────────── */
+@media (max-width: 600px) {
+  #securityModal,
+  #forgotModal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .sec-modal-card {
+    max-width: 100%;
+    width: 100%;
+    max-height: 94vh;
+    max-height: 94dvh;
+    border-radius: 24px 24px 0 0;
+    animation: secModalUp .4s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes secModalUp {
+    from { opacity: 0; transform: translateY(100%); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .sec-modal-header {
+    padding: 16px 18px 14px;
+    gap: 12px;
+  }
+
+  .sec-modal-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    font-size: 1.2rem;
+  }
+
+  .sec-modal-title h2 {
+    font-size: .96rem;
+  }
+
+  .sec-modal-title p {
+    font-size: .7rem;
+  }
+
+  .sec-modal-close {
+    width: 36px;
+    height: 36px;
+    font-size: .9rem;
+  }
+
+  .sec-modal-body {
+    padding: 16px 18px 20px;
+  }
+
+  .sec-field {
+    margin-bottom: 16px;
+  }
+
+  .sec-label {
+    font-size: .78rem;
+    margin-bottom: 7px;
+  }
+
+  .sec-input-wrap {
+    min-height: 48px;
+    padding: 0 12px;
+    border-radius: 13px;
+  }
+
+  .sec-input-wrap input,
+  .sec-input-wrap select {
+    font-size: 16px; /* iOS zoom fix */
+    padding: 12px 0;
+  }
+
+  .sec-input-wrap input::placeholder {
+    font-size: 14px;
+  }
+
+  .sec-btn {
+    min-height: 48px;
+    font-size: .88rem;
+    padding: 13px 18px;
+    border-radius: 13px;
+  }
+
+  .sec-btn-row {
+    gap: 8px;
+  }
+
+  .sec-student-card {
+    padding: 10px 12px;
+    gap: 10px;
+    border-radius: 13px;
+  }
+
+  .sec-student-avatar {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+  }
+
+  .sec-student-name {
+    font-size: .88rem;
+  }
+
+  .sec-student-meta {
+    font-size: .7rem;
+  }
+
+  .sec-question-preview {
+    padding: 12px 14px;
+    border-radius: 13px;
+  }
+
+  .sec-question-preview .text {
+    font-size: .88rem;
+  }
+
+  .sec-revealed-value {
+    font-size: 1.05rem;
+    padding: 12px 10px;
+  }
+
+  .sec-option-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .sec-option-title {
+    font-size: .86rem;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 380px) {
+  .sec-modal-body {
+    padding: 14px 14px 18px;
+  }
+  .sec-modal-header {
+    padding: 14px 14px 12px;
+  }
+  .sec-modal-title h2 {
+    font-size: .9rem;
+  }
+  .sec-btn {
+    font-size: .84rem;
+    padding: 12px 14px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 900px) and (orientation: landscape) {
+  .sec-modal-card {
+    max-height: 96vh;
+    max-height: 96dvh;
+  }
+  .sec-modal-header {
+    padding: 12px 18px 10px;
+  }
+  .sec-modal-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  .sec-modal-body {
+    padding: 14px 18px 18px;
+  }
+}
+
+/* Keyboard open — dynamic viewport */
+@supports (height: 100dvh) {
+  .sec-modal-card {
+    max-height: calc(100dvh - 32px);
+  }
+  @media (max-width: 600px) {
+    .sec-modal-card {
+      max-height: 94dvh;
+    }
+  }
+}
+
+/* Prevent iOS text size adjustment */
+@supports (-webkit-touch-callout: none) {
+  .sec-input-wrap input,
+  .sec-input-wrap select,
+  .sec-textarea-wrap textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sec-modal-card,
+  .sec-modal-card::before,
+  .sec-btn,
+  .sec-btn-primary,
+  .sec-result {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
 </head>
 <body>
 
@@ -2761,26 +3772,31 @@ setTimeout(loadMalayalamFontForPDF, 2000);
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 🔑 FORGOT PASSWORD MODAL                                     -->
-<!-- ============================================================ -->
-<div id="forgotModal" style="display:none;position:fixed;inset:0;background:rgba(3,8,28,.86);backdrop-filter:blur(14px);z-index:1060;align-items:center;justify-content:center;padding:18px;">
-  <div class="modal-glass p-4" style="max-width:420px;width:100%;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white fw-bold mb-0" style="font-size:1.05rem;">🔑 Forgot Password</h3>
-      <button id="closeForgotModalBtn" class="btn btn-sm btn-outline-light rounded-circle"><i class="fas fa-times"></i></button>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔑 FORGOT PASSWORD MODAL — RESPONSIVE                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="forgotModal">
+  <div class="sec-modal-card">
+
+    <!-- Header -->
+    <div class="sec-modal-header">
+      <div class="sec-modal-icon" id="forgotIcon">
+        <i class="fas fa-key"></i>
+      </div>
+      <div class="sec-modal-title">
+        <h2 id="forgotTitle">Password Recovery</h2>
+        <p id="forgotSubtitle">Security Question വഴി വീണ്ടെടുക്കാം</p>
+      </div>
+      <button class="sec-modal-close" onclick="window._closeForgotAll()" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
-    <div id="forgotStep1">
-      <input type="text" id="forgotStudentId" class="modal-form-input mb-3" placeholder="Student ID" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');">
-      <button id="forgotSubmitBtn" class="btn-gradient">Find</button>
+
+    <!-- Body -->
+    <div class="sec-modal-body" id="forgotBody">
+      <!-- Content injected by JavaScript -->
     </div>
-    <div id="forgotStep2" style="display:none;">
-      <div id="forgotResult2"></div>
-      <button id="forgotCloseBtn" class="btn-cancel mt-3 w-100">Close</button>
-    </div>
-    <div id="forgotLoading" style="display:none;text-align:center;padding:22px;">
-      <div class="spinner-border" style="color:#3b8bff;"></div>
-    </div>
+
   </div>
 </div>
 
@@ -15962,44 +16978,29 @@ console.log('✅ Fee Admin v3.0 loaded — loadFeeRecordsForAdmin:', typeof wind
              font-weight:700;min-height:14px;"></div>
       </div>
 <!-- ═══════════════════════════════════════════════════════ -->
-<!-- 🛡️ SECURITY QUESTION SECTION                             -->
+<!-- 🛡️ SECURITY QUESTION SECTION — RESPONSIVE                -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div id="securityQuestionSection" style="margin-bottom:20px;">
+<div id="securityQuestionSection" style="margin-bottom:18px;">
 
-  <div style="background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(59,139,255,.1));
-       border:1.5px solid rgba(34,211,238,.35);
-       border-radius:16px;padding:14px 16px;margin-bottom:16px;">
-    <div style="display:flex;gap:10px;align-items:flex-start;">
-      <i class="fas fa-shield-alt" style="color:#22d3ee;font-size:1.3rem;margin-top:2px;"></i>
-      <div>
-        <div style="color:#fff;font-weight:800;font-size:.88rem;margin-bottom:4px;">
-          🛡️ Security Question
-        </div>
-        <div style="color:#a9cdff;font-size:.74rem;line-height:1.55;">
-          Password മറന്നാൽ ഇത് ഉപയോഗിച്ച് വീണ്ടെടുക്കാം.<br>
-          എളുപ്പം ഓർക്കാൻ പറ്റുന്നതും മറ്റുള്ളവർക്ക് അറിയാത്തതും തിരഞ്ഞെടുക്കുക.
-        </div>
-      </div>
+  <div class="sec-info-box" style="background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(59,139,255,.1));border-color:rgba(34,211,238,.35);color:#fff;">
+    <i class="fas fa-shield-alt" style="color:#22d3ee;"></i>
+    <div>
+      <strong style="color:#fff;display:block;margin-bottom:3px;">🛡️ Security Question</strong>
+      <span style="color:#a9cdff;font-size:.72rem;">
+        Password മറന്നാൽ ഇത് ഉപയോഗിച്ച് വീണ്ടെടുക്കാം.
+        ഓർക്കാൻ എളുപ്പമുള്ളതും മറ്റുള്ളവർക്ക് അറിയാത്തതും തിരഞ്ഞെടുക്കുക.
+      </span>
     </div>
   </div>
 
-  <!-- Question Selector -->
-  <div style="margin-bottom:14px;">
-    <label style="color:#fff;font-size:.78rem;font-weight:800;
-           display:block;margin-bottom:6px;
-           text-shadow:0 2px 6px rgba(0,0,0,.7);">
-      ❓ Question തിരഞ്ഞെടുക്കുക <span style="color:#ef4444;">*</span>
+  <!-- Question Select -->
+  <div class="sec-field">
+    <label class="sec-label" style="color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.7);">
+      ❓ Question തിരഞ്ഞെടുക്കുക <span class="required">*</span>
     </label>
-    <div style="position:relative;display:flex;align-items:center;
-         background:rgba(255,255,255,.16);
-         border:1.5px solid rgba(255,255,255,.28);
-         border-radius:14px;padding:0 14px;">
-      <i class="fas fa-question-circle" style="color:#ffd966;margin-right:10px;"></i>
-      <select id="secQuestionSelect" 
-              style="flex:1;border:none;outline:none;background:transparent;
-                     padding:13px 0;color:#fff;font-family:inherit;
-                     font-size:.94rem;font-weight:700;cursor:pointer;
-                     -webkit-appearance:none;">
+    <div class="sec-input-wrap" style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);">
+      <i class="fas fa-question-circle" style="color:#ffd966;"></i>
+      <select id="secQuestionSelect" style="color:#fff;background:transparent;">
         <option value="" style="background:#0a1a3f;color:#fff;">-- Question തിരഞ്ഞെടുക്കുക --</option>
         <option value="മാതാവിന്റെ പേര് എന്താണ്?" style="background:#0a1a3f;color:#fff;">👩 മാതാവിന്റെ പേര് എന്താണ്?</option>
         <option value="പിതാവിന്റെ പേര് എന്താണ്?" style="background:#0a1a3f;color:#fff;">👨 പിതാവിന്റെ പേര് എന്താണ്?</option>
@@ -16008,63 +17009,48 @@ console.log('✅ Fee Admin v3.0 loaded — loadFeeRecordsForAdmin:', typeof wind
         <option value="പ്രിയപ്പെട്ട ഭക്ഷണം ഏതാണ്?" style="background:#0a1a3f;color:#fff;">🍛 പ്രിയപ്പെട്ട ഭക്ഷണം ഏതാണ്?</option>
         <option value="പ്രിയപ്പെട്ട കളി ഏതാണ്?" style="background:#0a1a3f;color:#fff;">⚽ പ്രിയപ്പെട്ട കളി ഏതാണ്?</option>
         <option value="പ്രിയപ്പെട്ട നിറം ഏതാണ്?" style="background:#0a1a3f;color:#fff;">🎨 പ്രിയപ്പെട്ട നിറം ഏതാണ്?</option>
-        <option value="വീട്ടിലെ വിലാസം എന്താണ്?" style="background:#0a1a3f;color:#fff;">🏡 വീട്ടിലെ വിലാസം എന്താണ്?</option>
         <option value="__custom__" style="background:#0a1a3f;color:#ffd966;">✨ Custom Question...</option>
       </select>
-      <i class="fas fa-chevron-down" style="color:#ffd966;pointer-events:none;"></i>
     </div>
 
-    <!-- Custom Question Input (hidden by default) -->
+    <!-- Custom Question -->
     <div id="customQuestionWrap" style="display:none;margin-top:10px;">
-      <div style="position:relative;display:flex;align-items:center;
-           background:rgba(255,255,255,.16);
-           border:1.5px solid rgba(255,255,255,.28);
-           border-radius:14px;padding:0 14px;">
-        <i class="fas fa-pen" style="color:#ffd966;margin-right:10px;"></i>
-        <input type="text" id="customQuestionInput" 
-               placeholder="നിങ്ങളുടെ സ്വന്തം question"
-               maxlength="100"
-               style="flex:1;border:none;outline:none;background:transparent;
-                      padding:13px 0;color:#fff;font-family:inherit;
-                      font-size:16px;font-weight:700;">
+      <div class="sec-textarea-wrap" style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);">
+        <textarea id="customQuestionInput"
+                  placeholder="നിങ്ങളുടെ സ്വന്തം question ഇവിടെ എഴുതുക"
+                  maxlength="100"
+                  style="color:#fff;min-height:50px;max-height:80px;"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- Answer Input -->
-  <div style="margin-bottom:14px;">
-    <label style="color:#fff;font-size:.78rem;font-weight:800;
-           display:block;margin-bottom:6px;
-           text-shadow:0 2px 6px rgba(0,0,0,.7);">
-      ✍️ Answer <span style="color:#ef4444;">*</span>
+  <!-- Answer -->
+  <div class="sec-field">
+    <label class="sec-label" style="color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.7);">
+      ✍️ Answer <span class="required">*</span>
     </label>
-    <div style="position:relative;display:flex;align-items:center;
-         background:rgba(255,255,255,.16);
-         border:1.5px solid rgba(255,255,255,.28);
-         border-radius:14px;padding:0 14px;">
-      <i class="fas fa-key" style="color:#ffd966;margin-right:10px;"></i>
-      <input type="text" id="secAnswerInput" 
+    <div class="sec-input-wrap" style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);">
+      <i class="fas fa-key" style="color:#ffd966;"></i>
+      <input type="text"
+             id="secAnswerInput"
              placeholder="ഉത്തരം (ഓർക്കാൻ എളുപ്പമുള്ളത്)"
              autocomplete="off"
              maxlength="80"
-             style="flex:1;border:none;outline:none;background:transparent;
-                    padding:13px 0;color:#fff;font-family:inherit;
-                    font-size:16px;font-weight:700;">
+             style="color:#fff;">
     </div>
-    <small style="color:#a9cdff;font-size:.68rem;display:block;margin-top:5px;">
+    <span class="sec-label-hint" style="color:#a9cdff;">
       <i class="fas fa-info-circle"></i> Capital/Small letters വ്യത്യാസമില്ല — "Kerala" = "kerala"
-    </small>
+    </span>
   </div>
 
   <!-- Warning -->
-  <div style="background:rgba(251,191,36,.12);
-       border:1px solid rgba(251,191,36,.35);
-       border-radius:12px;padding:10px 14px;
-       display:flex;gap:10px;align-items:flex-start;">
-    <i class="fas fa-exclamation-triangle" style="color:#fbbf24;margin-top:2px;"></i>
-    <div style="color:#fff;font-size:.72rem;line-height:1.6;">
-      <b>ഓർമ്മയുണ്ടാകണം:</b> ഈ ഉത്തരം പിന്നീട് password recover ചെയ്യാൻ വേണ്ടിവരും. 
-      മറ്റുള്ളവർക്ക് ഊഹിക്കാൻ പറ്റാത്തതും നിങ്ങൾക്ക് ഓർക്കാൻ എളുപ്പമുള്ളതും നൽകുക.
+  <div class="sec-info-box warning" style="background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.35);color:#fff;">
+    <i class="fas fa-exclamation-triangle" style="color:#fbbf24;"></i>
+    <div>
+      <strong style="color:#ffd966;">ഓർമ്മയുണ്ടാകണം:</strong>
+      <span style="font-size:.72rem;color:#fff;">
+        ഈ ഉത്തരം password recover ചെയ്യാൻ വേണ്ടിവരും. മറ്റുള്ളവർക്ക് ഊഹിക്കാൻ പറ്റാത്തത് നൽകുക.
+      </span>
     </div>
   </div>
 </div>
@@ -17942,6 +18928,838 @@ window.resetStudentPassword = async function(sid, name) {
   console.log('   → showForgotPwdHelp: with verification');
   console.log('   → _revealPassword: view saved password');
   console.log('   → _doResetPwd: set new password');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔐 SECURITY QUESTION SYSTEM — RESPONSIVE v25.0          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+
+  console.log('🔐 Loading responsive Security Question System...');
+
+  /* ═══════════════════════════════════════════════ */
+  /* CRYPTO HELPERS                                    */
+  /* ═══════════════════════════════════════════════ */
+  function _genSalt(len){
+    len = len || 16;
+    var a = new Uint8Array(len);
+    crypto.getRandomValues(a);
+    return Array.from(a, function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  }
+
+  async function _hash(ans, salt){
+    var norm = String(ans).toLowerCase().trim().replace(/\s+/g,' ');
+    var buf = new TextEncoder().encode(norm + '::' + salt);
+    var hash = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(hash), function(b){
+      return b.toString(16).padStart(2,'0');
+    }).join('');
+  }
+
+  async function _verify(ans, salt, hash){
+    var c = await _hash(ans, salt);
+    return c === hash;
+  }
+
+  /* ═══════════════════════════════════════════════ */
+  /* UTILITIES                                         */
+  /* ═══════════════════════════════════════════════ */
+  function _esc(s){
+    if(s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"']/g, function(m){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m];
+    });
+  }
+
+  function _setModalHeader(icon, iconClass, title, subtitle){
+    var iEl = document.getElementById('forgotIcon');
+    var tEl = document.getElementById('forgotTitle');
+    var sEl = document.getElementById('forgotSubtitle');
+    if(iEl){
+      iEl.className = 'sec-modal-icon ' + (iconClass || '');
+      iEl.innerHTML = '<i class="fas ' + icon + '"></i>';
+    }
+    if(tEl) tEl.textContent = title;
+    if(sEl) sEl.textContent = subtitle || '';
+  }
+
+  function _openModal(){
+    var m = document.getElementById('forgotModal');
+    if(m){ m.classList.add('open'); m.style.display = 'flex'; }
+    document.body.style.overflow = 'hidden';
+  }
+
+  window._closeForgotAll = function(){
+    var m = document.getElementById('forgotModal');
+    if(m){ m.classList.remove('open'); m.style.display = 'none'; }
+    document.body.style.overflow = '';
+  };
+
+  /* ═══════════════════════════════════════════════ */
+  /* CUSTOM QUESTION TOGGLE                            */
+  /* ═══════════════════════════════════════════════ */
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.id === 'secQuestionSelect'){
+      var wrap = document.getElementById('customQuestionWrap');
+      if(!wrap) return;
+      if(e.target.value === '__custom__'){
+        wrap.style.display = 'block';
+        setTimeout(function(){
+          var inp = document.getElementById('customQuestionInput');
+          if(inp) inp.focus();
+        }, 200);
+      } else {
+        wrap.style.display = 'none';
+      }
+    }
+  });
+
+  /* ═══════════════════════════════════════════════ */
+  /* OVERRIDE saveNewPassword — with security Q       */
+  /* ═══════════════════════════════════════════════ */
+  window.saveNewPassword = async function(){
+    var student = window._pendingStudent;
+    if(!student) return;
+
+    var pwd = (document.getElementById('newPassword') || {}).value || '';
+    var confirm = (document.getElementById('confirmPassword') || {}).value || '';
+
+    if(!pwd || pwd.length < 6){
+      showToast('⚠️ കുറഞ്ഞത് 6 അക്ഷരം വേണം','error'); return;
+    }
+    if(pwd !== confirm){
+      showToast('⚠️ Passwords ഒത്തിട്ടില്ല','error'); return;
+    }
+    var weak = ['123456','password','noor123','qwerty','111111','abc123'];
+    if(weak.indexOf(pwd.toLowerCase()) > -1){
+      showToast('⚠️ ഈ password ഉപയോഗിക്കരുത്','error'); return;
+    }
+
+    var qSel = document.getElementById('secQuestionSelect');
+    var customQ = document.getElementById('customQuestionInput');
+    var ansInp = document.getElementById('secAnswerInput');
+
+    if(!qSel || !ansInp){ showToast('⚠️ Page reload ചെയ്യുക','error'); return; }
+
+    var question = qSel.value;
+    if(question === '__custom__') question = customQ ? customQ.value.trim() : '';
+    var answer = ansInp.value.trim();
+
+    if(!question){
+      showToast('⚠️ Question തിരഞ്ഞെടുക്കുക','error');
+      qSel.focus(); return;
+    }
+    if(!answer || answer.length < 2){
+      showToast('⚠️ Answer നൽകുക (കുറഞ്ഞത് 2 അക്ഷരം)','error');
+      ansInp.focus(); return;
+    }
+
+    var btn = document.getElementById('pwdSetupBtn');
+    if(btn){
+      btn.disabled = true;
+      btn.innerHTML = '<span class="sec-spinner"></span> സേവ് ചെയ്യുന്നു...';
+    }
+
+    try{
+      var salt = _genSalt(16);
+      var hash = await _hash(answer, salt);
+
+      var r = await supabaseClient.from('students').update({
+        password: pwd,
+        password_set: true,
+        password_set_at: new Date().toISOString(),
+        security_question: question,
+        security_answer_hash: hash,
+        security_answer_salt: salt,
+        security_set_at: new Date().toISOString()
+      }).eq('studentid', student.studentid);
+
+      if(r.error) throw r.error;
+
+      if(typeof confetti !== 'undefined'){
+        confetti({ particleCount: 200, spread: 100, origin: { y: .6 },
+          colors: ['#6C5CE7','#00cec9','#fd79a8','#fdcb6e'] });
+      }
+      if(typeof window.showAchievement === 'function'){
+        window.showAchievement('🛡️','Password + Security Setup!',
+          'ഇനി password മറന്നാലും recover ചെയ്യാം!');
+      } else {
+        showToast('✅ Saved! Security Question ready','success');
+      }
+      if(typeof window.spawnSparkles === 'function') window.spawnSparkles(15);
+
+      document.getElementById('passwordSetupModal').style.display = 'none';
+
+      setTimeout(function(){
+        if(typeof window.completeLogin === 'function') window.completeLogin(student);
+      }, 900);
+
+      window._pendingStudent = null;
+
+    }catch(err){
+      showToast('❌ ' + err.message,'error');
+      if(btn){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle" style="color:#ffd966;"></i><span>Password സേവ് ചെയ്യുക</span>';
+      }
+    }
+  };
+
+  /* ═══════════════════════════════════════════════ */
+  /* SHOW FORGOT — Step 1: Find Student               */
+  /* ═══════════════════════════════════════════════ */
+  window.showForgotPwdHelp = function(){
+    _setModalHeader('fa-key', '', 'Password Recovery', 'Security Question വഴി വീണ്ടെടുക്കാം');
+    _renderStep1();
+    _openModal();
+    setTimeout(function(){
+      var i = document.getElementById('forgotStudentId');
+      if(i) i.focus();
+    }, 300);
+  };
+
+  function _renderStep1(){
+    var body = document.getElementById('forgotBody');
+    if(!body) return;
+    body.innerHTML =
+      '<div class="sec-info-box">' +
+        '<i class="fas fa-info-circle"></i>' +
+        '<div>Student ID നൽകിയാൽ നിങ്ങളുടെ Security Question കാണിക്കും.</div>' +
+      '</div>' +
+      '<div class="sec-field">' +
+        '<label class="sec-label" for="forgotStudentId">🆔 Student ID <span class="required">*</span></label>' +
+        '<div class="sec-input-wrap">' +
+          '<i class="fas fa-id-card"></i>' +
+          '<input type="text" id="forgotStudentId" ' +
+                 'placeholder="ഉദാ: NSM001" ' +
+                 'autocomplete="off" ' +
+                 'inputmode="text" ' +
+                 'autocapitalize="characters" ' +
+                 'spellcheck="false" ' +
+                 'oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,\'\')" ' +
+                 'onkeydown="if(event.key===\'Enter\'){event.preventDefault();window._forgotFind();}">' +
+        '</div>' +
+        '<span class="sec-label-hint"><i class="fas fa-keyboard"></i> ഡയറിയിലെ UID നമ്പർ</span>' +
+      '</div>' +
+      '<div class="sec-btn-row">' +
+        '<button type="button" class="sec-btn sec-btn-secondary" onclick="window._closeForgotAll()">' +
+          '<i class="fas fa-times"></i> Cancel' +
+        '</button>' +
+        '<button type="button" class="sec-btn sec-btn-primary" id="forgotFindBtn" onclick="window._forgotFind()">' +
+          '<i class="fas fa-search"></i> Find Account' +
+        '</button>' +
+      '</div>';
+  }
+
+  /* ═══════════════════════════════════════════════ */
+  /* FORGOT — Find Student                            */
+  /* ═══════════════════════════════════════════════ */
+  window._forgotFind = async function(){
+    var inp = document.getElementById('forgotStudentId');
+    if(!inp) return;
+    var sid = inp.value.trim().toUpperCase();
+
+    if(!sid){
+      showToast('Student ID നൽകുക','error');
+      inp.focus(); return;
+    }
+
+    if(typeof window.rateLimit === 'function'){
+      if(!window.rateLimit('forgot_' + sid, 5, 10*60*1000)) return;
+    }
+
+    var btn = document.getElementById('forgotFindBtn');
+    if(btn){ btn.disabled = true; btn.innerHTML = '<span class="sec-spinner"></span> Searching...'; }
+
+    try{
+      var r = await supabaseClient.from('students')
+        .select('studentid, name, class, is_blocked, security_question, photo')
+        .eq('studentid', sid)
+        .maybeSingle();
+
+      if(r.error || !r.data){
+        _renderError('❌ Student ID കണ്ടെത്തിയില്ല',
+          'Student ID ശരിയാണോ എന്ന് പരിശോധിക്കുക അല്ലെങ്കിൽ office-ൽ ബന്ധപ്പെടുക.');
+        return;
+      }
+      if(r.data.is_blocked === true){
+        _renderError('🚫 Account Blocked',
+          'ഈ account താൽക്കാലികമായി block ചെയ്തിരിക്കുന്നു. Office-ൽ ബന്ധപ്പെടുക.');
+        return;
+      }
+      if(!r.data.security_question){
+        _renderNoSecurityQuestion(r.data, sid);
+        return;
+      }
+
+      _renderSecurityQuestionStep(r.data, sid);
+
+    }catch(err){
+      _renderError('❌ Error', err.message || 'Something went wrong');
+    }
+  };
+
+  /* ═══════════════════════════════════════════════ */
+  /* RENDER — Error                                   */
+  /* ═══════════════════════════════════════════════ */
+  function _renderError(title, msg){
+    _setModalHeader('fa-times-circle', 'warning', 'Error', '');
+    var body = document.getElementById('forgotBody');
+    if(!body) return;
+    body.innerHTML =
+      '<div class="sec-result error" style="padding:16px;">' +
+        '<i class="fas fa-exclamation-circle" style="font-size:1.4rem;"></i>' +
+        '<div>' +
+          '<div style="font-weight:800;margin-bottom:4px;">' + _esc(title) + '</div>' +
+          '<div style="font-weight:500;font-size:.8rem;line-height:1.5;">' + _esc(msg) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sec-btn-row" style="margin-top:16px;">' +
+        '<button type="button" class="sec-btn sec-btn-secondary" onclick="window.showForgotPwdHelp()">' +
+          '<i class="fas fa-arrow-left"></i> Try Again' +
+        '</button>' +
+        '<button type="button" class="sec-btn sec-btn-primary" onclick="window._closeForgotAll()">' +
+          '<i class="fas fa-check"></i> Close' +
+        '</button>' +
+      '</div>';
+  }
+
+  /* ═══════════════════════════════════════════════ */
+  /* RENDER — No Security Question                    */
+  /* ═══════════════════════════════════════════════ */
+  function _renderNoSecurityQuestion(student, sid){
+    _setModalHeader('fa-shield-alt', 'warning', 'Security Question ലഭ്യമല്ല', '');
+    var body = document.getElementById('forgotBody');
+    if(!body) return;
+    body.innerHTML =
+      _studentCardHTML(student, sid) +
+      '<div class="sec-info-box warning">' +
+        '<i class="fas fa-exclamation-triangle"></i>' +
+        '<div>' +
+          '<strong>Security Question Set ചെയ്തിട്ടില്ല</strong><br>' +
+          '<span style="font-size:.76rem;">Password reset ചെയ്യാൻ office-ൽ ബന്ധപ്പെടുക.</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sec-info-box" style="background:linear-gradient(135deg,#ecfeff,#e0f2fe);">' +
+        '<i class="fas fa-phone-alt"></i>' +
+        '<div>' +
+          '<strong>📞 +91 70346 78818</strong><br>' +
+          '<span style="font-size:.76rem;">ശനി-വ്യാഴം: 6:00 AM – 10:00 AM<br>📧 noorussalam6110@gmail.com</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sec-btn-row" style="margin-top:16px;">' +
+        '<button type="button" class="sec-btn sec-btn-secondary" onclick="window.showForgotPwdHelp()">' +
+          '<i class="fas fa-arrow-left"></i> Back' +
+        '</button>' +
+        '<button type="button" class="sec-btn sec-btn-primary" onclick="window._closeForgotAll()">' +
+          '<i class="fas fa-check"></i> Close' +
+        '</button>' +
+      '</div>';
+  }
+
+  /* ═══════════════════════════════════════════════ */
+  /* RENDER — Security Question Step                  */
+  /* ═══════════════════════════════════════════════ */
+  function _renderSecurityQuestionStep(student, sid){
+    _setModalHeader('fa-shield-alt', '', 'Security Question', 'ഉത്തരം നൽകി verify ചെയ്യുക');
+    var body = document.getElementById('forgotBody');
+    if(!body) return;
+
+    body.innerHTML =
+      _studentCardHTML(student, sid) +
+      '<div class="sec-question-preview">' +
+        '<div class="label"><i class="fas fa-question-circle"></i> Security Question</div>' +
+        '<div class="text">' + _esc(student.security_question) + '</div>' +
+      '</div>' +
+      '<div class="sec-field">' +
+        '<label class="sec-label" for="forgotAnswerInput">' +
+          '✍️ ഉത്തരം <span class="required">*</span>' +
+        '</label>' +
+        '<div class="sec-input-wrap">' +
+          '<i class="fas fa-key"></i>' +
+          '<input type="text" id="forgotAnswerInput" ' +
+                 'placeholder="ഉത്തരം ടൈപ്പ് ചെയ്യുക" ' +
+                 'autocomplete="off" ' +
+                 'maxlength="80" ' +
+                 'autocapitalize="off" ' +
+                 'onkeydown="if(event.key===\'Enter\'){event.preventDefault();window._forgotVerify();}">' +
+        '</div>' +
+        '<span class="sec-label-hint">' +
+          '<i class="fas fa-info-circle"></i> Capital/Small letters വ്യത്യാസമില്ല' +
+        '</span>' +
+      '</div>' +
+      '<div id="forgotVerifyResult"></div>' +
+      '<div class="sec-btn-row" style="margin-top:16px;">' +
+        '<button type="button" class="sec-btn sec-btn-secondary" onclick="window.showForgotPwdHelp()">' +
+          '<i class="fas fa-arrow-left"></i> Back' +
+        '</button>' +
+        '<button type="button" class="sec-btn sec-btn-success" id="forgotVerifyBtn" onclick="window._forgotVerify()">' +
+          '<i class="fas fa-check-circle"></i> Verify' +
+        '</button>' +
+      '</div>' +
+      '<div class="sec-attempts safe" id="forgotAttemptsInfo">' +
+        '<i class="fas fa-shield-alt"></i> ' +
+        'Attempts left: <span class="count" id="forgotAttemptsLeft">3</span>' +
+      '</div>';
+
+    setTimeout(function(){
+      var i = document.getElementById('forgotAnswerInput');
+      if(i) i.focus();
+    }, 300);
+  }
+
+  /* Student card helper */
+  function _studentCardHTML(student, sid){
+    var initial = (student.name || 'S').charAt(0).toUpperCase();
+    var avatarHtml = initial;
+    if(student.photo && (student.photo.startsWith('http') || student.photo.startsWith('data:'))){
+      avatarHtml = '<img src="' + _esc(student.photo) + '" alt="">';
+    }
+    return '<div class="sec-student-card">' +
+      '<div class="sec-student-avatar">' + avatarHtml + '</div>' +
+      '<div class="sec-student-info">' +
+        '<div class="sec-student-name">' + _esc(student.name) + '</div>' +
+        '<div class="sec-student-meta">' +
+          '<span class="chip">Class ' + _esc(student.class) + '</span>' +
+          '<span class="chip">' + _esc(sid) + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /* ═══════════════════════════════════════════════ */
+  /* FORGOT — Verify Answer                           */
+  /* ═══════════════════════════════════════════════ */
+  var _attempts = {};
+
+  window._forgotVerify = async function(){
+    var aInp = document.getElementById('forgotAnswerInput');
+    var btn = document.getElementById('forgotVerifyBtn');
+    var res = document.getElementById('forgotVerifyResult');
+    if(!aInp || !btn || !res) return;
+
+    var sid = (document.getElementById('forgotStudentId') || {}).value;
+    if(!sid){
+      // Try get sid from stored state
+      sid = window._forgotCurrentSid;
+    }
+    if(!sid){ showToast('Student ID ലഭ്യമല്ല','error'); return; }
+    sid = sid.toUpperCase();
+
+    var answer = aInp.value.trim();
+    if(!answer){
+      showToast('⚠️ ഉത്തരം നൽകുക','error');
+      aInp.focus(); return;
+    }
+
+    var key = 'v_' + sid;
+    _attempts[key] = (_attempts[key] || 0) + 1;
+
+    if(_attempts[key] > 3){
+      res.innerHTML =
+        '<div class="sec-result error">' +
+          '<i class="fas fa-ban" style="font-size:1.3rem;"></i>' +
+          '<div><b>Too many attempts</b><br>' +
+          '<span style="font-size:.76rem;">10 മിനിറ്റ് കഴിഞ്ഞ് ശ്രമിക്കുക</span></div>' +
+        '</div>';
+      btn.disabled = true;
+      aInp.disabled = true;
+      return;
+    }
+
+    var leftEl = document.getElementById('forgotAttemptsLeft');
+    if(leftEl) leftEl.textContent = Math.max(0, 3 - _attempts[key]);
+    if(_attempts[key] >= 2){
+      var info = document.getElementById('forgotAttemptsInfo');
+      if(info) info.classList.remove('safe');
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="sec-spinner"></span> Verifying...';
+
+    try{
+      var r = await supabaseClient
+        .from('students')
+        .select('security_answer_hash, security_answer_salt, name, class, photo, password')
+        .eq('studentid', sid)
+        .single();
+
+      if(r.error || !r.data) throw new Error('Data fetch failed');
+
+      var ok = await _verify(answer, r.data.security_answer_salt, r.data.security_answer_hash);
+
+      if(!ok){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify';
+        res.innerHTML =
+          '<div class="sec-result error">' +
+            '<i class="fas fa-times-circle"></i>' +
+            '<div>❌ ഉത്തരം തെറ്റാണ്. വീണ്ടും ശ്രമിക്കുക.</div>' +
+          '</div>';
+        aInp.value = '';
+        aInp.focus();
+        if(typeof showToast === 'function') showToast('❌ തെറ്റായ ഉത്തരം','error');
+        return;
+      }
+
+      // Success
+      _attempts[key] = 0;
+
+      if(typeof confetti !== 'undefined'){
+        confetti({ particleCount: 100, spread: 80, origin: { y: .6 } });
+      }
+      if(typeof window.spawnSparkles === 'function') window.spawnSparkles(8);
+
+      var student = {
+        studentid: sid,
+        name: r.data.name,
+        class: r.data.class,
+        photo: r.data.photo,
+        password: r.data.password
+      };
+
+      _renderRecoveryOptions(student, sid);
+
+      if(typeof window.logAudit === 'function'){
+        window.logAudit('SECURITY_VERIFIED','students', sid, null, { via: 'security_question' });
+      }
+
+    }catch(err){
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify';
+      res.innerHTML =
+        '<div class="sec-result error">' +
+          '<i class="fas fa-exclamation-circle"></i>' +
+          '<div>❌ ' + _esc(err.message) + '</div>' +
+        '</div>';
+    }
+  };
+
+  /* Keep track of current student being recovered */
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.id === 'forgotStudentId'){
+      window._forgotCurrentSid = e.target.value.trim().toUpperCase();
+    }
+  });
+
+  /* ═══════════════════════════════════════════════ */
+  /* RENDER — Recovery Options                        */
+  /* ═══════════════════════════════════════════════ */
+  function _renderRecoveryOptions(student, sid){
+    _setModalHeader('fa-check-circle', 'success', '✅ Verified Successfully!', 'ഇനി എന്ത് ചെയ്യണം?');
+    var body = document.getElementById('forgotBody');
+    if(!body) return;
+
+    body.innerHTML =
+      _studentCardHTML(student, sid) +
+
+      '<div class="sec-info-box success">' +
+        '<i class="fas fa-check-circle"></i>' +
+        '<div>ഉത്തരം ശരിയാണ്! ഇനി password കാണാം അല്ലെങ്കിൽ പുതിയത് സെറ്റ് ചെയ്യാം.</div>' +
+      '</div>' +
+
+      /* Option A — Reveal */
+      '<div class="sec-option-card">' +
+        '<div class="sec-option-title">' +
+          '<i class="fas fa-eye reveal-icon"></i>' +
+          'Option A: നിലവിലുള്ള Password കാണുക' +
+        '</div>' +
+        '<div id="showPasswordArea" style="display:none;"></div>' +
+        '<button type="button" id="revealPwdBtn" class="sec-btn sec-btn-warning" onclick="window._revealPassword(\'' + sid + '\')">' +
+          '<i class="fas fa-eye"></i> Show Current Password' +
+        '</button>' +
+      '</div>' +
+
+      /* Option B — Reset */
+      '<div class="sec-option-card">' +
+        '<div class="sec-option-title">' +
+          '<i class="fas fa-redo reset-icon"></i>' +
+          'Option B: പുതിയ Password സെറ്റ് ചെയ്യുക' +
+        '</div>' +
+        '<div id="resetPwdArea" style="display:none;">' +
+          '<div class="sec-field">' +
+            '<label class="sec-label">പുതിയ Password <span class="required">*</span></label>' +
+            '<div class="sec-input-wrap">' +
+              '<i class="fas fa-lock"></i>' +
+              '<input type="password" id="resetNewPwd" placeholder="കുറഞ്ഞത് 6 അക്ഷരം" style="font-size:16px;">' +
+              '<button type="button" class="sec-eye-btn" onclick="window._toggleEye(\'resetNewPwd\',this)">' +
+                '<i class="fas fa-eye"></i>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="sec-field">' +
+            '<label class="sec-label">Confirm Password <span class="required">*</span></label>' +
+            '<div class="sec-input-wrap">' +
+              '<i class="fas fa-lock"></i>' +
+              '<input type="password" id="resetConfirmPwd" placeholder="അതേ password വീണ്ടും" style="font-size:16px;">' +
+            '</div>' +
+          '</div>' +
+          '<button type="button" id="resetPwdSubmitBtn" class="sec-btn sec-btn-purple" onclick="window._doResetPwd(\'' + sid + '\')">' +
+            '<i class="fas fa-save"></i> Save New Password' +
+          '</button>' +
+        '</div>' +
+        '<button type="button" id="resetPwdToggleBtn" class="sec-btn sec-btn-purple" onclick="window._toggleResetArea()">' +
+          '<i class="fas fa-redo"></i> Reset Password' +
+        '</button>' +
+      '</div>' +
+
+      '<div class="sec-btn-row" style="margin-top:8px;">' +
+        '<button type="button" class="sec-btn sec-btn-secondary" onclick="window._closeForgotAll()">' +
+          '<i class="fas fa-check"></i> Done' +
+        '</button>' +
+      '</div>' +
+      '<div class="sec-attempts" style="margin-top:12px;">' +
+        '<i class="fas fa-clock"></i> Security കാരണം ഈ section 5 മിനിറ്റിനുശേഷം close ആകും' +
+      '</div>';
+
+    // Auto close after 5 minutes
+    clearTimeout(window._forgotTimer);
+    window._forgotTimer = setTimeout(function(){
+      if(document.getElementById('forgotModal').classList.contains('open')){
+        showToast('⏰ Session expired','info');
+        window._closeForgotAll();
+      }
+    }, 5 * 60 * 1000);
+  }
+
+  /* ═══════════════════════════════════════════════ */
+  /* EYE TOGGLE HELPER                                */
+  /* ═══════════════════════════════════════════════ */
+  window._toggleEye = function(inputId, btn){
+    var inp = document.getElementById(inputId);
+    if(!inp) return;
+    if(inp.type === 'password'){
+      inp.type = 'text';
+      btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+    } else {
+      inp.type = 'password';
+      btn.innerHTML = '<i class="fas fa-eye"></i>';
+    }
+  };
+
+  /* ═══════════════════════════════════════════════ */
+  /* REVEAL PASSWORD                                  */
+  /* ═══════════════════════════════════════════════ */
+  window._revealPassword = async function(sid){
+    var btn = document.getElementById('revealPwdBtn');
+    var area = document.getElementById('showPasswordArea');
+    if(!btn || !area) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="sec-spinner"></span> Loading...';
+
+    try{
+      var r = await supabaseClient.from('students')
+        .select('password')
+        .eq('studentid', sid)
+        .single();
+
+      if(r.error || !r.data) throw new Error('Password fetch failed');
+
+      var pwd = r.data.password || 'noor123';
+      area.style.display = 'block';
+      area.innerHTML =
+        '<div class="sec-revealed-area">' +
+          '<div class="sec-revealed-label">🔓 Your Password</div>' +
+          '<div class="sec-revealed-value" id="revealedPwdValue">' + _esc(pwd) + '</div>' +
+          '<button type="button" class="sec-copy-btn" onclick="window._copyPwd(\'' + _esc(pwd).replace(/'/g,"\\'") + '\')">' +
+            '<i class="fas fa-copy"></i> Copy Password' +
+          '</button>' +
+        '</div>';
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Password';
+      btn.className = 'sec-btn sec-btn-secondary';
+      btn.onclick = function(){ window._hideReveal(); };
+
+      if(typeof showToast === 'function') showToast('🔓 Password revealed','info');
+      if(typeof window.logAudit === 'function'){
+        window.logAudit('REVEAL_PASSWORD','students', sid, null, { via: 'security_question' });
+      }
+
+    }catch(err){
+      showToast('❌ ' + err.message,'error');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-eye"></i> Show Current Password';
+    }
+  };
+
+  window._hideReveal = function(){
+    var area = document.getElementById('showPasswordArea');
+    var btn = document.getElementById('revealPwdBtn');
+    if(area) area.style.display = 'none';
+    if(btn){
+      btn.innerHTML = '<i class="fas fa-eye"></i> Show Current Password';
+      btn.className = 'sec-btn sec-btn-warning';
+      var sid = window._forgotCurrentSid;
+      btn.onclick = function(){ if(sid) window._revealPassword(sid); };
+    }
+  };
+
+  window._copyPwd = function(text){
+    if(!text) return;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(text).then(function(){
+        showToast('📋 Copied!','success');
+      }).catch(function(){
+        showToast('📋 Manual copy: ' + text,'info');
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand('copy'); showToast('📋 Copied!','success'); }
+      catch(e){ showToast('📋 Manual copy needed','info'); }
+      document.body.removeChild(ta);
+    }
+  };
+
+  /* ═══════════════════════════════════════════════ */
+  /* RESET PASSWORD AREA TOGGLE                       */
+  /* ═══════════════════════════════════════════════ */
+  window._toggleResetArea = function(){
+    var area = document.getElementById('resetPwdArea');
+    var btn = document.getElementById('resetPwdToggleBtn');
+    if(!area || !btn) return;
+
+    if(area.style.display === 'none' || !area.style.display){
+      area.style.display = 'block';
+      btn.style.display = 'none';
+      setTimeout(function(){
+        var inp = document.getElementById('resetNewPwd');
+        if(inp) inp.focus();
+      }, 200);
+    } else {
+      area.style.display = 'none';
+      btn.style.display = 'flex';
+    }
+  };
+
+  /* ═══════════════════════════════════════════════ */
+  /* DO RESET PASSWORD                                */
+  /* ═══════════════════════════════════════════════ */
+  window._doResetPwd = async function(sid){
+    var p1El = document.getElementById('resetNewPwd');
+    var p2El = document.getElementById('resetConfirmPwd');
+    var btn = document.getElementById('resetPwdSubmitBtn');
+    if(!p1El || !p2El || !btn) return;
+
+    var p1 = p1El.value.trim();
+    var p2 = p2El.value.trim();
+
+    if(!p1 || p1.length < 6){
+      showToast('⚠️ കുറഞ്ഞത് 6 അക്ഷരം','error');
+      p1El.focus(); return;
+    }
+    if(p1 !== p2){
+      showToast('⚠️ Passwords ഒത്തിട്ടില്ല','error');
+      p2El.focus(); return;
+    }
+    var weak = ['123456','password','noor123','qwerty','111111'];
+    if(weak.indexOf(p1.toLowerCase()) > -1){
+      showToast('⚠️ ഈ password ഉപയോഗിക്കരുത്','error'); return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="sec-spinner"></span> Saving...';
+
+    try{
+      var r = await supabaseClient.from('students').update({
+        password: p1,
+        password_set: true,
+        password_set_at: new Date().toISOString(),
+        password_reset_by: 'Self-Security-Question'
+      }).eq('studentid', sid);
+
+      if(r.error) throw r.error;
+
+      if(typeof confetti !== 'undefined'){
+        confetti({ particleCount: 150, spread: 90, origin: { y: .6 } });
+      }
+      if(typeof window.showAchievement === 'function'){
+        window.showAchievement('✅','Password Reset!','പുതിയ password ഉപയോഗിച്ച് login ചെയ്യുക');
+      } else {
+        showToast('✅ Password reset ചെയ്തു!','success');
+      }
+      if(typeof window.logAudit === 'function'){
+        window.logAudit('SELF_RESET_PASSWORD','students', sid, null, { via: 'security_question' });
+      }
+
+      setTimeout(function(){
+        window._closeForgotAll();
+
+        // Prefill login form
+        var sidInput = document.getElementById('studentId');
+        var pwdField = document.getElementById('passwordField');
+        var pwdInput = document.getElementById('studentPassword');
+
+        if(sidInput) sidInput.value = sid;
+        if(pwdField) pwdField.style.display = 'block';
+        if(pwdInput) setTimeout(function(){ pwdInput.focus(); }, 400);
+
+        showToast('🔑 പുതിയ password ഉപയോഗിച്ച് login ചെയ്യുക','info');
+      }, 1200);
+
+    }catch(err){
+      showToast('❌ ' + err.message,'error');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-save"></i> Save New Password';
+    }
+  };
+
+  /* ═══════════════════════════════════════════════ */
+  /* CLICK OUTSIDE + ESC                              */
+  /* ═══════════════════════════════════════════════ */
+  document.addEventListener('DOMContentLoaded', function(){
+    var m = document.getElementById('forgotModal');
+    if(m){
+      m.addEventListener('click', function(e){
+        if(e.target === this) window._closeForgotAll();
+      });
+    }
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        var m2 = document.getElementById('forgotModal');
+        if(m2 && m2.classList.contains('open')) window._closeForgotAll();
+      }
+    });
+  });
+
+  /* ═══════════════════════════════════════════════ */
+  /* KEYBOARD VIEWPORT HANDLER (Mobile)               */
+  /* ═══════════════════════════════════════════════ */
+  if(window.visualViewport){
+    var vv = window.visualViewport;
+    function adjustModal(){
+      var m = document.querySelector('#forgotModal .sec-modal-card');
+      if(!m) return;
+      var isOpen = document.getElementById('forgotModal').classList.contains('open');
+      if(!isOpen) return;
+
+      var vh = vv.height;
+      var winH = window.innerHeight;
+      var keyboardOpen = (winH - vh) > 120;
+
+      if(keyboardOpen && window.innerWidth <= 600){
+        m.style.maxHeight = vh + 'px';
+      } else {
+        m.style.maxHeight = '';
+      }
+    }
+    vv.addEventListener('resize', adjustModal);
+    vv.addEventListener('scroll', adjustModal);
+  }
+
+  console.log('✅ Responsive Security Question System loaded');
+  console.log('   → Mobile: bottom sheet style');
+  console.log('   → Desktop: centered modal');
+  console.log('   → iOS zoom: fixed (16px inputs)');
+  console.log('   → Keyboard: dynamic viewport');
 })();
 </script>
 </body>
