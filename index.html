@@ -1402,6 +1402,37 @@ body.light-mode .new-badge{
   box-shadow: 0 4px 12px -2px rgba(239,68,68,.5);
 }
 </style>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔤 MALAYALAM FONT FOR PDF — v25.0                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script>
+window.MALAYALAM_FONT_BASE64 = null;
+async function loadMalayalamFontForPDF() {
+  if (window.MALAYALAM_FONT_BASE64) return window.MALAYALAM_FONT_BASE64;
+  try {
+    const url = 'https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoSansMalayalam/NotoSansMalayalam-Regular.ttf';
+    const res = await fetch(url);
+    const buf = await res.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    window.MALAYALAM_FONT_BASE64 = btoa(bin);
+    console.log('✅ Malayalam font loaded');
+    return window.MALAYALAM_FONT_BASE64;
+  } catch(e) { console.warn('Font load failed:', e); return null; }
+}
+async function setupMalayalamPDF(doc) {
+  const fontB64 = await loadMalayalamFontForPDF();
+  if (!fontB64) return false;
+  try {
+    doc.addFileToVFS('NotoSansMalayalam.ttf', fontB64);
+    doc.addFont('NotoSansMalayalam.ttf', 'NotoSansMalayalam', 'normal');
+    doc.setFont('NotoSansMalayalam', 'normal');
+    return true;
+  } catch(e) { return false; }
+}
+setTimeout(loadMalayalamFontForPDF, 2000);
+</script>
 </head>
 <body>
 
@@ -4500,6 +4531,7 @@ async function downloadPassbookPDF(){
     if(!r.data||r.data.length===0){showToast('No transactions','error');showLoading(false);return;}
     var jsPDF=window.jspdf.jsPDF;
     var doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
+    await setupMalayalamPDF(doc);
     var pw=doc.internal.pageSize.getWidth();
     doc.setFillColor(21,71,168);doc.rect(0,0,pw,80,'F');
     doc.setTextColor(255,255,255);
@@ -5329,6 +5361,7 @@ async function downloadAcademicReportEnhanced(filterExam){
     var logoData=await getLogoDataUrl();
     var jsPDF=window.jspdf.jsPDF;
     var doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
+    await setupMalayalamPDF(doc);
     var pageW=doc.internal.pageSize.getWidth();
     var pageH=doc.internal.pageSize.getHeight();
 
@@ -5707,6 +5740,7 @@ async function downloadPaymentsPDF(){
   if(!filteredPayments||filteredPayments.length===0){showToast('No data','error');return;}
   var jsPDF=window.jspdf.jsPDF;
   var doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
+  await setupMalayalamPDF(doc);
   var date=document.getElementById('adminDate').value;
   doc.setFontSize(15);doc.text('Palathulli — Class '+currentAdminClass,40,45);
   doc.setFontSize(10);doc.text('Date: '+date,40,65);
@@ -5755,6 +5789,7 @@ async function downloadStudentsPDF(){
 
     var jsPDF = window.jspdf.jsPDF;
     var doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    await setupMalayalamPDF(doc);
     var pageW = doc.internal.pageSize.getWidth();
     var pageH = doc.internal.pageSize.getHeight();
 
@@ -6395,6 +6430,7 @@ async function downloadClassMarksPDF(){
     var subjects=getSubjectsForClass(currentAdminClass,exam);
     var jsPDF=window.jspdf.jsPDF;
     var doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+    await setupMalayalamPDF(doc);
     var pw=doc.internal.pageSize.getWidth();
     doc.setFillColor(21,71,168);doc.rect(0,0,pw,70,'F');
     doc.setTextColor(255,255,255);
@@ -6892,6 +6928,7 @@ async function downloadCompetitionsPDF(){
   if(!filteredCompetitions.length){showToast('No data','error');return;}
   var jsPDF=window.jspdf.jsPDF;
   var doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+  await setupMalayalamPDF(doc);
   var pw=doc.internal.pageSize.getWidth();
   doc.setFillColor(21,71,168);doc.rect(0,0,pw,70,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont(undefined,'bold');
@@ -7051,6 +7088,7 @@ async function downloadBalancesPDF(){
   if(!balancesData.length){showToast('No data','error');return;}
   var jsPDF=window.jspdf.jsPDF;
   var doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
+  await setupMalayalamPDF(doc);
   doc.setFontSize(15);doc.text('Balances — Class '+currentAdminClass,40,45);
   doc.autoTable({
     startY:75,head:[['#','Student','Class','Balance']],
@@ -8787,6 +8825,7 @@ async function downloadFeeParentsPDF(){
   try{
     var jsPDF = window.jspdf.jsPDF;
     var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    await setupMalayalamPDF(doc);
     var pw = doc.internal.pageSize.getWidth();
 
     doc.setFillColor(21,71,168); doc.rect(0,0,pw,80,'F');
@@ -10667,6 +10706,17 @@ var loginLogsData=[],filteredLoginLogs=[];
 
 async function trackLogin(student){
   if(!supabaseClient||!student)return;
+  var now=Date.now();
+  var lastTrack=window._lastTrackedLogin||{};
+  var sessionKey=student.studentid+'_'+(sessionStorage.getItem('noor_session_id')||'default');
+  if(lastTrack.sessionKey===sessionKey && (now-(lastTrack.time||0))<300000){
+    console.log('⏭️ Skipping duplicate login tracking');
+    return;
+  }
+  if(!sessionStorage.getItem('noor_session_id')){
+    sessionStorage.setItem('noor_session_id','sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8));
+  }
+  window._lastTrackedLogin={studentid:student.studentid,sessionKey:sessionKey,time:now};
   try{
     var device='Unknown';
     var ua=navigator.userAgent||'';
@@ -10682,6 +10732,7 @@ async function trackLogin(student){
       device:device,
       user_agent:ua.substring(0,200)
     });
+    console.log('✅ Login tracked:',student.studentid);
   }catch(e){console.warn('trackLogin:',e);}
 }
 
@@ -10785,6 +10836,7 @@ async function downloadLoginLogsPDF(){
   var date=document.getElementById('loginLogDate').value;
   var jsPDF=window.jspdf.jsPDF;
   var doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
+  await setupMalayalamPDF(doc);
   var pw=doc.internal.pageSize.getWidth();
   doc.setFillColor(21,71,168);doc.rect(0,0,pw,70,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont(undefined,'bold');
@@ -15143,6 +15195,486 @@ window.switchAdminTab = function(tab){
 
 console.log('✅ Fee Admin v3.0 loaded — loadFeeRecordsForAdmin:', typeof window.loadFeeRecordsForAdmin);
 
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🚀 v25.0 — ALL-IN-ONE ENHANCEMENTS                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+  console.log('🚀 Loading v25.0 enhancements...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 1️⃣ SESSION TIMEOUT — 30 min inactivity                  */
+  /* ═══════════════════════════════════════════════════════ */
+  var INACTIVITY_MS = 30 * 60 * 1000;
+  var _inactivityTimer = null;
+  function getU(){
+    if (typeof currentUser !== 'undefined' && currentUser) return currentUser;
+    return window.currentUser;
+  }
+  function resetInactivityTimer(){
+    if (_inactivityTimer) clearTimeout(_inactivityTimer);
+    var u = getU(); if (!u) return;
+    _inactivityTimer = setTimeout(function(){
+      var u2 = getU();
+      if (u2 && !window.isAdminMode) {
+        if (typeof showToast === 'function') showToast('⏰ Session expired. വീണ്ടും login ചെയ്യൂ.','info');
+        if (typeof window.logout === 'function') window.logout();
+      }
+    }, INACTIVITY_MS);
+  }
+  ['mousedown','keydown','scroll','touchstart','click'].forEach(function(ev){
+    document.addEventListener(ev, resetInactivityTimer, { passive: true });
+  });
+  var _origUpdate = window.updateDashboardUI;
+  if (typeof _origUpdate === 'function') {
+    window.updateDashboardUI = function(){
+      _origUpdate.apply(this, arguments);
+      resetInactivityTimer();
+    };
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 2️⃣ RATE LIMITING                                        */
+  /* ═══════════════════════════════════════════════════════ */
+  var _rateLimits = {};
+  window.rateLimit = function(key, maxCalls, windowMs){
+    maxCalls = maxCalls || 5;
+    windowMs = windowMs || 60000;
+    var now = Date.now();
+    if (!_rateLimits[key]) _rateLimits[key] = [];
+    _rateLimits[key] = _rateLimits[key].filter(function(t){ return now - t < windowMs; });
+    if (_rateLimits[key].length >= maxCalls) {
+      if (typeof showToast === 'function') showToast('⚠️ അൽപ്പം കഴിഞ്ഞ് ശ്രമിക്കൂ','error');
+      return false;
+    }
+    _rateLimits[key].push(now);
+    return true;
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 3️⃣ AUDIT LOGGING                                        */
+  /* ═══════════════════════════════════════════════════════ */
+  window.logAudit = async function(action, table, recordId, oldData, newData){
+    try {
+      var client = window.supabaseClient || (typeof supabaseClient !== 'undefined' ? supabaseClient : null);
+      if (!client) return;
+      var u = (typeof currentUser !== 'undefined' && currentUser) || window.currentUser;
+      var adm = window.isAdminMode || (typeof isAdminMode !== 'undefined' && isAdminMode);
+      await client.from('audit_logs').insert({
+        user_id: adm ? 'ADMIN' : (u ? u.studentId : 'unknown'),
+        user_type: adm ? 'admin' : 'student',
+        action: action, table_name: table, record_id: String(recordId || ''),
+        old_data: oldData || null, new_data: newData || null,
+        user_agent: navigator.userAgent.substring(0, 200)
+      });
+    } catch(e) {}
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 4️⃣ ERROR TRACKING                                       */
+  /* ═══════════════════════════════════════════════════════ */
+  function sendError(p){
+    try {
+      var c = window.supabaseClient || (typeof supabaseClient !== 'undefined' ? supabaseClient : null);
+      if (!c) return;
+      var u = (typeof currentUser !== 'undefined' && currentUser) || window.currentUser;
+      c.from('error_logs').insert({
+        message: String(p.message || '').substring(0, 1000),
+        source: p.source || '', lineno: p.lineno || null, colno: p.colno || null,
+        stack: String(p.stack || '').substring(0, 2000),
+        user_id: u ? u.studentId : 'guest',
+        user_agent: navigator.userAgent.substring(0, 200),
+        url: window.location.href
+      }).then(function(){}).catch(function(){});
+    } catch(e) {}
+  }
+  window.addEventListener('error', function(e){
+    if (!e.message && !e.error) return;
+    sendError({ message: e.message || String(e.error), source: e.filename, lineno: e.lineno, colno: e.colno, stack: e.error && e.error.stack });
+  });
+  window.unhandledRejectionHandler = true;
+  window.addEventListener('unhandledrejection', function(e){
+    sendError({ message: (e.reason && e.reason.message) || String(e.reason), stack: e.reason && e.reason.stack });
+  });
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 5️⃣ DARK MODE — Proper Toggle                            */
+  /* ═══════════════════════════════════════════════════════ */
+  window.applyTheme_v25 = function(theme){
+    if (theme === 'dark') {
+      document.body.classList.remove('light-mode');
+      var i = document.getElementById('themeIcon');
+      if (i) i.className = 'fas fa-moon';
+    } else {
+      document.body.classList.add('light-mode');
+      var i2 = document.getElementById('themeIcon');
+      if (i2) i2.className = 'fas fa-sun';
+    }
+    try { localStorage.setItem('noor_theme', theme); } catch(e) {}
+    if (typeof renderCharts === 'function') {
+      var u = (typeof currentUser !== 'undefined' && currentUser) || window.currentUser;
+      if (u) setTimeout(renderCharts, 300);
+    }
+  };
+
+  window.toggleTheme_v25 = function(){
+    var cur = localStorage.getItem('noor_theme') || 'light';
+    var next = cur === 'light' ? 'dark' : 'light';
+    window.applyTheme_v25(next);
+    if (typeof showToast === 'function') {
+      showToast(next === 'dark' ? '🌙 Dark mode ON' : '☀️ Light mode ON', 'info');
+    }
+  };
+
+  /* Override existing toggleTheme */
+  window.toggleTheme = window.toggleTheme_v25;
+
+  /* Apply saved theme on init */
+  setTimeout(function(){
+    var saved = localStorage.getItem('noor_theme');
+    if (saved === 'dark') window.applyTheme_v25('dark');
+  }, 500);
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 6️⃣ CERTIFICATE GENERATOR                                */
+  /* ═══════════════════════════════════════════════════════ */
+  window.generateCertificate = async function(type, studentData){
+    if (!window.jspdf) { showToast('PDF library loading...','error'); return; }
+    var { jsPDF } = window.jspdf;
+    var doc = new jsPDF('l', 'mm', 'a4');
+    var W = 297, H = 210;
+
+    /* Malayalam font */
+    if (typeof setupMalayalamPDF === 'function') {
+      await setupMalayalamPDF(doc);
+    }
+
+    /* Background */
+    doc.setFillColor(253, 246, 227);
+    doc.rect(0, 0, W, H, 'F');
+
+    /* Borders */
+    doc.setDrawColor(212, 175, 55);
+    doc.setLineWidth(3);
+    doc.rect(10, 10, W - 20, H - 20);
+    doc.setDrawColor(21, 71, 168);
+    doc.setLineWidth(0.5);
+    doc.rect(14, 14, W - 28, H - 28);
+
+    /* Logo */
+    try {
+      if (typeof getLogoDataUrl === 'function') {
+        var logoData = await getLogoDataUrl();
+        if (logoData) doc.addImage(logoData, 'PNG', W/2 - 15, 22, 30, 30);
+      }
+    } catch(e) {}
+
+    /* Header */
+    doc.setFontSize(22);
+    doc.setTextColor(21, 71, 168);
+    doc.text('NOORUSSALAM MADRASA', W/2, 68, { align: 'center' });
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Kambippalam, Kerala Estate • Reg No. 6110', W/2, 76, { align: 'center' });
+
+    /* Title */
+    var labels = {
+      completion: 'CERTIFICATE OF COMPLETION',
+      merit: 'CERTIFICATE OF MERIT',
+      hifz: 'HIFZ COMPLETION CERTIFICATE',
+      attendance: 'CERTIFICATE OF PERFECT ATTENDANCE',
+      competition: 'CERTIFICATE OF ACHIEVEMENT',
+      character: 'CERTIFICATE OF EXCELLENCE'
+    };
+    doc.setFontSize(18);
+    doc.setTextColor(180, 83, 9);
+    doc.text(labels[type] || 'CERTIFICATE', W/2, 95, { align: 'center' });
+    doc.setDrawColor(212, 175, 55);
+    doc.setLineWidth(0.8);
+    doc.line(W/2 - 40, 100, W/2 + 40, 100);
+
+    /* Body */
+    doc.setFontSize(11);
+    doc.setTextColor(80, 80, 80);
+    doc.text('This is to certify that', W/2, 115, { align: 'center' });
+
+    doc.setFontSize(28);
+    doc.setTextColor(0, 0, 0);
+    doc.text(studentData.name, W/2, 133, { align: 'center' });
+
+    doc.setFontSize(11);
+    doc.setTextColor(80, 80, 80);
+    doc.text('Class ' + studentData.class + ' • Student ID: ' + studentData.studentid, W/2, 142, { align: 'center' });
+
+    doc.setFontSize(12);
+    doc.setTextColor(21, 71, 168);
+    doc.text(studentData.title || 'For outstanding performance', W/2, 155, { align: 'center', maxWidth: W-60 });
+
+    /* Date + Signature */
+    var certDate = new Date();
+    doc.setFontSize(10);
+    doc.setTextColor(80, 80, 80);
+    doc.text(certDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }), 35, H - 35);
+    doc.setDrawColor(80, 80, 80);
+    doc.setLineWidth(0.4);
+    doc.line(35, H - 32, 90, H - 32);
+    doc.setFontSize(8);
+    doc.text('Date', 35, H - 28);
+
+    var swadar = (typeof SWADAR_MUALLIM_NAME !== 'undefined' && SWADAR_MUALLIM_NAME) || 'Swadar Muallim';
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text(swadar, W - 35, H - 40, { align: 'right' });
+
+    if (typeof SWADAR_SIGNATURE !== 'undefined' && SWADAR_SIGNATURE && SWADAR_SIGNATURE.indexOf('data:image') === 0) {
+      try { doc.addImage(SWADAR_SIGNATURE, 'PNG', W - 80, H - 60, 50, 20); } catch(e) {}
+    }
+    doc.setDrawColor(80, 80, 80);
+    doc.line(W - 90, H - 32, W - 35, H - 32);
+    doc.setFontSize(8);
+    doc.text('Swadar Muallim Signature', W - 90, H - 28);
+
+    /* Serial */
+    var serial = 'NSM-' + type.substring(0, 3).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text('Certificate No: ' + serial, W/2, H - 15, { align: 'center' });
+
+    doc.save('Certificate_' + type + '_' + studentData.name.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf');
+    if (typeof confetti !== 'undefined') confetti({ particleCount: 150, spread: 90, origin: { y: .6 } });
+    if (typeof showToast === 'function') showToast('✅ Certificate generated!','success');
+    if (typeof window.logAudit === 'function') window.logAudit('GENERATE_CERTIFICATE', 'certificates', serial, null, { studentid: studentData.studentid, type: type });
+  };
+
+  window.openCertificateModal = async function(){
+    if (!window.supabaseClient && typeof supabaseClient === 'undefined') return;
+    var client = window.supabaseClient || supabaseClient;
+    var r = await client.from('students').select('studentid, name, class').order('class').order('name');
+    var students = r.data || [];
+
+    var html = '<form onsubmit="event.preventDefault();window._handleCertSubmit()">' +
+      '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Certificate Type *</label>' +
+      '<select id="certType_v25" class="modal-form-input" required>' +
+        '<option value="completion">📜 Course Completion</option>' +
+        '<option value="merit">🏆 Merit / Academic</option>' +
+        '<option value="hifz">📖 Hifz Completion</option>' +
+        '<option value="attendance">✅ Perfect Attendance</option>' +
+        '<option value="competition">🥇 Competition Winner</option>' +
+        '<option value="character">⭐ Best Character</option>' +
+      '</select></div>' +
+      '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Student *</label>' +
+      '<select id="certStudent_v25" class="modal-form-input" required>' +
+        '<option value="">-- Select --</option>' +
+        students.map(function(s){ return '<option value="' + s.studentid + '" data-name="' + s.name + '" data-class="' + s.class + '">' + s.name + ' (Class ' + s.class + ' — ' + s.studentid + ')</option>'; }).join('') +
+      '</select></div>' +
+      '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Title *</label>' +
+      '<input type="text" id="certTitle_v25" class="modal-form-input" required maxlength="100" placeholder="e.g., Academic Excellence Award 2026"></div>' +
+      '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-file-pdf"></i> Generate</button>' +
+      '<button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>' +
+    '</form>';
+
+    if (typeof modalTitleSpan !== 'undefined') modalTitleSpan.innerText = '🎓 Certificate Generator';
+    if (typeof modalBodyDiv !== 'undefined') modalBodyDiv.innerHTML = html;
+    if (typeof modal !== 'undefined') modal.style.display = 'flex';
+  };
+
+  window._handleCertSubmit = function(){
+    var type = document.getElementById('certType_v25').value;
+    var sel = document.getElementById('certStudent_v25');
+    var opt = sel.options[sel.selectedIndex];
+    var title = document.getElementById('certTitle_v25').value.trim();
+    if (!opt.value || !title) { showToast('എല്ലാ fields-ഉം പൂരിപ്പിക്കുക','error'); return; }
+    window.generateCertificate(type, {
+      studentid: opt.value,
+      name: opt.dataset.name,
+      class: opt.dataset.class,
+      title: title
+    });
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 7️⃣ CSV IMPORT                                            */
+  /* ═══════════════════════════════════════════════════════ */
+  window.importStudentsCSV = async function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    try {
+      var text = await file.text();
+      var lines = text.split(/\r?\n/).filter(function(l){ return l.trim(); });
+      if (lines.length < 2) throw new Error('CSV empty');
+      function parseLine(line){
+        var r = [], c = '', q = false;
+        for (var i = 0; i < line.length; i++) {
+          var ch = line[i];
+          if (ch === '"') { if (q && line[i+1] === '"') { c += '"'; i++; } else q = !q; }
+          else if (ch === ',' && !q) { r.push(c); c = ''; }
+          else c += ch;
+        }
+        r.push(c);
+        return r.map(function(x){ return x.trim(); });
+      }
+      var h = parseLine(lines[0]).map(function(x){ return x.toLowerCase(); });
+      var ix = {
+        sid: h.findIndex(function(x){ return /student.?id|^id$|uid/i.test(x); }),
+        name: h.findIndex(function(x){ return /^name$/i.test(x); }),
+        cls: h.findIndex(function(x){ return /^class$/i.test(x); }),
+        roll: h.findIndex(function(x){ return /^roll$/i.test(x); }),
+        fname: h.findIndex(function(x){ return /father/i.test(x); }),
+        ph: h.findIndex(function(x){ return /phone|mobile/i.test(x); })
+      };
+      if (ix.sid < 0 || ix.name < 0 || ix.cls < 0) throw new Error('Missing required columns: studentid, name, class');
+      var list = [];
+      for (var i = 1; i < lines.length; i++) {
+        var cols = parseLine(lines[i]);
+        if (cols.length < 3) continue;
+        var sid = (cols[ix.sid] || '').trim().toUpperCase();
+        var nm = (cols[ix.name] || '').trim();
+        var cl = (cols[ix.cls] || '').trim();
+        if (!sid || !nm || !cl) continue;
+        list.push({
+          studentid: sid, name: nm, class: cl,
+          roll: ix.roll >= 0 ? (cols[ix.roll] || '').trim() : '',
+          fathername: ix.fname >= 0 ? (cols[ix.fname] || '').trim() : '',
+          phone: ix.ph >= 0 ? (cols[ix.ph] || '').trim() : '',
+          password: 'noor123'
+        });
+      }
+      if (!list.length) throw new Error('No valid rows');
+      if (!confirm('Import ' + list.length + ' students?')) return;
+      if (typeof showLoading === 'function') showLoading(true);
+      var client = window.supabaseClient || supabaseClient;
+      var done = 0;
+      for (var i = 0; i < list.length; i += 100) {
+        var chunk = list.slice(i, i + 100);
+        var r = await client.from('students').upsert(chunk, { onConflict: 'studentid' });
+        if (r.error) throw r.error;
+        done += chunk.length;
+      }
+      if (typeof showLoading === 'function') showLoading(false);
+      showToast('✅ Imported ' + done + ' students','success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 80 });
+      if (typeof loadStudentsForAdmin === 'function') loadStudentsForAdmin();
+      if (typeof window.logAudit === 'function') window.logAudit('BULK_IMPORT', 'students', 'csv', null, { count: done });
+    } catch(err) {
+      if (typeof showLoading === 'function') showLoading(false);
+      showToast('❌ ' + err.message,'error');
+    }
+    e.target.value = '';
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 8️⃣ DATA EXPORT (Backup)                                 */
+  /* ═══════════════════════════════════════════════════════ */
+  window.exportAllData = async function(){
+    if (!confirm('എല്ലാ data-യും backup ആയി download ചെയ്യണോ?')) return;
+    if (typeof showLoading === 'function') showLoading(true);
+    try {
+      var client = window.supabaseClient || supabaseClient;
+      var tables = ['students','payments','withdrawals','exam_marks','moral_values',
+        'attendance_records','extracurricular_grades','competitions','fee_parents',
+        'fee_records','notifications','notice_board','events','activities','library',
+        'lessons','downloads','student_creations','login_logs','settings','fee_settings'];
+      var backup = { exported_at: new Date().toISOString(), version: '25.0', data: {} };
+      for (var i = 0; i < tables.length; i++) {
+        var t = tables[i];
+        try {
+          var all = [];
+          var from = 0;
+          while (true) {
+            var r = await client.from(t).select('*').range(from, from + 999);
+            if (r.error) throw r.error;
+            if (!r.data || !r.data.length) break;
+            all = all.concat(r.data);
+            if (r.data.length < 1000) break;
+            from += 1000;
+          }
+          backup.data[t] = all;
+        } catch(e) { backup.data[t] = { error: e.message }; }
+      }
+      var blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'noorussalam_backup_' + new Date().toISOString().split('T')[0] + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      if (typeof showLoading === 'function') showLoading(false);
+      showToast('✅ Backup downloaded (' + (blob.size/1024/1024).toFixed(2) + ' MB)','success');
+      if (typeof window.logAudit === 'function') window.logAudit('EXPORT_BACKUP', 'all', 'backup', null, { size_mb: (blob.size/1024/1024).toFixed(2) });
+    } catch(err) {
+      if (typeof showLoading === 'function') showLoading(false);
+      showToast('❌ ' + err.message,'error');
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 9️⃣ ADD CERTIFICATE + EXPORT BUTTONS TO ADMIN            */
+  /* ═══════════════════════════════════════════════════════ */
+  function addAdminButtons(){
+    var tabs = document.getElementById('adminTabs');
+    if (!tabs) return;
+    if (document.querySelector('[data-tab="certificate_v25"]')) return;
+
+    var certBtn = document.createElement('button');
+    certBtn.className = 'admin-tab';
+    certBtn.dataset.tab = 'certificate_v25';
+    certBtn.innerHTML = '🎓 Certificate';
+    certBtn.onclick = function(){ window.openCertificateModal(); };
+    tabs.appendChild(certBtn);
+  }
+
+  /* Add CSV/Export buttons to Students tab */
+  function addStudentTabButtons(){
+    var tab = document.getElementById('adminStudentsTab');
+    if (!tab) return;
+    var toolbar = tab.querySelector('.admin-toolbar');
+    if (!toolbar) return;
+    if (toolbar.querySelector('#csvImportInput_v25')) return;
+
+    var importBtn = document.createElement('button');
+    importBtn.className = 'btn-load';
+    importBtn.innerHTML = '<i class="fas fa-file-csv"></i> Import CSV';
+    importBtn.onclick = function(){ document.getElementById('csvImportInput_v25').click(); };
+    toolbar.appendChild(importBtn);
+
+    var importInput = document.createElement('input');
+    importInput.type = 'file';
+    importInput.id = 'csvImportInput_v25';
+    importInput.accept = '.csv';
+    importInput.style.display = 'none';
+    importInput.onchange = window.importStudentsCSV;
+    toolbar.appendChild(importInput);
+
+    var exportBtn = document.createElement('button');
+    exportBtn.className = 'btn-load';
+    exportBtn.style.background = 'linear-gradient(100deg,#8b5cf6,#a78bfa)';
+    exportBtn.style.color = '#fff';
+    exportBtn.innerHTML = '<i class="fas fa-download"></i> Export All';
+    exportBtn.onclick = window.exportAllData;
+    toolbar.appendChild(exportBtn);
+  }
+
+  /* Auto-inject on admin login */
+  var adminSection = document.getElementById('adminSection');
+  if (adminSection) {
+    var obs = new MutationObserver(function(){
+      if (adminSection.style.display === 'block') {
+        setTimeout(addAdminButtons, 800);
+        setTimeout(addStudentTabButtons, 1200);
+      }
+    });
+    obs.observe(adminSection, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  console.log('✅ v25.0 All enhancements loaded');
+  console.log('   → window.generateCertificate()');
+  console.log('   → window.importStudentsCSV()');
+  console.log('   → window.exportAllData()');
+  console.log('   → window.logAudit()');
+  console.log('   → window.rateLimit()');
 })();
 </script>
 </body>
