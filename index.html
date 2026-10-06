@@ -14144,6 +14144,644 @@ if('serviceWorker' in navigator){
 
 console.log('✅ PART 3.H loaded — Password + Security + Final');
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔧 MODAL SCROLL FIX v27.0                                -->
+<!-- Top/Bottom Always Reachable on Mobile + Desktop          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="modal-scroll-fix-v27">
+/* ─────────────────────────────────────────────────────── */
+/* 1️⃣ ALL MODAL WRAPPERS — Always Scrollable               */
+/* ─────────────────────────────────────────────────────── */
+#passwordSetupModal,
+#pwdResetModal,
+#forgotModal,
+#globalModal,
+#passbookModal,
+#studentWithdrawalModal,
+#notificationsModal,
+#editProfileModal,
+#topperModal,
+#topperCropModal,
+#uploadCreationModal,
+#notesModal,
+#noticeBoardModal,
+#findStudentIdModal,
+#helpModal,
+#creationLightbox {
+  /* KEY FIX: Allow outer scroll */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+  
+  /* KEY FIX: Don't use center (causes top cutoff) */
+  align-items: flex-start !important;
+  justify-content: center !important;
+  
+  /* Breathing room */
+  padding: 16px !important;
+}
 
+/* Override inline styles on password modals specifically */
+#passwordSetupModal[style*="display: flex"],
+#passwordSetupModal[style*="display:flex"],
+#pwdResetModal[style*="display: flex"],
+#pwdResetModal[style*="display:flex"] {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow-y: auto !important;
+}
+
+/* ─────────────────────────────────────────────────────── */
+/* 2️⃣ MODAL CARDS — Auto Margins for Centering            */
+/* ─────────────────────────────────────────────────────── */
+/* 
+   💡 WHY: `align-items: center` cuts off top when content overflows.
+   ✅ SOLUTION: `margin: auto 0` = centers WITHOUT cutting off.
+*/
+#passwordSetupModal > div,
+#pwdResetModal > div,
+#forgotModal > .sec-modal-card,
+#passbookModal > div,
+#studentWithdrawalModal > div,
+#notificationsModal > div,
+#editProfileModal > div,
+#topperModal > div,
+#topperCropModal > div,
+#uploadCreationModal > div,
+#notesModal > div,
+#noticeBoardModal > div,
+#findStudentIdModal > div,
+#helpModal > .help-modal-box {
+  margin: auto 0 !important;
+  flex-shrink: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+}
+
+/* ─────────────────────────────────────────────────────── */
+/* 3️⃣ GLOBAL MODAL — Special Case (Internal Scroll)       */
+/* ─────────────────────────────────────────────────────── */
+#globalModal > div {
+  margin: auto 0 !important;
+  flex-shrink: 0 !important;
+  width: 100% !important;
+  max-width: 820px !important;
+  max-height: calc(100vh - 32px) !important;
+  max-height: calc(100dvh - 32px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+#globalModal #modalContentBody {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+/* ─────────────────────────────────────────────────────── */
+/* 4️⃣ CREATION LIGHTBOX — Different Structure              */
+/* ─────────────────────────────────────────────────────── */
+#creationLightbox {
+  align-items: flex-start !important;
+  padding: 16px !important;
+}
+
+#creationLightbox .cl-content {
+  margin: auto 0 !important;
+  flex-shrink: 0 !important;
+  max-height: none !important;
+}
+
+/* ─────────────────────────────────────────────────────── */
+/* 5️⃣ SURVEY POPUP — Mobile Friendly                       */
+/* ─────────────────────────────────────────────────────── */
+#surveyPopup {
+  align-items: flex-start !important;
+  padding: 16px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+#surveyPopup .survey-card {
+  margin: auto 0 !important;
+  flex-shrink: 0 !important;
+  max-height: none !important;
+}
+
+/* ─────────────────────────────────────────────────────── */
+/* 6️⃣ POSTER PREVIEW — Full Screen Scroll                   */
+/* ─────────────────────────────────────────────────────── */
+#posterPreviewOverlay {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 20px 20px 120px !important;
+  align-items: flex-start !important;
+}
+
+#posterPreviewOverlay .certificate-canvas {
+  margin: 0 auto !important;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 7️⃣ MOBILE — Bottom Sheet WITH Full Scroll               */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  #passwordSetupModal,
+  #pwdResetModal,
+  #forgotModal,
+  #globalModal,
+  #passbookModal,
+  #studentWithdrawalModal,
+  #notificationsModal,
+  #editProfileModal,
+  #topperModal,
+  #topperCropModal,
+  #uploadCreationModal,
+  #notesModal,
+  #noticeBoardModal,
+  #findStudentIdModal,
+  #surveyPopup,
+  #creationLightbox,
+  #helpModal {
+    padding: 0 !important;
+    align-items: flex-end !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Modal cards — bottom sheet style WITH scroll */
+  #passwordSetupModal > div,
+  #pwdResetModal > div,
+  #forgotModal > .sec-modal-card,
+  #passbookModal > div,
+  #studentWithdrawalModal > div,
+  #notificationsModal > div,
+  #editProfileModal > div,
+  #topperModal > div,
+  #topperCropModal > div,
+  #uploadCreationModal > div,
+  #notesModal > div,
+  #noticeBoardModal > div,
+  #findStudentIdModal > div,
+  #helpModal > .help-modal-box,
+  #surveyPopup .survey-card,
+  #creationLightbox .cl-content {
+    margin: 0 !important;
+    border-radius: 24px 24px 0 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-shrink: 0 !important;
+    padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Password setup — allow slightly taller */
+  #passwordSetupModal > div,
+  #pwdResetModal > div,
+  #forgotModal > .sec-modal-card {
+    max-height: 94dvh !important;
+  }
+
+  /* Global modal keeps internal scroll structure */
+  #globalModal > div {
+    max-height: 94dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
+
+  #globalModal #modalContentBody {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    padding-bottom: 24px !important;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 500px) {
+  #passwordSetupModal > div,
+  #pwdResetModal > div,
+  #forgotModal > .sec-modal-card {
+    padding: 22px 18px !important;
+    padding-bottom: max(22px, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 8️⃣ DESKTOP — Visible Scrollbar + Grab Cursor             */
+/* ═══════════════════════════════════════════════════════ */
+@media (min-width: 901px) {
+  #passwordSetupModal::-webkit-scrollbar,
+  #pwdResetModal::-webkit-scrollbar,
+  #forgotModal::-webkit-scrollbar,
+  #globalModal::-webkit-scrollbar,
+  #passbookModal::-webkit-scrollbar,
+  #studentWithdrawalModal::-webkit-scrollbar,
+  #notificationsModal::-webkit-scrollbar,
+  #editProfileModal::-webkit-scrollbar,
+  #topperModal::-webkit-scrollbar,
+  #uploadCreationModal::-webkit-scrollbar,
+  #notesModal::-webkit-scrollbar,
+  #noticeBoardModal::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  #passwordSetupModal::-webkit-scrollbar-thumb,
+  #pwdResetModal::-webkit-scrollbar-thumb,
+  #forgotModal::-webkit-scrollbar-thumb,
+  #globalModal::-webkit-scrollbar-thumb,
+  #passbookModal::-webkit-scrollbar-thumb,
+  #studentWithdrawalModal::-webkit-scrollbar-thumb,
+  #notificationsModal::-webkit-scrollbar-thumb,
+  #editProfileModal::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3b8bff, #1547a8);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  #passwordSetupModal::-webkit-scrollbar-track,
+  #pwdResetModal::-webkit-scrollbar-track,
+  #forgotModal::-webkit-scrollbar-track {
+    background: rgba(255,255,255,.08);
+    border-radius: 10px;
+  }
+}
+
+/* Grab cursor feedback */
+.grabbable {
+  cursor: grab !important;
+}
+
+.modal-dragging,
+.modal-dragging * {
+  cursor: grabbing !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.modal-dragging {
+  scroll-behavior: auto !important;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 9️⃣ FORCE OVERRIDE INLINE STYLES                          */
+/* ═══════════════════════════════════════════════════════ */
+#passwordSetupModal,
+#pwdResetModal {
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+@media (max-width: 900px) {
+  #passwordSetupModal,
+  #pwdResetModal {
+    align-items: flex-end !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🔟 PREVENT SCROLL LOCK CONFLICTS                         */
+/* ═══════════════════════════════════════════════════════ */
+/* Don't let JS scroll-lock freeze modal scrolling */
+#passwordSetupModal,
+#pwdResetModal,
+#forgotModal,
+#globalModal,
+#passbookModal,
+#studentWithdrawalModal,
+#notificationsModal,
+#editProfileModal {
+  touch-action: pan-y !important;
+}
+
+#globalModal #modalContentBody,
+#passwordSetupModal > div,
+#pwdResetModal > div,
+.sec-modal-card {
+  touch-action: pan-y !important;
+}
+</style>
+
+<script id="modal-scroll-fix-js">
+/* ═══════════════════════════════════════════════════════ */
+/* 🖱️ MOUSE DRAG-TO-SCROLL (Desktop)                       */
+/* Click and drag inside modal = scroll like a phone        */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  // All scrollable modals
+  var MODAL_IDS = [
+    'passwordSetupModal','pwdResetModal','forgotModal',
+    'globalModal','passbookModal','studentWithdrawalModal',
+    'notificationsModal','editProfileModal','topperModal',
+    'topperCropModal','uploadCreationModal','notesModal',
+    'noticeBoardModal','findStudentIdModal','helpModal',
+    'creationLightbox','surveyPopup'
+  ];
+
+  var DRAG_THRESHOLD = 5; // pixels before considered a drag
+
+  function makeDraggable(scrollEl){
+    if(!scrollEl || scrollEl._dragReady) return;
+    scrollEl._dragReady = true;
+
+    var isDragging = false;
+    var wasActuallyDragged = false;
+    var startX = 0, startY = 0;
+    var startScrollTop = 0, startScrollLeft = 0;
+    var lastMoveTime = 0;
+    var velocity = 0;
+    var momentumId = null;
+
+    function onMouseDown(e){
+      // Skip interactive elements
+      var t = e.target;
+      if(t.closest('input, textarea, select, button, a, label, [contenteditable], [role="button"]')) return;
+      // Left mouse button only
+      if(e.button !== 0) return;
+      // Skip if touch device
+      if('ontouchstart' in window && e.pointerType === 'touch') return;
+
+      isDragging = true;
+      wasActuallyDragged = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      startScrollTop = scrollEl.scrollTop;
+      startScrollLeft = scrollEl.scrollLeft;
+      lastMoveTime = performance.now();
+      velocity = 0;
+
+      if(momentumId) cancelAnimationFrame(momentumId);
+      
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('mouseleave', onMouseUp);
+    }
+
+    function onMouseMove(e){
+      if(!isDragging) return;
+      var dx = e.clientX - startX;
+      var dy = e.clientY - startY;
+      
+      if(!wasActuallyDragged && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)){
+        wasActuallyDragged = true;
+        scrollEl.classList.add('grabbable');
+        scrollEl.classList.add('modal-dragging');
+      }
+
+      if(wasActuallyDragged){
+        var now = performance.now();
+        var dt = now - lastMoveTime;
+        if(dt > 0){
+          var prevTop = scrollEl.scrollTop;
+          scrollEl.scrollTop = startScrollTop - dy;
+          scrollEl.scrollLeft = startScrollLeft - dx;
+          // Calculate velocity for momentum
+          velocity = (scrollEl.scrollTop - prevTop) / dt * 16.67;
+        }
+        lastMoveTime = now;
+        e.preventDefault();
+      }
+    }
+
+    function onMouseUp(e){
+      if(!isDragging) return;
+      isDragging = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mouseleave', onMouseUp);
+
+      scrollEl.classList.remove('grabbable');
+
+      // Momentum scroll
+      if(wasActuallyDragged && Math.abs(velocity) > 1){
+        var maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
+        function momentum(){
+          velocity *= 0.94;
+          if(Math.abs(velocity) < 0.5) return;
+          var newTop = scrollEl.scrollTop + velocity;
+          if(newTop < 0){ newTop = 0; velocity = 0; }
+          if(newTop > maxScroll){ newTop = maxScroll; velocity = 0; }
+          scrollEl.scrollTop = newTop;
+          momentumId = requestAnimationFrame(momentum);
+        }
+        momentumId = requestAnimationFrame(momentum);
+      }
+
+      // Prevent click-through after drag
+      if(wasActuallyDragged){
+        var blockClick = function(ev){
+          ev.stopPropagation();
+          ev.preventDefault();
+          document.removeEventListener('click', blockClick, true);
+        };
+        document.addEventListener('click', blockClick, true);
+        
+        // Remove dragging class after a moment
+        setTimeout(function(){
+          scrollEl.classList.remove('modal-dragging');
+        }, 100);
+      } else {
+        scrollEl.classList.remove('modal-dragging');
+      }
+
+      wasActuallyDragged = false;
+    }
+
+    scrollEl.addEventListener('mousedown', onMouseDown);
+  }
+
+  function findScrollableModal(){
+    // Find the topmost visible modal
+    for(var i = 0; i < MODAL_IDS.length; i++){
+      var el = document.getElementById(MODAL_IDS[i]);
+      if(!el) continue;
+      var disp = el.style.display;
+      var isVisible = disp === 'flex' || disp === 'block' || 
+                     el.classList.contains('open') || 
+                     el.classList.contains('active');
+      if(isVisible) return el;
+    }
+    return null;
+  }
+
+  function enableAllDraggables(){
+    MODAL_IDS.forEach(function(id){
+      var el = document.getElementById(id);
+      if(!el) return;
+      
+      // The outer wrapper itself
+      makeDraggable(el);
+      
+      // Direct children that might be scrollable
+      var children = el.querySelectorAll(':scope > div, :scope > .sec-modal-card, :scope > .help-modal-box');
+      children.forEach(function(child){
+        // Only if the child is actually scrollable
+        var style = window.getComputedStyle(child);
+        if(style.overflowY === 'auto' || style.overflowY === 'scroll'){
+          makeDraggable(child);
+        }
+      });
+    });
+  }
+
+  // Initial run
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', enableAllDraggables);
+  } else {
+    enableAllDraggables();
+  }
+
+  // Re-run when modals appear (delayed)
+  setTimeout(enableAllDraggables, 2000);
+  setTimeout(enableAllDraggables, 5000);
+
+  // Watch for dynamically added scrollable elements
+  var observer = new MutationObserver(function(mutations){
+    var needsUpdate = false;
+    mutations.forEach(function(m){
+      if(m.type === 'attributes' && (m.attributeName === 'style' || m.attributeName === 'class')){
+        needsUpdate = true;
+      }
+      if(m.addedNodes && m.addedNodes.length > 0){
+        needsUpdate = true;
+      }
+    });
+    if(needsUpdate) setTimeout(enableAllDraggables, 400);
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    MODAL_IDS.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) observer.observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
+    });
+  });
+
+  console.log('✅ Mouse drag-to-scroll ready for modals');
+})();
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📱 TOUCH SCROLL — Ensure Native Touch Scroll Works       */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  // Ensure touch scroll works on modal wrappers
+  document.addEventListener('touchstart', function(e){
+    var modal = e.target.closest('[id$="Modal"], #surveyPopup, #creationLightbox');
+    if(!modal) return;
+    
+    // Don't preventDefault — allow native scroll
+    // Just mark that touch scroll is active
+    modal._touchScrollActive = true;
+  }, { passive: true });
+
+  // Prevent body scroll behind modal (but allow modal scroll)
+  document.addEventListener('touchmove', function(e){
+    var modal = e.target.closest('[id$="Modal"], #surveyPopup, #creationLightbox');
+    if(!modal) return;
+    // Native scroll works — nothing to do
+  }, { passive: true });
+
+  console.log('✅ Touch scroll polish ready');
+})();
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🎯 ENSURE MODALS SCROLL TO TOP WHEN OPENED               */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  var MODAL_IDS = [
+    'passwordSetupModal','pwdResetModal','forgotModal',
+    'globalModal','passbookModal','studentWithdrawalModal',
+    'notificationsModal','editProfileModal','topperModal',
+    'uploadCreationModal','notesModal','noticeBoardModal',
+    'findStudentIdModal','helpModal'
+  ];
+
+  function resetScroll(modal){
+    if(!modal) return;
+    modal.scrollTop = 0;
+    // Also reset scrollable children
+    modal.querySelectorAll('*').forEach(function(el){
+      if(el.scrollHeight > el.clientHeight + 5){
+        var style = window.getComputedStyle(el);
+        if(style.overflowY === 'auto' || style.overflowY === 'scroll'){
+          el.scrollTop = 0;
+        }
+      }
+    });
+  }
+
+  // Watch for modal visibility changes
+  MODAL_IDS.forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    
+    var observer = new MutationObserver(function(){
+      var disp = el.style.display;
+      if(disp === 'flex' || disp === 'block'){
+        // Modal just opened — reset scroll to top
+        setTimeout(function(){ resetScroll(el); }, 50);
+      }
+    });
+    observer.observe(el, { attributes: true, attributeFilter: ['style'] });
+  });
+
+  console.log('✅ Modal scroll-to-top on open ready');
+})();
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🛡️ SCROLL LOCK SAFETY — Don't freeze modal scroll       */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  // Override any aggressive scroll-lock that might freeze modal scrolling
+  var originalOverflow = null;
+  
+  function checkScrollLock(){
+    var activeModal = null;
+    var modalIds = ['passwordSetupModal','pwdResetModal','forgotModal','globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal'];
+    
+    for(var i = 0; i < modalIds.length; i++){
+      var el = document.getElementById(modalIds[i]);
+      if(el && (el.style.display === 'flex' || el.style.display === 'block')){
+        activeModal = el;
+        break;
+      }
+    }
+
+    if(activeModal){
+      // Ensure this modal is scrollable
+      activeModal.style.overflowY = 'auto';
+      activeModal.style.webkitOverflowScrolling = 'touch';
+    }
+  }
+
+  // Check periodically
+  setInterval(checkScrollLock, 500);
+
+  console.log('✅ Scroll lock safety ready');
+})();
+
+console.log('✅ Modal scroll fix v27.0 fully loaded');
+</script>
 </body>
 </html>
