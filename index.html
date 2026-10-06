@@ -16525,5 +16525,469 @@ window.resetStudentPassword = async function(sid, name) {
   console.log('✅ Secure Forgot Password flow loaded');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔑 STUDENT PASSWORD RESET — v25.0 Professional          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="pwdResetModal" style="display:none;position:fixed;inset:0;
+     background:rgba(3,8,28,.88);backdrop-filter:blur(16px);
+     z-index:9999999;align-items:center;justify-content:center;
+     padding:18px;overflow-y:auto;">
+
+  <div style="max-width:480px;width:100%;
+       background:#fff;border-radius:24px;padding:28px 24px;
+       box-shadow:0 40px 90px -30px rgba(0,0,0,.9);
+       position:relative;overflow:hidden;
+       animation:modalContentIn .5s cubic-bezier(.34,1.56,.64,1);">
+
+    <!-- Golden top line -->
+    <div style="position:absolute;top:0;left:12%;right:12%;height:3px;
+         border-radius:3px;
+         background:linear-gradient(90deg,transparent,#d4af37,#ffd966,#fff,#ffd966,#d4af37,transparent);
+         background-size:250% 100%;
+         animation:cardGoldenFlow 4s linear infinite;"></div>
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="width:70px;height:70px;margin:0 auto 12px;border-radius:50%;
+           background:linear-gradient(140deg,#f59e0b,#fbbf24);
+           display:flex;align-items:center;justify-content:center;
+           font-size:2rem;color:#fff;
+           box-shadow:0 12px 28px -10px rgba(251,191,36,.7);">
+        <i class="fas fa-key"></i>
+      </div>
+      <h3 style="color:#0f172a;font-size:1.2rem;font-weight:800;margin:0 0 6px;">
+        🔑 Password Reset
+      </h3>
+      <p id="pwdResetStudentName" style="color:#64748b;font-size:.84rem;margin:0;"></p>
+    </div>
+
+    <!-- Student info card -->
+    <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);
+         border:1.5px solid rgba(180,83,9,.35);
+         border-radius:16px;padding:14px 16px;margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="pwdResetAvatar" style="width:48px;height:48px;border-radius:50%;
+             background:linear-gradient(140deg,#1e6be0,#22d3ee);
+             display:flex;align-items:center;justify-content:center;
+             color:#fff;font-size:1.2rem;font-weight:900;flex-shrink:0;"></div>
+        <div style="flex:1;min-width:0;">
+          <div id="pwdResetFullName" style="color:#0f172a;font-weight:800;font-size:.96rem;
+               white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+          <div id="pwdResetMeta" style="color:#b45309;font-size:.74rem;margin-top:2px;font-weight:700;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reset options -->
+    <div style="margin-bottom:16px;">
+      <label style="color:#0f172a;font-size:.82rem;font-weight:800;
+             display:block;margin-bottom:10px;">
+        🎯 Reset Type തിരഞ്ഞെടുക്കുക:
+      </label>
+
+      <!-- Option 1: Force re-setup (recommended) -->
+      <label class="pwd-reset-opt" data-type="force" style="display:flex;
+             align-items:center;gap:12px;padding:14px 16px;
+             background:#eff6ff;border:2px solid rgba(59,130,246,.3);
+             border-radius:14px;margin-bottom:10px;cursor:pointer;transition:.25s;">
+        <input type="radio" name="pwdResetType" value="force" checked
+               style="width:20px;height:20px;accent-color:#1e6be0;">
+        <div style="flex:1;">
+          <div style="color:#0f172a;font-weight:800;font-size:.88rem;">
+            ✨ Student തന്നെ പുതിയ password create ചെയ്യട്ടെ
+          </div>
+          <div style="color:#64748b;font-size:.72rem;margin-top:3px;">
+            അടുത്ത login-ൽ password setup modal വരും
+          </div>
+        </div>
+      </label>
+
+      <!-- Option 2: Custom password -->
+      <label class="pwd-reset-opt" data-type="custom" style="display:flex;
+             align-items:center;gap:12px;padding:14px 16px;
+             background:#f0fdf4;border:2px solid rgba(5,150,105,.3);
+             border-radius:14px;margin-bottom:10px;cursor:pointer;transition:.25s;">
+        <input type="radio" name="pwdResetType" value="custom"
+               style="width:20px;height:20px;accent-color:#059669;">
+        <div style="flex:1;">
+          <div style="color:#0f172a;font-weight:800;font-size:.88rem;">
+            🔑 Admin ഒരു password സെറ്റ് ചെയ്യട്ടെ
+          </div>
+          <div style="color:#64748b;font-size:.72rem;margin-top:3px;">
+            Custom password type ചെയ്യാം
+          </div>
+        </div>
+      </label>
+
+      <!-- Option 3: Default password -->
+      <label class="pwd-reset-opt" data-type="default" style="display:flex;
+             align-items:center;gap:12px;padding:14px 16px;
+             background:#fef3c7;border:2px solid rgba(180,83,9,.3);
+             border-radius:14px;cursor:pointer;transition:.25s;">
+        <input type="radio" name="pwdResetType" value="default"
+               style="width:20px;height:20px;accent-color:#b45309;">
+        <div style="flex:1;">
+          <div style="color:#0f172a;font-weight:800;font-size:.88rem;">
+            🎯 Default password (noor123)
+          </div>
+          <div style="color:#64748b;font-size:.72rem;margin-top:3px;">
+            അടുത്ത login-ൽ student തന്നെ മാറ്റണം
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <!-- Custom password field (hidden by default) -->
+    <div id="pwdResetCustomWrap" style="display:none;margin-bottom:16px;">
+      <label style="color:#475569;font-size:.78rem;font-weight:800;
+             display:block;margin-bottom:6px;">
+        🔐 പുതിയ Password <span style="color:#ef4444;">*</span>
+      </label>
+      <div style="display:flex;align-items:center;background:#f8fafc;
+           border:1.5px solid rgba(100,116,139,.25);border-radius:12px;
+           padding:0 14px;">
+        <i class="fas fa-lock" style="color:#0891b2;margin-right:10px;"></i>
+        <input type="text" id="pwdResetCustomInput"
+               placeholder="കുറഞ്ഞത് 6 അക്ഷരം"
+               style="flex:1;border:none;outline:none;background:transparent;
+                      padding:13px 0;font-family:inherit;font-size:16px;
+                      font-weight:700;color:#0f172a;">
+        <i class="fas fa-eye" onclick="(function(el){
+            el.type = el.type==='text'?'password':'text';
+            this.className = el.type==='text'?'fas fa-eye-slash':'fas fa-eye';
+          }).call(this, document.getElementById('pwdResetCustomInput'))"
+           style="cursor:pointer;color:#0891b2;padding:6px;"></i>
+      </div>
+      <small style="color:#64748b;font-size:.7rem;display:block;margin-top:5px;">
+        <i class="fas fa-info-circle"></i> Student-നു ഈ password അറിയിക്കേണ്ടതാണ്
+      </small>
+    </div>
+
+    <!-- Warning -->
+    <div style="background:#fef3c7;border:1px solid rgba(180,83,9,.3);
+         border-radius:12px;padding:10px 14px;margin-bottom:18px;
+         font-size:.74rem;color:#b45309;line-height:1.6;">
+      <i class="fas fa-exclamation-triangle"></i>
+      Reset ചെയ്തതിനുശേഷം student-ന്റെ നിലവിലുള്ള password ഉപയോഗശൂന്യമാകും.
+    </div>
+
+    <!-- Action buttons -->
+    <div style="display:flex;gap:10px;">
+      <button type="button" onclick="window._closePwdResetModal()"
+              style="flex:0.6;padding:14px;border-radius:14px;
+                     background:#f1f5f9;color:#475569;border:1.5px solid rgba(100,116,139,.2);
+                     font-family:inherit;font-weight:800;font-size:.86rem;
+                     cursor:pointer;transition:.2s;"
+              onmouseover="this.style.background='#e2e8f0'"
+              onmouseout="this.style.background='#f1f5f9'">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+      <button type="button" id="pwdResetConfirmBtn"
+              onclick="window._submitPwdReset()"
+              style="flex:1;padding:14px;border-radius:14px;
+                     background:linear-gradient(100deg,#f59e0b,#fbbf24);
+                     color:#fff;border:none;font-family:inherit;
+                     font-weight:800;font-size:.9rem;cursor:pointer;
+                     box-shadow:0 12px 28px -10px rgba(251,191,36,.7);
+                     display:flex;align-items:center;justify-content:center;gap:8px;
+                     transition:.2s;"
+              onmouseover="this.style.transform='translateY(-2px)'"
+              onmouseout="this.style.transform='translateY(0)'">
+        <i class="fas fa-key"></i> Reset Password
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Password Reset Modal — Option highlight */
+.pwd-reset-opt:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -10px rgba(0,0,0,.15);
+}
+.pwd-reset-opt.active{
+  border-color: #1e6be0 !important;
+  background: linear-gradient(135deg,#dbeafe,#bfdbfe) !important;
+  box-shadow: 0 8px 20px -10px rgba(30,107,224,.4);
+}
+.pwd-reset-opt.active .pwd-reset-icon{
+  transform: scale(1.1);
+}
+
+@media (max-width: 600px){
+  #pwdResetModal > div{
+    padding: 22px 18px !important;
+    border-radius: 20px !important;
+  }
+  #pwdResetModal h3{
+    font-size: 1.05rem !important;
+  }
+}
+</style>
+
+<script>
+/* ═══════════════════════════════════════════════════════ */
+/* 🔑 PASSWORD RESET — Professional Implementation         */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  var _currentStudent = null;
+
+  /* ─────────────────────────────────────────── */
+  /* Open Modal — replaces old prompt() function */
+  /* ─────────────────────────────────────────── */
+  window.resetStudentPassword = function(sid, name){
+    if(!sid){
+      showToast('Student ID ലഭ്യമല്ല','error');
+      return;
+    }
+
+    // Find student data
+    var student = (window.studentsAdminData || []).find(function(s){
+      return s.studentid === sid;
+    });
+
+    _currentStudent = {
+      studentid: sid,
+      name: (student && student.name) || name || 'Student',
+      class: student ? student.class : '—',
+      roll: student ? student.roll : '—',
+      photo: student ? student.photo : ''
+    };
+
+    // Populate modal
+    var avatarEl = document.getElementById('pwdResetAvatar');
+    if(avatarEl){
+      var photo = _currentStudent.photo || '';
+      if(photo && (photo.startsWith('http') || photo.startsWith('data:'))){
+        avatarEl.innerHTML = '<img src="' + photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      } else {
+        avatarEl.textContent = (_currentStudent.name || 'S').charAt(0).toUpperCase();
+      }
+    }
+
+    var nameEl = document.getElementById('pwdResetFullName');
+    if(nameEl) nameEl.textContent = _currentStudent.name;
+
+    var metaEl = document.getElementById('pwdResetMeta');
+    if(metaEl) metaEl.textContent = 'Class ' + _currentStudent.class + ' • ID: ' + sid;
+
+    var titleEl = document.getElementById('pwdResetStudentName');
+    if(titleEl) titleEl.textContent = 'Student-ന്റെ password മാറ്റുക';
+
+    // Reset form state
+    var radios = document.querySelectorAll('input[name="pwdResetType"]');
+    radios.forEach(function(r){
+      r.checked = (r.value === 'force');
+      var opt = r.closest('.pwd-reset-opt');
+      if(opt){
+        opt.classList.toggle('active', r.value === 'force');
+      }
+    });
+
+    // Hide custom input
+    var customWrap = document.getElementById('pwdResetCustomWrap');
+    if(customWrap) customWrap.style.display = 'none';
+
+    var customInput = document.getElementById('pwdResetCustomInput');
+    if(customInput) customInput.value = '';
+
+    // Show modal
+    document.getElementById('pwdResetModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Sparkle
+    if(typeof window.spawnSparkles === 'function'){
+      setTimeout(function(){ window.spawnSparkles(5); }, 250);
+    }
+  };
+
+  /* ─────────────────────────────────────────── */
+  /* Close Modal                                 */
+  /* ─────────────────────────────────────────── */
+  window._closePwdResetModal = function(){
+    document.getElementById('pwdResetModal').style.display = 'none';
+    document.body.style.overflow = '';
+    _currentStudent = null;
+  };
+
+  /* ─────────────────────────────────────────── */
+  /* Submit Reset                                */
+  /* ─────────────────────────────────────────── */
+  window._submitPwdReset = async function(){
+    if(!_currentStudent){
+      showToast('Student data ലഭ്യമല്ല','error');
+      return;
+    }
+
+    // Get selected option
+    var selected = document.querySelector('input[name="pwdResetType"]:checked');
+    if(!selected){
+      showToast('ഒരു option തിരഞ്ഞെടുക്കുക','error');
+      return;
+    }
+
+    var type = selected.value;
+    var newPassword = '';
+    var passwordSet = false;
+
+    if(type === 'force'){
+      // Force re-setup: password = 'noor123', password_set = false
+      newPassword = 'noor123';
+      passwordSet = false;
+    } else if(type === 'custom'){
+      var customInput = document.getElementById('pwdResetCustomInput');
+      newPassword = (customInput.value || '').trim();
+      if(newPassword.length < 6){
+        showToast('⚠️ കുറഞ്ഞത് 6 അക്ഷരം വേണം','error');
+        customInput.focus();
+        return;
+      }
+      passwordSet = true;
+    } else {
+      // default
+      newPassword = 'noor123';
+      passwordSet = false;
+    }
+
+    // Confirm
+    var typeLabels = {
+      force: '✨ Student തന്നെ പുതിയ password create ചെയ്യും',
+      custom: '🔑 Admin-സെറ്റ് ചെയ്ത password: ' + newPassword,
+      default: '🎯 Default password (noor123)'
+    };
+    var confirmMsg =
+      '🔑 Password Reset Confirm\n\n' +
+      '👤 ' + _currentStudent.name + '\n' +
+      '📚 Class ' + _currentStudent.class + '\n' +
+      '🎯 ' + typeLabels[type] + '\n\n' +
+      'ഉറപ്പാണോ?';
+
+    if(!confirm(confirmMsg)) return;
+
+    // Submit
+    var btn = document.getElementById('pwdResetConfirmBtn');
+    var oldHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting...';
+
+    try{
+      var updateData = {
+        password: newPassword,
+        password_set: passwordSet,
+        password_set_at: passwordSet ? new Date().toISOString() : null,
+        password_reset_by: 'Admin',
+        password_reset_at: new Date().toISOString()
+      };
+
+      var r = await supabaseClient
+        .from('students')
+        .update(updateData)
+        .eq('studentid', _currentStudent.studentid);
+
+      if(r.error){
+        // If password_reset_at column missing, retry without it
+        if(String(r.error.message).toLowerCase().indexOf('password_reset_at') > -1){
+          delete updateData.password_reset_at;
+          r = await supabaseClient
+            .from('students')
+            .update(updateData)
+            .eq('studentid', _currentStudent.studentid);
+        }
+        if(r.error) throw r.error;
+      }
+
+      // Success!
+      showToast('✅ Password reset ചെയ്തു', 'success');
+
+      if(typeof confetti !== 'undefined'){
+        confetti({
+          particleCount: 100,
+          spread: 80,
+          origin: { y: .7 },
+          colors: ['#f59e0b', '#fbbf24', '#22d3ee', '#10b981']
+        });
+      }
+
+      if(typeof window.showAchievement === 'function'){
+        window.showAchievement('🔑', 'Password Reset!',
+          _currentStudent.name + ' — ' + typeLabels[type].replace(/[✨🔑🎯]/g, '').trim());
+      }
+
+      // Audit log
+      if(typeof window.logAudit === 'function'){
+        window.logAudit('RESET_PASSWORD', 'students', _currentStudent.studentid,
+          null, { type: type, reset_at: new Date().toISOString() });
+      }
+
+      // Close & refresh
+      setTimeout(function(){
+        window._closePwdResetModal();
+        if(typeof loadStudentsForAdmin === 'function'){
+          loadStudentsForAdmin();
+        }
+      }, 500);
+
+    } catch(err){
+      console.error('Password reset error:', err);
+      showToast('❌ ' + (err.message || 'Reset failed'), 'error');
+      btn.disabled = false;
+      btn.innerHTML = oldHTML;
+    }
+  };
+
+  /* ─────────────────────────────────────────── */
+  /* Radio change handlers                       */
+  /* ─────────────────────────────────────────── */
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.name === 'pwdResetType'){
+      // Update active class
+      document.querySelectorAll('.pwd-reset-opt').forEach(function(opt){
+        var radio = opt.querySelector('input[type="radio"]');
+        opt.classList.toggle('active', radio && radio.checked);
+      });
+
+      // Show/hide custom input
+      var customWrap = document.getElementById('pwdResetCustomWrap');
+      if(customWrap){
+        customWrap.style.display = (e.target.value === 'custom') ? 'block' : 'none';
+        if(e.target.value === 'custom'){
+          setTimeout(function(){
+            var inp = document.getElementById('pwdResetCustomInput');
+            if(inp) inp.focus();
+          }, 250);
+        }
+      }
+    }
+  });
+
+  /* ─────────────────────────────────────────── */
+  /* Click outside to close                      */
+  /* ─────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function(){
+    var modal = document.getElementById('pwdResetModal');
+    if(modal){
+      modal.addEventListener('click', function(e){
+        if(e.target === this){
+          window._closePwdResetModal();
+        }
+      });
+    }
+
+    // ESC key
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        var m = document.getElementById('pwdResetModal');
+        if(m && m.style.display === 'flex'){
+          window._closePwdResetModal();
+        }
+      }
+    });
+  });
+
+  console.log('✅ Password Reset System v25.0 loaded');
+})();
+</script>
 </body>
 </html>
