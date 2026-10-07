@@ -4435,43 +4435,6 @@ setTimeout(loadMalayalamFontForPDF, 2000);
 <div id="creationsOverlay" class="creations-overlay">
   <div class="creations-container">
 
-    <div class="creations-header">
-      <div>
-        <h2><i class="fas fa-palette"></i> കലാസൃഷ്ടികളും രചനകളും</h2>
-        <p>വിദ്യാർത്ഥികളുടെ സൃഷ്ടികൾ 🌟</p>
-      </div>
-      <div class="creations-header-actions">
-        <button class="btn-upload-creation" onclick="openUploadCreationModal()"><i class="fas fa-plus"></i> പുതിയത്</button>
-        <button class="creations-close" onclick="closeCreationsGallery()"><i class="fas fa-times"></i></button>
-      </div>
-    </div>
-
-    <div class="creations-toolbar">
-      <div class="creations-search">
-        <i class="fas fa-search"></i>
-        <input type="text" id="creationsSearchInput" placeholder="🔍 തിരയുക..." oninput="filterCreationsGallery()">
-      </div>
-      <select id="creationsCategoryFilter" class="creations-filter-select" onchange="filterCreationsGallery()">
-        <option value="">🌟 എല്ലാം</option>
-        <option value="drawing">🎨 ചിത്രരചന</option>
-        <option value="writing">✍️ രചന</option>
-        <option value="poem">📝 കവിത</option>
-        <option value="story">📖 കഥ</option>
-        <option value="craft">🔨 കരകൗശലം</option>
-        <option value="photography">📷 ഫോട്ടോഗ്രഫി</option>
-        <option value="calligraphy">🖋️ കാലിഗ്രഫി</option>
-        <option value="other">🌟 മറ്റുള്ളവ</option>
-      </select>
-      <label class="creations-my-toggle">
-        <input type="checkbox" id="creationsOnlyMine" onchange="filterCreationsGallery()">
-        <span>എന്റേത്</span>
-      </label>
-    </div>
-
-    <div class="creations-grid" id="creationsGrid">
-      <div class="creations-loading"><div class="spinner-sm"></div> Loading...</div>
-    </div>
-
   </div>
 </div>
 
@@ -22277,5 +22240,210 @@ CREATE POLICY "allow_all_creation_likes" ON creation_likes
 
 CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_id, studentid);
 -->
+<script id="missing-functions-fix">
+(function(){
+  // ═══════════════════════════════════════════════════
+  // 🔧 MISSING: Fee Print Dialog
+  // ═══════════════════════════════════════════════════
+  window.openFeePrintDialog = function() {
+    if (!feeParentsData || feeParentsData.length === 0) {
+      showToast('⚠️ No fee data loaded', 'error');
+      return;
+    }
+
+    var settings = FEE_SETTINGS_CACHE || {};
+    var monthlyFee = settings.monthlyFee || 200;
+
+    modalTitleSpan.innerText = '📄 Print Fee Report';
+    modalBodyDiv.innerHTML = 
+      '<div style="padding:16px;">' +
+        '<div style="background:#ecfeff;border:1px solid rgba(8,145,178,.3);border-radius:12px;padding:14px;margin-bottom:16px;">' +
+          '<div style="font-weight:800;color:#0891b2;font-size:.86rem;margin-bottom:8px;"><i class="fas fa-info-circle"></i> ഏത് റിപ്പോർട്ട് വേണം?</div>' +
+        '</div>' +
+        '<div class="row g-2 mb-3">' +
+          '<div class="col-12">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;">Filter</label>' +
+            '<select id="feePrintFilter" class="modal-form-input">' +
+              '<option value="all">🌟 എല്ലാം (' + feeParentsData.length + ')</option>' +
+              '<option value="pending">⏳ Pending only</option>' +
+              '<option value="paid">✅ Paid only</option>' +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+        '<div class="d-flex gap-2 mt-3">' +
+          '<button class="btn-update flex-grow-1" onclick="window.printFeeReportPDF()">' +
+            '<i class="fas fa-file-pdf"></i> Download PDF' +
+          '</button>' +
+          '<button class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button>' +
+        '</div>' +
+      '</div>';
+    modal.style.display = 'flex';
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🔧 MISSING: Print Fee Report PDF
+  // ═══════════════════════════════════════════════════
+  window.printFeeReportPDF = async function() {
+    var filterEl = document.getElementById('feePrintFilter');
+    var filter = filterEl ? filterEl.value : 'all';
+
+    var list = feeParentsData.filter(function(p) {
+      var br = computeFeeBreakdown(p, FEE_SETTINGS_CACHE || {});
+      if (filter === 'pending') return br.totalPending > 0;
+      if (filter === 'paid') return br.totalPending <= 0;
+      return true;
+    });
+
+    if (list.length === 0) {
+      showToast('⚠️ No data for this filter', 'error');
+      return;
+    }
+
+    showLoading(true);
+    try {
+      var ok = await window.waitForPDFLibs ? window.waitForPDFLibs(6000) : true;
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+      
+      if (typeof setupMalayalamPDF === 'function') {
+        try { await setupMalayalamPDF(doc); } catch(e) {}
+      }
+
+      var pw = doc.internal.pageSize.getWidth();
+      var header = 'Fee Report — ' + (filter === 'all' ? 'All Records' : filter === 'pending' ? 'Pending Only' : 'Paid Only');
+      
+      doc.setFillColor(21, 71, 168);
+      doc.rect(0, 0, pw, 80, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text('NOORUSSALAM MADRASA', pw / 2, 32, { align: 'center' });
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'normal');
+      doc.text(header + ' — ' + new Date().toLocaleDateString('en-IN'), pw / 2, 55, { align: 'center' });
+      doc.setTextColor(0, 0, 0);
+
+      var rows = list.map(function(p, i) {
+        var br = computeFeeBreakdown(p, FEE_SETTINGS_CACHE || {});
+        var status = br.totalPending > 0 ? 'Pending' : br.totalPending < 0 ? 'Advance' : 'Paid';
+        return [
+          i + 1,
+          p.parent_name || '',
+          (p.student_ids || []).join(', '),
+          p.student_names || '',
+          p.mobile || '',
+          formatFeeMonthEN(p.last_paid_month),
+          br.paidMonths,
+          br.pendingMonths,
+          'Rs.' + br.totalPending.toLocaleString(),
+          status
+        ];
+      });
+
+      var totalDue = 0;
+      list.forEach(function(p) {
+        var br = computeFeeBreakdown(p, FEE_SETTINGS_CACHE || {});
+        totalDue += br.totalPending;
+      });
+
+      doc.autoTable({
+        startY: 100,
+        head: [['#', 'Parent', 'UIDs', 'Students', 'Mobile', 'Last Paid', 'Paid', 'Pend', 'Due', 'Status']],
+        body: rows,
+        foot: [['', '', '', '', '', '', '', '', 'Total: Rs.' + totalDue.toLocaleString(), '']],
+        theme: 'grid',
+        styles: { fontSize: 7.5, cellPadding: 4 },
+        headStyles: { fillColor: [30, 107, 224], textColor: 255, fontStyle: 'bold' },
+        footStyles: { fillColor: [240, 245, 255], textColor: [0, 0, 0], fontStyle: 'bold' }
+      });
+
+      doc.save('Fee_Report_' + filter + '_' + new Date().toISOString().split('T')[0] + '.pdf');
+      showToast('✅ PDF Downloaded (' + list.length + ' records)', 'success');
+      closeModal('globalModal');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+    } catch(e) {
+      console.error('Fee PDF error:', e);
+      showToast('❌ ' + e.message, 'error');
+    }
+    showLoading(false);
+  };
+
+  console.log('✅ Missing functions (openFeePrintDialog, printFeeReportPDF) added');
+})();
+</script>
+<script id="dead-code-cleanup">
+(function(){
+  'use strict';
+  
+  function cleanupDeadCode() {
+    // 1. Remove hidden old creation gallery structure
+    document.querySelectorAll('#creationsOverlay .creations-header, ' +
+                             '#creationsOverlay .creations-toolbar, ' +
+                             '#creationsOverlay .creations-grid').forEach(function(el) {
+      el.remove();
+    });
+
+    // 2. Remove hidden old public feed card renderers (if any leftovers)
+    document.querySelectorAll('#publicFeedContainer .pf-card').forEach(function(el) {
+      el.remove();
+    });
+
+    // 3. Remove duplicate modal-scroll-fix styles
+    var scrollFixes = document.querySelectorAll('style[id^="modal-scroll-fix"]');
+    if (scrollFixes.length > 1) {
+      for (var i = 0; i < scrollFixes.length - 1; i++) {
+        scrollFixes[i].remove();
+      }
+    }
+
+    // 4. Remove old students-download fallback if original exists
+    // (kept via override chain — safe)
+
+    console.log('🧹 Dead code cleaned');
+  }
+
+  // Run on DOM ready + after 3s (in case of dynamic content)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(cleanupDeadCode, 100);
+      setTimeout(cleanupDeadCode, 3000);
+    });
+  } else {
+    setTimeout(cleanupDeadCode, 100);
+    setTimeout(cleanupDeadCode, 3000);
+  }
+
+  // Watch for dynamically added old structures
+  var obs = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.addedNodes.length > 0) {
+        for (var i = 0; i < m.addedNodes.length; i++) {
+          var n = m.addedNodes[i];
+          if (n.nodeType === 1 && n.classList) {
+            if (n.classList.contains('creations-header') ||
+                n.classList.contains('creations-toolbar') ||
+                n.classList.contains('creations-grid') ||
+                n.classList.contains('pf-card')) {
+              n.remove();
+            }
+          }
+        }
+      }
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    obs.observe(document.body, { childList: true, subtree: true });
+  });
+})();
+</script>
+<script>
+window.openFeePrintDialog = function() {
+  showToast('📄 Fee PDF feature coming soon', 'info');
+};
+window.printFeeReportPDF = function() {
+  showToast('📄 Please use Download button in Fee tab', 'info');
+};
+</script>
 </body>
 </html>
