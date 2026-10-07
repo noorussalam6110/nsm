@@ -23177,5 +23177,314 @@ window.printFeeReportPDF = function() {
 
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 📊 v34.0 — Quiz Results View in Admin Panel                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script id="quiz-results-admin">
+(function(){
+  'use strict';
+  console.log('📊 Quiz Results Admin loading...');
+
+  /* ═══════════════════════════════════════════════════ */
+  /* 🎯 LOAD QUIZ ATTEMPTS FROM DATABASE               */
+  /* ═══════════════════════════════════════════════════ */
+  window.loadQuizResults = async function() {
+    var wrap = document.getElementById('quizResultsWrap');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+
+    try {
+      // Fetch all quiz attempts
+      var r = await supabaseClient.from('quiz_attempts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(500);
+
+      var attempts = r.data || [];
+
+      if (attempts.length === 0) {
+        wrap.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" style="font-size:3rem;opacity:.4;display:block;margin-bottom:12px;"></i>ഇതുവരെ Quiz attempts ഇല്ല</div>';
+        return;
+      }
+
+      // Get student info
+      var sids = Array.from(new Set(attempts.map(a => a.studentid)));
+      var smap = {};
+      if (sids.length > 0) {
+        var sr = await supabaseClient.from('students')
+          .select('studentid, name, class, roll, photo')
+          .in('studentid', sids);
+        (sr.data || []).forEach(s => {
+          smap[s.studentid] = s;
+        });
+      }
+
+      // Summary stats
+      var totalAttempts = attempts.length;
+      var uniqueStudents = sids.length;
+      var avgScore = attempts.reduce((sum, a) => sum + (a.score || 0), 0) / totalAttempts;
+      var perfect = attempts.filter(a => a.score === a.total).length;
+
+      // Summary cards
+      var summaryHTML = 
+        '<div class="admin-summary">' +
+          '<div class="stat"><div class="num">' + totalAttempts + '</div><div class="label">Total Attempts</div></div>' +
+          '<div class="stat"><div class="num green">' + uniqueStudents + '</div><div class="label">Students</div></div>' +
+          '<div class="stat"><div class="num orange">' + avgScore.toFixed(1) + '</div><div class="label">Avg Score</div></div>' +
+          '<div class="stat"><div class="num green">' + perfect + '</div><div class="label">🏆 Perfect</div></div>' +
+        '</div>';
+
+      // Table
+      var h = summaryHTML + '<div class="admin-table-wrap"><table>' +
+        '<thead><tr>' +
+          '<th>#</th>' +
+          '<th>Student</th>' +
+          '<th>Class</th>' +
+          '<th>Week</th>' +
+          '<th>Score</th>' +
+          '<th>%</th>' +
+          '<th>Time</th>' +
+          '<th>Date</th>' +
+          '<th>Actions</th>' +
+        '</tr></thead><tbody>';
+
+      attempts.forEach(function(a, i) {
+        var s = smap[a.studentid] || { name: 'Unknown', class: '—', roll: '—' };
+        var pct = a.total > 0 ? Math.round(a.score / a.total * 100) : 0;
+        var pctColor = pct >= 80 ? '#059669' : pct >= 60 ? '#0891b2' : pct >= 40 ? '#b45309' : '#dc2626';
+        var timeTaken = a.time_taken ? a.time_taken + 's' : '—';
+
+        h += '<tr>';
+        h += '<td>' + (i+1) + '</td>';
+        h += '<td><strong>' + escapeHtml(s.name) + '</strong><br><small style="color:#94a3b8;">' + escapeHtml(a.studentid) + '</small></td>';
+        h += '<td>' + escapeHtml(s.class || '—') + '</td>';
+        h += '<td><small>' + escapeHtml(a.week_year || '—') + '</small></td>';
+        h += '<td><strong style="color:' + pctColor + ';font-size:1rem;">' + a.score + '/' + a.total + '</strong></td>';
+        h += '<td><span style="color:' + pctColor + ';font-weight:900;">' + pct + '%</span></td>';
+        h += '<td><small>' + timeTaken + '</small></td>';
+        h += '<td><small>' + formatDate(a.created_at) + '</small></td>';
+        h += '<td><button class="btn-sm approve" onclick="window.viewQuizDetails(' + a.id + ')" title="View details">👁️</button></td>';
+        h += '</tr>';
+      });
+
+      h += '</tbody></table></div>';
+      wrap.innerHTML = h;
+
+      // Store attempts for detail view
+      window._quizAttemptsCache = attempts;
+      window._quizStudentsCache = smap;
+
+    } catch(e) {
+      console.error('Quiz results error:', e);
+      wrap.innerHTML = '<div class="empty-state" style="color:#dc2626;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════ */
+  /* 🔍 VIEW QUIZ DETAILS — Show each answer             */
+  /* ═══════════════════════════════════════════════════ */
+  window.viewQuizDetails = async function(attemptId) {
+    var attempt = (window._quizAttemptsCache || []).find(a => a.id === attemptId);
+    if (!attempt) return;
+
+    var student = (window._quizStudentsCache || {})[attempt.studentid] || {};
+
+    modalTitleSpan.innerText = '📋 Quiz Details — ' + (student.name || attempt.studentid);
+
+    modalBodyDiv.innerHTML = '<div class="text-center py-4"><div class="spinner-sm"></div></div>';
+    modal.style.display = 'flex';
+
+    try {
+      // Get question details
+      var qIds = (attempt.answers || []).map(a => a.q).filter(Boolean);
+      var questions = {};
+      if (qIds.length > 0) {
+        var qr = await supabaseClient.from('quiz_questions')
+          .select('*')
+          .in('id', qIds);
+        (qr.data || []).forEach(q => {
+          questions[q.id] = q;
+        });
+      }
+
+      var pct = attempt.total > 0 ? Math.round(attempt.score / attempt.total * 100) : 0;
+      var pctColor = pct >= 80 ? '#059669' : pct >= 60 ? '#0891b2' : pct >= 40 ? '#b45309' : '#dc2626';
+
+      var h = '';
+
+      // Header
+      h += '<div style="background:linear-gradient(135deg,#f0f9ff,#dbeafe);padding:16px 20px;border-radius:16px;border:1.5px solid rgba(59,130,246,.3);margin-bottom:18px;">';
+      h += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">';
+      h += '<div>';
+      h += '<div style="font-size:.72rem;color:#64748b;font-weight:800;text-transform:uppercase;">Student</div>';
+      h += '<div style="font-weight:900;color:#0f172a;font-size:1.1rem;margin-top:2px;">' + escapeHtml(student.name || attempt.studentid) + '</div>';
+      h += '<div style="font-size:.76rem;color:#0891b2;margin-top:3px;">Class ' + escapeHtml(student.class || '—') + ' • ' + escapeHtml(attempt.studentid) + '</div>';
+      h += '</div>';
+      h += '<div style="text-align:center;">';
+      h += '<div style="font-size:2.4rem;font-weight:900;color:' + pctColor + ';line-height:1;">' + attempt.score + '/' + attempt.total + '</div>';
+      h += '<div style="font-size:.76rem;color:' + pctColor + ';font-weight:800;margin-top:2px;">' + pct + '%</div>';
+      h += '</div>';
+      h += '</div>';
+      h += '<div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;font-size:.72rem;">';
+      h += '<span style="background:#fff;padding:5px 12px;border-radius:20px;font-weight:800;color:#1e40af;"><i class="fas fa-calendar"></i> ' + escapeHtml(attempt.week_year || '—') + '</span>';
+      h += '<span style="background:#fff;padding:5px 12px;border-radius:20px;font-weight:800;color:#b45309;"><i class="fas fa-clock"></i> ' + (attempt.time_taken || 0) + 's</span>';
+      h += '<span style="background:#fff;padding:5px 12px;border-radius:20px;font-weight:800;color:#059669;"><i class="fas fa-check"></i> ' + formatDate(attempt.created_at) + '</span>';
+      h += '</div>';
+      h += '</div>';
+
+      // Questions with answers
+      h += '<div style="font-weight:800;color:#0f172a;margin-bottom:12px;font-size:.92rem;">📝 Answers Breakdown</div>';
+
+      (attempt.answers || []).forEach(function(ans, i) {
+        var q = questions[ans.q];
+        if (!q) return;
+
+        var isCorrect = ans.correct;
+        var borderColor = isCorrect ? '#059669' : '#dc2626';
+        var bgColor = isCorrect ? '#f0fdf4' : '#fef2f2';
+        var icon = isCorrect ? '✅' : '❌';
+
+        h += '<div style="background:' + bgColor + ';border:1.5px solid ' + borderColor + ';border-left:4px solid ' + borderColor + ';border-radius:14px;padding:14px;margin-bottom:10px;">';
+
+        // Question
+        h += '<div style="font-weight:800;color:#0f172a;font-size:.86rem;line-height:1.4;margin-bottom:10px;">';
+        h += '<span style="color:' + borderColor + ';font-size:1rem;">' + icon + '</span> Q' + (i+1) + '. ' + escapeHtml(q.question);
+        h += '</div>';
+
+        // Options
+        var opts = [
+          { letter: 'A', text: q.option_a },
+          { letter: 'B', text: q.option_b },
+          { letter: 'C', text: q.option_c },
+          { letter: 'D', text: q.option_d }
+        ].filter(o => o.text);
+
+        h += '<div style="display:flex;flex-direction:column;gap:6px;font-size:.8rem;">';
+        opts.forEach(function(o) {
+          var isStudentAns = ans.answer === o.letter;
+          var isCorrectAns = q.correct_answer === o.letter;
+
+          var optStyle = 'padding:8px 12px;border-radius:10px;display:flex;align-items:center;gap:8px;';
+          var optBg = '#fff';
+          var optBorder = '1px solid rgba(100,116,139,.2)';
+          var optColor = '#0f172a';
+          var optIcon = '';
+
+          if (isCorrectAns && isStudentAns) {
+            optBg = '#dcfce7';
+            optBorder = '2px solid #059669';
+            optColor = '#065f46';
+            optIcon = ' ✓';
+          } else if (isCorrectAns) {
+            optBg = '#dcfce7';
+            optBorder = '2px solid #059669';
+            optColor = '#065f46';
+            optIcon = ' ← Correct Answer';
+          } else if (isStudentAns) {
+            optBg = '#fee2e2';
+            optBorder = '2px solid #dc2626';
+            optColor = '#991b1b';
+            optIcon = ' ← Student\'s Answer';
+          }
+
+          h += '<div style="' + optStyle + 'background:' + optBg + ';border:' + optBorder + ';color:' + optColor + ';font-weight:' + (isStudentAns || isCorrectAns ? '900' : '600') + ';">';
+          h += '<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.06);font-weight:900;font-size:.72rem;flex-shrink:0;">' + o.letter + '</span>';
+          h += '<span style="flex:1;">' + escapeHtml(o.text) + '</span>';
+          if (optIcon) h += '<span style="font-weight:900;font-size:.72rem;white-space:nowrap;">' + optIcon + '</span>';
+          h += '</div>';
+        });
+        h += '</div>';
+
+        h += '</div>';
+      });
+
+      // Close button
+      h += '<div style="display:flex;gap:10px;margin-top:20px;">';
+      h += '<button class="btn-cancel flex-grow-1" onclick="closeModal(\'globalModal\')" style="padding:12px 20px;border-radius:14px;">Close</button>';
+      h += '</div>';
+
+      modalBodyDiv.innerHTML = h;
+    } catch(e) {
+      modalBodyDiv.innerHTML = '<div class="empty-state" style="color:#dc2626;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════ */
+  /* 🔧 INJECT "Quiz Results" section into Quiz tab     */
+  /* ═══════════════════════════════════════════════════ */
+  function injectQuizResultsSection() {
+    var quizTab = document.getElementById('adminQuizTab');
+    if (!quizTab) return;
+    if (document.getElementById('quizResultsWrap')) return;
+
+    // Add "Results" toggle button in toolbar
+    var toolbar = quizTab.querySelector('.admin-toolbar');
+    if (toolbar && !document.getElementById('quizResultsToggleBtn')) {
+      var btn = document.createElement('button');
+      btn.id = 'quizResultsToggleBtn';
+      btn.className = 'btn-update';
+      btn.style.background = 'linear-gradient(100deg,#059669,#34d399)';
+      btn.style.color = '#fff';
+      btn.innerHTML = '<i class="fas fa-chart-bar"></i> View Results';
+      btn.onclick = function() {
+        var section = document.getElementById('quizResultsSection');
+        if (!section) return;
+        if (section.style.display === 'none') {
+          section.style.display = 'block';
+          btn.innerHTML = '<i class="fas fa-question-circle"></i> View Questions';
+          window.loadQuizResults();
+        } else {
+          section.style.display = 'none';
+          btn.innerHTML = '<i class="fas fa-chart-bar"></i> View Results';
+        }
+      };
+      toolbar.appendChild(btn);
+    }
+
+    // Add results section after questions wrap
+    var questionsWrap = document.getElementById('quizAdminWrap');
+    if (questionsWrap && !document.getElementById('quizResultsSection')) {
+      var resultsSection = document.createElement('div');
+      resultsSection.id = 'quizResultsSection';
+      resultsSection.style.display = 'none';
+      resultsSection.innerHTML = 
+        '<div style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1.5px solid rgba(5,150,105,.3);border-radius:14px;padding:14px 18px;margin:16px 0;">' +
+          '<div style="font-weight:900;color:#059669;font-size:.95rem;"><i class="fas fa-chart-bar"></i> Quiz Results — Student Answers</div>' +
+          '<div style="font-size:.76rem;color:#065f46;margin-top:4px;">ഓരോ student-ന്റെയും ഉത്തരങ്ങൾ ഇവിടെ കാണാം</div>' +
+        '</div>' +
+        '<div id="quizResultsWrap"></div>';
+      questionsWrap.parentNode.insertBefore(resultsSection, questionsWrap.nextSibling);
+    }
+  }
+
+  // Hook into loadQuizAdmin — auto-inject on tab load
+  var _origLoadQuiz = window.loadQuizAdmin;
+  if (typeof _origLoadQuiz === 'function') {
+    window.loadQuizAdmin = async function() {
+      var result = await _origLoadQuiz.apply(this, arguments);
+      setTimeout(injectQuizResultsSection, 200);
+      return result;
+    };
+  }
+
+  // Also inject when tab switches to quiz
+  var _origSwitch = window.switchAdminTab;
+  if (typeof _origSwitch === 'function') {
+    window.switchAdminTab = function(tab) {
+      var result = _origSwitch.apply(this, arguments);
+      if (tab === 'quiz') {
+        setTimeout(injectQuizResultsSection, 300);
+      }
+      return result;
+    };
+  }
+
+  setTimeout(injectQuizResultsSection, 2000);
+  setTimeout(injectQuizResultsSection, 5000);
+
+  console.log('✅ Quiz Results Admin loaded');
+  console.log('   Admin → Quiz tab → "View Results" button');
+})();
+</script>
 </body>
 </html>
