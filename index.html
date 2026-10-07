@@ -3087,6 +3087,240 @@ setTimeout(loadMalayalamFontForPDF, 2000);
   .student-welcome-banner .welcome-icon { width: 46px; height: 46px; font-size: 1.4rem; }
 }
 </style>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎯 v23.0-STYLE ADMIN PANEL — MOBILE PATCH              -->
+<!-- Overrides v26.0's compact admin tables to look like     -->
+<!-- v23.0's natural mobile view. All v26.0 JS kept intact.  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="v23-admin-mobile-patch">
+@media (max-width: 900px) {
+  /* ─────────────────────────────────────────────── */
+  /* 📊 ADMIN TABLES — v23.0 Natural Style           */
+  /* ─────────────────────────────────────────────── */
+  .admin-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border: 1px solid rgba(180,200,230,.5) !important;
+    border-radius: 18px !important;
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 12px 0 16px !important;
+  }
+  .admin-table-wrap table {
+    display: table !important;
+    width: 100% !important;
+    min-width: 300px !important;
+    border-collapse: collapse !important;
+    background: #fff !important;
+    font-size: .78rem !important;
+    color: #0f172a !important;
+    table-layout: auto !important;
+  }
+  .admin-table-wrap thead {
+    display: table-header-group !important;
+  }
+  .admin-table-wrap tbody {
+    display: table-row-group !important;
+  }
+  .admin-table-wrap tr {
+    display: table-row !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+  .admin-table-wrap tr:hover td {
+    background: #f0f6ff !important;
+  }
+  .admin-table-wrap th {
+    display: table-cell !important;
+    padding: 11px 13px !important;
+    font-size: .6rem !important;
+    text-align: left !important;
+    background: #f0f6ff !important;
+    border-bottom: 1.5px solid rgba(59,130,246,.2) !important;
+    white-space: nowrap !important;
+    letter-spacing: 1px !important;
+    font-weight: 800 !important;
+    color: #1e40af !important;
+    text-transform: uppercase !important;
+  }
+  .admin-table-wrap td {
+    display: table-cell !important;
+    padding: 9px 13px !important;
+    font-size: .78rem !important;
+    text-align: left !important;
+    border-bottom: 1px solid rgba(59,130,246,.08) !important;
+    vertical-align: middle !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    color: #0f172a !important;
+    background: transparent !important;
+  }
+  .admin-table-wrap td::before {
+    content: none !important;
+    display: none !important;
+  }
+  .admin-table-wrap td img {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+  }
+  .admin-table-wrap input[type="number"],
+  .admin-table-wrap input[type="text"] {
+    width: 74px !important;
+    max-width: 100% !important;
+    padding: 7px 9px !important;
+    font-size: 14px !important;
+    margin: 0 !important;
+    text-align: center !important;
+  }
+  .admin-table-wrap select {
+    width: auto !important;
+    max-width: 100% !important;
+    padding: 5px 8px !important;
+    font-size: 14px !important;
+    margin: 0 !important;
+  }
+
+  /* Class group header rows — v23.0 look (no special compact style) */
+  .admin-table-wrap tr[style*="linear-gradient"] td {
+    background: linear-gradient(100deg,#1e40af,#2563eb) !important;
+    color: #fff !important;
+    padding: 11px 13px !important;
+    font-weight: 900 !important;
+    font-size: .9rem !important;
+    text-align: left !important;
+    display: table-cell !important;
+  }
+
+  /* Action buttons — v23.0 natural size */
+  .admin-table-wrap .btn-sm {
+    padding: 5px 12px !important;
+    min-height: auto !important;
+    min-width: auto !important;
+    font-size: .7rem !important;
+    margin: 2px 3px 2px 0 !important;
+    border-radius: 30px !important;
+  }
+
+  /* Marks entry inputs — v23.0 */
+  #marksWrap .admin-table-wrap table {
+    min-width: 100% !important;
+  }
+  #marksWrap .admin-table-wrap th,
+  #marksWrap .admin-table-wrap td {
+    padding: 8px 10px !important;
+    font-size: .72rem !important;
+  }
+  #marksWrap .mk-inp {
+    width: 58px !important;
+    padding: 6px 8px !important;
+    font-size: 14px !important;
+  }
+
+  /* Students table — natural columns */
+  #adminStudentsWrap .admin-table-wrap th,
+  #adminStudentsWrap .admin-table-wrap td {
+    padding: 9px 13px !important;
+    font-size: .78rem !important;
+  }
+
+  /* Class selector panel — v23.0 style */
+  .class-selector-panel {
+    padding: 20px 16px !important;
+    border-radius: 24px !important;
+  }
+  .class-selector-panel h3 {
+    font-size: 1.15rem !important;
+  }
+  .class-selector-panel select {
+    min-width: 100% !important;
+    width: 100% !important;
+    font-size: 1rem !important;
+    padding: 14px 42px 14px 20px !important;
+  }
+
+  /* Admin tabs — v23.0 horizontal scroll */
+  .admin-tabs {
+    display: flex !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    padding: 4px 0 10px !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .admin-tabs::-webkit-scrollbar { display: none; }
+  .admin-tab {
+    flex-shrink: 0 !important;
+    padding: 9px 15px !important;
+    font-size: .72rem !important;
+    min-height: 38px !important;
+    white-space: nowrap !important;
+    border-radius: 40px !important;
+  }
+
+  /* Admin summary cards — v23.0 */
+  .admin-summary {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    gap: 11px !important;
+  }
+  .admin-summary .stat {
+    padding: 14px !important;
+    border-radius: 17px !important;
+  }
+  .admin-summary .stat .num {
+    font-size: 1.2rem !important;
+  }
+  .admin-summary .stat .label {
+    font-size: .55rem !important;
+  }
+
+  /* Admin toolbar — v23.0 */
+  .admin-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .admin-toolbar input,
+  .admin-toolbar select,
+  .admin-toolbar .modal-form-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 40px !important;
+  }
+  .admin-toolbar .btn-load,
+  .admin-toolbar .btn-update,
+  .admin-toolbar .btn-pdf {
+    width: 100% !important;
+    min-height: 42px !important;
+    justify-content: center !important;
+    font-size: .82rem !important;
+  }
+  .admin-toolbar label {
+    font-size: .78rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* Login logs — v23.0 style */
+  .login-log-item {
+    padding: 12px 14px !important;
+    gap: 12px !important;
+  }
+  .login-log-avatar {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 1.05rem !important;
+  }
+  .login-log-name { font-size: .9rem !important; }
+  .login-log-meta { font-size: .72rem !important; }
+  .login-log-time { font-size: .78rem !important; }
+  .login-log-del { width: 32px !important; height: 32px !important; }
+}
+</style>
 </head>
 <body>
 
