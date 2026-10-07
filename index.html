@@ -18189,5 +18189,367 @@ console.log('📱 All features: Login, Dashboard, Admin (27 tabs), Fee System, A
   console.log('✅ PDF + Fee Filter Fix loaded');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔔 ENHANCED REAL-TIME NOTIFICATIONS — v26.0            -->
+<!-- Paste right before </body>                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="realtime-notif-enhanced">
+(function(){
+  'use strict';
+
+  if (window._enhancedRealtimeLoaded) {
+    console.log('⏭️ Realtime already loaded');
+    return;
+  }
+  window._enhancedRealtimeLoaded = true;
+
+  var _reconnectAttempts = 0;
+  var _maxReconnect = 5;
+  var _channel = null;
+  var _heartbeatTimer = null;
+  var _isSubscribed = false;
+
+  console.log('🔔 Initializing Enhanced Real-Time Notifications...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 1️⃣ SUBSCRIBE with Auto-Reconnect                       */
+  /* ═══════════════════════════════════════════════════════ */
+  window.subscribeRealtimeNotifications = function() {
+    if (!supabaseClient) {
+      console.warn('⚠️ Supabase not ready');
+      return;
+    }
+    if (!currentUser || isAdminMode) {
+      console.log('⏭️ Skip subscribe (no user or admin mode)');
+      return;
+    }
+
+    // Cleanup old channel
+    if (_channel) {
+      try { supabaseClient.removeChannel(_channel); } catch(e) {}
+      _channel = null;
+      _isSubscribed = false;
+    }
+
+    var cls = (currentUser.class && currentUser.class !== 'N/A') ? String(currentUser.class) : '__none__';
+    var sid = currentUser.studentId;
+
+    try {
+      _channel = supabaseClient
+        .channel('realtime_notif_' + sid + '_' + Date.now())
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications'
+        }, function(payload) {
+          handleNewNotification(payload.new, sid, cls);
+        })
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'class_messages'
+        }, function(payload) {
+          handleNewClassMessage(payload.new, cls, sid);
+        })
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'direct_messages'
+        }, function(payload) {
+          handleNewDirectMessage(payload.new, sid);
+        })
+        .subscribe(function(status, err) {
+          console.log('📡 Realtime status:', status);
+          if (status === 'SUBSCRIBED') {
+            _isSubscribed = true;
+            _reconnectAttempts = 0;
+            console.log('✅ Realtime connected for', sid);
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            _isSubscribed = false;
+            console.warn('⚠️ Realtime disconnected:', status);
+            scheduleReconnect();
+          }
+        });
+
+      console.log('✅ Realtime channel created for', sid);
+    } catch(e) {
+      console.error('❌ Realtime subscribe error:', e);
+      scheduleReconnect();
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 2️⃣ NOTIFICATION HANDLER                                */
+  /* ═══════════════════════════════════════════════════════ */
+  function handleNewNotification(n, sid, cls) {
+    if (!n) return;
+
+    // Check if applies to this user
+    var tt = n.target_type || (n.target_class === 'all' ? 'all' : 'class');
+    var applies = false;
+
+    if (tt === 'all') applies = true;
+    else if (tt === 'student' && n.target_student === sid) applies = true;
+    else if (tt === 'class' && String(n.target_class) === cls) applies = true;
+
+    if (!applies) return;
+
+    console.log('🔔 New notification:', n.title);
+
+    // 🎯 1. Toast popup
+    if (typeof showToast === 'function') {
+      var icon = n.type === 'urgent' ? '🚨' : n.type === 'important' ? '⚡' : '🔔';
+      showToast(icon + ' ' + n.title, 'info');
+    }
+
+    // 🎯 2. Update bell badge
+    if (typeof loadStudentNotifications === 'function') {
+      loadStudentNotifications();
+    }
+
+    // 🎯 3. Browser notification
+    if (typeof showBrowserNotification === 'function') {
+      showBrowserNotification('🔔 ' + n.title, n.message || '');
+    }
+
+    // 🎯 4. Update open modal list
+    var modalEl = document.getElementById('notificationsModal');
+    if (modalEl && modalEl.style.display === 'flex') {
+      prependNotificationToList(n, tt);
+    }
+
+    // 🎯 5. Haptic feedback
+    if (navigator.vibrate) {
+      try { navigator.vibrate([80, 40, 80]); } catch(e) {}
+    }
+
+    // 🎯 6. Sound (if available)
+    if (typeof playSound === 'function') {
+      try { playSound('success'); } catch(e) {}
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 3️⃣ CLASS MESSAGE HANDLER                               */
+  /* ═══════════════════════════════════════════════════════ */
+  function handleNewClassMessage(m, cls, sid) {
+    if (!m) return;
+    if (String(m.class) !== cls) return;
+    if (m.sender_id === sid) return; // own message
+
+    // Skip if chat is open
+    var chatPanel = document.getElementById('chatPanel');
+    if (chatPanel && chatPanel.classList.contains('open')) return;
+
+    if (typeof showToast === 'function') {
+      var preview = (m.message || '').substring(0, 40);
+      showToast('💬 ' + (m.student_name || 'New') + ': ' + preview, 'info');
+    }
+
+    if (navigator.vibrate) {
+      try { navigator.vibrate(30); } catch(e) {}
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 4️⃣ DIRECT MESSAGE HANDLER                              */
+  /* ═══════════════════════════════════════════════════════ */
+  function handleNewDirectMessage(m, sid) {
+    if (!m) return;
+    if (m.receiver_id !== sid) return; // only incoming
+
+    // Skip if chat is open with that friend
+    var chatPanel = document.getElementById('chatPanel');
+    if (chatPanel && chatPanel.classList.contains('open')) {
+      if (window.CHAT_STATE && window.CHAT_STATE.activeChat === m.sender_id) {
+        return;
+      }
+    }
+
+    if (typeof showToast === 'function') {
+      showToast('💬 New message from ' + (m.sender_id || 'friend'), 'info');
+    }
+
+    if (navigator.vibrate) {
+      try { navigator.vibrate([50, 30, 50]); } catch(e) {}
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 5️⃣ PREPEND NEW ITEM TO MODAL LIST                      */
+  /* ═══════════════════════════════════════════════════════ */
+  function prependNotificationToList(n, tt) {
+    var listEl = document.getElementById('notificationsList');
+    if (!listEl) return;
+
+    var badge = tt === 'student'
+      ? '<span style="background:rgba(180,83,9,.15);color:#b45309;padding:2px 8px;border-radius:20px;font-size:.62rem;font-weight:800;margin-left:6px;">👤 Personal</span>'
+      : tt === 'class'
+        ? '<span style="background:rgba(59,130,246,.15);color:#2563eb;padding:2px 8px;border-radius:20px;font-size:.62rem;font-weight:800;margin-left:6px;">📚 Class</span>'
+        : '<span style="background:rgba(8,145,178,.15);color:#0891b2;padding:2px 8px;border-radius:20px;font-size:.62rem;font-weight:800;margin-left:6px;">🌟 All</span>';
+
+    var c = n.type === 'urgent' ? 'urgent' : n.type === 'important' ? 'important' : '';
+    var i = n.type === 'urgent' ? 'fa-exclamation-triangle'
+          : n.type === 'important' ? 'fa-exclamation-circle'
+          : 'fa-info-circle';
+
+    var linkHtml = '';
+    if (n.link_url) {
+      linkHtml = '<a href="' + escapeHtml(n.link_url) + '" target="_blank" rel="noopener" '
+              + 'style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:.78rem;'
+              + 'color:#0891b2;text-decoration:none;padding:6px 12px;background:rgba(8,145,178,.1);'
+              + 'border:1px solid rgba(8,145,178,.3);border-radius:20px;font-weight:700;">'
+              + '<i class="fas fa-external-link-alt"></i> Open Link</a>';
+    }
+
+    var newItem = '<div class="notif-item ' + c + '" style="animation:msgPop .4s cubic-bezier(.34,1.56,.64,1);">'
+      + '<div class="d-flex justify-content-between mb-2 flex-wrap gap-2">'
+      + '<strong style="color:#0f172a;font-size:.88rem;">'
+      + '<i class="fas ' + i + ' me-2"></i>' + escapeHtml(n.title) + badge
+      + '</strong>'
+      + '<small style="color:#64748b;font-size:.7rem;">just now</small>'
+      + '</div>'
+      + '<p style="color:#475569;margin-bottom:0;font-size:.82rem;">' + escapeHtml(n.message) + '</p>'
+      + linkHtml
+      + '</div>';
+
+    // Remove empty state if present
+    var emptyState = listEl.querySelector('div[style*="text-align:center"]');
+    if (emptyState && listEl.children.length === 1) {
+      listEl.innerHTML = '';
+    }
+
+    listEl.insertAdjacentHTML('afterbegin', newItem);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 6️⃣ AUTO-RECONNECT with Exponential Backoff             */
+  /* ═══════════════════════════════════════════════════════ */
+  function scheduleReconnect() {
+    if (_reconnectAttempts >= _maxReconnect) {
+      console.warn('❌ Max reconnection attempts reached');
+      return;
+    }
+    _reconnectAttempts++;
+    var delay = Math.min(30000, 1000 * Math.pow(2, _reconnectAttempts));
+    console.log('🔄 Reconnecting in', delay, 'ms (attempt', _reconnectAttempts + ')');
+    setTimeout(function() {
+      if (currentUser && !isAdminMode) {
+        window.subscribeRealtimeNotifications();
+      }
+    }, delay);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 7️⃣ OVERRIDE subscribeNotifications                     */
+  /* ═══════════════════════════════════════════════════════ */
+  window.subscribeNotifications = function() {
+    window.subscribeRealtimeNotifications();
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 8️⃣ HEARTBEAT — Keep connection alive (every 30s)       */
+  /* ═══════════════════════════════════════════════════════ */
+  function startHeartbeat() {
+    if (_heartbeatTimer) clearInterval(_heartbeatTimer);
+    _heartbeatTimer = setInterval(function() {
+      if (!currentUser || isAdminMode) return;
+      if (document.hidden) return;
+
+      // Periodic ping
+      if (typeof checkUnreadNotifications === 'function') {
+        checkUnreadNotifications();
+      }
+
+      // If channel died silently, reconnect
+      if (!_isSubscribed && _reconnectAttempts < _maxReconnect) {
+        console.log('💓 Heartbeat: reconnecting...');
+        window.subscribeRealtimeNotifications();
+      }
+    }, 30000);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 9️⃣ VISIBILITY CHANGE — Refresh on tab focus            */
+  /* ═══════════════════════════════════════════════════════ */
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && currentUser && !isAdminMode) {
+      console.log('👁️ Tab visible — refreshing notifications');
+      if (typeof checkUnreadNotifications === 'function') {
+        checkUnreadNotifications();
+      }
+      if (typeof loadStudentNotifications === 'function') {
+        loadStudentNotifications();
+      }
+      // Reconnect if channel dropped
+      if (!_isSubscribed) {
+        window.subscribeRealtimeNotifications();
+      }
+    }
+  });
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔟 AUTO-START when dashboard opens                     */
+  /* ═══════════════════════════════════════════════════════ */
+  var _dash = document.getElementById('dashboardSection');
+  if (_dash) {
+    var _dashObs = new MutationObserver(function() {
+      if (_dash.style.display === 'block' && currentUser && !isAdminMode) {
+        setTimeout(function() {
+          window.subscribeRealtimeNotifications();
+          startHeartbeat();
+        }, 1200);
+      }
+    });
+    _dashObs.observe(_dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Also start after 3 seconds (in case already logged in)
+  setTimeout(function() {
+    if (currentUser && !isAdminMode) {
+      window.subscribeRealtimeNotifications();
+      startHeartbeat();
+    }
+  }, 3000);
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 1️⃣1️⃣ CLEANUP on logout                                */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origLogout = window.logout;
+  if (typeof _origLogout === 'function' && !_origLogout._realtimeWrapped) {
+    window.logout = function() {
+      if (_channel) {
+        try { supabaseClient.removeChannel(_channel); } catch(e) {}
+        _channel = null;
+      }
+      if (_heartbeatTimer) {
+        clearInterval(_heartbeatTimer);
+        _heartbeatTimer = null;
+      }
+      _isSubscribed = false;
+      _reconnectAttempts = 0;
+      return _origLogout.apply(this, arguments);
+    };
+    window.logout._realtimeWrapped = true;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 1️⃣2️⃣ STATUS HELPER (debug)                            */
+  /* ═══════════════════════════════════════════════════════ */
+  window.realtimeStatus = function() {
+    return {
+      connected: _isSubscribed,
+      attempts: _reconnectAttempts,
+      hasChannel: !!_channel,
+      hasHeartbeat: !!_heartbeatTimer,
+      user: currentUser ? currentUser.studentId : null,
+      admin: isAdminMode
+    };
+  };
+
+  console.log('✅ Enhanced Real-Time Notifications loaded');
+  console.log('💡 Check status: realtimeStatus()');
+})();
+</script>
 </body>
 </html>
