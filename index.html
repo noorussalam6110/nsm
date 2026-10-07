@@ -22805,5 +22805,377 @@ window.printFeeReportPDF = function() {
   console.log('   • Admin password still works');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 📸 v33.0 — Remove Ticker + Creation Notifications         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══ PART 1: CSS — Hide Ticker ═══ -->
+<style id="hide-ticker-css">
+/* 🚫 Hide scrolling ticker on login page */
+.nsm-ticker {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+</style>
+
+<!-- ═══ PART 2: JS — Fix Both Issues ═══ -->
+<script id="v33-ticker-creation-fix">
+(function(){
+  'use strict';
+  console.log('📸 v33.0 loading — Ticker remove + Creation Notifications...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 1️⃣  REMOVE TICKER COMPLETELY                            */
+  /* ═══════════════════════════════════════════════════════ */
+  
+  // Override loadTickerMessages — do nothing
+  window.loadTickerMessages = function() {
+    var ticker = document.getElementById('nsmTicker');
+    if (ticker) {
+      ticker.style.display = 'none';
+      ticker.style.height = '0';
+      ticker.remove();
+    }
+  };
+
+  // Remove existing ticker immediately
+  function removeTicker() {
+    var ticker = document.getElementById('nsmTicker');
+    if (ticker) {
+      ticker.style.display = 'none';
+      ticker.remove();
+    }
+    var track = document.getElementById('nsmTickerTrack');
+    if (track) track.remove();
+  }
+
+  // Run on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(removeTicker, 100);
+      setTimeout(removeTicker, 1000);
+      setTimeout(removeTicker, 3000);
+    });
+  } else {
+    setTimeout(removeTicker, 100);
+    setTimeout(removeTicker, 1000);
+  }
+
+  // Watch for ticker trying to appear
+  var tickerObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.type === 'attributes' && m.target.id === 'nsmTicker') {
+        if (m.target.style.display === 'flex' || m.target.style.display === '') {
+          m.target.style.display = 'none';
+        }
+      }
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var ticker = document.getElementById('nsmTicker');
+    if (ticker) {
+      tickerObserver.observe(ticker, { attributes: true, attributeFilter: ['style'] });
+    }
+  });
+
+  // Also override positionTicker
+  window.positionTicker = function() { /* Disabled */ };
+
+  console.log('✅ Ticker removed');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 2️⃣  CREATION NOTIFICATIONS — Instagram Style             */
+  /* ═══════════════════════════════════════════════════════ */
+
+  // ═══ A. Create notification when new creation is posted ═══
+  var _origSubmitCreation = window.submitCreation;
+  if (typeof _origSubmitCreation === 'function') {
+    window.submitCreation = async function(e) {
+      // Store result
+      var result = await _origSubmitCreation.apply(this, arguments);
+      
+      // The creation was posted successfully — create notification
+      // But wait, we need to know if it succeeded. Check recent creations.
+      setTimeout(async function() {
+        if (!currentUser || !supabaseClient) return;
+        
+        try {
+          // Get the latest creation by this user (last 30 seconds)
+          var since = new Date(Date.now() - 30000).toISOString();
+          var r = await supabaseClient
+            .from('student_creations')
+            .select('*')
+            .eq('studentid', currentUser.studentId)
+            .gte('created_at', since)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          
+          if (r.data && r.data.length > 0) {
+            var c = r.data[0];
+            await broadcastCreationNotification(c);
+          }
+        } catch(err) {
+          console.warn('Creation notification error:', err);
+        }
+      }, 1000);
+      
+      return result;
+    };
+  }
+
+  // ═══ B. Broadcast notification to all students ═══
+  async function broadcastCreationNotification(creation) {
+    if (!supabaseClient || !currentUser) return;
+
+    var author = currentUser.name || 'Student';
+    var catLabel = getCategoryLabel(creation.category);
+    var title = '🎨 പുതിയ സൃഷ്ടി — ' + (creation.title || 'Untitled');
+    var message = author + ' ഒരു പുതിയ ' + catLabel + ' പങ്കുവെച്ചു! ഇൻസ്റ്റഗ്രാം-സ്റ്റൈൽ ഫീഡിൽ കാണൂ.';
+
+    try {
+      // Insert notification for everyone
+      var r = await supabaseClient.from('notifications').insert({
+        title: title,
+        message: message,
+        type: 'general',
+        target_type: 'all',
+        target_class: 'all',
+        link_url: window.location.origin + '?public=1',
+        created_at: new Date().toISOString()
+      });
+      
+      if (r.error) throw r.error;
+      
+      console.log('✅ Creation notification broadcast to all students');
+      
+      // Show local toast for the uploader
+      showToast('📢 എല്ലാവർക്കും notification അയച്ചു!', 'success');
+      
+      // Trigger browser notification if permission granted
+      if (typeof showBrowserNotification === 'function' && Notification.permission === 'granted') {
+        showBrowserNotification('🎨 നിങ്ങളുടെ സൃഷ്ടി പോസ്റ്റ് ചെയ്തു!', 'Admin approve ചെയ്താൽ എല്ലാവർക്കും കാണാം');
+      }
+    } catch(e) {
+      console.warn('Broadcast error:', e);
+    }
+  }
+
+  // ═══ C. When admin APPROVES creation — notify everyone ═══
+  var _origApproveCreation = window.approveCreationAdmin;
+  if (typeof _origApproveCreation === 'function') {
+    window.approveCreationAdmin = async function(id) {
+      // Get creation info first
+      var creationInfo = null;
+      try {
+        var r = await supabaseClient
+          .from('student_creations')
+          .select('*')
+          .eq('id', id)
+          .single();
+        creationInfo = r.data;
+      } catch(e) {}
+
+      // Run original approve
+      var result = await _origApproveCreation.apply(this, arguments);
+
+      // After approval, notify everyone
+      if (creationInfo && currentUser) {
+        setTimeout(async function() {
+          try {
+            // Get author name
+            var authorName = 'A student';
+            try {
+              var sr = await supabaseClient
+                .from('students')
+                .select('name, class')
+                .eq('studentid', creationInfo.studentid)
+                .single();
+              if (sr.data) {
+                authorName = sr.data.name || 'Student';
+              }
+            } catch(e) {}
+
+            var catLabel = getCategoryLabel(creationInfo.category);
+            var title = '✨ പുതിയ സൃഷ്ടി — ' + (creationInfo.title || 'Untitled');
+            var message = authorName + ' ഒരു പുതിയ ' + catLabel + ' പങ്കുവെച്ചു! കാണാൻ ടാപ്പ് ചെയ്യൂ.';
+
+            await supabaseClient.from('notifications').insert({
+              title: title,
+              message: message,
+              type: 'general',
+              target_type: 'all',
+              target_class: 'all',
+              link_url: window.location.origin + '?public=1'
+            });
+
+            console.log('✅ Approval notification broadcast to all');
+            showToast('📢 എല്ലാവർക്കും notification അയച്ചു!', 'success');
+          } catch(e) {
+            console.warn('Approval notification error:', e);
+          }
+        }, 500);
+      }
+
+      return result;
+    };
+  }
+
+  console.log('✅ Creation notification system ready');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 3️⃣  INSTAGRAM-STYLE IN-APP NOTIFICATION POPUP            */
+  /* ═══════════════════════════════════════════════════════ */
+
+  // Listen for new notifications in real-time
+  function setupNotificationListener() {
+    if (!supabaseClient || !currentUser) return;
+
+    try {
+      var channel = supabaseClient
+        .channel('new_creation_notif_' + currentUser.studentId)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications'
+        }, function(payload) {
+          var n = payload.new;
+          if (!n) return;
+
+          // Only show notifications targeting all or this student
+          var tt = n.target_type || 'all';
+          if (tt === 'all' || (tt === 'student' && n.target_student === currentUser.studentId)) {
+            // Check if it's a creation notification (has emoji)
+            if (n.title && (n.title.indexOf('🎨') > -1 || n.title.indexOf('✨') > -1)) {
+              showInstagramNotification(n.title, n.message, n.link_url);
+            }
+          }
+        })
+        .subscribe();
+
+      console.log('✅ Notification listener started');
+    } catch(e) {
+      console.warn('Notification listener error:', e);
+    }
+  }
+
+  // Instagram-style slide-in notification
+  function showInstagramNotification(title, message, linkUrl) {
+    // Check if already dismissed
+    var existing = document.getElementById('igNotifPopup');
+    if (existing) existing.remove();
+
+    var popup = document.createElement('div');
+    popup.id = 'igNotifPopup';
+    popup.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-120%);
+      background: linear-gradient(135deg, #ec4899, #8b5cf6, #3b8bff);
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 18px;
+      box-shadow: 0 20px 50px -12px rgba(236,72,153,.85);
+      z-index: 9999999;
+      max-width: 92vw;
+      width: 380px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+      font-family: 'Anek Malayalam', sans-serif;
+    `;
+
+    popup.innerHTML = `
+      <div style="width: 46px; height: 46px; border-radius: 50%; 
+                  background: rgba(255,255,255,.25); 
+                  display: flex; align-items: center; justify-content: center; 
+                  font-size: 1.4rem; flex-shrink: 0;
+                  backdrop-filter: blur(10px);">
+        🎨
+      </div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-weight: 900; font-size: .88rem; margin-bottom: 3px; 
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          ${escapeHtml(title || 'New Creation')}
+        </div>
+        <div style="font-size: .74rem; opacity: .9; line-height: 1.4;
+                    display: -webkit-box; -webkit-line-clamp: 2; 
+                    -webkit-box-orient: vertical; overflow: hidden;">
+          ${escapeHtml(message || '')}
+        </div>
+      </div>
+      <button onclick="event.stopPropagation();this.parentNode.remove();" 
+              style="background: rgba(255,255,255,.2); border: none; 
+                     color: #fff; width: 28px; height: 28px; border-radius: 50%; 
+                     cursor: pointer; font-size: .9rem; flex-shrink: 0;
+                     display: flex; align-items: center; justify-content: center;">
+        ×
+      </button>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Slide in
+    requestAnimationFrame(function() {
+      popup.style.transform = 'translateX(-50%) translateY(0)';
+    });
+
+    // Click → open feed
+    popup.onclick = function() {
+      popup.remove();
+      if (linkUrl) {
+        window.open(linkUrl, '_blank');
+      } else {
+        if (typeof openPublicCreationsFeed === 'function') {
+          openPublicCreationsFeed();
+        }
+      }
+    };
+
+    // Auto dismiss after 8s
+    setTimeout(function() {
+      if (popup.parentNode) {
+        popup.style.transform = 'translateX(-50%) translateY(-120%)';
+        setTimeout(function() { popup.remove(); }, 500);
+      }
+    }, 8000);
+
+    // Haptic
+    if (navigator.vibrate) {
+      try { navigator.vibrate([40, 30, 40]); } catch(e) {}
+    }
+
+    // Sound
+    if (typeof playSound === 'function') {
+      try { playSound('success'); } catch(e) {}
+    }
+  }
+
+  // Start listener when user logs in
+  var _origCompleteLogin = window.completeLogin;
+  if (typeof _origCompleteLogin === 'function') {
+    window.completeLogin = async function(student) {
+      var result = await _origCompleteLogin.apply(this, arguments);
+      setTimeout(setupNotificationListener, 2000);
+      return result;
+    };
+  }
+
+  // Also start on page load if user already logged in
+  setTimeout(setupNotificationListener, 5000);
+
+  console.log('📸 v33.0 fully loaded');
+  console.log('   • Ticker removed from login page');
+  console.log('   • Creation upload → notification to all');
+  console.log('   • Approval → notification to all');
+  console.log('   • Instagram-style slide-in popup');
+
+})();
+</script>
 </body>
 </html>
