@@ -22528,5 +22528,282 @@ window.printFeeReportPDF = function() {
   console.log('✅ Ticker speed fix loaded');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔓 v32.0 — STUDENT ID ONLY LOGIN (No Password)            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<style id="no-password-login-css">
+/* 🚫 Hide password field */
+#passwordField { display: none !important; }
+
+/* 🚫 Hide forgot password link */
+.nsm-hint[onclick*="showForgotPwdHelp"],
+.nsm-hint[onclick*="ForgotPwd"] { display: none !important; }
+
+/* 🚫 Hide divider "or" */
+.nsm-form .nsm-divider { display: none !important; }
+
+/* 🚫 Hide password setup modal */
+#passwordSetupModal { display: none !important; }
+
+/* 🚫 Hide any password reset modal */
+#pwdResetModal { display: none !important; }
+
+/* ✨ Better button text */
+#nsmLoginBtn span::after {
+  content: '' !important;
+}
+</style>
+
+<script>
+(function(){
+  'use strict';
+  console.log('🔓 No-Password Login loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 1️⃣  REPLACE LOGIN HANDLER — Student ID only              */
+  /* ═══════════════════════════════════════════════════════ */
+  function installNewLoginHandler() {
+    var form = document.getElementById('loginForm');
+    if (!form) return;
+
+    // Remove ALL existing submit listeners by cloning the form
+    var newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+
+    // Re-attach input formatter for studentId
+    var sidInput = document.getElementById('studentId');
+    if (sidInput) {
+      sidInput.addEventListener('input', function() {
+        var p = this.selectionStart;
+        var c = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (this.value !== c) {
+          this.value = c;
+          this.setSelectionRange(p, p);
+        }
+        try { localStorage.setItem('noor_last_id', c); } catch(e){}
+      });
+    }
+
+    // New submit handler — no password
+    newForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!supabaseClient) {
+        showToast('System loading. Refresh.', 'error');
+        return;
+      }
+
+      var raw = (sidInput.value || '').trim().toUpperCase();
+      if (!raw) {
+        showToast('Student ID നൽകുക', 'error');
+        return;
+      }
+
+      showLoading(true);
+
+      try {
+        // ═══ 1. Admin check (password still works for admin) ═══
+        var ap = localStorage.getItem('admin_password') || DEFAULT_ADMIN_PASSWORD;
+        if (raw === ap || raw === DEFAULT_ADMIN_PASSWORD) {
+          isAdminMode = true;
+          currentAdminClass = '';
+          loginSection.style.display = 'none';
+          adminSection.style.display = 'block';
+          dashboardSection.style.display = 'none';
+          document.getElementById('aiFab').classList.remove('show');
+          if (notifChannel) {
+            supabaseClient.removeChannel(notifChannel);
+            notifChannel = null;
+          }
+          stopLeaderboardAutoScroll();
+          await loadAllSettings();
+          document.getElementById('adminClassSelector').value = '';
+          document.getElementById('adminMainContent').style.display = 'none';
+          document.getElementById('noClassMsg').style.display = 'block';
+          document.getElementById('selectedClassBadge').style.display = 'none';
+          document.getElementById('adminSettingsTab').style.display = 'none';
+          try { localStorage.setItem('noor_last_id', raw); } catch(e){}
+          showToast('🔐 Admin Panel', 'success');
+          enableBodyScroll();
+          showLoading(false);
+          return;
+        }
+
+        // ═══ 2. Student lookup — NO PASSWORD CHECK ═══
+        var r = await supabaseClient.from('students')
+          .select('*').eq('studentid', raw).single();
+
+        if (r.error || !r.data) {
+          showToast('❌ Student ID കണ്ടെത്തിയില്ല', 'error');
+          showLoading(false);
+          return;
+        }
+
+        var student = r.data;
+
+        // ═══ 3. Blocked check ═══
+        if (student.is_blocked === true) {
+          showLoading(false);
+          showBlockedScreen(student);
+          return;
+        }
+
+        // ═══ 4. Direct login — no password needed ═══
+        showLoading(false);
+        if (typeof window.completeLogin === 'function') {
+          await window.completeLogin(student);
+        }
+
+      } catch (err) {
+        console.error('Login error:', err);
+        showToast('❌ ' + (err.message || 'Error'), 'error');
+        showLoading(false);
+      }
+    });
+
+    console.log('✅ New login handler installed');
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 2️⃣  UPDATE BUTTON TEXT (remove password hint)           */
+  /* ═══════════════════════════════════════════════════════ */
+  function updateButtonText() {
+    var btn = document.getElementById('nsmLoginBtn');
+    if (btn) {
+      var span = btn.querySelector('span');
+      if (span) span.textContent = 'പോർട്ടലിലേക്ക് പ്രവേശിക്കുക';
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 3️⃣  HIDE PASSWORD SETUP & RESET MODALS                  */
+  /* ═══════════════════════════════════════════════════════ */
+  function hidePasswordModals() {
+    // Hide password setup modal
+    var pwdSetup = document.getElementById('passwordSetupModal');
+    if (pwdSetup) {
+      pwdSetup.style.display = 'none';
+      pwdSetup.style.visibility = 'hidden';
+      pwdSetup.style.pointerEvents = 'none';
+    }
+
+    // Hide password reset modal
+    var pwdReset = document.getElementById('pwdResetModal');
+    if (pwdReset) {
+      pwdReset.style.display = 'none';
+      pwdReset.style.visibility = 'hidden';
+      pwdReset.style.pointerEvents = 'none';
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 4️⃣  OVERRIDE showPasswordSetup — Skip entirely          */
+  /* ═══════════════════════════════════════════════════════ */
+  // Even if called somewhere, it should just log in directly
+  var _origShowPwdSetup = window.showPasswordSetup;
+  window.showPasswordSetup = function(student) {
+    console.log('🔓 Password setup skipped — logging in directly');
+    if (student && typeof window.completeLogin === 'function') {
+      window.completeLogin(student);
+    }
+  };
+
+  // Also override password reset — not needed
+  window.resetStudentPassword = function(sid, name) {
+    showToast('🔓 Password system disabled — Student ID only', 'info');
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 5️⃣  OVERRIDE completeLogin — Remove password fields     */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origComplete = window.completeLogin;
+  if (typeof _origComplete === 'function') {
+    window.completeLogin = async function(student) {
+      // Remove password-related fields before login
+      if (student) {
+        delete student.password;
+        delete student.password_set;
+        delete student.password_set_at;
+      }
+      return _origComplete.apply(this, arguments);
+    };
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 6️⃣  OVERRIDE showForgotPwdHelp — Disabled               */
+  /* ═══════════════════════════════════════════════════════ */
+  window.showForgotPwdHelp = function() {
+    showToast('🔓 Password system disabled — no password needed', 'info');
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 7️⃣  REMOVE PASSWORD FIELD FROM DOM (cleanup)            */
+  /* ═══════════════════════════════════════════════════════ */
+  function removePasswordField() {
+    var pwdField = document.getElementById('passwordField');
+    if (pwdField) {
+      pwdField.remove();
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 8️⃣  INIT                                                 */
+  /* ═══════════════════════════════════════════════════════ */
+  function init() {
+    installNewLoginHandler();
+    updateButtonText();
+    hidePasswordModals();
+    removePasswordField();
+
+    // Re-apply periodically in case some script re-adds them
+    setInterval(hidePasswordModals, 2000);
+  }
+
+  // Wait for DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 800);
+      setTimeout(init, 2000);
+    });
+  } else {
+    setTimeout(init, 800);
+    setTimeout(init, 2000);
+  }
+
+  // Watch for password modal trying to open
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.type === 'attributes' && m.target.id === 'passwordSetupModal') {
+        if (m.target.style.display === 'flex') {
+          m.target.style.display = 'none';
+        }
+      }
+      if (m.type === 'attributes' && m.target.id === 'pwdResetModal') {
+        if (m.target.style.display === 'flex') {
+          m.target.style.display = 'none';
+        }
+      }
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var pwdSetup = document.getElementById('passwordSetupModal');
+    if (pwdSetup) {
+      observer.observe(pwdSetup, { attributes: true, attributeFilter: ['style'] });
+    }
+    var pwdReset = document.getElementById('pwdResetModal');
+    if (pwdReset) {
+      observer.observe(pwdReset, { attributes: true, attributeFilter: ['style'] });
+    }
+  });
+
+  console.log('✅ No-Password Login v32.0 ready');
+  console.log('   • Student ID only');
+  console.log('   • Password fields hidden');
+  console.log('   • Password setup skipped');
+  console.log('   • Admin password still works');
+})();
+</script>
 </body>
 </html>
