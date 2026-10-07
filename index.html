@@ -8971,3 +8971,4552 @@ async function deleteComment(id){
 
 console.log('✅ PART 2 loaded — Admin Panel complete');
 </script>
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🎨 PART 3 CSS — AI + CHAT + QUIZ + REWARDS + KIDS + SOCIAL     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<style id="part3-styles">
+
+/* ── 3.1 AI ASSISTANT ── */
+.ai-fab{
+  position:fixed;bottom:22px;right:20px;z-index:9999989;
+  width:64px;height:64px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.3);cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+  font-size:1.55rem;color:#fff;
+  background:linear-gradient(135deg,#22d3ee,#3b8bff,#8b5cf6);
+  background-size:200% 200%;
+  animation:fabPulse 3s ease infinite;
+  box-shadow:0 20px 50px -14px rgba(34,211,238,1);
+  transition:.25s;
+}
+.ai-fab.show{display:flex}
+@keyframes fabPulse{
+  0%,100%{background-position:0% 50%;box-shadow:0 20px 50px -14px rgba(34,211,238,1),0 0 0 0 rgba(34,211,238,.5)}
+  50%{background-position:100% 50%;box-shadow:0 20px 50px -14px rgba(139,92,246,1),0 0 0 14px rgba(34,211,238,0)}
+}
+body.ai-panel-open .ai-fab,
+body.modal-open .ai-fab,
+body.chat-panel-open .ai-fab{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+
+.ai-panel{
+  position:fixed;inset:0;top:0;left:0;right:0;bottom:0;
+  z-index:9999988;display:none;flex-direction:column;overflow:hidden;
+  background:#fff;padding:0;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  border:none;border-radius:0;box-shadow:none;
+  height:100dvh;max-height:100dvh;width:100%;max-width:100%;margin:0;
+  animation:aiPanelSlide .35s cubic-bezier(.34,1.2,.64,1);
+  padding-top:max(env(safe-area-inset-top,0px),12px);
+}
+@supports (height:100dvh){.ai-panel{height:100dvh!important;max-height:100dvh!important;}}
+@supports (-webkit-touch-callout:none){.ai-panel{height:-webkit-fill-available;min-height:-webkit-fill-available;}}
+.ai-panel.open{display:flex}
+@keyframes aiPanelSlide{0%{opacity:0;transform:translateY(30px) scale(.96)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+.ai-head{
+  padding:14px 18px;
+  padding-top:calc(14px + env(safe-area-inset-top,0px));
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:#fff;border-bottom:1px solid rgba(100,116,139,.1);
+  flex-shrink:0;position:relative;z-index:10;min-height:64px;
+}
+.ai-head-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.ai-avatar{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+  background:linear-gradient(140deg,#4285f4,#1a73e8,#0b57d0);
+  color:#fff;flex-shrink:0;
+  box-shadow:0 2px 8px -2px rgba(66,133,244,.5);
+}
+.ai-head h6{margin:0;font-weight:700;font-size:1.02rem;color:#0f172a;line-height:1.15;}
+.ai-head small{
+  font-size:.7rem;color:#64748b;
+  display:flex;align-items:center;gap:5px;margin-top:2px;
+}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:#34d399;animation:aiDotPulse 2s infinite}
+@keyframes aiDotPulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.7)}50%{box-shadow:0 0 0 6px rgba(52,211,153,0)}}
+.ai-head-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.ai-head-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:transparent;border:none;color:#475569;cursor:pointer;
+  font-size:1rem;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.ai-head-btn:hover{background:#f1f5f9}
+.ai-head-btn:active{background:#e2e8f0}
+
+.ai-body{
+  flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
+  padding:20px 16px 100px;
+  display:flex;flex-direction:column;gap:16px;
+  background:#fff;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;
+}
+.ai-welcome{
+  flex:1;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:40px 24px;
+  animation:aiWelcomeIn .6s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes aiWelcomeIn{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+.ai-welcome-logo{
+  width:64px;height:64px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;
+  background:linear-gradient(140deg,#4285f4,#1a73e8,#0b57d0);
+  color:#fff;margin-bottom:20px;
+  box-shadow:0 8px 24px -8px rgba(66,133,244,.6);
+}
+.ai-welcome-title{
+  font-size:1.6rem;font-weight:600;margin:0 0 8px;
+  background:linear-gradient(90deg,#4285f4,#9b72cb,#d96570);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;-webkit-text-fill-color:transparent;
+  letter-spacing:-.5px;
+}
+.ai-welcome-sub{
+  font-size:.9rem;color:#64748b;margin:0 0 26px;
+  line-height:1.55;max-width:340px;
+}
+.ai-suggestions{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  width:100%;max-width:440px;margin-top:6px;
+}
+.ai-suggestion{
+  background:#f8fafc;border:1px solid rgba(100,116,139,.14);
+  border-radius:16px;padding:14px 12px;text-align:left;
+  cursor:pointer;font-family:inherit;font-size:.82rem;
+  color:#0f172a;font-weight:600;
+  display:flex;flex-direction:column;gap:6px;
+  transition:.2s;line-height:1.35;
+}
+.ai-suggestion:hover{
+  background:#eff6ff;border-color:rgba(66,133,244,.35);
+  transform:translateY(-2px);
+}
+.ai-suggestion:active{transform:scale(.97)}
+.ai-suggestion i{font-size:1.05rem;color:#4285f4}
+.ai-suggestion span{font-size:.72rem;color:#64748b;font-weight:500}
+
+.ai-msg{
+  max-width:88%;padding:12px 16px;border-radius:20px;
+  font-size:.94rem;line-height:1.55;word-wrap:break-word;
+  white-space:pre-wrap;
+  animation:msgPop .3s cubic-bezier(.34,1.56,.64,1);
+  position:relative;
+}
+@keyframes msgPop{
+  0%{opacity:0;transform:translateY(10px) scale(.96)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+.ai-msg.bot{
+  align-self:flex-start;background:#f1f5f9;
+  border:none;border-bottom-left-radius:6px;
+  color:#0f172a;padding:12px 16px;
+}
+.ai-msg.bot b,.ai-msg.bot strong{color:#0b57d0;font-weight:700}
+.ai-msg.user{
+  align-self:flex-end;
+  background:linear-gradient(135deg,#4285f4,#1a73e8);
+  color:#fff;font-weight:500;border-bottom-right-radius:6px;
+  box-shadow:0 2px 8px -2px rgba(66,133,244,.4);
+}
+.ai-msg.user *{color:#fff!important}
+.ai-copy-btn{
+  position:absolute;bottom:-28px;left:4px;
+  width:28px;height:28px;border-radius:50%;
+  background:#f8fafc;border:1px solid rgba(100,116,139,.2);
+  color:#64748b;cursor:pointer;opacity:0;transition:.2s;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;padding:0;
+}
+.ai-msg.bot:hover .ai-copy-btn{opacity:1}
+.ai-msg.bot:last-child .ai-copy-btn{opacity:.6}
+.ai-msg.typing{
+  background:#f1f5f9;padding:14px 18px;min-height:44px;
+  display:flex;gap:5px;align-items:center;align-self:flex-start;
+}
+.ai-msg.typing .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#94a3b8;
+  animation:typingBounce 1.4s infinite ease-in-out both;
+}
+.ai-msg.typing .dot:nth-child(2){animation-delay:.2s;background:#64748b}
+.ai-msg.typing .dot:nth-child(3){animation-delay:.4s;background:#475569}
+@keyframes typingBounce{0%,80%,100%{transform:scale(.6);opacity:.5}40%{transform:scale(1);opacity:1}}
+
+.ai-foot{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,#fff 18%,#fff 100%);
+  display:flex;gap:8px;align-items:flex-end;
+  z-index:20;transition:transform .2s ease;pointer-events:auto;
+}
+.ai-input-wrap{
+  flex:1;display:flex;align-items:center;
+  background:#f1f5f9;border:1px solid rgba(100,116,139,.15);
+  border-radius:28px;padding:4px 6px 4px 18px;
+  transition:.2s;min-width:0;
+}
+.ai-input-wrap:focus-within{
+  background:#fff;border-color:rgba(66,133,244,.5);
+  box-shadow:0 0 0 3px rgba(66,133,244,.1);
+}
+.ai-input{
+  flex:1;border:none;outline:none;background:transparent;
+  padding:12px 0;color:#0f172a;font-family:inherit;
+  font-size:16px;min-width:0;line-height:1.3;
+}
+.ai-input::placeholder{color:#94a3b8;font-size:.95rem}
+.ai-mic-btn{
+  width:36px;height:36px;border-radius:50%;border:none;
+  cursor:pointer;flex-shrink:0;background:transparent;
+  color:#475569;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:.2s;
+}
+.ai-mic-btn:hover{background:#e2e8f0}
+.ai-mic-btn.listening{background:#fee2e2;color:#dc2626;animation:pulseMic 1.2s infinite}
+@keyframes pulseMic{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.5)}50%{box-shadow:0 0 0 10px rgba(220,38,38,0)}}
+.ai-send{
+  width:44px;height:44px;border-radius:50%;border:none;
+  cursor:pointer;flex-shrink:0;
+  background:linear-gradient(135deg,#4285f4,#1a73e8);
+  color:#fff;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px -2px rgba(66,133,244,.5);
+  transition:.2s;
+}
+.ai-send:hover:not(:disabled){transform:scale(1.06)}
+.ai-send:active:not(:disabled){transform:scale(.94)}
+.ai-send:disabled{opacity:.5;cursor:not-allowed}
+
+@media(min-width:901px){
+  .ai-panel{
+    inset:auto;top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:min(520px,92vw);height:min(760px,92dvh);
+    max-height:92dvh;border-radius:24px;
+    box-shadow:0 30px 80px -20px rgba(15,23,42,.5);
+    animation:aiPanelDesk .35s cubic-bezier(.34,1.2,.64,1);
+  }
+  @keyframes aiPanelDesk{
+    0%{opacity:0;transform:translate(-50%,-46%) scale(.94)}
+    100%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  }
+}
+
+@media(max-width:900px){
+  .ai-panel{
+    left:0!important;right:0!important;
+    bottom:0!important;top:0!important;
+    width:100vw!important;
+    height:100dvh!important;max-height:100dvh!important;
+    border-radius:0!important;
+  }
+  .ai-body{padding:16px 12px 90px!important}
+  .ai-suggestions{grid-template-columns:1fr!important}
+  body.logged-in .ai-fab{
+    bottom:calc(90px + env(safe-area-inset-bottom,0px))!important;
+    right:14px!important;width:52px!important;height:52px!important;
+    font-size:1.25rem!important;
+  }
+}
+
+/* ── 3.2 CLASS CHAT ── */
+.chat-fab{
+  position:fixed;
+  bottom:calc(90px + env(safe-area-inset-bottom,0px));
+  right:84px;z-index:9999988;
+  width:56px;height:56px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.4);
+  cursor:pointer;display:none;align-items:center;justify-content:center;
+  font-size:1.35rem;color:#fff;
+  background:linear-gradient(135deg,#22c55e,#10b981);
+  box-shadow:0 15px 40px -12px rgba(34,197,94,.9);
+  transition:all .25s ease;
+}
+.chat-fab.show{display:flex}
+.chat-fab:hover{transform:scale(1.08)}
+.chat-fab:active{transform:scale(.95)}
+.chat-fab .chat-badge{
+  position:absolute;top:-4px;right:-4px;
+  min-width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(100deg,#ef4444,#f87171);
+  color:#fff;font-size:.68rem;font-weight:900;
+  display:none;align-items:center;justify-content:center;
+  border:2px solid #fff;padding:0 5px;
+}
+.chat-fab .chat-badge.show{display:flex;animation:badgePop .4s ease}
+@keyframes badgePop{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+@media (min-width:901px){
+  .chat-fab{bottom:22px;right:96px;width:60px;height:60px;font-size:1.5rem}
+}
+body.ai-panel-open .chat-fab,
+body.modal-open .chat-fab,
+body.chat-panel-open .chat-fab{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+
+.chat-panel{
+  position:fixed;inset:0;z-index:9999980;
+  display:none;flex-direction:row;background:#fff;overflow:hidden;
+}
+.chat-panel.open{display:flex}
+
+.chat-sidebar{
+  width:300px;
+  background:linear-gradient(180deg,#1e293b,#0f172a);
+  color:#fff;display:flex;flex-direction:column;
+  flex-shrink:0;border-right:1px solid rgba(255,255,255,.1);
+}
+.chat-sidebar-header{
+  padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.1);
+}
+.chat-sidebar-header-top{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.chat-sidebar-header h5{
+  margin:0;font-size:1rem;font-weight:900;
+  display:flex;align-items:center;gap:8px;
+}
+.chat-sidebar-header h5 i{color:#34d399}
+.chat-close-btn{
+  background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:34px;height:34px;border-radius:50%;
+  font-size:.95rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:.2s;
+}
+.chat-close-btn:hover{background:rgba(255,255,255,.2)}
+.chat-tabs-side{
+  display:flex;gap:4px;background:rgba(255,255,255,.06);
+  padding:4px;border-radius:12px;margin-top:8px;
+}
+.chat-tab-side{
+  flex:1;padding:8px 6px;border:none;background:transparent;
+  color:rgba(255,255,255,.6);font-family:inherit;
+  font-weight:800;font-size:.7rem;border-radius:9px;
+  cursor:pointer;transition:.2s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.chat-tab-side.active{
+  background:linear-gradient(100deg,#22c55e,#10b981);color:#fff;
+}
+.chat-tab-side:not(.active):hover{color:#fff;background:rgba(255,255,255,.1)}
+.chat-sidebar-list{
+  flex:1;overflow-y:auto;padding:10px 8px;
+  -webkit-overflow-scrolling:touch;
+}
+.chat-sidebar-list::-webkit-scrollbar{width:5px}
+.chat-sidebar-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:5px}
+.chat-sidebar-section-title{
+  font-size:.62rem;font-weight:900;
+  text-transform:uppercase;letter-spacing:1px;
+  color:rgba(255,255,255,.5);padding:10px 10px 6px;
+}
+.friend-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px;border-radius:12px;cursor:pointer;
+  transition:.2s;margin-bottom:4px;position:relative;
+}
+.friend-item:hover{background:rgba(255,255,255,.08)}
+.friend-item.active{background:linear-gradient(100deg,rgba(34,197,94,.25),rgba(16,185,129,.15))}
+.friend-avatar{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:900;color:#fff;
+  flex-shrink:0;overflow:hidden;position:relative;
+  background:linear-gradient(140deg,#3b8bff,#22d3ee);
+}
+.friend-avatar img{width:100%;height:100%;object-fit:cover}
+.friend-avatar .av-frame{
+  position:absolute;inset:-2px;border-radius:50%;
+  pointer-events:none;border:2px solid transparent;
+}
+.friend-avatar .av-frame.frame-gold{border-color:#fbbf24;box-shadow:0 0 8px #fbbf24}
+.friend-avatar .av-frame.frame-silver{border-color:#cbd5e1}
+.friend-avatar .av-frame.frame-diamond{border-color:#22d3ee;box-shadow:0 0 10px #22d3ee}
+.friend-avatar .av-frame.frame-flame{
+  border-color:#f97316;box-shadow:0 0 10px #f97316;
+  animation:frameGlow 1.5s ease-in-out infinite;
+}
+.friend-status-dot{
+  position:absolute;bottom:-1px;right:-1px;
+  width:12px;height:12px;border-radius:50%;
+  background:#6b7280;border:2px solid #1e293b;z-index:2;
+}
+.friend-status-dot.online{
+  background:#22c55e;box-shadow:0 0 8px #22c55e;
+  animation:statusPulse 2s infinite;
+}
+@keyframes statusPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}
+  50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}
+}
+.friend-info{flex:1;min-width:0}
+.friend-name{
+  font-size:.84rem;font-weight:800;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:#fff;
+}
+.friend-preview{
+  font-size:.68rem;color:rgba(255,255,255,.55);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;
+}
+.friend-meta{
+  display:flex;flex-direction:column;
+  align-items:flex-end;gap:3px;flex-shrink:0;
+}
+.friend-time{font-size:.6rem;color:rgba(255,255,255,.45)}
+.friend-unread{
+  background:linear-gradient(100deg,#ef4444,#f87171);
+  color:#fff;min-width:18px;height:18px;
+  border-radius:20px;font-size:.62rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 5px;
+}
+.chat-add-friend-btn{
+  margin:10px;padding:10px 14px;border-radius:12px;
+  background:rgba(34,197,94,.15);
+  border:1.5px dashed rgba(34,197,94,.5);
+  color:#34d399;font-family:inherit;font-weight:800;
+  font-size:.78rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:.2s;
+}
+.chat-add-friend-btn:hover{background:rgba(34,197,94,.25);border-style:solid}
+
+.chat-main{
+  flex:1;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#f8fafc,#f1f5f9);
+  position:relative;min-width:0;
+}
+.chat-header{
+  padding:14px 18px;background:#fff;
+  border-bottom:1px solid rgba(100,116,139,.15);
+  display:flex;align-items:center;gap:12px;
+  flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.chat-back-btn{
+  display:none;background:transparent;border:none;
+  color:#475569;font-size:1.1rem;width:36px;height:36px;
+  border-radius:50%;cursor:pointer;transition:.2s;
+}
+.chat-back-btn:hover{background:#f1f5f9}
+.chat-header-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(140deg,#3b8bff,#22d3ee);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:1rem;
+  flex-shrink:0;overflow:hidden;position:relative;
+}
+.chat-header-avatar img{width:100%;height:100%;object-fit:cover}
+.chat-header-info{flex:1;min-width:0}
+.chat-header-name{
+  font-size:.92rem;font-weight:900;color:#0f172a;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.chat-header-meta{
+  font-size:.72rem;color:#64748b;
+  display:flex;align-items:center;gap:6px;margin-top:2px;
+}
+.chat-header-meta .online-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#22c55e;box-shadow:0 0 6px #22c55e;
+  animation:statusPulse 2s infinite;
+}
+.chat-header-actions{display:flex;gap:6px}
+.chat-header-action{
+  background:transparent;border:none;color:#475569;
+  width:38px;height:38px;border-radius:50%;
+  font-size:.95rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:.2s;
+}
+.chat-header-action:hover{background:#f1f5f9}
+
+.chat-messages{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:18px 16px 100px;
+  display:flex;flex-direction:column;gap:12px;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.chat-messages::-webkit-scrollbar{width:6px}
+.chat-messages::-webkit-scrollbar-thumb{background:rgba(100,116,139,.3);border-radius:6px}
+.chat-date-separator{
+  text-align:center;font-size:.68rem;color:#94a3b8;
+  font-weight:700;margin:8px 0;
+  display:flex;align-items:center;gap:10px;
+}
+.chat-date-separator::before,
+.chat-date-separator::after{
+  content:'';flex:1;height:1px;background:rgba(100,116,139,.15);
+}
+.chat-msg{
+  display:flex;gap:8px;max-width:82%;
+  align-items:flex-end;
+  animation:msgSlideIn .3s ease;position:relative;
+}
+@keyframes msgSlideIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.chat-msg.mine{align-self:flex-end;flex-direction:row-reverse}
+.chat-msg.other{align-self:flex-start}
+.chat-msg-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(140deg,#3b8bff,#22d3ee);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:.78rem;
+  flex-shrink:0;overflow:hidden;position:relative;align-self:flex-end;
+}
+.chat-msg-avatar img{width:100%;height:100%;object-fit:cover}
+.chat-msg.mine .chat-msg-avatar{display:none}
+.chat-msg-bubble-wrap{
+  display:flex;flex-direction:column;gap:3px;
+  min-width:0;max-width:100%;
+}
+.chat-msg.mine .chat-msg-bubble-wrap{align-items:flex-end}
+.chat-msg-sender{
+  font-size:.68rem;color:#64748b;font-weight:700;
+  padding:0 8px;margin-bottom:2px;
+}
+.chat-msg.mine .chat-msg-sender{display:none}
+.chat-msg-bubble{
+  background:#fff;border-radius:18px;border-bottom-left-radius:4px;
+  padding:10px 14px;color:#0f172a;font-size:.88rem;line-height:1.5;
+  word-wrap:break-word;word-break:break-word;white-space:pre-wrap;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+  position:relative;max-width:100%;
+}
+.chat-msg.mine .chat-msg-bubble{
+  background:linear-gradient(100deg,#667eea,#764ba2);
+  color:#fff;border-bottom-left-radius:18px;border-bottom-right-radius:4px;
+  box-shadow:0 4px 12px -4px rgba(102,126,234,.6);
+}
+.chat-msg-time{
+  font-size:.62rem;color:#94a3b8;
+  padding:0 8px;margin-top:2px;
+}
+.chat-msg.mine .chat-msg-time{text-align:right}
+.chat-msg-reactions{
+  display:flex;gap:3px;padding:0 6px;margin-top:2px;flex-wrap:wrap;
+}
+.chat-reaction-pill{
+  background:#fff;border:1px solid rgba(100,116,139,.2);
+  border-radius:20px;padding:2px 8px;
+  font-size:.75rem;font-weight:700;cursor:pointer;transition:.2s;
+}
+.chat-reaction-pill:hover{background:#f1f5f9}
+.chat-reaction-pill.mine{background:#dbeafe;border-color:#3b82f6}
+.chat-msg-delete-btn{
+  background:rgba(239,68,68,.1);border:none;color:#dc2626;
+  width:24px;height:24px;border-radius:50%;font-size:.65rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  position:absolute;top:4px;right:4px;opacity:0;transition:.2s;
+}
+.chat-msg:hover .chat-msg-delete-btn{opacity:1}
+
+.chat-typing-indicator{
+  padding:8px 16px;font-size:.75rem;color:#64748b;
+  font-weight:700;display:none;align-items:center;gap:6px;
+  flex-shrink:0;background:rgba(241,245,249,.8);
+  backdrop-filter:blur(8px);
+}
+.chat-typing-indicator.show{display:flex}
+.chat-typing-dots{display:inline-flex;gap:3px}
+.chat-typing-dots span{
+  width:5px;height:5px;border-radius:50%;
+  background:#94a3b8;
+  animation:typingBounce 1.4s infinite;
+}
+.chat-typing-dots span:nth-child(2){animation-delay:.15s}
+.chat-typing-dots span:nth-child(3){animation-delay:.3s}
+
+.chat-input-area{
+  padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  background:#fff;border-top:1px solid rgba(100,116,139,.15);
+  display:flex;gap:8px;align-items:flex-end;
+  flex-shrink:0;position:absolute;bottom:0;left:0;right:0;z-index:5;
+}
+.chat-input-wrap{
+  flex:1;display:flex;align-items:flex-end;
+  background:#f1f5f9;border:1.5px solid transparent;
+  border-radius:24px;padding:4px 6px 4px 16px;
+  transition:.2s;min-width:0;
+}
+.chat-input-wrap:focus-within{
+  background:#fff;border-color:#667eea;
+  box-shadow:0 0 0 3px rgba(102,126,234,.15);
+}
+.chat-input{
+  flex:1;border:none;outline:none;background:transparent;
+  padding:10px 0;font-family:inherit;font-size:16px;
+  color:#0f172a;min-width:0;resize:none;
+  max-height:100px;line-height:1.4;
+}
+.chat-input::placeholder{color:#94a3b8;font-size:.92rem}
+.chat-emoji-btn{
+  width:34px;height:34px;border-radius:50%;border:none;
+  background:transparent;color:#475569;font-size:1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:.2s;flex-shrink:0;
+}
+.chat-emoji-btn:hover{background:#e2e8f0}
+.chat-send-btn{
+  width:46px;height:46px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  color:#fff;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 18px -6px rgba(102,126,234,.6);
+  transition:.2s;flex-shrink:0;
+}
+.chat-send-btn:hover:not(:disabled){transform:scale(1.06)}
+.chat-send-btn:active:not(:disabled){transform:scale(.94)}
+.chat-send-btn:disabled{
+  opacity:.4;cursor:not-allowed;
+  background:#94a3b8;box-shadow:none;
+}
+.chat-emoji-picker{
+  position:absolute;bottom:100%;left:16px;
+  background:#fff;border-radius:16px;padding:12px;
+  box-shadow:0 20px 50px -15px rgba(0,0,0,.25);
+  border:1px solid rgba(100,116,139,.15);
+  display:none;z-index:20;max-width:320px;margin-bottom:8px;
+}
+.chat-emoji-picker.show{display:block;animation:emojiIn .25s ease}
+@keyframes emojiIn{
+  from{opacity:0;transform:translateY(8px) scale(.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.chat-emoji-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);
+  gap:4px;max-height:200px;overflow-y:auto;
+}
+.chat-emoji-btn-item{
+  background:transparent;border:none;font-size:1.4rem;
+  cursor:pointer;padding:4px;border-radius:8px;
+  transition:.15s;line-height:1;
+}
+.chat-emoji-btn-item:hover{background:#f1f5f9;transform:scale(1.15)}
+.chat-empty{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:12px;color:#64748b;
+  padding:40px 20px;text-align:center;
+}
+.chat-empty i{font-size:3.5rem;opacity:.35;color:#667eea}
+.chat-scroll-btn{
+  position:absolute;bottom:90px;right:20px;
+  width:42px;height:42px;border-radius:50%;border:none;
+  background:linear-gradient(140deg,#667eea,#764ba2);
+  color:#fff;font-size:1rem;cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+  box-shadow:0 10px 25px -8px rgba(102,126,234,.7);
+  z-index:10;transition:.2s;
+}
+.chat-scroll-btn.show{display:flex;animation:emojiIn .3s ease}
+.chat-scroll-btn:hover{transform:scale(1.08)}
+.chat-scroll-btn .scroll-badge{
+  position:absolute;top:-6px;right:-6px;
+  background:linear-gradient(100deg,#ef4444,#f87171);
+  color:#fff;min-width:20px;height:20px;
+  border-radius:50%;font-size:.62rem;font-weight:900;
+  display:none;align-items:center;justify-content:center;
+  padding:0 5px;border:2px solid #fff;
+}
+.chat-scroll-btn .scroll-badge.show{display:flex}
+
+@media (max-width:900px){
+  .chat-panel{flex-direction:row;position:fixed;inset:0}
+  .chat-sidebar{
+    width:100%!important;position:absolute;inset:0;
+    z-index:3;transition:transform .3s cubic-bezier(.34,1.2,.64,1);
+  }
+  .chat-sidebar.hidden-mobile{transform:translateX(-100%)}
+  .chat-main{
+    width:100%;position:absolute;inset:0;z-index:2;
+    transform:translateX(100%);
+    transition:transform .3s cubic-bezier(.34,1.2,.64,1);
+  }
+  .chat-main.show-mobile{transform:translateX(0);z-index:4}
+  .chat-back-btn{display:flex}
+}
+@media (min-width:901px){
+  .chat-panel{
+    position:fixed;top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:min(920px,94vw);height:min(720px,90dvh);
+    max-height:90dvh;border-radius:24px;
+    box-shadow:0 40px 100px -25px rgba(0,0,0,.6);
+    overflow:hidden;animation:chatIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes chatIn{
+    from{opacity:0;transform:translate(-50%,-48%) scale(.95)}
+    to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  }
+}
+
+/* ── 3.3 ADD FRIEND MODAL ── */
+.add-friend-modal{
+  position:fixed;inset:0;background:rgba(15,23,42,.85);
+  backdrop-filter:blur(14px);z-index:9999999;
+  display:none;align-items:flex-start;justify-content:center;
+  padding:16px;overflow-y:auto;
+}
+.add-friend-modal.open{display:flex}
+.add-friend-card{
+  background:#fff;border-radius:24px;padding:24px;
+  max-width:440px;width:100%;margin:auto 0;
+  box-shadow:0 30px 70px -20px rgba(0,0,0,.6);
+  max-height:92dvh;overflow-y:auto;
+}
+.add-friend-card h3{
+  margin:0 0 6px;font-size:1.15rem;font-weight:900;color:#0f172a;
+  display:flex;align-items:center;gap:8px;
+}
+.add-friend-card h3 i{color:#22c55e}
+.add-friend-sub{color:#64748b;font-size:.82rem;margin:0 0 18px}
+.add-friend-input{
+  width:100%;padding:14px 16px;border:2px solid #e2e8f0;
+  border-radius:14px;font-family:inherit;font-size:16px;
+  font-weight:700;color:#0f172a;outline:none;margin-bottom:12px;
+  text-transform:uppercase;letter-spacing:1.5px;
+}
+.add-friend-input:focus{
+  border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.15);
+}
+.add-friend-btn{
+  width:100%;padding:14px;border-radius:14px;border:none;
+  background:linear-gradient(100deg,#22c55e,#10b981);
+  color:#fff;font-family:inherit;font-weight:800;
+  font-size:.92rem;cursor:pointer;transition:.2s;min-height:48px;
+}
+.add-friend-btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px -10px rgba(34,197,94,.7)}
+.add-friend-result{
+  margin-top:14px;padding:12px 14px;border-radius:12px;
+  font-size:.85rem;font-weight:700;display:none;
+}
+.add-friend-result.show{display:block}
+.add-friend-result.success{background:#ecfdf5;color:#059669;border:1px solid rgba(5,150,105,.3)}
+.add-friend-result.error{background:#fef2f2;color:#dc2626;border:1px solid rgba(220,38,38,.3)}
+
+/* ── 3.4 AVATAR CUSTOMIZER ── */
+.avatar-customizer-modal{
+  position:fixed;inset:0;
+  background:linear-gradient(135deg,rgba(108,92,231,.95),rgba(236,72,153,.95));
+  z-index:9999999;display:none;align-items:flex-start;justify-content:center;
+  padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.avatar-customizer-modal.open{display:flex}
+.avatar-customizer-card{
+  background:#fff;border-radius:26px;padding:26px 22px;
+  max-width:520px;width:100%;margin:auto 0;
+  box-shadow:0 40px 80px -20px rgba(0,0,0,.5);
+  animation:avatarIn .5s cubic-bezier(.34,1.56,.64,1);
+  max-height:92dvh;overflow-y:auto;
+}
+@keyframes avatarIn{
+  0%{transform:scale(.9) translateY(30px);opacity:0}
+  100%{transform:scale(1) translateY(0);opacity:1}
+}
+.av-header{text-align:center;margin-bottom:20px}
+.av-header-icon{
+  width:60px;height:60px;border-radius:18px;
+  background:linear-gradient(140deg,#667eea,#764ba2);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 10px;font-size:1.7rem;color:#fff;
+  box-shadow:0 12px 25px -10px rgba(102,126,234,.6);
+}
+.av-title{font-size:1.25rem;font-weight:900;color:#0f172a;margin:0 0 4px}
+.av-sub{color:#64748b;font-size:.82rem;margin:0}
+.av-preview-area{
+  background:linear-gradient(135deg,#f0f9ff,#fce7f3);
+  border-radius:20px;padding:24px;text-align:center;
+  margin-bottom:20px;position:relative;overflow:hidden;
+}
+.av-preview-area::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.5),transparent 60%);
+  pointer-events:none;
+}
+.av-preview-big{
+  position:relative;width:130px;height:130px;
+  margin:0 auto;z-index:2;
+}
+.av-preview-inner{
+  width:100%;height:100%;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:3rem;color:#fff;font-weight:900;
+  overflow:hidden;position:relative;transition:all .3s ease;
+  background:linear-gradient(140deg,#3b8bff,#22d3ee);
+}
+.av-preview-inner img{width:100%;height:100%;object-fit:cover}
+.av-preview-frame{
+  position:absolute;inset:-6px;border-radius:50%;
+  pointer-events:none;transition:all .3s ease;
+}
+.av-preview-frame.frame-gold{
+  border:4px solid transparent;
+  background:linear-gradient(45deg,#fbbf24,#f59e0b,#fcd34d,#f59e0b) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:frameGlow 3s ease-in-out infinite;
+}
+.av-preview-frame.frame-silver{
+  border:4px solid transparent;
+  background:linear-gradient(45deg,#cbd5e1,#f1f5f9,#94a3b8,#e2e8f0) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.av-preview-frame.frame-diamond{
+  border:4px solid transparent;
+  background:linear-gradient(45deg,#22d3ee,#a5f3fc,#67e8f9,#06b6d4) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:frameGlow 2s ease-in-out infinite;
+  box-shadow:0 0 20px rgba(34,211,238,.6);
+}
+.av-preview-frame.frame-flame{
+  border:4px solid transparent;
+  background:linear-gradient(45deg,#f97316,#fbbf24,#ef4444,#f59e0b) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:frameGlow 1.5s ease-in-out infinite;
+}
+@keyframes frameGlow{
+  0%,100%{filter:drop-shadow(0 0 8px currentColor) brightness(1)}
+  50%{filter:drop-shadow(0 0 16px currentColor) brightness(1.2)}
+}
+.av-preview-hat{
+  position:absolute;top:-18px;left:50%;
+  transform:translateX(-50%);font-size:2rem;
+  z-index:3;animation:hatBob 3s ease-in-out infinite;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.2));
+}
+@keyframes hatBob{
+  0%,100%{transform:translateX(-50%) translateY(0) rotate(-3deg)}
+  50%{transform:translateX(-50%) translateY(-4px) rotate(3deg)}
+}
+.av-section{margin-bottom:18px}
+.av-section-title{
+  display:flex;align-items:center;gap:8px;
+  font-size:.82rem;font-weight:800;color:#0f172a;
+  margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;
+}
+.av-section-title i{color:#667eea;font-size:.9rem}
+.av-colors-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:8px;
+}
+@media (max-width:500px){.av-colors-grid{grid-template-columns:repeat(5,1fr)}}
+.av-color-swatch{
+  aspect-ratio:1;border-radius:50%;cursor:pointer;
+  border:3px solid transparent;transition:all .2s ease;
+  position:relative;box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.av-color-swatch:hover{transform:scale(1.1)}
+.av-color-swatch.active{
+  border-color:#0f172a;transform:scale(1.15);
+  box-shadow:0 0 0 3px #fff,0 0 0 6px #667eea;
+}
+.av-options-row{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:8px;
+}
+@media (max-width:500px){.av-options-row{grid-template-columns:repeat(4,1fr)}}
+.av-option{
+  background:#f8fafc;border:2px solid transparent;
+  border-radius:12px;padding:10px 6px;text-align:center;
+  cursor:pointer;transition:all .2s ease;font-size:1.4rem;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  min-height:70px;justify-content:center;
+}
+.av-option:hover{
+  background:#eff6ff;border-color:rgba(102,126,234,.4);
+  transform:translateY(-2px);
+}
+.av-option.active{
+  background:linear-gradient(135deg,#dbeafe,#e0e7ff);
+  border-color:#667eea;box-shadow:0 6px 16px -6px rgba(102,126,234,.5);
+}
+.av-option-label{
+  font-size:.58rem;font-weight:800;
+  text-transform:uppercase;color:#475569;letter-spacing:.3px;
+}
+.av-style-tabs{
+  display:flex;gap:4px;background:#f1f5f9;
+  border-radius:12px;padding:4px;margin-bottom:12px;
+}
+.av-style-tab{
+  flex:1;padding:8px 10px;border:none;background:transparent;
+  border-radius:9px;font-family:inherit;font-weight:800;
+  font-size:.72rem;color:#64748b;cursor:pointer;transition:all .2s;
+}
+.av-style-tab.active{background:#fff;color:#667eea;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.av-footer-btns{display:flex;gap:10px;margin-top:20px}
+.av-btn{
+  flex:1;padding:14px 20px;border-radius:14px;border:none;
+  font-family:inherit;font-weight:800;font-size:.9rem;
+  cursor:pointer;transition:all .2s ease;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:48px;
+}
+.av-btn.cancel{
+  background:#f1f5f9;color:#475569;
+  border:1.5px solid rgba(100,116,139,.2);
+}
+.av-btn.save{
+  background:linear-gradient(100deg,#667eea,#764ba2);
+  color:#fff;box-shadow:0 12px 25px -10px rgba(102,126,234,.7);
+}
+.av-btn.save:hover{transform:translateY(-2px);box-shadow:0 18px 35px -12px rgba(102,126,234,.9)}
+.av-btn:active{transform:translateY(1px) scale(.98)}
+
+/* ── 3.5 QUIZ + REWARDS + LEVELUP ── */
+.quiz-modal-overlay{
+  position:fixed;inset:0;
+  background:linear-gradient(135deg,rgba(108,92,231,.95),rgba(0,206,201,.95));
+  z-index:9999999;display:none;align-items:flex-start;justify-content:center;
+  padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.quiz-modal-overlay.open{display:flex}
+.quiz-modal-card{
+  background:#fff;border-radius:26px;padding:26px;
+  max-width:560px;width:100%;margin:auto 0;
+  box-shadow:0 40px 80px -20px rgba(0,0,0,.5);
+  animation:quizIn .5s cubic-bezier(.34,1.56,.64,1);
+  max-height:92dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  position:relative;
+}
+@keyframes quizIn{
+  0%{transform:scale(.9) translateY(30px);opacity:0}
+  100%{transform:scale(1) translateY(0);opacity:1}
+}
+.quiz-header{text-align:center;margin-bottom:20px}
+.quiz-header-icon{
+  width:70px;height:70px;border-radius:20px;
+  background:linear-gradient(140deg,#667eea,#764ba2);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;font-size:2rem;color:#fff;
+  box-shadow:0 15px 30px -10px rgba(102,126,234,.7);
+  animation:iconFloat 3s ease-in-out infinite;
+}
+@keyframes iconFloat{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-6px) rotate(-4deg)}
+}
+.quiz-title{
+  font-size:1.35rem;font-weight:900;color:#0f172a;
+  margin:0 0 6px;
+  background:linear-gradient(100deg,#667eea,#764ba2);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.quiz-sub{color:#64748b;font-size:.84rem;margin:0}
+.quiz-progress-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;
+}
+.quiz-progress-row .num{
+  font-size:.78rem;font-weight:800;color:#667eea;white-space:nowrap;
+}
+.quiz-progress-row .bar{
+  flex:1;height:8px;background:#e0e7ff;border-radius:8px;overflow:hidden;
+}
+.quiz-progress-row .bar div{
+  height:100%;background:linear-gradient(90deg,#667eea,#764ba2);
+  border-radius:8px;transition:width .4s ease;
+}
+.quiz-question{
+  background:#f8fafc;border-radius:16px;padding:18px;
+  margin-bottom:16px;border-left:4px solid #667eea;
+}
+.quiz-question .q-text{
+  font-size:1rem;font-weight:800;color:#0f172a;
+  line-height:1.5;margin:0;
+}
+.quiz-options{display:flex;flex-direction:column;gap:10px}
+.quiz-option{
+  background:#fff;border:2px solid #e2e8f0;
+  border-radius:14px;padding:14px 16px;cursor:pointer;
+  font-family:inherit;font-size:.92rem;font-weight:700;
+  color:#0f172a;text-align:left;transition:all .2s ease;
+  display:flex;align-items:center;gap:12px;
+  -webkit-tap-highlight-color:transparent;min-height:52px;
+}
+.quiz-option:hover:not(.disabled){
+  border-color:#667eea;background:#eff6ff;transform:translateX(4px);
+}
+.quiz-option .opt-letter{
+  width:32px;height:32px;border-radius:10px;
+  background:linear-gradient(140deg,#667eea,#764ba2);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:.82rem;flex-shrink:0;
+}
+.quiz-option.correct{
+  border-color:#059669;background:linear-gradient(135deg,#ecfdf5,#d1fae5);
+}
+.quiz-option.correct .opt-letter{background:linear-gradient(140deg,#059669,#34d399)}
+.quiz-option.wrong{
+  border-color:#dc2626;background:linear-gradient(135deg,#fef2f2,#fee2e2);
+  animation:wrongShake .4s ease;
+}
+.quiz-option.wrong .opt-letter{background:linear-gradient(140deg,#dc2626,#f87171)}
+@keyframes wrongShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  75%{transform:translateX(8px)}
+}
+.quiz-option.disabled{cursor:not-allowed;pointer-events:none}
+.quiz-result{text-align:center;padding:20px}
+.quiz-result-emoji{
+  font-size:4rem;margin-bottom:12px;
+  animation:resultBounce .6s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes resultBounce{
+  0%{transform:scale(0) rotate(-180deg)}
+  60%{transform:scale(1.2) rotate(10deg)}
+  100%{transform:scale(1) rotate(0deg)}
+}
+.quiz-result-score{
+  font-size:3rem;font-weight:900;
+  background:linear-gradient(100deg,#667eea,#764ba2);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;line-height:1;margin-bottom:4px;
+}
+.quiz-result-label{font-size:.82rem;color:#64748b;margin-bottom:20px}
+.quiz-xp-earned{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(100deg,#fbbf24,#f59e0b);
+  color:#03132e;padding:8px 18px;border-radius:30px;
+  font-weight:900;font-size:.88rem;margin-bottom:20px;
+  animation:xpPop .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes xpPop{
+  0%{transform:scale(0)}
+  60%{transform:scale(1.15)}
+  100%{transform:scale(1)}
+}
+
+.rewards-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:12px;margin-top:12px;
+}
+.reward-card{
+  background:#fff;border:1.5px solid rgba(100,116,139,.15);
+  border-radius:18px;padding:16px 14px;text-align:center;
+  transition:all .25s ease;position:relative;overflow:hidden;
+}
+.reward-card::before{
+  content:'';position:absolute;top:0;left:12%;right:12%;
+  height:3px;border-radius:3px;
+  background:linear-gradient(90deg,#fbbf24,#f59e0b);
+}
+.reward-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 15px 30px -12px rgba(0,0,0,.15);
+  border-color:rgba(139,92,246,.4);
+}
+.reward-icon{
+  font-size:2.5rem;display:block;margin-bottom:10px;
+  animation:rewardFloat 2.5s ease-in-out infinite;
+}
+@keyframes rewardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.reward-title{font-size:.85rem;font-weight:800;color:#0f172a;margin:0 0 4px;line-height:1.25}
+.reward-desc{
+  font-size:.68rem;color:#64748b;line-height:1.4;
+  margin-bottom:10px;min-height:32px;
+}
+.reward-cost{
+  display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(100deg,#fbbf24,#f59e0b);
+  color:#03132e;padding:5px 12px;border-radius:20px;
+  font-size:.74rem;font-weight:900;margin-bottom:8px;
+}
+.reward-redeem-btn{
+  width:100%;padding:9px 12px;border-radius:10px;border:none;
+  background:linear-gradient(100deg,#667eea,#764ba2);
+  color:#fff;font-family:inherit;font-weight:800;
+  font-size:.78rem;cursor:pointer;transition:.2s ease;
+}
+.reward-redeem-btn:disabled{opacity:.5;cursor:not-allowed}
+.reward-redeem-btn:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px -8px rgba(102,126,234,.7);
+}
+
+.levelup-popup{
+  position:fixed;inset:0;z-index:9999999;display:none;
+  align-items:center;justify-content:center;
+  background:radial-gradient(circle,rgba(102,126,234,.95),rgba(118,75,162,.98));
+  animation:levelupBg .5s ease;
+}
+.levelup-popup.open{display:flex}
+@keyframes levelupBg{0%{opacity:0}100%{opacity:1}}
+.levelup-content{
+  text-align:center;padding:30px;
+  animation:levelupIn .6s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes levelupIn{
+  0%{transform:scale(.5) rotate(-20deg);opacity:0}
+  60%{transform:scale(1.1) rotate(5deg)}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+.levelup-number{
+  font-size:8rem;font-weight:900;color:#fbbf24;line-height:1;
+  text-shadow:0 0 40px rgba(251,191,36,.8),0 10px 30px rgba(0,0,0,.3);
+  margin-bottom:12px;animation:levelupPulse 1s ease-in-out infinite;
+}
+@keyframes levelupPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+}
+.levelup-title{
+  font-size:2rem;font-weight:900;color:#fff;
+  margin:0 0 8px;text-shadow:0 4px 20px rgba(0,0,0,.3);
+}
+.levelup-sub{font-size:1rem;color:rgba(255,255,255,.9);margin:0 0 24px}
+.levelup-btn{
+  padding:14px 32px;border-radius:60px;border:none;
+  background:#fff;color:#667eea;font-family:inherit;
+  font-weight:900;font-size:.95rem;cursor:pointer;
+  box-shadow:0 15px 40px -10px rgba(0,0,0,.4);
+}
+
+.xp-popup{
+  position:fixed;top:80px;left:50%;
+  transform:translateX(-50%) translateY(-100px);
+  background:linear-gradient(100deg,#fbbf24,#f59e0b);
+  color:#03132e;padding:10px 22px;border-radius:60px;
+  font-weight:900;font-size:.9rem;z-index:9999998;
+  box-shadow:0 15px 40px -10px rgba(251,191,36,.9);
+  display:flex;align-items:center;gap:8px;
+  animation:xpPopupIn .5s cubic-bezier(.34,1.56,.64,1) forwards;
+  pointer-events:none;
+}
+@keyframes xpPopupIn{
+  0%{transform:translateX(-50%) translateY(-100px);opacity:0}
+  20%{transform:translateX(-50%) translateY(0);opacity:1}
+  80%{transform:translateX(-50%) translateY(0);opacity:1}
+  100%{transform:translateX(-50%) translateY(-100px);opacity:0}
+}
+
+/* ── 3.6 XP / STREAK / MISSIONS / TASBEEH WIDGETS ── */
+.xp-widget{
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  border-radius:22px;padding:18px 20px;margin-bottom:16px;
+  position:relative;overflow:hidden;
+  box-shadow:0 15px 35px -12px rgba(102,126,234,.7);
+  color:#fff;
+}
+.xp-widget::before{
+  content:'';position:absolute;top:-50%;right:-30%;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(255,255,255,.15),transparent 70%);
+  border-radius:50%;animation:xpOrb 8s ease-in-out infinite;
+}
+@keyframes xpOrb{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-20px,20px) scale(1.2)}
+}
+.xp-header{
+  display:flex;align-items:center;gap:12px;
+  position:relative;z-index:2;margin-bottom:14px;
+}
+.xp-level-badge{
+  width:60px;height:60px;border-radius:18px;
+  background:linear-gradient(140deg,#fbbf24,#f59e0b);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  color:#03132e;font-weight:900;
+  box-shadow:0 8px 20px -6px rgba(251,191,36,.9);
+  flex-shrink:0;position:relative;
+}
+.xp-level-badge .lvl-num{font-size:1.5rem;line-height:1}
+.xp-level-badge .lvl-label{font-size:.55rem;letter-spacing:1px;opacity:.8}
+.xp-info{flex:1;min-width:0}
+.xp-title{font-size:1rem;font-weight:800;margin:0 0 4px}
+.xp-rank-name{font-size:.75rem;color:rgba(255,255,255,.85);font-weight:600;margin:0}
+.xp-progress-wrap{
+  height:8px;background:rgba(0,0,0,.25);border-radius:8px;
+  overflow:hidden;position:relative;z-index:2;margin-bottom:8px;
+}
+.xp-progress-bar{
+  height:100%;background:linear-gradient(90deg,#fbbf24,#fcd34d);
+  border-radius:8px;transition:width .8s cubic-bezier(.34,1.56,.64,1);
+  position:relative;
+}
+.xp-progress-bar::after{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+  animation:xpShine 2s ease-in-out infinite;
+}
+@keyframes xpShine{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+.xp-numbers{
+  display:flex;justify-content:space-between;
+  font-size:.72rem;font-weight:700;
+  color:rgba(255,255,255,.9);position:relative;z-index:2;
+}
+
+.streak-widget{
+  background:linear-gradient(135deg,#ff6b35,#f7931e);
+  border-radius:22px;padding:16px 18px;margin-bottom:16px;
+  display:flex;align-items:center;gap:14px;color:#fff;
+  box-shadow:0 15px 35px -12px rgba(255,107,53,.7);
+  position:relative;overflow:hidden;
+}
+.streak-widget::after{
+  content:'🔥';position:absolute;right:-10px;top:-20px;
+  font-size:6rem;opacity:.12;
+  animation:fireFloat 3s ease-in-out infinite;
+}
+@keyframes fireFloat{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-8px) rotate(8deg)}
+}
+.streak-fire{
+  width:56px;height:56px;border-radius:16px;
+  background:rgba(255,255,255,.25);
+  backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;flex-shrink:0;
+  animation:firePulse 1.5s ease-in-out infinite;
+  position:relative;z-index:2;
+}
+@keyframes firePulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+}
+.streak-info{flex:1;min-width:0;position:relative;z-index:2}
+.streak-count{
+  font-size:1.8rem;font-weight:900;line-height:1;
+  text-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.streak-count small{font-size:.8rem;font-weight:700;margin-left:4px;opacity:.9}
+.streak-label{
+  font-size:.78rem;font-weight:600;opacity:.92;margin-top:4px;
+}
+.streak-best{
+  font-size:.68rem;background:rgba(255,255,255,.25);
+  padding:4px 10px;border-radius:20px;font-weight:700;
+  position:relative;z-index:2;white-space:nowrap;
+}
+
+.missions-widget{
+  background:#fff;border-radius:22px;padding:18px;
+  margin-bottom:16px;border:1.6px solid rgba(108,92,231,.25);
+  box-shadow:0 8px 24px -12px rgba(108,92,231,.3);
+}
+.missions-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.missions-header h5{
+  margin:0;font-size:.96rem;font-weight:800;color:#0f172a;
+  display:flex;align-items:center;gap:8px;
+}
+.missions-header h5 i{color:#8b5cf6}
+.missions-progress{
+  font-size:.72rem;
+  background:linear-gradient(100deg,#8b5cf6,#a78bfa);
+  color:#fff;padding:4px 12px;border-radius:20px;font-weight:800;
+}
+.mission-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px;background:#f8fafc;
+  border:1.4px solid rgba(100,116,139,.15);
+  border-radius:14px;margin-bottom:8px;
+  transition:all .25s ease;cursor:pointer;
+}
+.mission-item:hover{
+  transform:translateX(4px);
+  border-color:rgba(139,92,246,.4);background:#f3e8ff;
+}
+.mission-item.done{
+  background:linear-gradient(135deg,#ecfdf5,#d1fae5);
+  border-color:rgba(5,150,105,.4);opacity:.75;
+}
+.mission-item.done .mission-title{
+  text-decoration:line-through;color:#64748b;
+}
+.mission-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(140deg,#8b5cf6,#a78bfa);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;flex-shrink:0;
+}
+.mission-item.done .mission-icon{
+  background:linear-gradient(140deg,#059669,#34d399);
+}
+.mission-info{flex:1;min-width:0}
+.mission-title{
+  font-size:.85rem;font-weight:800;color:#0f172a;margin-bottom:2px;
+}
+.mission-desc{font-size:.7rem;color:#64748b;line-height:1.3}
+.mission-xp{
+  background:linear-gradient(100deg,#fbbf24,#f59e0b);
+  color:#03132e;padding:4px 10px;border-radius:20px;
+  font-size:.7rem;font-weight:900;flex-shrink:0;
+}
+.mission-check{
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid rgba(100,116,139,.3);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:.7rem;flex-shrink:0;transition:all .2s ease;
+}
+.mission-item.done .mission-check{
+  background:linear-gradient(140deg,#059669,#34d399);
+  border-color:transparent;
+}
+
+.tasbeeh-widget{
+  background:linear-gradient(135deg,#0ea5e9,#38bdf8);
+  border-radius:22px;padding:20px;margin-bottom:16px;
+  text-align:center;color:#fff;
+  box-shadow:0 15px 35px -12px rgba(14,165,233,.7);
+  position:relative;overflow:hidden;
+}
+.tasbeeh-widget::before{
+  content:'📿';position:absolute;
+  top:-20px;right:-20px;font-size:6rem;opacity:.12;
+}
+.tasbeeh-title{
+  font-size:.82rem;font-weight:800;
+  letter-spacing:1.5px;text-transform:uppercase;
+  opacity:.9;margin-bottom:4px;position:relative;z-index:2;
+}
+.tasbeeh-dhikr{
+  font-size:1.1rem;font-weight:800;
+  margin:0 0 12px;position:relative;z-index:2;
+}
+.tasbeeh-count{
+  font-size:4rem;font-weight:900;line-height:1;
+  margin:8px 0 12px;text-shadow:0 4px 12px rgba(0,0,0,.2);
+  position:relative;z-index:2;transition:transform .15s ease;
+}
+.tasbeeh-count.pop{animation:tasbeehPop .3s ease}
+@keyframes tasbeehPop{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.15)}
+  100%{transform:scale(1)}
+}
+.tasbeeh-tap-btn{
+  width:90px;height:90px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.25);
+  backdrop-filter:blur(20px);
+  color:#fff;font-size:2rem;cursor:pointer;
+  transition:all .15s ease;
+  box-shadow:0 10px 30px -8px rgba(0,0,0,.3),inset 0 2px 4px rgba(255,255,255,.3);
+  position:relative;z-index:2;-webkit-tap-highlight-color:transparent;
+}
+.tasbeeh-tap-btn:active{
+  transform:scale(.92);background:rgba(255,255,255,.35);
+}
+.tasbeeh-row{
+  display:flex;gap:8px;justify-content:center;
+  margin-top:14px;position:relative;z-index:2;
+}
+.tasbeeh-mini-btn{
+  padding:8px 14px;border-radius:20px;
+  border:1.5px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.15);
+  color:#fff;font-family:inherit;font-weight:800;
+  font-size:.74rem;cursor:pointer;transition:.2s ease;
+}
+.tasbeeh-mini-btn:active{background:rgba(255,255,255,.3)}
+
+@media (max-width:500px){
+  .xp-widget,.streak-widget,.missions-widget,.tasbeeh-widget{
+    border-radius:18px;padding:14px 16px;
+  }
+  .xp-level-badge{width:52px;height:52px}
+  .xp-level-badge .lvl-num{font-size:1.3rem}
+  .streak-fire{width:50px;height:50px;font-size:1.6rem}
+  .streak-count{font-size:1.5rem}
+  .levelup-number{font-size:6rem}
+  .levelup-title{font-size:1.5rem}
+  .tasbeeh-count{font-size:3rem}
+  .tasbeeh-tap-btn{width:80px;height:80px;font-size:1.7rem}
+}
+
+/* ── 3.7 SURVEY POPUP (Base styles — HTML in Part 1) ── */
+.survey-card{position:relative}
+.survey-q{
+  background:#fff;border:1.5px solid rgba(180,200,230,.6);
+  border-radius:18px;padding:18px 20px;margin-bottom:14px;
+  transition:all .3s ease;
+}
+.survey-q:focus-within{
+  border-color:#6C5CE7;
+  box-shadow:0 10px 30px -12px rgba(108,92,231,.4);
+  transform:translateY(-2px);
+}
+.survey-q-head{
+  display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;
+}
+.survey-q-no{
+  width:32px;height:32px;border-radius:10px;
+  background:linear-gradient(140deg,#6C5CE7,#a29bfe);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:.85rem;flex-shrink:0;
+}
+.survey-q-text{
+  flex:1;color:#0f172a;font-weight:700;
+  font-size:.94rem;line-height:1.5;padding-top:4px;
+}
+.survey-q-text .required-star{color:#ef4444;margin-left:3px}
+.survey-q-input{
+  width:100%;min-height:60px;background:#f8fafc;
+  border:1.5px solid rgba(100,116,139,.2);
+  border-radius:12px;padding:12px 14px;color:#0f172a;
+  font-family:'Anek Malayalam',sans-serif;font-size:16px;
+  line-height:1.5;outline:none;resize:vertical;
+  transition:all .25s ease;
+}
+.survey-q-input:focus{
+  background:#fff;border-color:#6C5CE7;
+  box-shadow:0 0 0 4px rgba(108,92,231,.12);
+}
+.survey-q-input::placeholder{color:#94a3b8;font-size:.86rem}
+
+/* ── 3.8 MODAL SCROLL FIX (Universal) ── */
+#quizModal,#rewardsModal,#addFriendModal,#avatarCustomizerModal,
+#levelupPopup,#passwordSetupModal,#pwdResetModal,#forgotModal{
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+}
+.modal-form-input input,.modal-form-input textarea,.modal-form-input select{
+  font-size:16px!important;
+}
+
+/* ── 3.9 BIRTHDAY ── */
+body.birthday-active .avatar-neon{
+  animation:birthdayAvatarBounce 1s ease infinite;
+}
+@keyframes birthdayAvatarBounce{
+  0%,100%{transform:scale(1) rotate(0)}
+  25%{transform:scale(1.1) rotate(-5deg)}
+  75%{transform:scale(1.1) rotate(5deg)}
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🤖 AI ASSISTANT HTML                                            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<button class="ai-fab show" id="aiFab" onclick="toggleAIChat()" title="AI Assistant">
+  <i class="fas fa-robot"></i>
+</button>
+
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-head">
+    <div class="ai-head-left">
+      <div class="ai-avatar"><i class="fas fa-sparkles"></i></div>
+      <div style="min-width:0;flex:1;">
+        <h6>NSM Assistant</h6>
+        <small><span class="ai-dot"></span> Online • Powered by AI</small>
+      </div>
+    </div>
+    <div class="ai-head-actions">
+      <button class="ai-head-btn" onclick="clearAIChat()" title="New chat"><i class="fas fa-plus"></i></button>
+      <button class="ai-head-btn" onclick="toggleAIChat()" title="Close"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="ai-body" id="aiBody">
+    <div class="ai-welcome" id="aiWelcome">
+      <div class="ai-welcome-logo"><i class="fas fa-sparkles"></i></div>
+      <h2 class="ai-welcome-title">ഹായ്! ഞാൻ NSM Assistant</h2>
+      <p class="ai-welcome-sub" id="aiWelcomeSub">നിങ്ങളെ എങ്ങനെ സഹായിക്കാം? ചുവടെ type ചെയ്യുക അല്ലെങ്കിൽ ഒരു suggestion തിരഞ്ഞെടുക്കുക.</p>
+      <div class="ai-suggestions" id="aiSuggestions">
+        <button class="ai-suggestion" onclick="aiQuick('എന്റെ സമ്പാദ്യം എത്ര?')">
+          <i class="fas fa-piggy-bank"></i> എന്റെ സമ്പാദ്യം
+          <span>Palathulli balance</span>
+        </button>
+        <button class="ai-suggestion" onclick="aiQuick('എന്റെ ഹാജർ')">
+          <i class="fas fa-calendar-check"></i> എന്റെ ഹാജർ
+          <span>Attendance report</span>
+        </button>
+        <button class="ai-suggestion" onclick="aiQuick('എന്റെ റിസൾട്ട്')">
+          <i class="fas fa-chart-simple"></i> എന്റെ റിസൾട്ട്
+          <span>Exam performance</span>
+        </button>
+        <button class="ai-suggestion" onclick="aiQuick('മദ്രസ സമയം')">
+          <i class="fas fa-clock"></i> മദ്രസ സമയം
+          <span>Class timings</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-foot" id="aiFoot">
+    <div class="ai-input-wrap">
+      <input type="text" class="ai-input" id="aiInput" placeholder="എന്തെങ്കിലും ചോദിക്കൂ..."
+             onkeydown="if(event.key==='Enter'){event.preventDefault();sendAIMessage();}"
+             autocomplete="off">
+      <button class="ai-mic-btn" id="aiMicBtn" onclick="toggleVoiceInput()" title="Voice input">
+        <i class="fas fa-microphone"></i>
+      </button>
+    </div>
+    <button class="ai-send" id="aiSendBtn" onclick="sendAIMessage()" title="Send">
+      <i class="fas fa-paper-plane"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 👥 CLASS CHAT HTML                                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<button id="chatFab" class="chat-fab" onclick="window.openChatPanel()" title="Class Chat">
+  <i class="fas fa-comments"></i>
+  <span class="chat-badge" id="chatFabBadge"></span>
+</button>
+
+<div id="chatPanel" class="chat-panel">
+  <div class="chat-sidebar" id="chatSidebar">
+    <div class="chat-sidebar-header">
+      <div class="chat-sidebar-header-top">
+        <h5><i class="fas fa-comments"></i> Chat</h5>
+        <button class="chat-close-btn" onclick="window.closeChatPanel()" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="chat-tabs-side">
+        <button class="chat-tab-side active" data-tab="class" onclick="window.chatSwitchTab('class')">
+          <i class="fas fa-users"></i> Class
+        </button>
+        <button class="chat-tab-side" data-tab="friends" onclick="window.chatSwitchTab('friends')">
+          <i class="fas fa-user-friends"></i> Friends
+        </button>
+        <button class="chat-tab-side" data-tab="requests" onclick="window.chatSwitchTab('requests')">
+          <i class="fas fa-user-plus"></i> Requests
+        </button>
+      </div>
+    </div>
+    <div class="chat-sidebar-list" id="chatSidebarList">
+      <div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,.5);font-size:.8rem;">
+        <div class="spinner-sm" style="border-top-color:#34d399;"></div>
+      </div>
+    </div>
+    <button class="chat-add-friend-btn" onclick="window.openAddFriendModal()">
+      <i class="fas fa-user-plus"></i> Add Friend by Student ID
+    </button>
+  </div>
+
+  <div class="chat-main" id="chatMain">
+    <div class="chat-header">
+      <button class="chat-back-btn" onclick="window.chatBackToList()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="chat-header-avatar" id="chatHeaderAvatar">C</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name" id="chatHeaderName">Class Chat</div>
+        <div class="chat-header-meta" id="chatHeaderMeta">
+          <span class="online-dot"></span><span>Loading...</span>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="chat-header-action" onclick="window.chatRefresh()" title="Refresh">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-empty">
+        <i class="fas fa-comments"></i>
+        <div style="font-weight:800;color:#0f172a;font-size:.94rem;">Chat Loading...</div>
+      </div>
+    </div>
+
+    <div class="chat-typing-indicator" id="chatTypingIndicator">
+      <div class="chat-typing-dots"><span></span><span></span><span></span></div>
+      <span id="chatTypingText">Someone is typing...</span>
+    </div>
+
+    <button class="chat-scroll-btn" id="chatScrollBtn" onclick="window.chatScrollToBottom()">
+      <i class="fas fa-arrow-down"></i>
+      <span class="scroll-badge" id="chatScrollBadge"></span>
+    </button>
+
+    <div class="chat-input-area">
+      <div class="chat-input-wrap">
+        <textarea id="chatInput" class="chat-input" placeholder="Message type ചെയ്യൂ..." rows="1"
+                  oninput="window.chatInputChange(this)"
+                  onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();window.sendChatMessage();}"></textarea>
+        <button class="chat-emoji-btn" onclick="window.toggleEmojiPicker()" title="Emoji">
+          <i class="far fa-smile"></i>
+        </button>
+      </div>
+      <button class="chat-send-btn" id="chatSendBtn" onclick="window.sendChatMessage()" disabled>
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+
+    <div class="chat-emoji-picker" id="chatEmojiPicker">
+      <div style="font-size:.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Quick Emojis</div>
+      <div class="chat-emoji-grid" id="chatEmojiGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 👥 ADD FRIEND MODAL                                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="addFriendModal" class="add-friend-modal">
+  <div class="add-friend-card">
+    <h3><i class="fas fa-user-plus"></i> Add Friend</h3>
+    <p class="add-friend-sub">Student ID നൽകി friend request അയക്കൂ</p>
+    <input type="text" id="addFriendInput" class="add-friend-input"
+           placeholder="e.g., NSM001" maxlength="20"
+           oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');">
+    <button class="add-friend-btn" onclick="window.sendFriendRequest()">
+      <i class="fas fa-paper-plane"></i> Send Request
+    </button>
+    <div id="addFriendResult" class="add-friend-result"></div>
+    <div style="margin-top:16px;text-align:center;">
+      <button onclick="window.closeAddFriendModal()" class="btn-cancel" style="padding:10px 24px;border-radius:60px;font-size:.82rem;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🎨 AVATAR CUSTOMIZER HTML                                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="avatarCustomizerModal" class="avatar-customizer-modal">
+  <div class="avatar-customizer-card">
+    <div class="av-header">
+      <div class="av-header-icon">🎨</div>
+      <h3 class="av-title">Avatar Customizer</h3>
+      <p class="av-sub">നിങ്ങളുടെ avatar മനോഹരമാക്കൂ!</p>
+    </div>
+
+    <div class="av-preview-area">
+      <div class="av-preview-big">
+        <div class="av-preview-frame" id="avPreviewFrame"></div>
+        <div class="av-preview-hat" id="avPreviewHat" style="display:none;"></div>
+        <div class="av-preview-inner" id="avPreviewInner">S</div>
+      </div>
+    </div>
+
+    <div class="av-section">
+      <div class="av-section-title"><i class="fas fa-palette"></i> Base Color</div>
+      <div class="av-colors-grid" id="avColorsGrid"></div>
+    </div>
+
+    <div class="av-section">
+      <div class="av-section-title"><i class="fas fa-layer-group"></i> Style</div>
+      <div class="av-style-tabs">
+        <button class="av-style-tab active" data-style="gradient" onclick="window.setAvatarStyle('gradient',this)">Gradient</button>
+        <button class="av-style-tab" data-style="solid" onclick="window.setAvatarStyle('solid',this)">Solid</button>
+        <button class="av-style-tab" data-style="radial" onclick="window.setAvatarStyle('radial',this)">Radial</button>
+      </div>
+    </div>
+
+    <div class="av-section">
+      <div class="av-section-title"><i class="fas fa-circle-notch"></i> Frame</div>
+      <div class="av-options-row" id="avFramesGrid"></div>
+    </div>
+
+    <div class="av-section">
+      <div class="av-section-title"><i class="fas fa-hat-cowboy"></i> Hat / Accessory</div>
+      <div class="av-options-row" id="avHatsGrid"></div>
+    </div>
+
+    <div class="av-footer-btns">
+      <button class="av-btn cancel" onclick="window.closeAvatarCustomizer()">Cancel</button>
+      <button class="av-btn save" onclick="window.saveAvatarCustomization()">
+        <i class="fas fa-save"></i> Save Avatar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🎁 REWARDS MODAL                                                -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="rewardsModal" class="quiz-modal-overlay">
+  <div class="quiz-modal-card">
+    <button onclick="closeRewardsModal()" style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:#f1f5f9;border:none;color:#475569;font-size:1.2rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div class="quiz-header">
+      <div class="quiz-header-icon">🎁</div>
+      <h2 class="quiz-title">Rewards Store</h2>
+      <p class="quiz-sub">XP points ഉപയോഗിച്ച് rewards വാങ്ങൂ!</p>
+    </div>
+    <div id="rewardsGrid" class="rewards-grid"></div>
+    <div style="text-align:center;margin-top:16px;">
+      <button onclick="closeRewardsModal()" class="btn-cancel" style="padding:12px 30px;border-radius:60px;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🏆 QUIZ MODAL                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="quizModal" class="quiz-modal-overlay">
+  <div class="quiz-modal-card">
+    <button onclick="closeQuizModal()" style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:#f1f5f9;border:none;color:#475569;font-size:1.2rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div id="quizBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🎬 LEVEL UP POPUP                                               -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="levelupPopup" class="levelup-popup">
+  <div class="levelup-content">
+    <div class="levelup-number" id="levelupNumber">2</div>
+    <h2 class="levelup-title">LEVEL UP! 🎉</h2>
+    <p class="levelup-sub" id="levelupSub">നിങ്ങൾ Level 2-ൽ എത്തി!</p>
+    <button class="levelup-btn" onclick="closeLevelupPopup()">Continue →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🌐 PUBLIC FEED OVERLAY                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="publicFeedOverlay" class="public-feed-overlay" style="position:fixed;inset:0;background:#f0f6ff;z-index:3000;display:none;flex-direction:column;">
+  <div class="pf-header" style="position:sticky;top:0;z-index:10;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(59,130,246,.2);padding:12px 16px;">
+    <div style="max-width:680px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+        <img src="https://i.postimg.cc/DznFT7L9/IMG-3167.png" style="width:42px;height:42px;border-radius:12px;background:#fff;padding:5px;object-fit:contain;flex-shrink:0;" alt="Logo">
+        <div>
+          <h2 style="color:#0f172a;font-size:1.05rem;font-weight:800;margin:0;">കലാസൃഷ്ടികളും രചനകളും</h2>
+          <p style="color:#64748b;font-size:.7rem;margin:2px 0 0;text-transform:uppercase;letter-spacing:.8px;">Noorussalam Madrasa • Public Gallery</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+        <button onclick="loginFromFeed()" style="background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#fff;border:none;padding:9px 16px;border-radius:30px;font-weight:800;font-size:.78rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <button onclick="closePublicCreationsFeed()" style="background:#fff;border:1px solid rgba(100,116,139,.2);color:#475569;width:40px;height:40px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="pf-feed" id="publicFeedScroll" style="flex:1;overflow-y:auto;padding:16px;padding-bottom:80px;">
+    <div style="max-width:680px;margin:0 auto;" id="publicFeedContainer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 📱 PWA INSTALL BUTTON                                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<button id="pwaInstallBtn" style="display:none;position:fixed;bottom:90px;right:20px;z-index:9999;background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#fff;border:none;padding:12px 20px;border-radius:50px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 10px 30px -8px rgba(34,211,238,.9);font-size:.85rem;align-items:center;gap:8px;">
+  <i class="fas fa-download"></i> ആപ്പ് ഇൻസ്റ്റാൾ
+</button>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🎨 PART 3 JS — AI + CHAT + KIDS + SOCIAL + FINAL INIT          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.1 AI ASSISTANT                                                */
+/* ═══════════════════════════════════════════════════════════════ */
+var aiOpen=false,aiHistory=[],aiGuestMode=false,_aiSending=false;
+
+const MADRASA_INFO={
+  name:'NOORUSSALAM MADRASA',
+  nameMl:'നൂറുസ്സലാം മദ്രസ',
+  location:'Kambippalam, Kerala Estate',
+  locationMl:'കമ്പിപ്പാലം, കേരള എസ്റ്റേറ്റ്',
+  founders:'പട്ട മുഹമ്മദ്, തോട്ടുങ്ങൽ മുഹമ്മദ് കുട്ടി, പട്ടാണി ഇസ്മായിൽ മുസ്ലിയാർ',
+  timings:'ശനി മുതൽ വ്യാഴം വരെ: രാവിലെ 6:00 - 10:00',
+  contact:'+91 70346 78818',
+  classesInfo:'Class 1 മുതൽ Class 10 വരെ'
+};
+
+function showAIAssistant(){
+  if(!currentUser)return;
+  var fab=document.getElementById('aiFab');
+  if(fab)fab.classList.add('show');
+  var nameEl=document.getElementById('aiStudentNameText');
+  if(nameEl)nameEl.textContent=currentUser.name||'Student';
+}
+
+function toggleAIChat(){
+  if(!currentUser){aiGuestMode=true;}
+  aiOpen=!aiOpen;
+  var panel=document.getElementById('aiPanel');
+  panel.classList.toggle('open',aiOpen);
+
+  var nameEl=document.getElementById('aiStudentNameText');
+  if(nameEl)nameEl.textContent=currentUser?currentUser.name:'Guest';
+
+  var wSub=document.getElementById('aiWelcomeSub');
+  if(wSub){
+    wSub.textContent=currentUser
+      ?('അസ്സലാമു അലൈക്കും '+currentUser.name+'! 👋 എന്തെങ്കിലും ചോദിക്കൂ.')
+      :'നിങ്ങളെ എങ്ങനെ സഹായിക്കാം? ചുവടെ type ചെയ്യുക.';
+  }
+
+  var sugg=document.getElementById('aiSuggestions');
+  if(sugg){
+    if(currentUser){
+      sugg.innerHTML=
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ സമ്പാദ്യം എത്ര?\')"><i class="fas fa-piggy-bank"></i>എന്റെ സമ്പാദ്യം<span>Palathulli balance</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ ഹാജർ\')"><i class="fas fa-calendar-check"></i>എന്റെ ഹാജർ<span>Attendance report</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ റിസൾട്ട്\')"><i class="fas fa-chart-simple"></i>എന്റെ റിസൾട്ട്<span>Exam performance</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ റാങ്ക് എത്ര?\')"><i class="fas fa-trophy"></i>എന്റെ റാങ്ക്<span>Class rank</span></button>';
+    }else{
+      sugg.innerHTML=
+        '<button class="ai-suggestion" onclick="aiQuick(\'മദ്രസ എവിടെ?\')"><i class="fas fa-map-marker-alt"></i>മദ്രസ സ്ഥലം<span>Location info</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'സ്ഥാപകർ ആരാണ്?\')"><i class="fas fa-users"></i>സ്ഥാപകർ<span>Founders</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'മദ്രസ സമയം\')"><i class="fas fa-clock"></i>മദ്രസ സമയം<span>Timings</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എങ്ങനെ ലോഗിൻ ചെയ്യാം?\')"><i class="fas fa-key"></i>Login ചെയ്യാൻ<span>How to login</span></button>';
+    }
+  }
+
+  if(aiOpen){
+    document.body.classList.add('ai-panel-open');
+    document.body.style.overflow='hidden';
+    setTimeout(function(){
+      var inp=document.getElementById('aiInput');
+      if(inp)inp.focus();
+      var body=document.getElementById('aiBody');
+      if(body)body.scrollTop=body.scrollHeight;
+    },300);
+  }else{
+    document.body.classList.remove('ai-panel-open');
+    document.body.style.overflow='';
+    var panel2=document.getElementById('aiPanel');
+    if(panel2){panel2.style.height='';panel2.style.maxHeight='';panel2.style.top='';panel2.style.bottom='';}
+    var foot=document.getElementById('aiFoot');
+    if(foot){foot.style.top='';foot.style.transform='';foot.style.bottom='0';}
+  }
+}
+
+function aiQuick(t){document.getElementById('aiInput').value=t;sendAIMessage();}
+
+function aiAddMsg(t,w){
+  var b=document.getElementById('aiBody');if(!b)return;
+  var wl=document.getElementById('aiWelcome');
+  if(wl)wl.remove();
+  var d=document.createElement('div');
+  d.className='ai-msg '+w;
+  if(w==='bot'){
+    d.innerHTML=t+'<button class="ai-copy-btn" onclick="copyAIMsg(this)" title="Copy"><i class="fas fa-copy"></i></button>';
+  }else{
+    d.innerHTML=t;
+  }
+  b.appendChild(d);
+  setTimeout(function(){b.scrollTop=b.scrollHeight;},60);
+  return d;
+}
+
+function copyAIMsg(btn){
+  var msg=btn.parentNode;
+  var clone=msg.cloneNode(true);
+  var cb=clone.querySelector('.ai-copy-btn');if(cb)cb.remove();
+  var text=clone.innerText.trim();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){
+      var icon=btn.querySelector('i');
+      if(icon){icon.className='fas fa-check';setTimeout(function(){icon.className='fas fa-copy';},1500);}
+    });
+  }
+}
+
+function clearAIChat(){
+  if(_aiSending)return;
+  var b=document.getElementById('aiBody');if(!b)return;
+  aiHistory=[];
+  b.innerHTML=
+    '<div class="ai-welcome" id="aiWelcome">'+
+      '<div class="ai-welcome-logo"><i class="fas fa-sparkles"></i></div>'+
+      '<h2 class="ai-welcome-title">ഹായ്! ഞാൻ NSM Assistant</h2>'+
+      '<p class="ai-welcome-sub" id="aiWelcomeSub">'+(currentUser?('അസ്സലാമു അലൈക്കും '+escapeHtml(currentUser.name)+'! 👋 എന്തെങ്കിലും ചോദിക്കൂ.'):'നിങ്ങളെ എങ്ങനെ സഹായിക്കാം?')+'</p>'+
+      '<div class="ai-suggestions" id="aiSuggestions"></div>'+
+    '</div>';
+  var sugg=document.getElementById('aiSuggestions');
+  if(sugg){
+    if(currentUser){
+      sugg.innerHTML=
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ സമ്പാദ്യം എത്ര?\')"><i class="fas fa-piggy-bank"></i>എന്റെ സമ്പാദ്യം<span>Palathulli balance</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ ഹാജർ\')"><i class="fas fa-calendar-check"></i>എന്റെ ഹാജർ<span>Attendance report</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ റിസൾട്ട്\')"><i class="fas fa-chart-simple"></i>എന്റെ റിസൾട്ട്<span>Exam performance</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എന്റെ റാങ്ക് എത്ര?\')"><i class="fas fa-trophy"></i>എന്റെ റാങ്ക്<span>Class rank</span></button>';
+    }else{
+      sugg.innerHTML=
+        '<button class="ai-suggestion" onclick="aiQuick(\'മദ്രസ എവിടെ?\')"><i class="fas fa-map-marker-alt"></i>മദ്രസ സ്ഥലം<span>Location info</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'സ്ഥാപകർ ആരാണ്?\')"><i class="fas fa-users"></i>സ്ഥാപകർ<span>Founders</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'മദ്രസ സമയം\')"><i class="fas fa-clock"></i>മദ്രസ സമയം<span>Timings</span></button>'+
+        '<button class="ai-suggestion" onclick="aiQuick(\'എങ്ങനെ ലോഗിൻ ചെയ്യാം?\')"><i class="fas fa-key"></i>Login ചെയ്യാൻ<span>How to login</span></button>';
+    }
+  }
+  var inp=document.getElementById('aiInput');
+  if(inp)inp.focus();
+  showToast('🆕 പുതിയ ചാറ്റ്','info');
+}
+
+function quickLocalAnswer(q){
+  if(!currentUser)return null;
+  var t=q.toLowerCase().trim();
+  var uname=escapeHtml(currentUser.name||'Student');
+  if(/^(hi|hello|hai|hey|salam|assalam|ഹലോ|സലാം|ഹായ്)[\s!.]*$/.test(t))
+    return'വ അലൈക്കും സലാം <b>'+uname+'</b>! 👋<br>എങ്ങനെ സഹായിക്കാം?';
+  if(/^(thanks?|thank you|thx|നന്ദി|thankyou)[\s!.]*$/.test(t))
+    return'ബാരകല്ലാഹു ഫീക് <b>'+uname+'</b>! 🤲';
+  if(/^(bye|goodbye|വിട|fi amanillah)[\s!.]*$/.test(t))
+    return'ഫീ അമാനില്ലാഹ് <b>'+uname+'</b>! 👋';
+  if(/^(ok|okay|ശരി|k)[\s!.]*$/.test(t))
+    return'ശരി <b>'+uname+'</b>! ✅';
+  return null;
+}
+
+function madrasaGuestAnswer(q){
+  var t=(q||"").toLowerCase().trim();
+  if(!t)return null;
+  if(/^(hi|hello|hai|hey|salam|assalam|ഹലോ|സലാം|ഹായ്|അസ്സലാം)[\s!.]*$/.test(t)){
+    return'വ അലൈക്കും സലാം! 👋<br><br>ഞാൻ <b>NSM Assistant</b> 😊<br>നൂറുസ്സലാം മദ്‌റസയെക്കുറിച്ച് എന്തും ചോദിക്കാം! 🏛️';
+  }
+  if(/(founder|സ്ഥാപക|ഉസ്താദ്|ustad|history|ചരിത്രം)/.test(t)){
+    return'🏛️ <b>സ്ഥാപകർ</b><br>പട്ട മുഹമ്മദ്, തോട്ടുങ്ങൽ മുഹമ്മദ് കുട്ടി, പട്ടാണി ഇസ്മായിൽ മുസ്ലിയാർ അവർ!';
+  }
+  if(/(location|where|എവിടെ|സ്ഥലം|address)/.test(t)){
+    return'📍 കമ്പിപ്പാലം, കേരള എസ്റ്റേറ്റ്';
+  }
+  if(/(timing|time|സമയം|hours)/.test(t)){
+    return'🕐 ശനി-വ്യാഴം, രാവിലെ 6:00 AM - 10:00 AM';
+  }
+  if(/(contact|phone|ഫോൺ|നമ്പർ)/.test(t)){
+    return'📞 +91 70346 78818';
+  }
+  if(/(login|ലോഗിൻ|sign in|portal|password)/.test(t)){
+    return'🔐 Student ID നൽകി Login ചെയ്യൂ!';
+  }
+  if(/(madrasa|മദ്‌റസ|noorussalam|about)/.test(t)){
+    return'🏛️ <b>നൂറുസ്സലാം മദ്‌റസ</b><br>Class 1-10 • സമസ്ത Reg 6110';
+  }
+  if(/(help|സഹായം)/.test(t)){
+    return'🤖 ഞാൻ പറയാം:<br>• 🏛️ മദ്‌റസ വിവരം<br>• 📍 സ്ഥലം<br>• 🏛️ സ്ഥാപകർ<br>• 🕐 സമയം<br>• 📞 ഫോൺ';
+  }
+  return'🤔 ക്ഷമിക്കണം, എനിക്കത് കൃത്യമായി മനസ്സിലായില്ല 😅<br><br>💡 ഇത് പരീക്ഷിച്ചു നോക്കൂ:<br>• "മദ്‌റസ എവിടെ?"<br>• "സ്ഥാപകർ ആരാണ്?"<br>• "സമയം എന്താണ്?"';
+}
+
+function showTypingIndicator(){
+  var b=document.getElementById('aiBody');if(!b)return null;
+  var d=document.createElement('div');
+  d.className='ai-msg bot typing';
+  d.setAttribute('id','aiTypingIndicator');
+  d.innerHTML='<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+  b.appendChild(d);
+  b.scrollTop=b.scrollHeight;
+  return d;
+}
+function removeTypingIndicator(){
+  var el=document.getElementById('aiTypingIndicator');
+  if(el&&el.parentNode)el.parentNode.removeChild(el);
+}
+
+async function sendAIMessage(){
+  if(_aiSending)return;
+  var input=document.getElementById('aiInput');
+  var sendBtn=document.querySelector('.ai-send');
+  var q=input.value.trim();if(!q)return;
+  input.value='';
+  aiAddMsg(escapeHtml(q),'user');
+  aiHistory.push({role:'user',text:q});
+  _aiSending=true;
+  input.disabled=true;
+  if(sendBtn)sendBtn.disabled=true;
+
+  var local=quickLocalAnswer(q);
+  if(local){
+    setTimeout(function(){
+      aiAddMsg(local,'bot');
+      aiHistory.push({role:'bot',text:local});
+      _aiSending=false;
+      input.disabled=false;
+      if(sendBtn)sendBtn.disabled=false;
+      input.focus();
+    },250);
+    return;
+  }
+
+  showTypingIndicator();
+  var answer=null;
+
+  try{
+    answer=await Promise.race([
+      callGeminiAI(q),
+      new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},20000);})
+    ]);
+  }catch(e){answer=null;}
+
+  if(!answer){
+    if(!currentUser){answer=madrasaGuestAnswer(q);}
+    else{answer=await aiRespond(q);}
+  }
+
+  removeTypingIndicator();
+  aiAddMsg(answer,'bot');
+  aiHistory.push({role:'bot',text:answer});
+  _aiSending=false;
+  input.disabled=false;
+  if(sendBtn)sendBtn.disabled=false;
+  input.focus();
+}
+
+async function callGeminiAI(userMessage){
+  try{
+    if(!currentUser){
+      var res=await fetch(GEMINI_EDGE_FN,{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+SUPABASE_ANON_KEY,
+          'apikey':SUPABASE_ANON_KEY
+        },
+        body:JSON.stringify({message:userMessage,context:{},history:aiHistory.slice(-4)})
+      });
+      if(!res.ok)return null;
+      var data=await res.json();
+      if(data&&data.reply){
+        return escapeHtml(String(data.reply))
+          .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+          .replace(/\n/g,'<br>');
+      }
+      return null;
+    }
+
+    var balance=0;
+    try{balance=await getStudentBalance(currentUser.studentId);}catch(e){}
+    var context={
+      name:currentUser.name,class:currentUser.class,roll:currentUser.roll,
+      studentId:currentUser.studentId,grade:currentUser.overallGrade,
+      rank:currentUser.rank,attendance:currentUser.attendance,
+      balance:Number(balance).toFixed(2),minWithdraw:MIN_WITHDRAW,
+      moralGrade:currentUser.moralValuesGrade
+    };
+    var res2=await fetch(GEMINI_EDGE_FN,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+SUPABASE_ANON_KEY,
+        'apikey':SUPABASE_ANON_KEY
+      },
+      body:JSON.stringify({message:userMessage,context:context,history:aiHistory.slice(-4)})
+    });
+    if(!res2.ok)return null;
+    var data2=await res2.json();
+    if(data2&&data2.reply){
+      return escapeHtml(String(data2.reply))
+        .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+        .replace(/\n/g,'<br>');
+    }
+    return null;
+  }catch(e){return null;}
+}
+
+async function aiRespond(q){
+  var t=q.toLowerCase();
+  var uname=escapeHtml((currentUser.name||'Student').split(' ')[0]);
+  if(/(balance|palathulli|savings|സമ്പാദ്യം|പലതുള്ളി)/.test(t)){
+    var b=await getStudentBalance(currentUser.studentId);
+    return'💰 '+uname+', നിങ്ങളുടെ പലതുള്ളിയിൽ <b>₹'+b.toFixed(2)+'</b> ഉണ്ട്!';
+  }
+  if(/(attendance|ഹാജർ|ഹാജര്‍)/.test(t)){
+    var a=currentUser.attendance||0;
+    return'📆 '+uname+', ഹാജർ: <b>'+a+'%</b>.';
+  }
+  if(/(result|റിസൾട്ട്|grade|mark|ഗ്രേഡ്|മാർക്ക്)/.test(t)){
+    return'📊 '+uname+', Grade: <b>'+(currentUser.overallGrade||'N/A')+'</b> | Rank: <b>#'+(currentUser.rank||'—')+'</b>';
+  }
+  if(/(rank|റാങ്ക്)/.test(t)){
+    return'🏆 '+uname+', Class Rank: <b>#'+(currentUser.rank||'—')+'</b>';
+  }
+  if(/(timing|സമയം|hours|time)/.test(t)){
+    return'🕐 Madrasa timings: <b>ശനി-വ്യാഴം 6AM-10AM</b>';
+  }
+  if(/(contact|ഫോൺ|phone)/.test(t)){
+    return'📞 Contact: <b>+91 70346 78818</b>';
+  }
+  if(/(help|സഹായം)/.test(t)){
+    return'🤖 '+uname+', ഞാൻ സഹായിക്കാം:<br>• 💰 സമ്പാദ്യം<br>• 📊 റിസൾട്ട് / റാങ്ക്<br>• 📆 ഹാജർ<br>• 🕌 Madrasa timings<br>• 📞 Contact';
+  }
+  var fallbacks=[
+    '🤔 '+uname+', എന്റെ brain cell ഇപ്പോൾ ലീവിൽ ആണ് 😅 വേറെ എന്തേലും ചോദിക്ക്!',
+    '😂 '+uname+', ഇത് ഞാൻ പോലും ചിരിച്ചു! വേറെ എന്തേലും?',
+    '🤷 അളിയാ '+uname+', എനിക്ക് ഇത് മനസ്സിലായില്ല. ലളിതമായി ചോദിക്ക്! 😄'
+  ];
+  return fallbacks[Math.floor(Math.random()*fallbacks.length)];
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.2 VOICE INPUT                                                 */
+/* ═══════════════════════════════════════════════════════════════ */
+var _recognition=null,_isListening=false;
+
+function initVoiceRecognition(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window))return null;
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  _recognition=new SR();
+  _recognition.continuous=false;
+  _recognition.interimResults=false;
+  _recognition.lang='ml-IN';
+  _recognition.onstart=function(){_isListening=true;updateMicUI(true);};
+  _recognition.onend=function(){_isListening=false;updateMicUI(false);};
+  _recognition.onerror=function(e){_isListening=false;updateMicUI(false);if(e.error!=='aborted')showToast('⚠️ Voice: '+e.error,'error');};
+  _recognition.onresult=function(e){
+    var text=e.results[0][0].transcript;
+    var inp=document.getElementById('aiInput');
+    if(inp){inp.value=text;sendAIMessage();}
+  };
+  return _recognition;
+}
+
+function toggleVoiceInput(){
+  if(!_recognition)_recognition=initVoiceRecognition();
+  if(!_recognition){showToast('⚠️ Voice not supported','error');return;}
+  if(_isListening){try{_recognition.stop();}catch(e){}return;}
+  try{_recognition.start();showToast('🎤 Listening...','info');}
+  catch(e){showToast('⚠️ '+e.message,'error');}
+}
+
+function updateMicUI(on){
+  var btn=document.getElementById('aiMicBtn');
+  if(!btn)return;
+  btn.classList.toggle('listening',on);
+  var icon=btn.querySelector('i');
+  if(icon)icon.className=on?'fas fa-stop':'fas fa-microphone';
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.3 AVATAR CUSTOMIZER                                           */
+/* ═══════════════════════════════════════════════════════════════ */
+const AV_COLORS=[
+  '#3b8bff','#22d3ee','#a855f7','#ec4899','#f59e0b','#10b981',
+  '#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#6366f1'
+];
+const AV_COLOR_2={
+  '#3b8bff':'#22d3ee','#22d3ee':'#3b8bff','#a855f7':'#ec4899',
+  '#ec4899':'#a855f7','#f59e0b':'#f97316','#10b981':'#06b6d4',
+  '#ef4444':'#f97316','#8b5cf6':'#6366f1','#06b6d4':'#3b8bff',
+  '#f97316':'#f59e0b','#84cc16':'#10b981','#6366f1':'#8b5cf6'
+};
+const AV_FRAMES=[
+  {key:'none',emoji:'⭕',label:'None'},
+  {key:'gold',emoji:'🥇',label:'Gold'},
+  {key:'silver',emoji:'🥈',label:'Silver'},
+  {key:'diamond',emoji:'💎',label:'Diamond'},
+  {key:'flame',emoji:'🔥',label:'Flame'}
+];
+const AV_HATS=[
+  {key:'none',emoji:'❌',label:'None'},
+  {key:'cap',emoji:'🧢',label:'Cap'},
+  {key:'crown',emoji:'👑',label:'Crown'},
+  {key:'flower',emoji:'🌸',label:'Flower'},
+  {key:'star',emoji:'⭐',label:'Star'}
+];
+
+let avatarState={
+  color:'#3b8bff',color2:'#22d3ee',
+  style:'gradient',frame:'none',hat:'none'
+};
+
+function renderAvatarColorGrid(){
+  const grid=document.getElementById('avColorsGrid');
+  if(!grid)return;
+  grid.innerHTML=AV_COLORS.map(function(c){
+    return'<div class="av-color-swatch '+(c===avatarState.color?'active':'')+'" style="background:'+c+';" data-color="'+c+'" onclick="window.pickAvatarColor(\''+c+'\')"></div>';
+  }).join('');
+}
+function renderAvatarFramesGrid(){
+  const grid=document.getElementById('avFramesGrid');
+  if(!grid)return;
+  grid.innerHTML=AV_FRAMES.map(function(f){
+    return'<div class="av-option '+(f.key===avatarState.frame?'active':'')+'" data-frame="'+f.key+'" onclick="window.pickAvatarFrame(\''+f.key+'\')"><div style="font-size:1.3rem;">'+f.emoji+'</div><div class="av-option-label">'+f.label+'</div></div>';
+  }).join('');
+}
+function renderAvatarHatsGrid(){
+  const grid=document.getElementById('avHatsGrid');
+  if(!grid)return;
+  grid.innerHTML=AV_HATS.map(function(h){
+    return'<div class="av-option '+(h.key===avatarState.hat?'active':'')+'" data-hat="'+h.key+'" onclick="window.pickAvatarHat(\''+h.key+'\')"><div style="font-size:1.3rem;">'+h.emoji+'</div><div class="av-option-label">'+h.label+'</div></div>';
+  }).join('');
+}
+
+function updateAvatarPreview(){
+  const inner=document.getElementById('avPreviewInner');
+  const frame=document.getElementById('avPreviewFrame');
+  const hat=document.getElementById('avPreviewHat');
+  if(!inner||!frame||!hat)return;
+
+  const initial=(currentUser&&currentUser.name?currentUser.name.charAt(0).toUpperCase():'S');
+
+  if(avatarState.style==='solid'){
+    inner.style.background=avatarState.color;
+  }else if(avatarState.style==='radial'){
+    inner.style.background='radial-gradient(circle at 30% 30%, '+avatarState.color2+', '+avatarState.color+')';
+  }else{
+    inner.style.background='linear-gradient(140deg, '+avatarState.color+', '+avatarState.color2+')';
+  }
+
+  const hasPhoto=currentUser&&currentUser.photo&&(currentUser.photo.startsWith('http')||currentUser.photo.startsWith('data:'));
+  if(hasPhoto){
+    inner.innerHTML='<img src="'+currentUser.photo+'" alt="avatar">';
+  }else{
+    inner.textContent=initial;
+  }
+
+  frame.className='av-preview-frame';
+  if(avatarState.frame!=='none')frame.classList.add('frame-'+avatarState.frame);
+
+  if(avatarState.hat!=='none'){
+    const hatData=AV_HATS.find(function(h){return h.key===avatarState.hat;});
+    hat.textContent=hatData?hatData.emoji:'';
+    hat.style.display='block';
+  }else{
+    hat.style.display='none';
+  }
+}
+
+window.pickAvatarColor=function(color){
+  avatarState.color=color;
+  avatarState.color2=AV_COLOR_2[color]||'#22d3ee';
+  renderAvatarColorGrid();
+  updateAvatarPreview();
+  if(navigator.vibrate)navigator.vibrate(8);
+};
+window.pickAvatarFrame=function(key){
+  avatarState.frame=key;
+  renderAvatarFramesGrid();
+  updateAvatarPreview();
+  if(navigator.vibrate)navigator.vibrate(8);
+};
+window.pickAvatarHat=function(key){
+  avatarState.hat=key;
+  renderAvatarHatsGrid();
+  updateAvatarPreview();
+  if(navigator.vibrate)navigator.vibrate(8);
+};
+window.setAvatarStyle=function(style,btn){
+  avatarState.style=style;
+  document.querySelectorAll('.av-style-tab').forEach(function(t){t.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  updateAvatarPreview();
+};
+
+window.openAvatarCustomizer=async function(){
+  if(!currentUser){showToast('Login first','error');return;}
+  try{
+    const r=await supabaseClient.from('student_avatars').select('*').eq('studentid',currentUser.studentId).maybeSingle();
+    if(r.data){
+      avatarState.color=r.data.avatar_color||'#3b8bff';
+      avatarState.color2=r.data.avatar_color_2||'#22d3ee';
+      avatarState.style=r.data.avatar_style||'gradient';
+      avatarState.frame=r.data.avatar_frame||'none';
+      avatarState.hat=r.data.avatar_hat||'none';
+    }
+  }catch(e){console.warn(e);}
+
+  renderAvatarColorGrid();
+  renderAvatarFramesGrid();
+  renderAvatarHatsGrid();
+  updateAvatarPreview();
+
+  document.querySelectorAll('.av-style-tab').forEach(function(t){
+    t.classList.toggle('active',t.dataset.style===avatarState.style);
+  });
+
+  document.getElementById('avatarCustomizerModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(navigator.vibrate)navigator.vibrate(10);
+};
+
+window.closeAvatarCustomizer=function(){
+  document.getElementById('avatarCustomizerModal').classList.remove('open');
+  document.body.style.overflow='';
+};
+
+window.saveAvatarCustomization=async function(){
+  if(!currentUser)return;
+  try{
+    const r=await supabaseClient.from('student_avatars').upsert({
+      studentid:currentUser.studentId,
+      avatar_color:avatarState.color,
+      avatar_color_2:avatarState.color2,
+      avatar_style:avatarState.style,
+      avatar_frame:avatarState.frame,
+      avatar_hat:avatarState.hat,
+      updated_at:new Date().toISOString()
+    },{onConflict:'studentid'});
+    if(r.error)throw r.error;
+
+    currentUser.avatar_color=avatarState.color;
+    currentUser.avatar_color_2=avatarState.color2;
+    currentUser.avatar_style=avatarState.style;
+    currentUser.avatar_frame=avatarState.frame;
+    currentUser.avatar_hat=avatarState.hat;
+    localStorage.setItem('noor_session',JSON.stringify(currentUser));
+
+    applyAvatarToDashboard();
+    showToast('✅ Avatar saved!','success');
+    if(typeof confetti!=='undefined')confetti({particleCount:100,spread:80,origin:{y:.6}});
+    closeAvatarCustomizer();
+  }catch(e){showToast('❌ '+e.message,'error');}
+};
+
+window.applyAvatarToDashboard=function(){
+  const avatar=document.getElementById('avatarInitials');
+  if(!avatar||!currentUser)return;
+  const color=currentUser.avatar_color||'#3b8bff';
+  const color2=currentUser.avatar_color_2||'#22d3ee';
+  const style=currentUser.avatar_style||'gradient';
+  const frame=currentUser.avatar_frame||'none';
+
+  if(style==='solid')avatar.style.background=color;
+  else if(style==='radial')avatar.style.background='radial-gradient(circle at 30% 30%, '+color2+', '+color+')';
+  else avatar.style.background='linear-gradient(140deg, '+color+', '+color2+')';
+
+  avatar.style.border='3px solid rgba(255,255,255,.4)';
+  avatar.style.boxShadow='0 6px 18px -6px rgba(0,0,0,.35)';
+  if(frame==='gold'){
+    avatar.style.borderColor='#fbbf24';
+    avatar.style.boxShadow='0 0 15px rgba(251,191,36,.7), 0 6px 18px -6px rgba(0,0,0,.35)';
+  }else if(frame==='silver'){avatar.style.borderColor='#cbd5e1';}
+  else if(frame==='diamond'){
+    avatar.style.borderColor='#22d3ee';
+    avatar.style.boxShadow='0 0 18px rgba(34,211,238,.8), 0 6px 18px -6px rgba(0,0,0,.35)';
+  }else if(frame==='flame'){
+    avatar.style.borderColor='#f97316';
+    avatar.style.boxShadow='0 0 20px rgba(249,115,22,.8), 0 6px 18px -6px rgba(0,0,0,.35)';
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.4 CLASS CHAT                                                  */
+/* ═══════════════════════════════════════════════════════════════ */
+window.CHAT_STATE={
+  isOpen:false,activeTab:'class',activeChat:'class',
+  activeFriendData:null,messages:[],friends:[],requests:[],classMembers:[],
+  channel:null,dmChannel:null,onlineUsers:new Set(),
+  isTyping:false,typingTimeout:null,lastMessageTime:0,
+  unreadCount:0,emojiPickerOpen:false
+};
+
+const QUICK_EMOJIS=['😀','😂','😍','🥰','😎','🤩','😊','🙂','😉','😇','🤗','🤔','😅','😴','😢','😭','😡','👍','👎','🙏','👏','🤝','💪','✌️','🖐️','👋','🤲','❤️','💯','🔥','⭐','✨','🎉','🎊','🎁','🌟','💎','🏆','🥇','👑'];
+
+function renderEmojiGrid(){
+  const grid=document.getElementById('chatEmojiGrid');
+  if(!grid)return;
+  grid.innerHTML=QUICK_EMOJIS.map(function(e){
+    return'<button class="chat-emoji-btn-item" onclick="window.insertEmoji(\''+e+'\')">'+e+'</button>';
+  }).join('');
+}
+
+window.insertEmoji=function(emoji){
+  const input=document.getElementById('chatInput');
+  if(!input)return;
+  input.value+=emoji;
+  input.focus();
+  window.chatInputChange(input);
+  toggleEmojiPicker();
+};
+
+window.toggleEmojiPicker=function(){
+  const picker=document.getElementById('chatEmojiPicker');
+  if(!picker)return;
+  CHAT_STATE.emojiPickerOpen=!CHAT_STATE.emojiPickerOpen;
+  picker.classList.toggle('show',CHAT_STATE.emojiPickerOpen);
+};
+
+window.chatInputChange=function(el){
+  const sendBtn=document.getElementById('chatSendBtn');
+  if(sendBtn)sendBtn.disabled=!el.value.trim();
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,100)+'px';
+};
+
+window.openChatPanel=async function(){
+  if(!currentUser){showToast('Login first','error');return;}
+  document.getElementById('chatPanel').classList.add('open');
+  document.body.classList.add('chat-panel-open');
+  document.body.style.overflow='hidden';
+  CHAT_STATE.isOpen=true;
+  renderEmojiGrid();
+  await markOnline();
+  startOnlineHeartbeat();
+  await loadFriendsList();
+  await loadFriendRequests();
+  if(CHAT_STATE.activeChat==='class')await openClassChat();
+  else await openDirectChatWith(CHAT_STATE.activeChat);
+  if(navigator.vibrate)navigator.vibrate(15);
+};
+
+window.closeChatPanel=function(){
+  document.getElementById('chatPanel').classList.remove('open');
+  document.body.classList.remove('chat-panel-open');
+  document.body.style.overflow='';
+  CHAT_STATE.isOpen=false;
+  if(CHAT_STATE.channel){try{supabaseClient.removeChannel(CHAT_STATE.channel);}catch(e){}CHAT_STATE.channel=null;}
+  if(CHAT_STATE.dmChannel){try{supabaseClient.removeChannel(CHAT_STATE.dmChannel);}catch(e){}CHAT_STATE.dmChannel=null;}
+  markOffline();
+};
+
+async function markOnline(){
+  if(!currentUser)return;
+  try{
+    await supabaseClient.from('online_status').upsert({
+      studentid:currentUser.studentId,
+      last_seen:new Date().toISOString(),is_online:true
+    },{onConflict:'studentid'});
+  }catch(e){}
+}
+async function markOffline(){
+  if(!currentUser)return;
+  try{
+    await supabaseClient.from('online_status').upsert({
+      studentid:currentUser.studentId,
+      last_seen:new Date().toISOString(),is_online:false
+    },{onConflict:'studentid'});
+  }catch(e){}
+}
+
+var _chatHeartbeat=null;
+function startOnlineHeartbeat(){
+  if(_chatHeartbeat)clearInterval(_chatHeartbeat);
+  _chatHeartbeat=setInterval(markOnline,30000);
+}
+
+window.chatSwitchTab=function(tab){
+  CHAT_STATE.activeTab=tab;
+  document.querySelectorAll('.chat-tab-side').forEach(function(t){
+    t.classList.toggle('active',t.dataset.tab===tab);
+  });
+  renderSidebar();
+};
+
+async function loadFriendsList(){
+  if(!currentUser)return;
+  try{
+    const r=await supabaseClient.from('friendships')
+      .select('*')
+      .or('student_a.eq.'+currentUser.studentId+',student_b.eq.'+currentUser.studentId)
+      .eq('status','accepted');
+    const friendIds=(r.data||[]).map(function(f){
+      return f.student_a===currentUser.studentId?f.student_b:f.student_a;
+    });
+    if(friendIds.length===0){CHAT_STATE.friends=[];renderSidebar();return;}
+
+    const sr=await supabaseClient.from('students').select('studentid, name, class, photo').in('studentid',friendIds);
+    const ar=await supabaseClient.from('student_avatars').select('*').in('studentid',friendIds);
+    const avatarMap={};
+    (ar.data||[]).forEach(function(a){avatarMap[a.studentid]=a;});
+    const or_=await supabaseClient.from('online_status').select('studentid, is_online, last_seen').in('studentid',friendIds);
+    const onlineMap={};
+    (or_.data||[]).forEach(function(o){onlineMap[o.studentid]=o;});
+
+    const dmR=await supabaseClient.from('direct_messages').select('*')
+      .or('and(sender_id.eq.'+currentUser.studentId+',receiver_id.in.('+friendIds.join(',')+')),and(receiver_id.eq.'+currentUser.studentId+',sender_id.in.('+friendIds.join(',')+'))')
+      .order('created_at',{ascending:false}).limit(100);
+
+    const lastMsgMap={};
+    const unreadMap={};
+    (dmR.data||[]).forEach(function(m){
+      const otherId=m.sender_id===currentUser.studentId?m.receiver_id:m.sender_id;
+      if(!lastMsgMap[otherId])lastMsgMap[otherId]=m;
+      if(m.receiver_id===currentUser.studentId&&!m.is_read){
+        unreadMap[otherId]=(unreadMap[otherId]||0)+1;
+      }
+    });
+
+    CHAT_STATE.friends=(sr.data||[]).map(function(s){
+      return Object.assign({},s,{
+        avatar:avatarMap[s.studentid]||null,
+        is_online:onlineMap[s.studentid]?onlineMap[s.studentid].is_online:false,
+        last_seen:onlineMap[s.studentid]?onlineMap[s.studentid].last_seen:null,
+        lastMessage:lastMsgMap[s.studentid]||null,
+        unread:unreadMap[s.studentid]||0
+      });
+    }).sort(function(a,b){
+      const ta=a.lastMessage?new Date(a.lastMessage.created_at).getTime():0;
+      const tb=b.lastMessage?new Date(b.lastMessage.created_at).getTime():0;
+      return tb-ta;
+    });
+    renderSidebar();
+  }catch(e){console.error('loadFriendsList:',e);}
+}
+
+async function loadFriendRequests(){
+  if(!currentUser)return;
+  try{
+    const r=await supabaseClient.from('friendships')
+      .select('*')
+      .or('student_a.eq.'+currentUser.studentId+',student_b.eq.'+currentUser.studentId)
+      .eq('status','pending')
+      .neq('requested_by',currentUser.studentId);
+    const requesterIds=(r.data||[]).map(function(f){return f.requested_by;});
+    if(requesterIds.length===0){CHAT_STATE.requests=[];updateChatFabBadge();return;}
+    const sr=await supabaseClient.from('students').select('studentid, name, class, photo').in('studentid',requesterIds);
+    const map={};
+    (sr.data||[]).forEach(function(s){map[s.studentid]=s;});
+    CHAT_STATE.requests=(r.data||[]).map(function(f){
+      return {id:f.id,from:map[f.requested_by]||{studentid:f.requested_by,name:'Unknown'}};
+    });
+    updateChatFabBadge();
+  }catch(e){console.error('loadFriendRequests:',e);}
+}
+
+function renderSidebar(){
+  const list=document.getElementById('chatSidebarList');
+  if(!list)return;
+  if(CHAT_STATE.activeTab==='class')list.innerHTML=renderClassSection();
+  else if(CHAT_STATE.activeTab==='friends')list.innerHTML=renderFriendsSection();
+  else if(CHAT_STATE.activeTab==='requests')list.innerHTML=renderRequestsSection();
+}
+
+function renderClassSection(){
+  const className=currentUser?currentUser.class:'—';
+  return '<div class="chat-sidebar-section-title">Your Class</div>'+
+    '<div class="friend-item '+(CHAT_STATE.activeChat==='class'?'active':'')+'" onclick="window.openClassChat()">'+
+      '<div class="friend-avatar" style="background:linear-gradient(140deg,#667eea,#764ba2);"><i class="fas fa-users" style="font-size:1.1rem;"></i></div>'+
+      '<div class="friend-info"><div class="friend-name">Class '+escapeHtml(className)+' Chat</div><div class="friend-preview">Tap to open group chat</div></div>'+
+    '</div>';
+}
+
+function renderFriendsSection(){
+  if(CHAT_STATE.friends.length===0){
+    return '<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,.5);font-size:.8rem;"><i class="fas fa-user-friends" style="font-size:2rem;opacity:.4;display:block;margin-bottom:8px;"></i><div>ഇതുവരെ friends ഇല്ല</div></div>';
+  }
+  return '<div class="chat-sidebar-section-title">Friends ('+CHAT_STATE.friends.length+')</div>'+
+    CHAT_STATE.friends.map(renderFriendItem).join('');
+}
+
+function renderFriendItem(f){
+  const initial=(f.name||'S').charAt(0).toUpperCase();
+  const hasPhoto=f.photo&&f.photo.startsWith('http');
+  const avatarHtml=hasPhoto?'<img src="'+f.photo+'" alt="">':initial;
+  let frameClass='';
+  if(f.avatar&&f.avatar.avatar_frame&&f.avatar.avatar_frame!=='none'){
+    frameClass='frame-'+f.avatar.avatar_frame;
+  }
+  let previewText='Say hi! 👋';
+  let timeText='';
+  let unread=0;
+  if(f.lastMessage){
+    previewText=(f.lastMessage.sender_id===currentUser.studentId?'✓ You: ':'')+(f.lastMessage.message||'').substring(0,30);
+    timeText=formatChatTime(f.lastMessage.created_at);
+    unread=f.unread;
+  }
+  const isActive=CHAT_STATE.activeChat===f.studentid;
+  return '<div class="friend-item '+(isActive?'active':'')+'" onclick="window.openDirectChatWith(\''+f.studentid+'\')">'+
+    '<div class="friend-avatar" style="background:linear-gradient(140deg,'+(f.avatar&&f.avatar.avatar_color||'#3b8bff')+','+(f.avatar&&f.avatar.avatar_color_2||'#22d3ee')+');">'+
+      avatarHtml+
+      '<div class="av-frame '+frameClass+'"></div>'+
+      '<div class="friend-status-dot '+(f.is_online?'online':'')+'"></div>'+
+    '</div>'+
+    '<div class="friend-info"><div class="friend-name">'+escapeHtml(f.name||f.studentid)+'</div><div class="friend-preview">'+escapeHtml(previewText)+'</div></div>'+
+    '<div class="friend-meta">'+(timeText?'<div class="friend-time">'+timeText+'</div>':'')+(unread>0?'<div class="friend-unread">'+(unread>9?'9+':unread)+'</div>':'')+'</div>'+
+  '</div>';
+}
+
+function renderRequestsSection(){
+  if(CHAT_STATE.requests.length===0){
+    return '<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,.5);font-size:.8rem;"><i class="fas fa-inbox" style="font-size:2rem;opacity:.4;display:block;margin-bottom:8px;"></i><div>No pending requests</div></div>';
+  }
+  return '<div class="chat-sidebar-section-title">Friend Requests ('+CHAT_STATE.requests.length+')</div>'+
+    CHAT_STATE.requests.map(function(r){
+      const initial=(r.from.name||'S').charAt(0).toUpperCase();
+      const hasPhoto=r.from.photo&&r.from.photo.startsWith('http');
+      const avatarHtml=hasPhoto?'<img src="'+r.from.photo+'" alt="">':initial;
+      return '<div class="friend-item" style="background:rgba(255,255,255,.06);">'+
+        '<div class="friend-avatar" style="background:linear-gradient(140deg,#f59e0b,#f97316);">'+avatarHtml+'</div>'+
+        '<div class="friend-info"><div class="friend-name">'+escapeHtml(r.from.name||r.from.studentid)+'</div><div class="friend-preview">Class '+escapeHtml(r.from.class||'—')+'</div></div>'+
+        '<div style="display:flex;gap:4px;flex-shrink:0;">'+
+          '<button class="fr-btn accept" onclick="event.stopPropagation();window.acceptFriend('+r.id+')" style="padding:7px 14px;border-radius:20px;border:none;background:linear-gradient(100deg,#22c55e,#10b981);color:#fff;font-weight:800;cursor:pointer;">✓</button>'+
+          '<button class="fr-btn reject" onclick="event.stopPropagation();window.rejectFriend('+r.id+')" style="padding:7px 14px;border-radius:20px;border:none;background:#fee2e2;color:#dc2626;font-weight:800;cursor:pointer;">✕</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+}
+
+function formatChatTime(iso){
+  try{
+    const d=new Date(iso);
+    const now=new Date();
+    const diff=now-d;
+    const dayDiff=Math.floor(diff/86400000);
+    if(dayDiff===0)return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    if(dayDiff===1)return'Yesterday';
+    if(dayDiff<7)return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+    return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+  }catch(e){return'';}
+}
+
+window.openClassChat=async function(){
+  CHAT_STATE.activeChat='class';
+  CHAT_STATE.activeFriendData=null;
+  document.getElementById('chatMain').classList.add('show-mobile');
+  document.getElementById('chatSidebar').classList.add('hidden-mobile');
+
+  const headerAvatar=document.getElementById('chatHeaderAvatar');
+  headerAvatar.innerHTML='<i class="fas fa-users"></i>';
+  headerAvatar.style.background='linear-gradient(140deg,#667eea,#764ba2)';
+  document.getElementById('chatHeaderName').textContent='Class '+(currentUser?currentUser.class:'—')+' Chat';
+  document.getElementById('chatHeaderMeta').innerHTML='<span class="online-dot"></span> <span>Group Chat</span>';
+
+  await loadClassMembers();
+  await loadClassMessages();
+  subscribeToClassMessages();
+  renderSidebar();
+  chatScrollToBottom();
+};
+
+window.openDirectChatWith=async function(friendId){
+  const friend=CHAT_STATE.friends.find(function(f){return f.studentid===friendId;});
+  if(!friend)return;
+  CHAT_STATE.activeChat=friendId;
+  CHAT_STATE.activeFriendData=friend;
+
+  document.getElementById('chatMain').classList.add('show-mobile');
+  document.getElementById('chatSidebar').classList.add('hidden-mobile');
+
+  const headerAvatar=document.getElementById('chatHeaderAvatar');
+  const hasPhoto=friend.photo&&friend.photo.startsWith('http');
+  if(hasPhoto)headerAvatar.innerHTML='<img src="'+friend.photo+'" alt="">';
+  else headerAvatar.textContent=(friend.name||'S').charAt(0).toUpperCase();
+  headerAvatar.style.background='linear-gradient(140deg,'+(friend.avatar&&friend.avatar.avatar_color||'#3b8bff')+','+(friend.avatar&&friend.avatar.avatar_color_2||'#22d3ee')+')';
+  document.getElementById('chatHeaderName').textContent=friend.name||friend.studentid;
+  const meta=friend.is_online
+    ?'<span class="online-dot"></span> <span>Online</span>'
+    :'<span>Last seen '+(friend.last_seen?formatChatTime(friend.last_seen):'recently')+'</span>';
+  document.getElementById('chatHeaderMeta').innerHTML=meta;
+
+  await loadDirectMessages(friendId);
+  subscribeToDirectMessages(friendId);
+  await markMessagesRead(friendId);
+  renderSidebar();
+  chatScrollToBottom();
+};
+
+window.chatBackToList=function(){
+  document.getElementById('chatMain').classList.remove('show-mobile');
+  document.getElementById('chatSidebar').classList.remove('hidden-mobile');
+};
+
+async function loadClassMembers(){
+  try{
+    const cls=String(currentUser?currentUser.class:'');
+    const r=await supabaseClient.from('students').select('studentid, name, photo').eq('class',cls);
+    CHAT_STATE.classMembers=r.data||[];
+  }catch(e){}
+}
+
+async function loadClassMessages(){
+  const container=document.getElementById('chatMessages');
+  if(!container)return;
+  container.innerHTML='<div style="text-align:center;padding:20px;color:#64748b;"><div class="spinner-sm"></div></div>';
+  try{
+    const cls=String(currentUser?currentUser.class:'');
+    const r=await supabaseClient.from('class_messages').select('*')
+      .eq('class',cls).eq('is_deleted',false)
+      .order('created_at',{ascending:true}).limit(200);
+    CHAT_STATE.messages=r.data||[];
+    renderMessages();
+  }catch(e){
+    container.innerHTML='<div class="chat-empty">Error loading messages</div>';
+  }
+}
+
+async function loadDirectMessages(friendId){
+  const container=document.getElementById('chatMessages');
+  if(!container)return;
+  container.innerHTML='<div style="text-align:center;padding:20px;color:#64748b;"><div class="spinner-sm"></div></div>';
+  try{
+    const myId=currentUser.studentId;
+    const r=await supabaseClient.from('direct_messages').select('*')
+      .or('and(sender_id.eq.'+myId+',receiver_id.eq.'+friendId+'),and(sender_id.eq.'+friendId+',receiver_id.eq.'+myId+')')
+      .eq('is_deleted',false)
+      .order('created_at',{ascending:true}).limit(200);
+    CHAT_STATE.messages=r.data||[];
+    renderMessages();
+  }catch(e){
+    container.innerHTML='<div class="chat-empty">Error loading messages</div>';
+  }
+}
+
+function renderMessages(){
+  const container=document.getElementById('chatMessages');
+  if(!container)return;
+  if(CHAT_STATE.messages.length===0){
+    container.innerHTML='<div class="chat-empty"><i class="fas fa-comment-dots"></i><div style="font-weight:800;color:#0f172a;font-size:.94rem;">No messages yet</div><div style="font-size:.8rem;">ആദ്യ message അയക്കൂ! 💬</div></div>';
+    return;
+  }
+  let lastDate='';
+  let html='';
+  const isDM=CHAT_STATE.activeChat!=='class';
+  const myId=currentUser.studentId;
+  const avatarMap={};
+  CHAT_STATE.friends.forEach(function(f){avatarMap[f.studentid]=f;});
+
+  CHAT_STATE.messages.forEach(function(m){
+    const msgDate=new Date(m.created_at).toDateString();
+    if(msgDate!==lastDate){
+      lastDate=msgDate;
+      const dateLabel=msgDate===new Date().toDateString()?'Today':
+                      msgDate===new Date(Date.now()-86400000).toDateString()?'Yesterday':
+                      new Date(m.created_at).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+      html+='<div class="chat-date-separator">'+dateLabel+'</div>';
+    }
+    const isMine=(m.sender_id||m.studentid)===myId;
+    const sender=isDM
+      ?(isMine?currentUser:CHAT_STATE.activeFriendData)
+      :(avatarMap[m.sender_id]||{name:m.student_name||'Student',studentid:m.sender_id});
+    const senderName=m.student_name||(sender&&sender.name)||'Student';
+    const initial=(senderName||'S').charAt(0).toUpperCase();
+    const hasPhoto=sender&&sender.photo&&sender.photo.startsWith('http');
+    const avatarHtml=hasPhoto?'<img src="'+sender.photo+'" alt="">':initial;
+    const reactions=m.reactions||{};
+    const reactionsHtml=Object.keys(reactions).length>0?
+      '<div class="chat-msg-reactions">'+
+        Object.keys(reactions).map(function(r){
+          return'<div class="chat-reaction-pill '+(reactions[r].indexOf(myId)>-1?'mine':'')+'" onclick="window.toggleReaction(\''+m.id+'\',\''+r+'\')">'+r+' '+reactions[r].length+'</div>';
+        }).join('')+
+      '</div>':'';
+    html+='<div class="chat-msg '+(isMine?'mine':'other')+'">'+
+      '<div class="chat-msg-avatar" style="background:linear-gradient(140deg,'+(sender&&sender.avatar_color||'#3b8bff')+','+(sender&&sender.avatar_color_2||'#22d3ee')+');">'+avatarHtml+'</div>'+
+      '<div class="chat-msg-bubble-wrap">'+
+        '<div class="chat-msg-sender">'+escapeHtml(senderName)+'</div>'+
+        '<div class="chat-msg-bubble" oncontextmenu="event.preventDefault();window.showReactionMenu(\''+m.id+'\');">'+escapeHtml(m.message)+'</div>'+
+        reactionsHtml+
+        '<div class="chat-msg-time">'+formatChatTime(m.created_at)+'</div>'+
+      '</div>'+
+      (isMine?'<button class="chat-msg-delete-btn" onclick="window.deleteMessage(\''+m.id+'\')"><i class="fas fa-trash"></i></button>':'')+
+    '</div>';
+  });
+  container.innerHTML=html;
+}
+
+window.chatScrollToBottom=function(){
+  const container=document.getElementById('chatMessages');
+  if(container){
+    container.scrollTop=container.scrollHeight;
+    CHAT_STATE.lastMessageTime=Date.now();
+    document.getElementById('chatScrollBtn').classList.remove('show');
+  }
+};
+
+window.chatRefresh=function(){
+  if(CHAT_STATE.activeChat==='class')loadClassMessages();
+  else loadDirectMessages(CHAT_STATE.activeChat);
+  showToast('🔄 Refreshed','info');
+};
+
+window.sendChatMessage=async function(){
+  const input=document.getElementById('chatInput');
+  if(!input)return;
+  const text=input.value.trim();
+  if(!text||!currentUser)return;
+  input.value='';
+  input.style.height='auto';
+  document.getElementById('chatSendBtn').disabled=true;
+  try{
+    if(CHAT_STATE.activeChat==='class'){
+      const cls=String(currentUser?currentUser.class:'');
+      const r=await supabaseClient.from('class_messages').insert({
+        class:cls,studentid:currentUser.studentId,
+        student_name:currentUser.name,message:text,message_type:'text'
+      });
+      if(r.error)throw r.error;
+    }else{
+      const r=await supabaseClient.from('direct_messages').insert({
+        sender_id:currentUser.studentId,
+        receiver_id:CHAT_STATE.activeChat,
+        message:text,message_type:'text'
+      });
+      if(r.error)throw r.error;
+    }
+    if(navigator.vibrate)navigator.vibrate(8);
+  }catch(e){showToast('❌ '+e.message,'error');}
+};
+
+function subscribeToClassMessages(){
+  if(CHAT_STATE.channel){try{supabaseClient.removeChannel(CHAT_STATE.channel);}catch(e){}}
+  const cls=String(currentUser?currentUser.class:'');
+  CHAT_STATE.channel=supabaseClient.channel('class_chat_'+cls)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'class_messages',filter:'class=eq.'+cls},function(payload){
+      const msg=payload.new;
+      if(!msg||msg.is_deleted)return;
+      if(CHAT_STATE.messages.some(function(m){return m.id===msg.id;}))return;
+      CHAT_STATE.messages.push(msg);
+      renderMessages();
+      const container=document.getElementById('chatMessages');
+      if(container){
+        const nearBottom=container.scrollHeight-container.scrollTop-container.clientHeight<150;
+        if(nearBottom)chatScrollToBottom();
+        else document.getElementById('chatScrollBtn').classList.add('show');
+      }
+      if(typeof playSound==='function')playSound('tap');
+    })
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'class_messages'},function(){loadClassMessages();})
+    .subscribe();
+}
+
+function subscribeToDirectMessages(friendId){
+  if(CHAT_STATE.dmChannel){try{supabaseClient.removeChannel(CHAT_STATE.dmChannel);}catch(e){}}
+  const myId=currentUser.studentId;
+  CHAT_STATE.dmChannel=supabaseClient.channel('dm_'+myId+'_'+friendId)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'direct_messages'},function(payload){
+      const msg=payload.new;
+      if(!msg)return;
+      const relevant=(msg.sender_id===myId&&msg.receiver_id===friendId)||(msg.sender_id===friendId&&msg.receiver_id===myId);
+      if(!relevant)return;
+      if(CHAT_STATE.messages.some(function(m){return m.id===msg.id;}))return;
+      CHAT_STATE.messages.push(msg);
+      renderMessages();
+      chatScrollToBottom();
+      if(msg.receiver_id===myId)markMessagesRead(friendId);
+    }).subscribe();
+}
+
+async function markMessagesRead(friendId){
+  if(!currentUser)return;
+  try{
+    await supabaseClient.from('direct_messages').update({is_read:true})
+      .eq('sender_id',friendId).eq('receiver_id',currentUser.studentId).eq('is_read',false);
+  }catch(e){}
+}
+
+window.showReactionMenu=function(msgId){
+  const emojis=['❤️','😂','👍','😮','😢','🎉'];
+  const choice=prompt('React with:\n1. ❤️  2. 😂  3. 👍  4. 😮  5. 😢  6. 🎉\n\nType number (1-6):');
+  const idx=parseInt(choice)-1;
+  if(idx>=0&&idx<emojis.length)toggleReaction(msgId,emojis[idx]);
+};
+
+window.toggleReaction=async function(msgId,emoji){
+  if(!currentUser)return;
+  const msg=CHAT_STATE.messages.find(function(m){return String(m.id)===String(msgId);});
+  if(!msg)return;
+  const reactions=msg.reactions||{};
+  if(!reactions[emoji])reactions[emoji]=[];
+  const myId=currentUser.studentId;
+  const idx=reactions[emoji].indexOf(myId);
+  if(idx>-1)reactions[emoji].splice(idx,1);
+  else reactions[emoji].push(myId);
+  if(reactions[emoji].length===0)delete reactions[emoji];
+  const table=CHAT_STATE.activeChat==='class'?'class_messages':'direct_messages';
+  try{
+    await supabaseClient.from(table).update({reactions:reactions}).eq('id',msgId);
+    msg.reactions=reactions;
+    renderMessages();
+  }catch(e){}
+};
+
+window.deleteMessage=async function(msgId){
+  if(!confirm('Delete this message?'))return;
+  const table=CHAT_STATE.activeChat==='class'?'class_messages':'direct_messages';
+  try{
+    await supabaseClient.from(table).update({is_deleted:true}).eq('id',msgId);
+    CHAT_STATE.messages=CHAT_STATE.messages.filter(function(m){return String(m.id)!==String(msgId);});
+    renderMessages();
+    showToast('🗑️ Deleted','info');
+  }catch(e){showToast('❌ '+e.message,'error');}
+};
+
+window.openAddFriendModal=function(){
+  document.getElementById('addFriendModal').classList.add('open');
+  document.getElementById('addFriendInput').value='';
+  document.getElementById('addFriendResult').className='add-friend-result';
+  setTimeout(function(){document.getElementById('addFriendInput').focus();},200);
+};
+
+window.closeAddFriendModal=function(){
+  document.getElementById('addFriendModal').classList.remove('open');
+};
+
+window.sendFriendRequest=async function(){
+  const input=document.getElementById('addFriendInput');
+  const result=document.getElementById('addFriendResult');
+  const targetId=input.value.trim().toUpperCase();
+  if(!targetId){
+    result.className='add-friend-result show error';
+    result.textContent='❌ Student ID നൽകുക';
+    return;
+  }
+  if(targetId===currentUser.studentId){
+    result.className='add-friend-result show error';
+    result.textContent='❌ സ്വന്തം ID ആണ്!';
+    return;
+  }
+  try{
+    const sr=await supabaseClient.from('students').select('studentid, name, class').eq('studentid',targetId).maybeSingle();
+    if(!sr.data){
+      result.className='add-friend-result show error';
+      result.textContent='❌ Student ID കണ്ടെത്തിയില്ല';
+      return;
+    }
+    const existing=await supabaseClient.from('friendships').select('*')
+      .or('and(student_a.eq.'+currentUser.studentId+',student_b.eq.'+targetId+'),and(student_a.eq.'+targetId+',student_b.eq.'+currentUser.studentId+')')
+      .maybeSingle();
+    if(existing.data){
+      result.className='add-friend-result show error';
+      if(existing.data.status==='accepted')result.textContent='✅ Already friends!';
+      else if(existing.data.requested_by===currentUser.studentId)result.textContent='⏳ Request already sent';
+      else result.textContent='✅ This student sent you a request';
+      return;
+    }
+    const a=currentUser.studentId<targetId?currentUser.studentId:targetId;
+    const b=currentUser.studentId<targetId?targetId:currentUser.studentId;
+    const r=await supabaseClient.from('friendships').insert({
+      student_a:a,student_b:b,status:'pending',requested_by:currentUser.studentId
+    });
+    if(r.error)throw r.error;
+    result.className='add-friend-result show success';
+    result.textContent='✅ Request sent to '+sr.data.name+'!';
+    if(typeof confetti!=='undefined')confetti({particleCount:60,spread:60,origin:{y:.7}});
+    input.value='';
+  }catch(e){
+    result.className='add-friend-result show error';
+    result.textContent='❌ '+e.message;
+  }
+};
+
+window.acceptFriend=async function(friendshipId){
+  try{
+    await supabaseClient.from('friendships').update({status:'accepted',accepted_at:new Date().toISOString()}).eq('id',friendshipId);
+    showToast('✅ Friend added!','success');
+    await loadFriendRequests();
+    await loadFriendsList();
+    renderSidebar();
+    if(typeof confetti!=='undefined')confetti({particleCount:80,spread:70,origin:{y:.7}});
+  }catch(e){showToast('❌ '+e.message,'error');}
+};
+
+window.rejectFriend=async function(friendshipId){
+  try{
+    await supabaseClient.from('friendships').delete().eq('id',friendshipId);
+    showToast('Rejected','info');
+    await loadFriendRequests();
+    renderSidebar();
+  }catch(e){showToast('❌ '+e.message,'error');}
+};
+
+function updateChatFabBadge(){
+  const badge=document.getElementById('chatFabBadge');
+  if(!badge)return;
+  const total=CHAT_STATE.requests.length;
+  if(total>0){badge.textContent=total>9?'9+':total;badge.classList.add('show');}
+  else badge.classList.remove('show');
+}
+
+async function pollChatBadges(){
+  if(!currentUser)return;
+  try{
+    const r=await supabaseClient.from('friendships').select('id')
+      .or('student_a.eq.'+currentUser.studentId+',student_b.eq.'+currentUser.studentId)
+      .eq('status','pending').neq('requested_by',currentUser.studentId);
+    CHAT_STATE.requests=r.data||[];
+    updateChatFabBadge();
+  }catch(e){}
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.5 XP + STREAK + MISSIONS + TASBEEH                            */
+/* ═══════════════════════════════════════════════════════════════ */
+window.KIDS_STATE={
+  xp:0,level:1,totalEarned:0,streak:0,longestStreak:0,
+  missions:[],missionsDone:[],tasbeehCount:0,lastDhikr:'subhanallah'
+};
+
+function xpForLevel(level){return level*100;}
+function totalXPForLevel(level){return (level*(level+1)/2)*100;}
+function levelFromTotalXP(totalXP){
+  let lvl=1;
+  while(totalXPForLevel(lvl+1)<=totalXP)lvl++;
+  return lvl;
+}
+function xpProgressForLevel(totalXP){
+  const lvl=levelFromTotalXP(totalXP);
+  const start=totalXPForLevel(lvl);
+  const end=totalXPForLevel(lvl+1);
+  const current=totalXP-start;
+  const needed=end-start;
+  return{current,needed,percent:Math.min(100,Math.round(current/needed*100))};
+}
+
+const RANKS=[
+  {min:1,max:5,name:'🌱 New Learner'},
+  {min:6,max:10,name:'📚 Student'},
+  {min:11,max:20,name:'⭐ Star Pupil'},
+  {min:21,max:30,name:'🎓 Scholar'},
+  {min:31,max:50,name:'🏆 Champion'},
+  {min:51,max:100,name:'👑 Master'},
+  {min:101,max:999,name:'💎 Legendary'}
+];
+function getRankName(level){
+  for(var i=0;i<RANKS.length;i++){
+    if(level>=RANKS[i].min&&level<=RANKS[i].max)return RANKS[i].name;
+  }
+  return'💎 Legendary';
+}
+
+function showXPPopup(amount,reason){
+  var popup=document.createElement('div');
+  popup.className='xp-popup';
+  popup.innerHTML='<span>✨ +'+amount+' XP</span><small style="font-weight:600;font-size:.7rem;opacity:.85;">'+(reason||'')+'</small>';
+  document.body.appendChild(popup);
+  setTimeout(function(){popup.remove();},2500);
+}
+
+window.closeLevelupPopup=function(){
+  document.getElementById('levelupPopup').classList.remove('open');
+};
+
+function showLevelUpPopup(newLevel){
+  document.getElementById('levelupNumber').textContent=newLevel;
+  document.getElementById('levelupSub').textContent='നിങ്ങൾ Level '+newLevel+' — '+getRankName(newLevel)+' ൽ എത്തി!';
+  document.getElementById('levelupPopup').classList.add('open');
+  if(typeof confetti!=='undefined'){
+    confetti({particleCount:250,spread:120,origin:{y:.5},colors:['#667eea','#764ba2','#fbbf24','#fcd34d','#34d399']});
+  }
+  setTimeout(function(){
+    var p=document.getElementById('levelupPopup');
+    if(p.classList.contains('open'))p.classList.remove('open');
+  },6000);
+}
+
+window.loadStudentXP=async function(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    var r=await supabaseClient.from('student_xp').select('*').eq('studentid',currentUser.studentId).maybeSingle();
+    if(r.data){
+      window.KIDS_STATE.xp=r.data.xp||0;
+      window.KIDS_STATE.level=r.data.level||1;
+      window.KIDS_STATE.totalEarned=r.data.total_earned||0;
+    }else{
+      await supabaseClient.from('student_xp').insert({studentid:currentUser.studentId,xp:0,level:1,total_earned:0});
+    }
+    renderXPWidget();
+  }catch(e){console.warn('loadStudentXP:',e);}
+};
+
+window.awardXP=async function(amount,reason){
+  if(!supabaseClient||!currentUser||!amount)return;
+  try{
+    var currentTotal=window.KIDS_STATE.totalEarned||0;
+    var newTotal=currentTotal+amount;
+    var oldLevel=levelFromTotalXP(currentTotal);
+    var newLevel=levelFromTotalXP(newTotal);
+    var progress=xpProgressForLevel(newTotal);
+    var r=await supabaseClient.from('student_xp').upsert({
+      studentid:currentUser.studentId,
+      xp:progress.current,level:newLevel,total_earned:newTotal,
+      last_earned_at:new Date().toISOString(),
+      updated_at:new Date().toISOString()
+    },{onConflict:'studentid'});
+    if(r.error)throw r.error;
+    window.KIDS_STATE.xp=progress.current;
+    window.KIDS_STATE.level=newLevel;
+    window.KIDS_STATE.totalEarned=newTotal;
+    renderXPWidget();
+    showXPPopup(amount,reason);
+    if(newLevel>oldLevel){
+      setTimeout(function(){showLevelUpPopup(newLevel);},800);
+      await checkAndUnlockStickers();
+    }
+  }catch(e){console.warn('awardXP error:',e);}
+};
+
+function injectWidgetToDashboard(widget,position){
+  var dash=document.getElementById('dashboardSection');
+  if(!dash)return;
+  var container=dash.querySelector('.container');
+  if(!container)return;
+  if(widget.parentNode)return;
+  var header=container.querySelector('.dashboard-header-glow');
+  if(!header)return;
+  if(position===1)header.insertAdjacentElement('afterend',widget);
+  else if(position===2){
+    var xp=document.getElementById('xpWidget');
+    if(xp)xp.insertAdjacentElement('afterend',widget);
+    else header.insertAdjacentElement('afterend',widget);
+  }else if(position===3){
+    var streak=document.getElementById('streakWidget');
+    if(streak)streak.insertAdjacentElement('afterend',widget);
+    else header.insertAdjacentElement('afterend',widget);
+  }else{
+    var missions=document.getElementById('missionsWidget');
+    if(missions)missions.insertAdjacentElement('afterend',widget);
+    else header.insertAdjacentElement('afterend',widget);
+  }
+}
+
+window.renderXPWidget=function(){
+  var widget=document.getElementById('xpWidget');
+  if(!widget){
+    widget=document.createElement('div');
+    widget.id='xpWidget';
+    widget.className='xp-widget';
+    injectWidgetToDashboard(widget,1);
+  }
+  var progress=xpProgressForLevel(window.KIDS_STATE.totalEarned||0);
+  var lvl=window.KIDS_STATE.level||1;
+  var rank=getRankName(lvl);
+  var name=currentUser&&currentUser.name?currentUser.name.split(' ')[0]:'Student';
+  widget.innerHTML=
+    '<div class="xp-header">'+
+      '<div class="xp-level-badge"><div class="lvl-num">'+lvl+'</div><div class="lvl-label">LEVEL</div></div>'+
+      '<div class="xp-info"><div class="xp-title">'+escapeHtml(name)+'</div><div class="xp-rank-name">'+rank+'</div></div>'+
+    '</div>'+
+    '<div class="xp-progress-wrap"><div class="xp-progress-bar" style="width:'+progress.percent+'%;"></div></div>'+
+    '<div class="xp-numbers"><span>⭐ '+progress.current+' / '+progress.needed+' XP</span><span>Total: '+(window.KIDS_STATE.totalEarned||0)+'</span></div>';
+};
+
+window.loadAndUpdateStreak=async function(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    var today=new Date().toISOString().split('T')[0];
+    var r=await supabaseClient.from('student_streaks').select('*').eq('studentid',currentUser.studentId).maybeSingle();
+    var streak=0,longest=0,lastDate=null,totalDays=0;
+    if(r.data){
+      streak=r.data.current_streak||0;
+      longest=r.data.longest_streak||0;
+      lastDate=r.data.last_login_date;
+      totalDays=r.data.total_days||0;
+      if(lastDate===today){}
+      else{
+        var yesterday=new Date();
+        yesterday.setDate(yesterday.getDate()-1);
+        var yStr=yesterday.toISOString().split('T')[0];
+        if(lastDate===yStr){streak+=1;totalDays+=1;}
+        else{streak=1;totalDays+=1;}
+        if(streak>longest)longest=streak;
+        await supabaseClient.from('student_streaks').update({
+          current_streak:streak,longest_streak:longest,
+          last_login_date:today,total_days:totalDays,
+          updated_at:new Date().toISOString()
+        }).eq('studentid',currentUser.studentId);
+        await awardXP(5,'Daily login');
+        if(streak===7)await awardXP(50,'🔥 7-day streak!');
+        if(streak===30)await awardXP(200,'🔥 30-day streak!');
+        if(streak===100)await awardXP(500,'🔥 100-day streak!');
+      }
+    }else{
+      streak=1;longest=1;totalDays=1;
+      await supabaseClient.from('student_streaks').insert({
+        studentid:currentUser.studentId,current_streak:1,
+        longest_streak:1,last_login_date:today,total_days:1
+      });
+      await awardXP(5,'Welcome!');
+    }
+    window.KIDS_STATE.streak=streak;
+    window.KIDS_STATE.longestStreak=longest;
+    renderStreakWidget();
+  }catch(e){console.warn('streak error:',e);}
+};
+
+window.renderStreakWidget=function(){
+  var widget=document.getElementById('streakWidget');
+  if(!widget){
+    widget=document.createElement('div');
+    widget.id='streakWidget';
+    widget.className='streak-widget';
+    injectWidgetToDashboard(widget,2);
+  }
+  var streak=window.KIDS_STATE.streak||0;
+  var longest=window.KIDS_STATE.longestStreak||0;
+  var subtext='';
+  if(streak>=100)subtext='💎 LEGENDARY! 100+ days!';
+  else if(streak>=30)subtext='🏆 Amazing! 30+ days!';
+  else if(streak>=7)subtext='🔥 You are on fire!';
+  else if(streak>=3)subtext='⭐ Keep going!';
+  else subtext='🌟 ഇന്നും login ചെയ്തു!';
+  widget.innerHTML=
+    '<div class="streak-fire">🔥</div>'+
+    '<div class="streak-info">'+
+      '<div class="streak-count">'+streak+'<small>days</small></div>'+
+      '<div class="streak-label">'+subtext+'</div>'+
+    '</div>'+
+    '<div class="streak-best">Best: '+longest+'</div>';
+};
+
+window.loadMissions=async function(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    var r=await supabaseClient.from('daily_missions').select('*').eq('is_active',true).order('xp_reward',{ascending:false});
+    var today=new Date().toISOString().split('T')[0];
+    var m=await supabaseClient.from('student_missions').select('*').eq('studentid',currentUser.studentId).eq('mission_date',today);
+    var doneKeys=(m.data||[]).map(function(x){return x.mission_key;});
+    window.KIDS_STATE.missions=r.data||[];
+    window.KIDS_STATE.missionsDone=doneKeys;
+    renderMissionsWidget();
+  }catch(e){console.warn('missions error:',e);}
+};
+
+window.completeMission=async function(missionKey){
+  if(!supabaseClient||!currentUser)return;
+  if(window.KIDS_STATE.missionsDone.indexOf(missionKey)>-1){
+    showToast('✅ ഇത് already പൂർത്തിയായി!','info');
+    return;
+  }
+  var mission=window.KIDS_STATE.missions.find(function(m){return m.mission_key===missionKey;});
+  if(!mission)return;
+  try{
+    await supabaseClient.from('student_missions').insert({
+      studentid:currentUser.studentId,
+      mission_key:missionKey,completed:true,
+      completed_at:new Date().toISOString()
+    });
+    window.KIDS_STATE.missionsDone.push(missionKey);
+    await awardXP(mission.xp_reward,mission.title);
+    renderMissionsWidget();
+    if(typeof confetti!=='undefined')confetti({particleCount:60,spread:60,origin:{y:.7}});
+    showToast('✅ Mission complete! +'+mission.xp_reward+' XP','success');
+  }catch(e){showToast('❌ '+e.message,'error');}
+};
+
+window.renderMissionsWidget=function(){
+  var widget=document.getElementById('missionsWidget');
+  if(!widget){
+    widget=document.createElement('div');
+    widget.id='missionsWidget';
+    widget.className='missions-widget';
+    injectWidgetToDashboard(widget,3);
+  }
+  var total=window.KIDS_STATE.missions.length;
+  var done=window.KIDS_STATE.missionsDone.length;
+  var html='<div class="missions-header"><h5><i class="fas fa-tasks"></i> Daily Missions</h5><span class="missions-progress">'+done+'/'+total+'</span></div>';
+  window.KIDS_STATE.missions.forEach(function(m){
+    var isDone=window.KIDS_STATE.missionsDone.indexOf(m.mission_key)>-1;
+    html+='<div class="mission-item '+(isDone?'done':'')+'" onclick="'+(isDone?'':'completeMission(\''+m.mission_key+'\')')+'">'+
+      '<div class="mission-icon">'+(m.icon||'🎯')+'</div>'+
+      '<div class="mission-info"><div class="mission-title">'+escapeHtml(m.title)+'</div><div class="mission-desc">'+escapeHtml(m.description||'')+'</div></div>'+
+      '<div class="mission-xp">+'+m.xp_reward+'</div>'+
+      '<div class="mission-check">'+(isDone?'✓':'')+'</div>'+
+    '</div>';
+  });
+  widget.innerHTML=html;
+};
+
+const DHIKR_TYPES={
+  subhanallah:'سُبْحَانَ اللَّهِ',
+  alhamdulillah:'الْحَمْدُ لِلَّهِ',
+  allahuakbar:'اللَّهُ أَكْبَرُ',
+  lailaha:'لَا إِلَٰهَ إِلَّا اللَّهُ',
+  astaghfirullah:'أَسْتَغْفِرُ اللَّهَ'
+};
+
+window.tasbeehTap=async function(){
+  window.KIDS_STATE.tasbeehCount++;
+  var el=document.getElementById('tasbeehCount');
+  if(el){
+    el.textContent=window.KIDS_STATE.tasbeehCount;
+    el.classList.remove('pop');
+    void el.offsetWidth;
+    el.classList.add('pop');
+  }
+  if(navigator.vibrate)navigator.vibrate(10);
+  if(window.KIDS_STATE.tasbeehCount%10===0){
+    try{
+      var today=new Date().toISOString().split('T')[0];
+      await supabaseClient.from('tasbeeh_log').upsert({
+        studentid:currentUser.studentId,
+        dhikr_type:window.KIDS_STATE.lastDhikr,
+        count:window.KIDS_STATE.tasbeehCount,log_date:today
+      },{onConflict:'studentid,dhikr_type,log_date'});
+    }catch(e){}
+  }
+  if(window.KIDS_STATE.tasbeehCount===100){
+    await awardXP(25,'100 Tasbeeh!');
+    if(typeof confetti!=='undefined')confetti({particleCount:80,spread:70,origin:{y:.6}});
+  }
+};
+
+window.tasbeehReset=function(){
+  if(!confirm('Reset counter?'))return;
+  window.KIDS_STATE.tasbeehCount=0;
+  var el=document.getElementById('tasbeehCount');
+  if(el)el.textContent='0';
+};
+
+window.tasbeehChangeDhikr=function(type){
+  window.KIDS_STATE.lastDhikr=type;
+  window.KIDS_STATE.tasbeehCount=0;
+  var el=document.getElementById('tasbeehDhikr');
+  if(el)el.textContent=DHIKR_TYPES[type]||type;
+  var cEl=document.getElementById('tasbeehCount');
+  if(cEl)cEl.textContent='0';
+};
+
+window.renderTasbeehWidget=function(){
+  var widget=document.getElementById('tasbeehWidget');
+  if(!widget){
+    widget=document.createElement('div');
+    widget.id='tasbeehWidget';
+    widget.className='tasbeeh-widget';
+    injectWidgetToDashboard(widget,4);
+  }
+  widget.innerHTML=
+    '<div class="tasbeeh-title">📿 Tasbeeh Counter</div>'+
+    '<div class="tasbeeh-dhikr" id="tasbeehDhikr">'+(DHIKR_TYPES[window.KIDS_STATE.lastDhikr]||'سُبْحَانَ اللَّهِ')+'</div>'+
+    '<div class="tasbeeh-count" id="tasbeehCount">'+window.KIDS_STATE.tasbeehCount+'</div>'+
+    '<button class="tasbeeh-tap-btn" onclick="tasbeehTap()">📿</button>'+
+    '<div class="tasbeeh-row">'+
+      '<button class="tasbeeh-mini-btn" onclick="tasbeehChangeDhikr(\'subhanallah\')">Subhan</button>'+
+      '<button class="tasbeeh-mini-btn" onclick="tasbeehChangeDhikr(\'alhamdulillah\')">Alhamd</button>'+
+      '<button class="tasbeeh-mini-btn" onclick="tasbeehChangeDhikr(\'allahuakbar\')">Akbar</button>'+
+      '<button class="tasbeeh-mini-btn" onclick="tasbeehReset()">Reset</button>'+
+    '</div>';
+};
+
+function addQuickActionTiles(){
+  var grid=document.getElementById('quickActionsGrid');
+  if(!grid)return;
+  if(grid.querySelector('[data-action="quiz"]'))return;
+  var newTiles=[
+    {action:'quiz',icon:'🎯',label:'Quiz',color:'linear-gradient(145deg,#667eea,#764ba2)',onclick:'openQuizModal()'},
+    {action:'rewards',icon:'🎁',label:'Rewards',color:'linear-gradient(145deg,#fbbf24,#f59e0b)',onclick:'openRewardsModal()'},
+    {action:'avatar_custom',icon:'🎨',label:'Avatar',color:'linear-gradient(145deg,#a855f7,#ec4899)',onclick:'window.openAvatarCustomizer()'},
+    {action:'class_chat',icon:'💬',label:'Chat',color:'linear-gradient(145deg,#22c55e,#10b981)',onclick:'window.openChatPanel()'}
+  ];
+  newTiles.forEach(function(t){
+    var div=document.createElement('div');
+    div.className='action-tile';
+    div.dataset.action=t.action;
+    div.onclick=new Function(t.onclick);
+    div.innerHTML='<div class="action-ico" style="background:'+t.color+'"><span style="font-size:1.3rem;">'+t.icon+'</span></div><h6>'+t.label+'</h6>';
+    grid.appendChild(div);
+  });
+}
+
+window.checkAndUnlockStickers=async function(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    var earned=[];
+    if(window.KIDS_STATE.streak>=7)earned.push('fire_1');
+    if(window.KIDS_STATE.totalEarned>=1000)earned.push('diamond_1');
+    if(window.KIDS_STATE.level>=5)earned.push('star_1');
+    var rank=currentUser.rank;
+    if(rank===1)earned.push('crown_1');
+    if(rank&&rank<=3)earned.push('trophy_1');
+    for(var i=0;i<earned.length;i++){
+      try{
+        await supabaseClient.from('student_stickers').insert({
+          studentid:currentUser.studentId,sticker_key:earned[i]
+        });
+      }catch(e){}
+    }
+  }catch(e){console.warn('stickers error:',e);}
+};
+
+async function initKidsPack(){
+  if(!currentUser||!supabaseClient)return;
+  await loadStudentXP();
+  await loadAndUpdateStreak();
+  await loadMissions();
+  renderTasbeehWidget();
+  addQuickActionTiles();
+  await checkAndUnlockStickers();
+  setTimeout(function(){completeMission('daily_login');},1500);
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.6 QUIZ + REWARDS                                              */
+/* ═══════════════════════════════════════════════════════════════ */
+var quizState={questions:[],current:0,score:0,startTime:0,answers:[]};
+
+function getWeekKey(){
+  var d=new Date();
+  var year=d.getFullYear();
+  var start=new Date(year,0,1);
+  var days=Math.floor((d-start)/(1000*60*60*24));
+  var week=Math.ceil((days+start.getDay()+1)/7);
+  return year+'-W'+String(week).padStart(2,'0');
+}
+
+window.openQuizModal=async function(){
+  document.getElementById('quizModal').classList.add('open');
+  var body=document.getElementById('quizBody');
+  body.innerHTML='<div style="text-align:center;padding:40px;"><div class="spinner-sm" style="width:32px;height:32px;border-width:3px;border-top-color:#667eea;"></div><p style="margin-top:14px;color:#64748b;">Loading quiz...</p></div>';
+  try{
+    var weekKey=getWeekKey();
+    var prev=await supabaseClient.from('quiz_attempts').select('*').eq('studentid',currentUser.studentId).eq('week_year',weekKey).maybeSingle();
+    if(prev.data){
+      body.innerHTML=
+        '<div class="quiz-header">'+
+          '<div class="quiz-header-icon">✅</div>'+
+          '<h2 class="quiz-title">Already Completed!</h2>'+
+          '<p class="quiz-sub">ഈ ആഴ്ചത്തെ quiz ഇതിനകം ചെയ്തു</p>'+
+        '</div>'+
+        '<div class="quiz-result">'+
+          '<div class="quiz-result-emoji">🏆</div>'+
+          '<div class="quiz-result-score">'+prev.data.score+'/'+prev.data.total+'</div>'+
+          '<div class="quiz-result-label">Score from this week</div>'+
+          '<p style="font-size:.82rem;color:#64748b;">അടുത്ത ആഴ്ച വീണ്ടും വരൂ!</p>'+
+        '</div>'+
+        '<div style="text-align:center;margin-top:20px;">'+
+          '<button onclick="closeQuizModal()" class="btn-cancel" style="padding:12px 30px;border-radius:60px;">Close</button>'+
+        '</div>';
+      return;
+    }
+    var r=await supabaseClient.from('quiz_questions').select('*').eq('is_active',true).limit(50);
+    var allQ=r.data||[];
+    if(allQ.length<5){
+      body.innerHTML='<div style="text-align:center;padding:30px;">Not enough questions available.</div>';
+      return;
+    }
+    var shuffled=allQ.sort(function(){return Math.random()-0.5;}).slice(0,5);
+    quizState={questions:shuffled,current:0,score:0,startTime:Date.now(),answers:[]};
+    renderQuizQuestion();
+  }catch(e){
+    body.innerHTML='<div style="text-align:center;padding:30px;color:#dc2626;">Error: '+e.message+'</div>';
+  }
+};
+
+window.closeQuizModal=function(){
+  document.getElementById('quizModal').classList.remove('open');
+};
+
+function renderQuizQuestion(){
+  var body=document.getElementById('quizBody');
+  var q=quizState.questions[quizState.current];
+  var num=quizState.current+1;
+  var total=quizState.questions.length;
+  var pct=(quizState.current/total)*100;
+  var options=[{letter:'A',text:q.option_a},{letter:'B',text:q.option_b}];
+  if(q.option_c)options.push({letter:'C',text:q.option_c});
+  if(q.option_d)options.push({letter:'D',text:q.option_d});
+  body.innerHTML=
+    '<div class="quiz-progress-row"><span class="num">'+num+'/'+total+'</span><div class="bar"><div style="width:'+pct+'%;"></div></div></div>'+
+    '<div class="quiz-question"><p class="q-text">'+escapeHtml(q.question)+'</p></div>'+
+    '<div class="quiz-options" id="quizOptions">'+
+      options.map(function(o){
+        return'<button class="quiz-option" data-answer="'+o.letter+'" onclick="answerQuiz(\''+o.letter+'\')"><span class="opt-letter">'+o.letter+'</span><span>'+escapeHtml(o.text)+'</span></button>';
+      }).join('')+
+    '</div>';
+}
+
+window.answerQuiz=function(letter){
+  var q=quizState.questions[quizState.current];
+  var isCorrect=letter===q.correct_answer;
+  if(isCorrect)quizState.score++;
+  quizState.answers.push({q:q.id,answer:letter,correct:isCorrect});
+  document.querySelectorAll('#quizOptions .quiz-option').forEach(function(btn){
+    btn.classList.add('disabled');
+    var ans=btn.dataset.answer;
+    if(ans===q.correct_answer)btn.classList.add('correct');
+    else if(ans===letter&&!isCorrect)btn.classList.add('wrong');
+  });
+  if(isCorrect){
+    if(typeof confetti!=='undefined')confetti({particleCount:30,spread:50,origin:{y:.7},colors:['#34d399','#10b981']});
+  }else{
+    if(navigator.vibrate)navigator.vibrate(100);
+  }
+  setTimeout(function(){
+    quizState.current++;
+    if(quizState.current<quizState.questions.length)renderQuizQuestion();
+    else finishQuiz();
+  },1200);
+};
+
+async function finishQuiz(){
+  var body=document.getElementById('quizBody');
+  var total=quizState.questions.length;
+  var score=quizState.score;
+  var timeTaken=Math.round((Date.now()-quizState.startTime)/1000);
+  var pct=Math.round(score/total*100);
+  var emoji,message,xpEarned;
+  if(pct===100){emoji='🏆';message='PERFECT! Amazing!';xpEarned=50;}
+  else if(pct>=80){emoji='🌟';message='Excellent!';xpEarned=35;}
+  else if(pct>=60){emoji='👍';message='Good job!';xpEarned=20;}
+  else if(pct>=40){emoji='💪';message='Keep trying!';xpEarned=10;}
+  else{emoji='📚';message='Study more!';xpEarned=5;}
+  try{
+    await supabaseClient.from('quiz_attempts').insert({
+      studentid:currentUser.studentId,week_year:getWeekKey(),
+      score:score,total:total,time_taken:timeTaken,answers:quizState.answers
+    });
+    await awardXP(xpEarned,'Quiz: '+score+'/'+total);
+  }catch(e){console.warn(e);}
+  body.innerHTML=
+    '<div class="quiz-result">'+
+      '<div class="quiz-result-emoji">'+emoji+'</div>'+
+      '<div class="quiz-result-score">'+score+'/'+total+'</div>'+
+      '<div class="quiz-result-label">'+message+' • '+pct+'%</div>'+
+      '<div class="quiz-xp-earned">✨ +'+xpEarned+' XP earned!</div>'+
+      '<div style="display:flex;gap:10px;justify-content:center;">'+
+        '<button onclick="closeQuizModal()" class="btn-cancel" style="padding:12px 30px;border-radius:60px;">Close</button>'+
+      '</div>'+
+    '</div>';
+  if(pct>=80&&typeof confetti!=='undefined'){
+    confetti({particleCount:200,spread:100,origin:{y:.5}});
+  }
+}
+
+window.openRewardsModal=async function(){
+  document.getElementById('rewardsModal').classList.add('open');
+  var grid=document.getElementById('rewardsGrid');
+  grid.innerHTML='<div style="text-align:center;padding:30px;color:#64748b;"><div class="spinner-sm"></div></div>';
+  try{
+    var r=await supabaseClient.from('rewards_store').select('*').eq('is_active',true).order('cost');
+    var rewards=r.data||[];
+    grid.innerHTML=rewards.map(function(rw){
+      var canAfford=(window.KIDS_STATE.totalEarned||0)>=rw.cost;
+      return'<div class="reward-card">'+
+        '<span class="reward-icon">'+rw.icon+'</span>'+
+        '<h4 class="reward-title">'+escapeHtml(rw.title)+'</h4>'+
+        '<p class="reward-desc">'+escapeHtml(rw.description||'')+'</p>'+
+        '<div class="reward-cost">⭐ '+rw.cost+' XP</div>'+
+        '<button class="reward-redeem-btn" onclick="redeemReward('+rw.id+','+rw.cost+',\''+escapeHtml(rw.title).replace(/'/g,"\\'")+'\')" '+(canAfford?'':'disabled')+'>'+(canAfford?'Redeem':'Not enough XP')+'</button>'+
+      '</div>';
+    }).join('');
+  }catch(e){
+    grid.innerHTML='<div style="text-align:center;padding:20px;color:#dc2626;">Error loading rewards</div>';
+  }
+};
+
+window.closeRewardsModal=function(){
+  document.getElementById('rewardsModal').classList.remove('open');
+};
+
+window.redeemReward=async function(rewardId,cost,title){
+  if(!confirm('🎁 "'+title+'" redeem ചെയ്യണോ?\n\n'+cost+' XP ചെലവാകും.'))return;
+  if((window.KIDS_STATE.totalEarned||0)<cost){showToast('⚠️ XP കുറവാണ്!','error');return;}
+  try{
+    var newTotal=window.KIDS_STATE.totalEarned-cost;
+    var newLevel=levelFromTotalXP(newTotal);
+    var progress=xpProgressForLevel(newTotal);
+    await supabaseClient.from('student_xp').update({
+      xp:progress.current,level:newLevel,
+      total_earned:newTotal,updated_at:new Date().toISOString()
+    }).eq('studentid',currentUser.studentId);
+    await supabaseClient.from('student_redemptions').insert({
+      studentid:currentUser.studentId,reward_id:rewardId,status:'pending'
+    });
+    window.KIDS_STATE.totalEarned=newTotal;
+    window.KIDS_STATE.level=newLevel;
+    window.KIDS_STATE.xp=progress.current;
+    renderXPWidget();
+    closeRewardsModal();
+    showToast('🎉 "'+title+'" redeem ചെയ്തു!','success');
+    if(typeof confetti!=='undefined')confetti({particleCount:150,spread:100,origin:{y:.6}});
+  }catch(e){showToast('❌ '+e.message,'error');}
+};
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.7 SOUND EFFECTS                                               */
+/* ═══════════════════════════════════════════════════════════════ */
+window.playSound=function(type){
+  if(localStorage.getItem('sound_enabled')==='false')return;
+  try{
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    var osc=ctx.createOscillator();
+    var gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    var configs={
+      success:{freq:[523,659,784],time:.15,dur:.1},
+      error:{freq:[300,200],time:.2,dur:.15},
+      levelup:{freq:[523,659,784,1046],time:.1,dur:.15},
+      tap:{freq:[800],time:.05,dur:.05}
+    };
+    var cfg=configs[type]||configs.tap;
+    cfg.freq.forEach(function(f,i){osc.frequency.setValueAtTime(f,ctx.currentTime+i*cfg.time);});
+    gain.gain.setValueAtTime(0.15,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+cfg.dur*cfg.freq.length);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime+cfg.dur*cfg.freq.length+0.05);
+  }catch(e){}
+};
+
+window.toggleSound=function(){
+  var current=localStorage.getItem('sound_enabled')!=='false';
+  localStorage.setItem('sound_enabled',current?'false':'true');
+  showToast(current?'🔇 Sound OFF':'🔊 Sound ON','info');
+};
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.8 SURVEY SYSTEM                                               */
+/* ═══════════════════════════════════════════════════════════════ */
+window.SURVEY_STATE={
+  enabled:false,settings:{},questions:[],currentStudent:null,postponeHours:24
+};
+
+window.loadSurveySettings=async function(){
+  if(!supabaseClient)return false;
+  try{
+    var r=await supabaseClient.from('survey_settings').select('*');
+    if(r.error)throw r.error;
+    var settings={};
+    (r.data||[]).forEach(function(s){settings[s.setting_key]=s.value;});
+    window.SURVEY_STATE.settings=settings;
+    window.SURVEY_STATE.enabled=(settings.survey_enabled==='true');
+    window.SURVEY_STATE.postponeHours=parseInt(settings.postpone_hours)||24;
+    return true;
+  }catch(e){console.warn('loadSurveySettings:',e.message);return false;}
+};
+
+window.loadSurveyQuestions=async function(){
+  if(!supabaseClient)return[];
+  try{
+    var r=await supabaseClient.from('survey_questions').select('*').eq('is_active',true).order('q_no');
+    if(r.error)throw r.error;
+    window.SURVEY_STATE.questions=(r.data||[]).slice(0,3);
+    return window.SURVEY_STATE.questions;
+  }catch(e){console.warn('loadSurveyQuestions:',e.message);return[];}
+};
+
+window.hasSurveySubmitted=async function(studentId){
+  if(!supabaseClient||!studentId)return false;
+  try{
+    var r=await supabaseClient.from('survey_responses').select('id').eq('studentid',studentId).maybeSingle();
+    return!!r.data;
+  }catch(e){return false;}
+};
+
+window.isSurveyPostponed=function(){
+  var u=window.currentUser||currentUser;
+  if(!u)return false;
+  try{
+    var key='survey_postponed_until_'+u.studentId;
+    var until=parseInt(localStorage.getItem(key)||'0');
+    return Date.now()<until;
+  }catch(e){return false;}
+};
+
+window.postponeSurvey=function(){
+  var u=window.currentUser||currentUser;
+  if(!u)return;
+  var hours=window.SURVEY_STATE.postponeHours||24;
+  var until=Date.now()+(hours*60*60*1000);
+  try{localStorage.setItem('survey_postponed_until_'+u.studentId,until.toString());}catch(e){}
+  document.getElementById('surveyPopup').classList.remove('open');
+  if(typeof showToast==='function')showToast('⏰ '+hours+' മണിക്കൂറിനുശേഷം വീണ്ടും ഓർമ്മിപ്പിക്കും','info');
+};
+
+window.showSurveyPopup=async function(){
+  var u=window.currentUser||currentUser;
+  if(!u)return;
+  await window.loadSurveySettings();
+  if(!window.SURVEY_STATE.enabled)return;
+  if(window.isSurveyPostponed())return;
+  var submitted=await window.hasSurveySubmitted(u.studentId);
+  if(submitted)return;
+  var questions=await window.loadSurveyQuestions();
+  if(questions.length===0)return;
+
+  var avatar=document.getElementById('surveyAvatar');
+  if(avatar){
+    if(u.photo&&(u.photo.startsWith('http')||u.photo.startsWith('data:'))){
+      avatar.innerHTML='<img src="'+u.photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">';
+    }else{
+      avatar.textContent=(u.name||'S').charAt(0).toUpperCase();
+    }
+  }
+  document.getElementById('surveyStudentName').textContent=u.name||'Student';
+  document.getElementById('surveyStudentClass').innerHTML='<i class="fas fa-graduation-cap"></i> Class '+(u.class||'—')+' • ID: '+u.studentId;
+  document.getElementById('surveyPopupTitle').textContent=window.SURVEY_STATE.settings.survey_title||'വിദ്യാർത്ഥി അഭിപ്രായ സർവേ';
+  document.getElementById('surveyPopupDesc').textContent=window.SURVEY_STATE.settings.survey_description||'';
+  document.getElementById('surveyPostponeText').textContent='"പിന്നീട്" ക്ലിക്ക് ചെയ്താൽ '+window.SURVEY_STATE.postponeHours+' മണിക്കൂറിനുശേഷം വീണ്ടും ഓർമ്മിപ്പിക്കും';
+
+  var area=document.getElementById('surveyQuestionsArea');
+  area.innerHTML=questions.map(function(q){
+    return'<div class="survey-q"><div class="survey-q-head"><div class="survey-q-no">'+q.q_no+'</div><div class="survey-q-text">'+escapeHtml(q.question_ml)+(q.is_required?'<span class="required-star">*</span>':'')+'</div></div><textarea class="survey-q-input" data-qno="'+q.q_no+'" data-required="'+(q.is_required?'true':'false')+'" placeholder="'+escapeHtml(q.placeholder_ml||'')+'" maxlength="1000"></textarea></div>';
+  }).join('');
+
+  document.getElementById('surveyPopup').classList.add('open');
+  document.body.style.overflow='hidden';
+};
+
+window.submitSurvey=async function(e){
+  if(e)e.preventDefault();
+  var u=window.currentUser||currentUser;
+  if(!u){showToast('Login first','error');return;}
+  var inputs=document.querySelectorAll('.survey-q-input');
+  var answers={1:'',2:'',3:''};
+  var hasError=false;
+  inputs.forEach(function(inp){
+    var qno=inp.dataset.qno;
+    var req=inp.dataset.required==='true';
+    var val=(inp.value||'').trim();
+    if(req&&!val){inp.style.borderColor='#ef4444';inp.style.background='#fef2f2';hasError=true;}
+    else{inp.style.borderColor='';inp.style.background='';}
+    answers[qno]=val;
+  });
+  if(hasError){showToast('⚠️ നിർബന്ധിത ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകുക','error');return;}
+  var btn=document.getElementById('surveySubmitBtn');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> സമർപ്പിക്കുന്നു...';}
+  try{
+    var device=/Android/i.test(navigator.userAgent)?'Android':/iPhone|iPad/i.test(navigator.userAgent)?'iOS':'Web';
+    var payload={
+      studentid:u.studentId,
+      student_name:u.name||'',
+      student_class:u.class||'',
+      q1_answer:answers[1]||null,
+      q2_answer:answers[2]||null,
+      q3_answer:answers[3]||null,
+      device:device
+    };
+    var r=await supabaseClient.from('survey_responses').upsert(payload,{onConflict:'studentid'});
+    if(r.error)throw r.error;
+    try{localStorage.removeItem('survey_postponed_until_'+u.studentId);}catch(e){}
+    if(typeof confetti!=='undefined'){
+      confetti({particleCount:140,spread:90,origin:{y:.6},colors:['#6C5CE7','#00cec9','#fd79a8','#fdcb6e','#a29bfe']});
+    }
+    showToast('✅ സർവേ സമർപ്പിച്ചു! നന്ദി 🌟','success');
+    document.getElementById('surveyPopup').classList.remove('open');
+    document.body.style.overflow='';
+  }catch(err){
+    console.error('submitSurvey:',err);
+    showToast('❌ '+(err.message||'Error'),'error');
+  }
+  if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i> സമർപ്പിക്കുക';}
+};
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.9 SURVEY POPUP AUTO-TRIGGER                                   */
+/* ═══════════════════════════════════════════════════════════════ */
+function triggerSurveyIfNeeded(){
+  if(!currentUser)return;
+  setTimeout(function(){
+    if(typeof showSurveyPopup==='function')showSurveyPopup();
+  },8000);
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.10 PUBLIC FEED                                                */
+/* ═══════════════════════════════════════════════════════════════ */
+var _publicFeedCache=[];
+var _publicFeedLikesCache={};
+
+async function openPublicCreationsFeed(){
+  var overlay=document.getElementById('publicFeedOverlay');
+  if(!overlay)return;
+  overlay.style.display='flex';
+  document.body.style.overflow='hidden';
+  await loadPublicCreationsFeed();
+}
+
+function closePublicCreationsFeed(){
+  var overlay=document.getElementById('publicFeedOverlay');
+  if(overlay)overlay.style.display='none';
+  document.body.style.overflow='';
+}
+
+function loginFromFeed(){
+  closePublicCreationsFeed();
+  window.scrollTo({top:0,behavior:'smooth'});
+  var sidInput=document.getElementById('studentId');
+  if(sidInput)setTimeout(function(){sidInput.focus();},400);
+}
+
+async function loadPublicCreationsFeed(){
+  var container=document.getElementById('publicFeedContainer');
+  if(!container)return;
+  container.innerHTML='<div style="text-align:center;padding:60px 20px;color:#64748b;"><div class="spinner-sm"></div><div style="margin-top:10px;">ലോഡ് ചെയ്യുന്നു...</div></div>';
+  if(!supabaseClient){container.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-triangle-exclamation"></i>System loading...</div>';return;}
+  try{
+    var r=await supabaseClient.from('student_creations').select('*').eq('approved',true).order('created_at',{ascending:false}).limit(100);
+    if(r.error)throw r.error;
+    _publicFeedCache=(r.data||[]).map(function(c){
+      return Object.assign({},c,{
+        file_url:c.file_url||c.image_url||null,
+        file_type:c.file_type||'image',
+        text_content:c.text_content||null
+      });
+    });
+    if(_publicFeedCache.length===0){
+      container.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-palette" style="font-size:3.5rem;color:#be185d;opacity:.4;display:block;margin-bottom:14px;"></i><h3 style="color:#0f172a;">ഇതുവരെ സൃഷ്ടികൾ ഇല്ല</h3><p style="color:#64748b;">ആദ്യത്തെ സൃഷ്ടി വരുമ്പോൾ ഇവിടെ കാണാം</p></div>';
+      return;
+    }
+    var sids=Array.from(new Set(_publicFeedCache.map(function(c){return c.studentid;})));
+    var smap={};
+    if(sids.length>0){
+      var sr=await supabaseClient.from('students').select('studentid,name,class,photo').in('studentid',sids);
+      (sr.data||[]).forEach(function(s){smap[s.studentid]={name:s.name,class:s.class,photo:s.photo};});
+    }
+    if(currentUser){
+      try{
+        var ids=_publicFeedCache.map(function(c){return c.id;});
+        var lr=await supabaseClient.from('creation_likes').select('creation_id').eq('studentid',currentUser.studentId).in('creation_id',ids);
+        (lr.data||[]).forEach(function(l){_publicFeedLikesCache[l.creation_id]=true;});
+      }catch(e){}
+    }
+    var html='';
+    if(!currentUser){
+      html+='<div style="background:linear-gradient(135deg,#ecfeff,#fce7f3);border:1.6px solid rgba(34,211,238,.3);border-radius:18px;padding:18px;margin-bottom:18px;text-align:center;"><p style="color:#0f172a;font-size:.88rem;margin:0 0 12px;font-weight:700;">🎨 ഇഷ്ടമുള്ള സൃഷ്ടികൾ ലൈക്ക് ചെയ്യാനും കമന്റ് ചെയ്യാനും Login ചെയ്യുക</p><button onclick="loginFromFeed()" style="background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#fff;border:none;padding:10px 24px;border-radius:30px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;"><i class="fas fa-sign-in-alt"></i> Login ചെയ്യുക</button></div>';
+    }
+    html+=_publicFeedCache.map(function(c){return renderPublicFeedCard(c,smap[c.studentid]);}).join('');
+    container.innerHTML=html;
+  }catch(e){
+    console.error('Public feed error:',e);
+    container.innerHTML='<div style="text-align:center;padding:60px;color:#dc2626;"><i class="fas fa-triangle-exclamation"></i><h3>Error</h3><p>'+escapeHtml(e.message||'Error')+'</p></div>';
+  }
+}
+
+function renderPublicFeedCard(c,author){
+  if(!author)author={name:'Student',class:'',photo:''};
+  var ft=c.file_type||'image';
+  var url=c.file_url||c.image_url;
+  var avatar=hasPhoto(author.photo)?'<img src="'+author.photo+'" alt="">':escapeHtml((author.name||'S').charAt(0).toUpperCase());
+  var mediaHtml;
+  if(ft==='text'){
+    var preview=(c.text_content||'').trim();
+    var short=preview.length>320?preview.substring(0,320)+'…':preview;
+    mediaHtml='<div style="padding:18px 20px 6px;cursor:pointer;" onclick="openPublicFeedDetail('+c.id+')"><div style="background:#f8fafc;border-radius:14px;padding:16px;font-size:.88rem;line-height:1.6;color:#0f172a;white-space:pre-wrap;">'+escapeHtml(short)+'</div></div>';
+  }else if(ft==='pdf'){
+    mediaHtml='<div style="padding:44px 20px;text-align:center;background:linear-gradient(140deg,#fef2f2,#fee2e2);cursor:pointer;" onclick="openPublicFeedDetail('+c.id+')"><i class="fas fa-file-pdf" style="font-size:3.2rem;color:#dc2626;display:block;margin-bottom:8px;"></i><div style="color:#0f172a;font-weight:800;font-size:1rem;">PDF Document</div><div style="color:#64748b;font-size:.78rem;margin-top:4px;">ടാപ്പ് ചെയ്ത് കാണുക</div></div>';
+  }else{
+    mediaHtml='<div style="width:100%;background:#0a1a3f;overflow:hidden;cursor:pointer;" onclick="openPublicFeedDetail('+c.id+')"><img src="'+url+'" loading="lazy" style="width:100%;display:block;max-height:600px;object-fit:cover;" alt="'+escapeHtml(c.title)+'"></div>';
+  }
+  var liked=_publicFeedLikesCache[c.id]?' liked':'';
+  var likedStyle=_publicFeedLikesCache[c.id]?'color:#be185d;':'';
+  return'<div style="background:#fff;border:1px solid rgba(180,200,230,.5);border-radius:22px;margin-bottom:18px;overflow:hidden;box-shadow:0 6px 18px -10px rgba(0,0,0,.15);">'+
+    '<div style="display:flex;align-items:center;padding:14px 16px;gap:12px;">'+
+      '<div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(140deg,#1e6be0,#22d3ee);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:1.05rem;overflow:hidden;flex-shrink:0;">'+avatar+'</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div style="color:#0f172a;font-weight:800;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(author.name)+'</div>'+
+        '<div style="color:#64748b;font-size:.72rem;margin-top:3px;">Class '+escapeHtml(author.class||'—')+' • '+timeAgo(c.created_at)+'<span style="display:inline-block;background:rgba(236,72,153,.15);color:#be185d;padding:2px 8px;border-radius:20px;font-size:.66rem;font-weight:800;margin-left:4px;">'+getCategoryLabel(c.category)+'</span></div>'+
+      '</div>'+
+    '</div>'+
+    mediaHtml+
+    '<div style="padding:14px 16px 16px;">'+
+      '<h3 style="color:#0f172a;font-size:1.05rem;font-weight:800;margin:0 0 8px;line-height:1.3;">'+escapeHtml(c.title)+'</h3>'+
+      (c.description?'<p style="color:#475569;font-size:.86rem;line-height:1.55;margin:0 0 12px;white-space:pre-wrap;">'+escapeHtml(c.description)+'</p>':'')+
+      '<div style="display:flex;gap:6px;padding-top:12px;border-top:1px solid rgba(100,116,139,.1);">'+
+        '<button id="pfLikeBtn_'+c.id+'" onclick="publicFeedLike('+c.id+')" style="flex:1;background:transparent;border:none;color:#64748b;font-weight:800;padding:10px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-size:.82rem;font-family:inherit;'+likedStyle+'"><i class="fas fa-heart"></i> <span id="pfLikeCount_'+c.id+'">'+(c.likes||0)+'</span></button>'+
+        '<button onclick="openPublicFeedDetail('+c.id+')" style="flex:1;background:transparent;border:none;color:#64748b;font-weight:800;padding:10px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-size:.82rem;font-family:inherit;"><i class="fas fa-comment"></i> കമന്റ്</button>'+
+        '<button onclick="publicFeedShare('+c.id+')" style="flex:1;background:transparent;border:none;color:#64748b;font-weight:800;padding:10px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-size:.82rem;font-family:inherit;"><i class="fas fa-share"></i> Share</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+async function publicFeedLike(creationId){
+  if(!currentUser){showToast('❤️ ലൈക്ക് ചെയ്യാൻ Login ചെയ്യുക','info');return;}
+  var btn=document.getElementById('pfLikeBtn_'+creationId);
+  var countEl=document.getElementById('pfLikeCount_'+creationId);
+  if(!btn||!countEl)return;
+  btn.disabled=true;
+  try{
+    var ex=await supabaseClient.from('creation_likes').select('id').eq('creation_id',creationId).eq('studentid',currentUser.studentId).maybeSingle();
+    var c=_publicFeedCache.find(function(x){return x.id===creationId;});
+    if(!c)return;
+    if(ex.data){
+      await supabaseClient.from('creation_likes').delete().eq('id',ex.data.id);
+      var nc=Math.max(0,(c.likes||0)-1);
+      await supabaseClient.from('student_creations').update({likes:nc}).eq('id',creationId);
+      c.likes=nc;
+      delete _publicFeedLikesCache[creationId];
+      btn.style.color='#64748b';
+      countEl.textContent=nc;
+    }else{
+      await supabaseClient.from('creation_likes').insert({creation_id:creationId,studentid:currentUser.studentId});
+      var nc2=(c.likes||0)+1;
+      await supabaseClient.from('student_creations').update({likes:nc2}).eq('id',creationId);
+      c.likes=nc2;
+      _publicFeedLikesCache[creationId]=true;
+      btn.style.color='#be185d';
+      countEl.textContent=nc2;
+      if(typeof confetti!=='undefined')confetti({particleCount:40,spread:60,origin:{y:0.7}});
+    }
+  }catch(e){showToast('❌ '+e.message,'error');}
+  btn.disabled=false;
+}
+
+function publicFeedShare(creationId){
+  var c=_publicFeedCache.find(function(x){return x.id===creationId;});
+  if(!c)return;
+  var text='🎨 '+c.title+' — Noorussalam Madrasa';
+  if(navigator.share){
+    navigator.share({title:c.title,text:text,url:window.location.origin}).catch(function(){});
+  }else{
+    var whatsapp='https://wa.me/?text='+encodeURIComponent(text+'\n'+window.location.origin);
+    window.open(whatsapp,'_blank');
+  }
+}
+
+async function openPublicFeedDetail(creationId){
+  var c=_publicFeedCache.find(function(x){return x.id===creationId;});
+  if(!c)return;
+  if(currentUser){
+    if(!allCreations.find(function(x){return x.id===creationId;}))allCreations.push(c);
+    if(!c.file_type)c.file_type='image';
+    if(!c.file_url&&c.image_url)c.file_url=c.image_url;
+    openCreationLightbox(creationId);
+    return;
+  }
+  var isPdf=c.file_type==='pdf';
+  var isText=c.file_type==='text';
+  var url=c.file_url||c.image_url;
+  var author={name:'Student',class:''};
+  try{
+    var sr=await supabaseClient.from('students').select('name,class').eq('studentid',c.studentid).single();
+    if(sr.data)author=sr.data;
+  }catch(e){}
+  modalTitleSpan.innerText='🎨 '+c.title;
+  var mediaHtml;
+  if(isText){mediaHtml='<div style="background:#fff;border:1px solid rgba(180,200,230,.5);border-radius:18px;padding:24px 26px;font-size:1rem;line-height:1.9;color:#0f172a;white-space:pre-wrap;word-break:break-word;max-height:55vh;overflow-y:auto;margin-bottom:14px;">'+escapeHtml(c.text_content||'')+'</div>';}
+  else if(isPdf){mediaHtml='<div style="background:#fff;border-radius:16px;overflow:hidden;margin-bottom:14px;"><iframe src="'+url+'" style="width:100%;height:60vh;border:0;"></iframe></div>';}
+  else{mediaHtml='<img src="'+url+'" style="width:100%;border-radius:16px;margin-bottom:14px;max-height:60vh;object-fit:contain;background:#000;">';}
+  modalBodyDiv.innerHTML=mediaHtml+
+    '<div style="color:#0f172a;font-weight:800;font-size:1.1rem;margin-bottom:6px;">'+escapeHtml(c.title)+'</div>'+
+    '<div style="color:#64748b;font-size:.78rem;margin-bottom:10px;">'+escapeHtml(author.name)+' • Class '+escapeHtml(author.class||'—')+' • '+formatDate(c.created_at)+'</div>'+
+    (c.description?'<p style="color:#475569;font-size:.88rem;line-height:1.55;white-space:pre-wrap;margin-bottom:14px;">'+escapeHtml(c.description)+'</p>':'')+
+    '<div style="background:linear-gradient(135deg,#ecfeff,#fce7f3);border:1px solid rgba(34,211,238,.3);border-radius:14px;padding:14px;text-align:center;"><p style="color:#0f172a;font-size:.82rem;margin:0 0 10px;">❤️ ലൈക്ക് ചെയ്യാനും കമന്റ് ചെയ്യാനും Login ചെയ്യുക</p><button onclick="closeModal(\'globalModal\');openPublicCreationsFeed();loginFromFeed();" style="background:linear-gradient(100deg,#22d3ee,#3b8bff);color:#fff;border:none;padding:10px 24px;border-radius:30px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;"><i class="fas fa-sign-in-alt"></i> Login</button></div>';
+  modal.style.display='flex';
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.11 NOTIFICATION PUSH + BADGE                                  */
+/* ═══════════════════════════════════════════════════════════════ */
+async function updateAppBadge(count){
+  try{
+    if('setAppBadge' in navigator){
+      if(count>0)await navigator.setAppBadge(count);
+      else await navigator.clearAppBadge();
+    }
+  }catch(e){}
+}
+
+async function askNotificationPermission(){
+  if(!('Notification' in window))return false;
+  if(Notification.permission==='granted')return true;
+  if(Notification.permission==='denied')return false;
+  try{
+    var perm=await Notification.requestPermission();
+    if(perm==='granted'){
+      showToast('🔔 അറിയിപ്പുകൾ ഓൺ ആയി!','success');
+      if(typeof checkUnreadNotifications==='function')checkUnreadNotifications();
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+function showBrowserNotification(title,body){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  try{
+    var n=new Notification(title,{
+      body:body||'',
+      icon:'https://i.postimg.cc/DznFT7L9/IMG-3167.png',
+      badge:'https://i.postimg.cc/DznFT7L9/IMG-3167.png',
+      tag:'nsm-'+Date.now()
+    });
+    n.onclick=function(){window.focus();n.close();};
+    setTimeout(function(){try{n.close();}catch(e){}},8000);
+  }catch(e){}
+}
+
+async function subscribePushNotifications(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))return false;
+  if(Notification.permission!=='granted')return false;
+  try{
+    var reg=await navigator.serviceWorker.ready;
+    var sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      var padding='='.repeat((4-VAPID_PUBLIC_KEY.length%4)%4);
+      var base64=(VAPID_PUBLIC_KEY+padding).replace(/-/g,'+').replace(/_/g,'/');
+      var raw=atob(base64);
+      var arr=Uint8Array.from([].map.call(raw,function(c){return c.charCodeAt(0);}));
+      sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:arr});
+    }
+    var j=sub.toJSON();
+    var sid=currentUser?currentUser.studentId:'GUEST';
+    var cls=currentUser?currentUser.class:null;
+    var r=await supabaseClient.from('push_subscriptions').upsert({
+      studentid:sid,class:cls,
+      endpoint:j.endpoint,
+      p256dh:j.keys.p256dh,
+      auth:j.keys.auth,
+      updated_at:new Date().toISOString()
+    },{onConflict:'studentid,endpoint'});
+    if(r.error)throw r.error;
+    localStorage.setItem('noor_push_subscribed','true');
+    return true;
+  }catch(err){console.error('❌ Push subscribe error:',err);return false;}
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.12 TICKER + PUBLIC NOTIFICATIONS                              */
+/* ═══════════════════════════════════════════════════════════════ */
+var loginNotifChannel=null;
+
+async function loadTickerMessages(){
+  var ticker=document.getElementById('nsmTicker');
+  var track=document.getElementById('nsmTickerTrack');
+  if(!ticker||!track)return;
+  var messages=[];
+  try{
+    if(supabaseClient){
+      var r=await supabaseClient.from('notifications').select('title, message, type, created_at, link_url').eq('target_type','all').order('created_at',{ascending:false}).limit(10);
+      if(r.data&&r.data.length>0){
+        messages=r.data.map(function(n){
+          return{text:n.title+(n.message?' — '+n.message:''),type:n.type||'general',link:n.link_url||null};
+        });
+      }
+    }
+  }catch(e){console.warn('Ticker DB error:',e);}
+  if(messages.length===0){
+    messages=[
+      {text:'നൂറുസ്സലാം മദ്‌റസയിലേക്ക് സ്വാഗതം! 🌟',type:'general'},
+      {text:'Student ID ഉപയോഗിച്ച് Portal-ൽ Login ചെയ്യൂ 🔐',type:'info'},
+      {text:'പലതുള്ളി സമ്പാദ്യ പദ്ധതി — Minimum ₹100 💰',type:'info'}
+    ];
+  }
+  var items=messages.map(function(m){
+    var icon=m.type==='urgent'?'fa-circle-exclamation':m.type==='important'?'fa-bolt':'fa-bullhorn';
+    var cls=m.type==='urgent'?'urgent':'';
+    var clickHandler=m.link?'onclick="window.open(\''+escapeHtml(m.link)+'\',\'_blank\')"':'onclick="openGuestNotifications()"';
+    var linkIcon=m.link?' <i class="fas fa-external-link-alt" style="font-size:.7rem;margin-left:4px;"></i>':'';
+    return'<span class="nsm-ticker-item '+cls+'" '+clickHandler+' style="cursor:pointer;"><i class="fas '+icon+'"></i><span>'+escapeHtml(m.text)+linkIcon+'</span></span><span class="nsm-ticker-dot">◆</span>';
+  }).join('');
+  track.innerHTML=items+items;
+  ticker.style.display='flex';
+}
+
+function positionTicker(){
+  var ticker=document.getElementById('nsmTicker');
+  var hero=document.querySelector('.nsm-hero');
+  var navbar=document.querySelector('.nsm-navbar');
+  if(!ticker||!hero)return;
+  var isMobile=window.innerWidth<=900;
+  if(isMobile){
+    if(hero.nextElementSibling!==ticker)hero.parentNode.insertBefore(ticker,hero.nextSibling);
+  }else{
+    if(navbar&&navbar.nextElementSibling!==ticker)navbar.parentNode.insertBefore(ticker,navbar.nextSibling);
+  }
+}
+
+async function checkUnreadNotifications(){
+  if(!supabaseClient)return 0;
+  try{
+    var r=await supabaseClient.from('notifications').select('id, created_at').eq('target_type','all').order('created_at',{ascending:false}).limit(50);
+    if(r.error)return 0;
+    var lastRead=parseInt(localStorage.getItem('lastReadNotifTime')||'0');
+    var unread=(r.data||[]).filter(function(n){return new Date(n.created_at).getTime()>lastRead;});
+    await updateAppBadge(unread.length);
+    var lb=document.getElementById('loginNotifBadge');
+    if(lb){
+      if(unread.length>0){lb.textContent=unread.length>9?'9+':unread.length;lb.classList.add('show');}
+      else lb.classList.remove('show');
+    }
+    return unread.length;
+  }catch(e){return 0;}
+}
+
+async function openGuestNotifications(){
+  document.getElementById('notificationsModal').style.display='flex';
+  localStorage.setItem('lastReadNotifTime',Date.now().toString());
+  var lb=document.getElementById('loginNotifBadge');
+  if(lb)lb.classList.remove('show');
+  await updateAppBadge(0);
+  var list=document.getElementById('notificationsList');
+  list.innerHTML='<div class="text-center py-3" style="color:#64748b;">Loading...</div>';
+  if(!supabaseClient){list.innerHTML='<div style="text-align:center;padding:20px;">System loading...</div>';return;}
+  try{
+    var r=await supabaseClient.from('notifications').select('*').eq('target_type','all').order('created_at',{ascending:false}).limit(30);
+    if(!r.data||r.data.length===0){list.innerHTML='<div style="text-align:center;padding:30px;color:#64748b;">🔕 No notifications</div>';return;}
+    list.innerHTML=r.data.map(function(n){
+      var c=n.type==='urgent'?'urgent':n.type==='important'?'important':'';
+      var i=n.type==='urgent'?'fa-exclamation-triangle':n.type==='important'?'fa-exclamation-circle':'fa-info-circle';
+      var linkHtml='';
+      if(n.link_url){
+        linkHtml='<a href="'+escapeHtml(n.link_url)+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:.78rem;color:#0891b2;text-decoration:none;padding:6px 12px;background:rgba(8,145,178,.1);border:1px solid rgba(8,145,178,.3);border-radius:20px;font-weight:700;"><i class="fas fa-external-link-alt"></i> Open Link</a>';
+      }
+      return'<div class="notif-item '+c+'"><div style="display:flex;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><strong style="color:#0f172a;font-size:.88rem;"><i class="fas '+i+' me-2"></i>'+escapeHtml(n.title)+'</strong><small style="color:#64748b;font-size:.7rem;">'+formatDate(n.created_at)+'</small></div><p style="color:#475569;margin-bottom:0;font-size:.82rem;">'+escapeHtml(n.message)+'</p>'+linkHtml+'</div>';
+    }).join('');
+  }catch(e){list.innerHTML='<div style="text-align:center;padding:20px;">Error</div>';}
+}
+
+function subscribePublicNotifications(){
+  if(!supabaseClient)return;
+  try{
+    loginNotifChannel=supabaseClient.channel('public_notifs_login').on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications'},function(payload){
+      var n=payload.new;
+      if(!n)return;
+      var tt=n.target_type||(n.target_class==='all'?'all':'class');
+      if(tt==='all'){
+        if(!currentUser)showToast('🔔 '+n.title,'info');
+        if(Notification.permission==='granted'){
+          try{
+            new Notification('🔔 '+n.title,{
+              body:n.message||'',
+              icon:'https://i.postimg.cc/DznFT7L9/IMG-3167.png',
+              badge:'https://i.postimg.cc/DznFT7L9/IMG-3167.png'
+            });
+          }catch(e){}
+        }
+        checkUnreadNotifications();
+        loadTickerMessages();
+      }
+    }).subscribe();
+  }catch(e){console.warn('Subscribe error:',e);}
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.13 MODAL STATE TRACKER + UNIVERSAL CLOSE                      */
+/* ═══════════════════════════════════════════════════════════════ */
+(function(){
+  window.closeModal=window.closeModal||function(id){
+    var el=document.getElementById(id);
+    if(el)el.style.display='none';
+    if(typeof updateModalState==='function')updateModalState();
+  };
+
+  var MODAL_IDS=['globalModal','passbookModal','findStudentIdModal','editProfileModal','forgotModal','topperModal','topperCropModal','studentWithdrawalModal','notificationsModal','uploadCreationModal','notesModal','noticeBoardModal','passwordSetupModal','pwdResetModal'];
+
+  function init(){
+    MODAL_IDS.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){el.addEventListener('click',function(e){if(e.target===this)this.style.display='none';});}
+    });
+    var lb=document.getElementById('creationLightbox');
+    if(lb){lb.addEventListener('click',function(e){if(e.target===this)window.closeCreationLightbox&&window.closeCreationLightbox();});}
+    var hm=document.getElementById('helpModal');
+    if(hm){hm.addEventListener('click',function(e){if(e.target===this)window.closeHelpModal();});}
+    document.addEventListener('keydown',function(e){
+      if(e.key!=='Escape')return;
+      for(var i=MODAL_IDS.length-1;i>=0;i--){
+        var el=document.getElementById(MODAL_IDS[i]);
+        if(el&&el.style.display==='flex'){el.style.display='none';if(typeof updateModalState==='function')updateModalState();return;}
+      }
+      var quiz=document.getElementById('quizModal');
+      if(quiz&&quiz.classList.contains('open')){closeQuizModal();return;}
+      var lvl=document.getElementById('levelupPopup');
+      if(lvl&&lvl.classList.contains('open')){closeLevelupPopup();return;}
+      var chat=document.getElementById('chatPanel');
+      if(chat&&chat.classList.contains('open')){closeChatPanel();return;}
+      var av=document.getElementById('avatarCustomizerModal');
+      if(av&&av.classList.contains('open')){closeAvatarCustomizer();return;}
+      var af=document.getElementById('addFriendModal');
+      if(af&&af.classList.contains('open')){closeAddFriendModal();return;}
+      var rw=document.getElementById('rewardsModal');
+      if(rw&&rw.classList.contains('open')){closeRewardsModal();return;}
+      var cb=document.getElementById('creationLightbox');
+      if(cb&&cb.classList.contains('open')){window.closeCreationLightbox&&window.closeCreationLightbox();return;}
+      var co=document.getElementById('creationsOverlay');
+      if(co&&co.classList.contains('open')){window.closeCreationsGallery&&window.closeCreationsGallery();return;}
+      var pp=document.getElementById('posterPreviewOverlay');
+      if(pp&&pp.style.display==='block'){window.closePosterPreview&&window.closePosterPreview();return;}
+      var hm2=document.getElementById('helpModal');
+      if(hm2&&hm2.classList.contains('active')){window.closeHelpModal();return;}
+      var pf=document.getElementById('publicFeedOverlay');
+      if(pf&&pf.style.display==='flex'){closePublicCreationsFeed();return;}
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
+
+  function updateModalState(){
+    var ids=['globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal','topperModal','topperCropModal','uploadCreationModal','notesModal','noticeBoardModal','forgotModal','findStudentIdModal','helpModal','passwordSetupModal','pwdResetModal'];
+    var anyOpen=false;
+    ids.forEach(function(id){
+      var el=document.getElementById(id);
+      if(!el)return;
+      var disp=el.style.display;
+      if(disp==='flex'||disp==='block'||(el.classList&&(el.classList.contains('active')||el.classList.contains('open'))))anyOpen=true;
+    });
+    ['creationLightbox','creationsOverlay','publicFeedOverlay'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el&&el.classList.contains('open'))anyOpen=true;
+    });
+    var quiz=document.getElementById('quizModal');
+    if(quiz&&quiz.classList.contains('open'))anyOpen=true;
+    var av=document.getElementById('avatarCustomizerModal');
+    if(av&&av.classList.contains('open'))anyOpen=true;
+    var af=document.getElementById('addFriendModal');
+    if(af&&af.classList.contains('open'))anyOpen=true;
+    var rw=document.getElementById('rewardsModal');
+    if(rw&&rw.classList.contains('open'))anyOpen=true;
+    var pp=document.getElementById('posterPreviewOverlay');
+    if(pp&&pp.style.display==='block')anyOpen=true;
+
+    if(anyOpen)document.body.classList.add('modal-open');
+    else document.body.classList.remove('modal-open');
+  }
+  window.updateModalState=updateModalState;
+
+  document.addEventListener('DOMContentLoaded',function(){
+    var watchIds=['globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal','topperModal','topperCropModal','uploadCreationModal','notesModal','noticeBoardModal','forgotModal','findStudentIdModal','helpModal','creationLightbox','creationsOverlay','posterPreviewOverlay','publicFeedOverlay','passwordSetupModal','pwdResetModal','quizModal','rewardsModal','addFriendModal','avatarCustomizerModal','levelupPopup'];
+    var mo=new MutationObserver(updateModalState);
+    watchIds.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el)mo.observe(el,{attributes:true,attributeFilter:['style','class']});
+    });
+    updateModalState();
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.14 MOBILE ENHANCEMENTS + PWA                                   */
+/* ═══════════════════════════════════════════════════════════════ */
+(function(){
+  function setupAIKeyboardHandler(){
+    var vv=window.visualViewport;
+    if(!vv)return;
+    function onVVResize(){
+      var panel=document.getElementById('aiPanel');
+      var foot=document.getElementById('aiFoot');
+      if(!panel||!panel.classList.contains('open'))return;
+      if(window.innerWidth>900)return;
+      var vh=vv.height;
+      var offsetTop=vv.offsetTop;
+      var winH=window.innerHeight;
+      var keyboardOpen=(winH-vh)>120;
+      if(keyboardOpen){
+        panel.style.height=vh+'px';
+        panel.style.maxHeight=vh+'px';
+        panel.style.top=offsetTop+'px';
+        panel.style.bottom='auto';
+        if(foot){
+          foot.style.position='absolute';
+          foot.style.top=vh+'px';
+          foot.style.transform='translateY(-100%)';
+          foot.style.bottom='auto';
+        }
+        var body=document.getElementById('aiBody');
+        if(body)setTimeout(function(){body.scrollTop=body.scrollHeight;},80);
+      }else{
+        panel.style.height='';
+        panel.style.maxHeight='';
+        panel.style.top='';
+        panel.style.bottom='';
+        if(foot){
+          foot.style.position='absolute';
+          foot.style.top='';
+          foot.style.transform='';
+          foot.style.bottom='0';
+        }
+      }
+    }
+    vv.addEventListener('resize',onVVResize);
+    vv.addEventListener('scroll',onVVResize);
+    window.addEventListener('orientationchange',function(){setTimeout(onVVResize,300);});
+  }
+  document.addEventListener('DOMContentLoaded',setupAIKeyboardHandler);
+  setTimeout(setupAIKeyboardHandler,1000);
+
+  function haptic(ms){try{if(navigator.vibrate)navigator.vibrate(ms||10);}catch(e){}}
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.action-tile, .pala-btn, .mob-nav-item, .btn-update, .btn-load, .nsm-btn-primary, .creation-card, .lb-card, .prayer-item, .mission-item, .quiz-option, .reward-redeem-btn');
+    if(t)haptic(8);
+  },{passive:true});
+
+  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    var ensureZoom=function(){
+      document.querySelectorAll('input, textarea, select').forEach(function(el){
+        if(!el.style.fontSize||parseFloat(el.style.fontSize)<16)el.style.fontSize='16px';
+      });
+    };
+    document.addEventListener('DOMContentLoaded',ensureZoom);
+    setTimeout(ensureZoom,1500);
+  }
+
+  if(!('IntersectionObserver' in window))return;
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.style.opacity='1';
+        en.target.style.transform='translateY(0)';
+        obs.unobserve(en.target);
+      }
+    });
+  },{threshold:0.06,rootMargin:'0px 0px -30px 0px'});
+  function registerCards(){
+    if(window.innerWidth>900)return;
+    document.querySelectorAll('#dashboardSection .hub-card, #dashboardSection .activity-timeline, #dashboardSection .chart-card, #dashboardSection .leaderboard-section, #dashboardSection .stats-grid .stat-card-neon, #dashboardSection .xp-widget, #dashboardSection .streak-widget, #dashboardSection .missions-widget, #dashboardSection .tasbeeh-widget').forEach(function(c){
+      if(c._animRegistered)return;
+      c._animRegistered=true;
+      c.style.opacity='0';
+      c.style.transform='translateY(20px)';
+      c.style.transition='opacity .55s cubic-bezier(.34,1.2,.64,1), transform .55s cubic-bezier(.34,1.2,.64,1)';
+      obs.observe(c);
+    });
+  }
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(registerCards,1200);});
+  setTimeout(registerCards,3000);
+
+  function enforceBottomNav(){
+    var nav=document.getElementById('mobBottomNav');
+    if(!nav)return;
+    var isLoggedIn=document.body.classList.contains('logged-in');
+    var isMobile=window.innerWidth<=900;
+    if(isLoggedIn&&isMobile){
+      nav.style.display='flex';
+      nav.style.position='fixed';
+      nav.style.left='14px';
+      nav.style.right='14px';
+      nav.style.bottom='14px';
+      nav.style.top='auto';
+      nav.style.zIndex='99999';
+      nav.style.transform='none';
+    }else{
+      nav.style.display='none';
+    }
+  }
+  document.addEventListener('DOMContentLoaded',enforceBottomNav);
+  setTimeout(enforceBottomNav,300);
+  setTimeout(enforceBottomNav,1000);
+  setTimeout(enforceBottomNav,2500);
+  var mo=new MutationObserver(enforceBottomNav);
+  mo.observe(document.body,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('resize',enforceBottomNav);
+})();
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.15 THEME                                                       */
+/* ═══════════════════════════════════════════════════════════════ */
+function initTheme(){
+  var saved=localStorage.getItem('noor_theme')||'light';
+  if(saved==='dark')document.body.classList.remove('light-mode');
+  else document.body.classList.add('light-mode');
+  document.body.classList.remove('logged-in');
+}
+
+window.applyTheme_v25=function(theme){
+  if(theme==='dark'){
+    document.body.classList.remove('light-mode');
+    var i=document.getElementById('themeIcon');
+    if(i)i.className='fas fa-moon';
+  }else{
+    document.body.classList.add('light-mode');
+    var i2=document.getElementById('themeIcon');
+    if(i2)i2.className='fas fa-sun';
+  }
+  try{localStorage.setItem('noor_theme',theme);}catch(e){}
+  if(typeof renderCharts==='function'&&currentUser)setTimeout(renderCharts,300);
+};
+
+window.toggleTheme=function(){
+  var cur=localStorage.getItem('noor_theme')||'light';
+  var next=cur==='light'?'dark':'light';
+  window.applyTheme_v25(next);
+  showToast(next==='dark'?'🌙 Dark mode ON':'☀️ Light mode ON','info');
+};
+
+function applyTheme(theme){window.applyTheme_v25(theme);}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.16 SHORTCUT NAVIGATION + INIT                                  */
+/* ═══════════════════════════════════════════════════════════════ */
+function handleShortcutNavigation(){
+  var hash=(window.location.hash||'').replace('#','').toLowerCase();
+  var params=new URLSearchParams(window.location.search);
+  function openTarget(){
+    if(!currentUser)return;
+    if(hash==='palathulli')openPassbook();
+    else if(hash==='fees'){if(typeof openStudentFees==='function')openStudentFees();else openPassbook();}
+    else if(hash==='creations')openCreationsGallery();
+    else if(hash==='ai'){var fab=document.getElementById('aiFab');if(fab&&fab.classList.contains('show'))toggleAIChat();}
+    if(params.get('public')==='1')openPublicCreationsFeed();
+  }
+  if(currentUser){setTimeout(openTarget,800);}
+  else{
+    var tries=0;
+    var timer=setInterval(function(){
+      tries++;
+      if(currentUser){clearInterval(timer);setTimeout(openTarget,800);}
+      if(tries>60)clearInterval(timer);
+    },500);
+  }
+  if(params.get('public')==='1'){
+    setTimeout(function(){if(typeof openPublicCreationsFeed==='function')openPublicCreationsFeed();},1500);
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',handleShortcutNavigation);
+else handleShortcutNavigation();
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.17 FAB VISIBILITY OBSERVER                                     */
+/* ═══════════════════════════════════════════════════════════════ */
+(function(){
+  var _obsDash=new MutationObserver(function(){
+    var dash=document.getElementById('dashboardSection');
+    if(dash&&dash.style.display==='block'){
+      setTimeout(function(){
+        try{if(typeof renderCharts==='function'&&currentUser)renderCharts();}
+        catch(e){console.warn('chart redraw',e);}
+        // Show Chat FAB
+        var chatFab=document.getElementById('chatFab');
+        if(chatFab&&currentUser)chatFab.classList.add('show');
+        // Re-init Kids Pack if needed
+        if(typeof initKidsPack==='function')setTimeout(initKidsPack,900);
+      },350);
+    }else{
+      var chatFab=document.getElementById('chatFab');
+      if(chatFab)chatFab.classList.remove('show');
+    }
+  });
+  document.addEventListener('DOMContentLoaded',function(){
+    var dash=document.getElementById('dashboardSection');
+    if(dash)_obsDash.observe(dash,{attributes:true,attributeFilter:['style']});
+  });
+  window.addEventListener('orientationchange',function(){
+    setTimeout(function(){if(typeof renderCharts==='function'&&currentUser)renderCharts();},500);
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.18 PWA INSTALL + SERVICE WORKER                                */
+/* ═══════════════════════════════════════════════════════════════ */
+(function(){
+  var deferredPrompt=null;
+  var installBtn=document.getElementById('pwaInstallBtn');
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();
+    deferredPrompt=e;
+    if(installBtn)installBtn.style.display='flex';
+  });
+  if(installBtn){
+    installBtn.addEventListener('click',async function(){
+      if(!deferredPrompt){
+        alert('ബ്രൗസർ മെനുവിൽ നിന്ന് "Add to Home Screen" തിരഞ്ഞെടുക്കുക');
+        return;
+      }
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt=null;
+      installBtn.style.display='none';
+    });
+  }
+  window.addEventListener('appinstalled',function(){
+    if(installBtn)installBtn.style.display='none';
+  });
+})();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(function(reg){console.log('✅ SW registered:',reg.scope);})
+      .catch(function(err){console.log('❌ SW error:',err);});
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.19 PROFILE DATA LOADER (Avatar)                                */
+/* ═══════════════════════════════════════════════════════════════ */
+async function loadAvatarData(){
+  if(!currentUser)return;
+  try{
+    var r=await supabaseClient.from('student_avatars').select('*').eq('studentid',currentUser.studentId).maybeSingle();
+    if(r.data){
+      currentUser.avatar_color=r.data.avatar_color;
+      currentUser.avatar_color_2=r.data.avatar_color_2;
+      currentUser.avatar_style=r.data.avatar_style;
+      currentUser.avatar_frame=r.data.avatar_frame;
+      currentUser.avatar_hat=r.data.avatar_hat;
+      applyAvatarToDashboard();
+    }
+  }catch(e){}
+}
+
+async function initSocialPack(){
+  if(!currentUser)return;
+  var fab=document.getElementById('chatFab');
+  if(fab)fab.classList.add('show');
+  applyAvatarToDashboard();
+  await loadAvatarData();
+  setTimeout(pollChatBadges,2000);
+  setInterval(pollChatBadges,30000);
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.20 GLOBAL INITIALIZATION                                       */
+/* ═══════════════════════════════════════════════════════════════ */
+async function initApp(){
+  initTheme();
+  if(typeof restoreSession==='function')await restoreSession();
+
+  var splash=document.getElementById('splashScreen');
+  if(splash){
+    splash.style.opacity='0';
+    setTimeout(function(){splash.remove();},250);
+  }
+  console.log('%c✅ Noorussalam Madrasa v26.0 Ultimate+ Edition','color:#0891b2;font-weight:bold;font-size:14px;');
+  console.log('%c📱 Mobile Bottom Nav: ENABLED','color:#059669;font-weight:bold;');
+  console.log('%c🎨 Theme: Adaptive','color:#b45309;font-weight:bold;');
+  console.log('%c🤖 AI + 💬 Chat + 🎯 Quiz + 🎁 Rewards: ALL LOADED','color:#8b5cf6;font-weight:bold;');
+
+  setTimeout(async function(){
+    if(Notification.permission==='granted')await subscribePushNotifications();
+  },3000);
+}
+
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){
+    if(window._prayerTickInterval){clearInterval(window._prayerTickInterval);window._prayerTickInterval=null;}
+    if(window._examTickInterval){clearInterval(window._examTickInterval);window._examTickInterval=null;}
+  }else{
+    if(currentUser&&window._prayerData&&typeof startPrayerCountdown==='function')startPrayerCountdown();
+    if(currentUser&&typeof loadExamCountdown==='function')loadExamCountdown();
+  }
+});
+
+window.addEventListener('load',function(){
+  setTimeout(function(){loadTickerMessages();positionTicker();},1200);
+  setTimeout(function(){
+    if('Notification' in window&&Notification.permission==='default'){
+      var asked=localStorage.getItem('noor_push_asked');
+      if(!asked){askNotificationPermission().then(function(){localStorage.setItem('noor_push_asked','true');});}
+    }else if(Notification.permission==='granted'){checkUnreadNotifications();}
+  },5000);
+  setTimeout(function(){subscribePublicNotifications();checkUnreadNotifications();},2000);
+});
+window.addEventListener('resize',positionTicker);
+setInterval(function(){if(!document.hidden){loadTickerMessages();checkUnreadNotifications();}},300000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)checkUnreadNotifications();});
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initApp);
+else initApp();
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* 3.21 WINDOW EXPORTS (Fallback)                                   */
+/* ═══════════════════════════════════════════════════════════════ */
+Object.assign(window,{
+  // AI
+  toggleAIChat,aiQuick,sendAIMessage,callGeminiAI,showAIAssistant,clearAIChat,copyAIMsg,
+  toggleVoiceInput,updateMicUI,
+  // Avatar
+  openAvatarCustomizer,closeAvatarCustomizer,saveAvatarCustomization,
+  pickAvatarColor,pickAvatarFrame,pickAvatarHat,setAvatarStyle,applyAvatarToDashboard,
+  // Chat
+  openChatPanel,closeChatPanel,chatSwitchTab,openClassChat,openDirectChatWith,
+  chatBackToList,sendChatMessage,chatInputChange,toggleEmojiPicker,insertEmoji,
+  chatRefresh,chatScrollToBottom,toggleReaction,showReactionMenu,deleteMessage,
+  openAddFriendModal,closeAddFriendModal,sendFriendRequest,acceptFriend,rejectFriend,
+  // Quiz/Rewards
+  openQuizModal,closeQuizModal,answerQuiz,openRewardsModal,closeRewardsModal,redeemReward,
+  closeLevelupPopup,
+  // Kids
+  loadStudentXP,awardXP,renderXPWidget,loadAndUpdateStreak,renderStreakWidget,
+  loadMissions,completeMission,renderMissionsWidget,renderTasbeehWidget,
+  tasbeehTap,tasbeehReset,tasbeehChangeDhikr,checkAndUnlockStickers,initKidsPack,
+  xpForLevel,levelFromTotalXP,xpProgressForLevel,
+  // Sound
+  playSound,toggleSound,
+  // Survey
+  showSurveyPopup,submitSurvey,postponeSurvey,isSurveyPostponed,
+  // Public Feed
+  openPublicCreationsFeed,closePublicCreationsFeed,loginFromFeed,
+  publicFeedLike,publicFeedShare,openPublicFeedDetail,loadPublicCreationsFeed,
+  // Theme
+  toggleTheme,applyTheme,
+  // Push
+  askNotificationPermission,showBrowserNotification,subscribePushNotifications,
+  // Ticker
+  loadTickerMessages,positionTicker,checkUnreadNotifications,openGuestNotifications,
+  // Toggle Sound
+  closeModal,
+  // Birthday basic
+  initApp
+});
+
+console.log('✅ PART 3 loaded — AI + Chat + Quiz + Rewards + Kids + Social + Final');
+console.log('🎉 ALL 3 PARTS LOADED — Noorussalam Madrasa v26.0');
+</script>
+
+</body>
+</html>
