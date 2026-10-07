@@ -18551,5 +18551,864 @@ console.log('📱 All features: Login, Dashboard, Admin (27 tabs), Fee System, A
   console.log('💡 Check status: realtimeStatus()');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🚀 CRITICAL FIX v26.1 — Missing Functions + Chat FAB       -->
+<!-- Paste right before </body>                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- 💬 CHAT FAB BUTTON (Missing element) -->
+<button class="chat-fab" id="chatFab" onclick="openChatPanel()" title="Class Chat">
+  <i class="fas fa-comments"></i>
+  <span class="chat-badge" id="chatBadge">0</span>
+</button>
+
+<!-- 💬 CHAT PANEL (Missing element) -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-sidebar" id="chatSidebar">
+    <div class="chat-sidebar-header">
+      <div class="chat-sidebar-header-top">
+        <h5><i class="fas fa-users"></i> Class Chat</h5>
+        <button class="chat-close-btn" onclick="closeChatPanel()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="chat-tabs-side">
+        <button class="chat-tab-side active" data-chat-tab="class" onclick="switchChatTab('class',this)">
+          <i class="fas fa-users"></i> Class
+        </button>
+        <button class="chat-tab-side" data-chat-tab="friends" onclick="switchChatTab('friends',this)">
+          <i class="fas fa-user-friends"></i> Friends
+        </button>
+      </div>
+    </div>
+    <div class="chat-sidebar-list" id="chatSidebarList">
+      <div style="text-align:center;padding:30px 20px;color:rgba(255,255,255,.5);font-size:.82rem;">
+        <i class="fas fa-comments" style="font-size:2rem;opacity:.4;display:block;margin-bottom:10px;"></i>
+        Chat loading...
+      </div>
+    </div>
+  </div>
+  <div class="chat-main" id="chatMain">
+    <div class="chat-header">
+      <button class="chat-back-btn" onclick="closeChatMobile()"><i class="fas fa-arrow-left"></i></button>
+      <div class="chat-header-avatar" id="chatHeaderAvatar">C</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name" id="chatHeaderName">Class Chat</div>
+        <div class="chat-header-meta" id="chatHeaderMeta">
+          <span class="online-dot"></span> <span>Online</span>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="chat-header-action" onclick="closeChatPanel()" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-empty">
+        <i class="fas fa-comment-dots"></i>
+        <div>സന്ദേശങ്ങൾ ഇവിടെ കാണാം</div>
+      </div>
+    </div>
+    <div class="chat-typing-indicator" id="chatTypingIndicator">
+      <span>typing</span>
+      <span class="chat-typing-dots"><span></span><span></span><span></span></span>
+    </div>
+    <div class="chat-input-area">
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" placeholder="സന്ദേശം എഴുതൂ..."
+                  rows="1" maxlength="1000"
+                  onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage();}"
+                  oninput="autoResizeChatInput(this)"></textarea>
+        <button class="chat-emoji-btn" onclick="toggleChatEmoji()" title="Emoji">
+          <i class="fas fa-smile"></i>
+        </button>
+      </div>
+      <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 🎨 AVATAR CUSTOMIZER MODAL -->
+<div class="avatar-customizer-modal" id="avatarCustomizerModal">
+  <div class="avatar-customizer-card">
+    <div class="av-header">
+      <div class="av-header-icon"><i class="fas fa-palette"></i></div>
+      <h2 class="av-title">Avatar Customize</h2>
+      <p class="av-sub">നിങ്ങളുടെ avatar ഭംഗിയാക്കൂ!</p>
+    </div>
+    <div class="av-preview-area">
+      <div class="av-preview-big">
+        <div class="av-preview-inner" id="avPreviewInner">S</div>
+      </div>
+    </div>
+    <div class="av-section">
+      <div class="av-section-title"><i class="fas fa-paint-bucket"></i> Color</div>
+      <div class="av-colors-grid" id="avColorsGrid"></div>
+    </div>
+    <div class="av-footer-btns">
+      <button class="av-btn cancel" onclick="closeAvatarCustomizer()">Cancel</button>
+      <button class="av-btn save" onclick="saveAvatarCustomization()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔧 MISSING FUNCTIONS — Fix for broken buttons               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+  console.log('🔧 Loading missing function stubs...');
+
+  /* ═══════════════ CREATIONS GALLERY ═══════════════ */
+  window.openCreationsGallery = function(){
+    var overlay = document.getElementById('creationsOverlay');
+    if(!overlay){ showToast('⚠️ Gallery loading...', 'info'); return; }
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if(typeof loadCreationsGallery === 'function') loadCreationsGallery();
+    else if(typeof loadPublicCreationsFeed === 'function') loadPublicCreationsFeed();
+  };
+  window.closeCreationsGallery = window.closeCreationsGallery || function(){
+    var overlay = document.getElementById('creationsOverlay');
+    if(overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  window.loadCreationsGallery = window.loadCreationsGallery || async function(){
+    var grid = document.getElementById('creationsGrid');
+    if(!grid || !supabaseClient) return;
+    grid.innerHTML = '<div class="creations-loading"><div class="spinner-sm"></div> Loading...</div>';
+    try{
+      var r = await supabaseClient.from('student_creations')
+        .select('*').eq('approved', true)
+        .order('created_at', {ascending: false}).limit(60);
+      if(!r.data || r.data.length === 0){
+        grid.innerHTML = '<div class="creations-empty">ഇതുവരെ സൃഷ്ടികൾ ഇല്ല 🌟</div>';
+        return;
+      }
+      allCreations = r.data.map(function(c){
+        return Object.assign({}, c, {
+          file_url: c.file_url || c.image_url || null,
+          file_type: c.file_type || 'image',
+          text_content: c.text_content || null
+        });
+      });
+      filteredCreationsList = allCreations.slice();
+      grid.innerHTML = allCreations.map(renderCreationCard).join('');
+    }catch(e){
+      console.error('creations gallery:', e);
+      grid.innerHTML = '<div class="creations-empty">Error loading</div>';
+    }
+  };
+  function renderCreationCard(c){
+    var thumb = '';
+    var ft = c.file_type || 'image';
+    var url = c.file_url || c.image_url;
+    if(ft === 'text'){
+      var p = (c.text_content || '').substring(0, 80);
+      thumb = '<div style="width:100%;height:100%;background:linear-gradient(140deg,#ddd6fe,#fce7f3);padding:14px;font-size:.75rem;color:#0f172a;overflow:hidden;line-height:1.4;">' + escapeHtml(p) + '</div>';
+    } else if(ft === 'pdf'){
+      thumb = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#fee2e2;font-size:3rem;color:#dc2626;">📄</div>';
+    } else {
+      thumb = '<img src="' + url + '" loading="lazy" alt="">';
+    }
+    return '<div class="creation-card" onclick="openCreationLightbox(' + c.id + ')">' +
+      '<div class="creation-thumb">' + thumb +
+      '<span class="creation-cat-chip">' + getCategoryLabel(c.category) + '</span></div>' +
+      '<div class="creation-body">' +
+      '<h4 class="creation-title">' + escapeHtml(c.title) + '</h4>' +
+      '<div class="creation-meta"><span class="creation-likes"><i class="fas fa-heart"></i> ' + (c.likes || 0) + '</span>' +
+      '<span>' + timeAgo(c.created_at) + '</span></div></div></div>';
+  }
+
+  /* ═══════════════ COMPETITIONS (Student) ═══════════════ */
+  window.showCompetitions = async function(){
+    if(!currentUser){ showToast('Login first', 'error'); return; }
+    modalTitleSpan.innerText = '🏆 മൽസരങ്ങൾ';
+    modalBodyDiv.innerHTML = '<div class="text-center py-4"><div class="spinner-border" style="color:#b45309"></div></div>';
+    modal.style.display = 'flex';
+    try{
+      var r = await supabaseClient.from('competitions').select('*').eq('studentid', currentUser.studentId);
+      if(!r.data || r.data.length === 0){
+        modalBodyDiv.innerHTML = '<div class="empty-state"><i class="fas fa-trophy" style="font-size:3rem;color:#94a3b8;opacity:.5;display:block;margin-bottom:12px;"></i><div style="font-weight:800;color:#0f172a;">മൽസരങ്ങളിൽ പങ്കെടുത്തിട്ടില്ല</div></div>';
+        return;
+      }
+      var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">';
+      r.data.forEach(function(c){
+        var posLabel = c.position === 1 ? '🥇 1st' : c.position === 2 ? '🥈 2nd' : c.position === 3 ? '🥉 3rd' : c.position ? '#' + c.position : '—';
+        var color = c.position === 1 ? '#b45309' : c.position === 2 ? '#64748b' : c.position === 3 ? '#9a3412' : '#2563eb';
+        html += '<div style="background:linear-gradient(150deg,#fef3c7,#dbeafe);border:1.4px solid rgba(180,83,9,.35);border-radius:16px;padding:14px;">' +
+          '<div style="font-weight:900;color:#0f172a;font-size:.94rem;margin-bottom:6px;">' + escapeHtml(c.competition_name) + '</div>' +
+          '<div style="font-size:.72rem;color:#64748b;">📅 ' + formatDate(c.competition_date) + '</div>' +
+          '<div style="font-size:1.4rem;font-weight:900;color:' + color + ';margin-top:8px;">' + posLabel + '</div>' +
+          '<div style="font-size:.72rem;color:#0891b2;font-weight:800;margin-top:4px;">Grade: ' + (c.grade || '—') + '</div></div>';
+      });
+      html += '</div>';
+      modalBodyDiv.innerHTML = html;
+    }catch(e){
+      modalBodyDiv.innerHTML = '<div class="empty-state">Error</div>';
+    }
+  };
+
+  /* ═══════════════ STUDENT ZONE ═══════════════ */
+  window.goToStudentZone = function(){
+    var target = document.getElementById('statsGridSection');
+    if(target){ target.scrollIntoView({behavior:'smooth', block:'start'}); showToast('🎓 Student Zone', 'info'); }
+    else showToast('🎓 Student Zone', 'info');
+  };
+
+  /* ═══════════════ CALENDAR ═══════════════ */
+  window.goToCalendar = function(){
+    var target = document.getElementById('calendarEventsList');
+    if(target) target.scrollIntoView({behavior:'smooth', block:'center'});
+    showToast('📅 Events കാണുന്നു', 'info');
+  };
+
+  /* ═══════════════ CHAT SYSTEM ═══════════════ */
+  window._chatState = {
+    open: false,
+    tab: 'class',
+    activeChat: null,
+    channel: null,
+    messages: []
+  };
+
+  window.openChatPanel = async function(){
+    if(!currentUser){ showToast('Login ചെയ്യൂ', 'error'); return; }
+    var panel = document.getElementById('chatPanel');
+    if(!panel) return;
+    panel.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    window._chatState.open = true;
+
+    // Mobile: hide sidebar, show main
+    if(window.innerWidth <= 900){
+      var sidebar = document.getElementById('chatSidebar');
+      var main = document.getElementById('chatMain');
+      if(sidebar) sidebar.classList.remove('hidden-mobile');
+      if(main) main.classList.remove('show-mobile');
+    }
+
+    await loadClassChatMessages();
+  };
+
+  window.closeChatPanel = function(){
+    var panel = document.getElementById('chatPanel');
+    if(panel) panel.classList.remove('open');
+    document.body.style.overflow = '';
+    window._chatState.open = false;
+
+    if(window._chatState.channel){
+      try{ supabaseClient.removeChannel(window._chatState.channel); }catch(e){}
+      window._chatState.channel = null;
+    }
+  };
+
+  window.closeChatMobile = function(){
+    var sidebar = document.getElementById('chatSidebar');
+    var main = document.getElementById('chatMain');
+    if(sidebar) sidebar.classList.add('hidden-mobile');
+    if(main) main.classList.remove('show-mobile');
+  };
+
+  window.switchChatTab = function(tab, btn){
+    window._chatState.tab = tab;
+    document.querySelectorAll('.chat-tab-side').forEach(function(t){ t.classList.remove('active'); });
+    if(btn) btn.classList.add('active');
+
+    var list = document.getElementById('chatSidebarList');
+    if(!list) return;
+
+    if(tab === 'class'){
+      list.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.6);font-size:.82rem;"><i class="fas fa-users" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>Class ' + (currentUser.class || '—') + ' Group Chat</div>';
+    } else {
+      list.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.6);font-size:.82rem;"><i class="fas fa-user-friends" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>Friends coming soon!</div>';
+    }
+  };
+
+  async function loadClassChatMessages(){
+    var container = document.getElementById('chatMessages');
+    if(!container || !supabaseClient || !currentUser) return;
+
+    container.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm"></div></div>';
+
+    try{
+      var r = await supabaseClient.from('class_messages')
+        .select('*')
+        .eq('class', String(currentUser.class))
+        .order('created_at', {ascending: true})
+        .limit(100);
+
+      if(!r.data || r.data.length === 0){
+        container.innerHTML = '<div class="chat-empty"><i class="fas fa-comment-dots"></i><div>ആദ്യ സന്ദേശം അയക്കൂ! 💬</div></div>';
+        return;
+      }
+
+      window._chatState.messages = r.data;
+      renderChatMessages(r.data);
+      subscribeClassChat();
+
+    }catch(e){
+      console.error('chat load:', e);
+      container.innerHTML = '<div class="chat-empty"><i class="fas fa-triangle-exclamation"></i>Error loading</div>';
+    }
+  }
+
+  function renderChatMessages(messages){
+    var container = document.getElementById('chatMessages');
+    if(!container) return;
+
+    if(messages.length === 0){
+      container.innerHTML = '<div class="chat-empty"><i class="fas fa-comment-dots"></i><div>ആദ്യ സന്ദേശം അയക്കൂ!</div></div>';
+      return;
+    }
+
+    var html = '';
+    var lastDate = null;
+    var myId = currentUser.studentId;
+
+    messages.forEach(function(m){
+      var d = new Date(m.created_at);
+      var dateKey = d.toDateString();
+      if(dateKey !== lastDate){
+        html += '<div class="chat-date-separator">' + formatDate(m.created_at) + '</div>';
+        lastDate = dateKey;
+      }
+
+      var mine = m.sender_id === myId;
+      var time = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+      var initial = (m.student_name || 'S').charAt(0).toUpperCase();
+
+      html += '<div class="chat-msg ' + (mine ? 'mine' : 'other') + '">';
+      if(!mine) html += '<div class="chat-msg-avatar">' + initial + '</div>';
+      html += '<div class="chat-msg-bubble-wrap">';
+      if(!mine) html += '<div class="chat-msg-sender">' + escapeHtml(m.student_name || 'Student') + '</div>';
+      html += '<div class="chat-msg-bubble">' + escapeHtml(m.message) + '</div>';
+      html += '<div class="chat-msg-time">' + time + '</div>';
+      html += '</div></div>';
+    });
+
+    container.innerHTML = html;
+    setTimeout(function(){ container.scrollTop = container.scrollHeight; }, 100);
+  }
+
+  function subscribeClassChat(){
+    if(!supabaseClient || !currentUser) return;
+    if(window._chatState.channel) return;
+
+    try{
+      window._chatState.channel = supabaseClient
+        .channel('class_chat_' + currentUser.class)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'class_messages',
+          filter: 'class=eq.' + currentUser.class
+        }, function(payload){
+          if(!payload.new) return;
+          if(payload.new.sender_id === currentUser.studentId) return;
+          window._chatState.messages.push(payload.new);
+          renderChatMessages(window._chatState.messages);
+        })
+        .subscribe();
+    }catch(e){ console.warn('chat subscribe:', e); }
+  }
+
+  window.sendChatMessage = async function(){
+    var input = document.getElementById('chatInput');
+    if(!input) return;
+    var text = input.value.trim();
+    if(!text || !currentUser) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+
+    try{
+      var r = await supabaseClient.from('class_messages').insert({
+        class: String(currentUser.class),
+        sender_id: currentUser.studentId,
+        student_name: currentUser.name,
+        message: text
+      });
+      if(r.error) throw r.error;
+
+      // Optimistically add
+      var optimistic = {
+        class: String(currentUser.class),
+        sender_id: currentUser.studentId,
+        student_name: currentUser.name,
+        message: text,
+        created_at: new Date().toISOString()
+      };
+      window._chatState.messages.push(optimistic);
+      renderChatMessages(window._chatState.messages);
+    }catch(e){
+      console.error('send message:', e);
+      showToast('❌ Message അയക്കാൻ പറ്റിയില്ല', 'error');
+    }
+  };
+
+  window.autoResizeChatInput = function(el){
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+  };
+
+  window.toggleChatEmoji = function(){
+    showToast('😊 Emoji soon!', 'info');
+  };
+
+  /* ═══════════════ AVATAR CUSTOMIZER ═══════════════ */
+  var AVATAR_COLORS = ['#3b8bff','#22d3ee','#8b5cf6','#ec4899','#f59e0b','#10b981','#ef4444','#6366f1','#0ea5e9','#84cc16'];
+
+  window.openAvatarCustomizer = function(){
+    if(!currentUser){ showToast('Login first', 'error'); return; }
+    var modal = document.getElementById('avatarCustomizerModal');
+    if(!modal) return;
+    modal.classList.add('open');
+
+    var grid = document.getElementById('avColorsGrid');
+    if(grid && grid.children.length === 0){
+      grid.innerHTML = AVATAR_COLORS.map(function(c, i){
+        return '<div class="av-color-swatch" data-color="' + c + '" style="background:' + c + ';" onclick="selectAvatarColor(this, \'' + c + '\')"></div>';
+      }).join('');
+    }
+
+    var preview = document.getElementById('avPreviewInner');
+    if(preview){
+      preview.textContent = (currentUser.name || 'S').charAt(0).toUpperCase();
+      preview.style.background = 'linear-gradient(140deg,' + (AVATAR_COLORS[0]) + ',' + AVATAR_COLORS[1] + ')';
+    }
+  };
+
+  var _selectedAvatarColor = null;
+  window.selectAvatarColor = function(el, color){
+    document.querySelectorAll('.av-color-swatch').forEach(function(s){ s.classList.remove('active'); });
+    el.classList.add('active');
+    _selectedAvatarColor = color;
+
+    var preview = document.getElementById('avPreviewInner');
+    if(preview) preview.style.background = color;
+  };
+
+  window.saveAvatarCustomization = async function(){
+    if(!currentUser){ return; }
+    if(!_selectedAvatarColor){
+      showToast('⚠️ ഒരു നിറം തിരഞ്ഞെടുക്കൂ', 'error');
+      return;
+    }
+    try{
+      // Store locally for now
+      currentUser.avatarColor = _selectedAvatarColor;
+      localStorage.setItem('noor_session', JSON.stringify(currentUser));
+
+      // Update DB (try avatar_color field, ignore if fails)
+      try{
+        await supabaseClient.from('students').update({avatar_color: _selectedAvatarColor}).eq('studentid', currentUser.studentId);
+      }catch(e){}
+
+      var preview = document.getElementById('avPreviewInner');
+      var avatar = document.getElementById('avatarText');
+      if(avatar && _selectedAvatarColor){
+        avatar.style.color = '#fff';
+        avatar.parentElement.style.background = _selectedAvatarColor;
+      }
+
+      closeAvatarCustomizer();
+      showToast('✅ Avatar സേവ് ചെയ്തു!', 'success');
+      if(typeof confetti !== 'undefined') confetti({particleCount: 80, spread: 70, origin: {y: .7}});
+    }catch(e){
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  window.closeAvatarCustomizer = function(){
+    var modal = document.getElementById('avatarCustomizerModal');
+    if(modal) modal.classList.remove('open');
+  };
+
+  /* ═══════════════ MISSING HELPERS ═══════════════ */
+  window.showStudentLessons = window.showStudentLessons || function(){
+    showToast('📖 Lessons', 'info');
+  };
+  window.showStudentDownloads = window.showStudentDownloads || function(){
+    showToast('📥 Downloads', 'info');
+  };
+
+  /* ═══════════════ SAFE FALLBACK for any onclick ═══════════════ */
+  // Global error interceptor — no more silent failures
+  window.addEventListener('error', function(e){
+    console.warn('🔇 Intercepted:', e.message);
+  });
+
+  console.log('✅ Missing functions loaded');
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ✨ PREMIUM MOBILE APP LOOK — CSS Enhancement                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<style id="premium-mobile-app-look">
+/* ═══════════════ PREMIUM GLASS + DEPTH ═══════════════ */
+:root{
+  --premium-shadow-sm: 0 2px 8px -2px rgba(15,23,42,.08);
+  --premium-shadow-md: 0 8px 24px -8px rgba(15,23,42,.15);
+  --premium-shadow-lg: 0 24px 60px -20px rgba(15,23,42,.25);
+  --premium-shadow-xl: 0 40px 90px -30px rgba(15,23,42,.35);
+  --premium-radius: 22px;
+  --premium-radius-sm: 14px;
+}
+
+/* ═══════════════ SMOOTH APP TRANSITIONS ═══════════════ */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.logged-in {
+  overscroll-behavior-y: contain;
+}
+
+/* ═══════════════ QUICK ACTIONS — iOS STYLE ═══════════════ */
+@media (max-width: 900px){
+  .action-grid {
+    background: linear-gradient(150deg, #ffffff, #f8fafc) !important;
+    padding: 22px 14px !important;
+    border-radius: 26px !important;
+    box-shadow: var(--premium-shadow-md), inset 0 1px 0 rgba(255,255,255,.9) !important;
+  }
+  .action-tile {
+    border-radius: 18px !important;
+    transition: transform .22s cubic-bezier(.34,1.56,.64,1),
+                background .22s ease !important;
+  }
+  .action-tile:active {
+    transform: scale(.93) !important;
+    background: rgba(59,130,246,.08) !important;
+  }
+  .action-ico {
+    box-shadow: 0 10px 22px -8px rgba(30,107,224,.5),
+                inset 0 1px 0 rgba(255,255,255,.4) !important;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+  .action-tile:active .action-ico {
+    transform: scale(.88) rotate(-3deg) !important;
+  }
+}
+
+/* ═══════════════ STAT CARDS — PREMIUM ═══════════════ */
+.stat-card-neon{
+  box-shadow: var(--premium-shadow-sm),
+              inset 0 1px 0 rgba(255,255,255,.9) !important;
+  border-radius: var(--premium-radius) !important;
+  transition: transform .28s cubic-bezier(.34,1.56,.64,1),
+              box-shadow .28s ease !important;
+}
+.stat-card-neon:hover{
+  box-shadow: var(--premium-shadow-md) !important;
+}
+
+/* ═══════════════ PALATHULLI HERO — GLASS DEPTH ═══════════════ */
+.palathulli-hero{
+  box-shadow: 0 32px 70px -28px rgba(26,79,196,.7),
+              inset 0 1px 2px rgba(255,255,255,.45),
+              inset 0 -2px 12px rgba(0,0,0,.15) !important;
+  border-radius: 30px !important;
+}
+
+/* ═══════════════ MOBILE BOTTOM NAV — FLUID ═══════════════ */
+.mob-bottom-nav{
+  box-shadow:
+    0 20px 44px -16px rgba(15,23,42,.35),
+    0 8px 20px -8px rgba(15,23,42,.18),
+    inset 0 1px 1.5px rgba(255,255,255,.9),
+    inset 0 0 0 1px rgba(255,255,255,.55) !important;
+  border-radius: 26px !important;
+}
+.mob-nav-item i{
+  transition: transform .35s cubic-bezier(.34,1.56,.64,1) !important;
+}
+.mob-nav-item.active i{
+  transform: scale(1.2) translateY(-2px) !important;
+  filter: drop-shadow(0 2px 4px rgba(30,64,175,.3));
+}
+
+/* ═══════════════ CHAT FAB — ENHANCED VISIBILITY ═══════════════ */
+@media (max-width: 900px){
+  .chat-fab{
+    display: none;
+    position: fixed;
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 78px !important;
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 1.3rem !important;
+    box-shadow:
+      0 16px 38px -10px rgba(34,197,94,.9),
+      0 0 0 1px rgba(255,255,255,.2),
+      inset 0 1px 1px rgba(255,255,255,.4) !important;
+    z-index: 9999989 !important;
+  }
+  body.logged-in .chat-fab.show{
+    display: flex !important;
+    animation: chatFabPop .5s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+  @keyframes chatFabPop{
+    0%{ transform: scale(0); opacity: 0; }
+    100%{ transform: scale(1); opacity: 1; }
+  }
+  .chat-fab:active{ transform: scale(.92) !important; }
+  .chat-fab .chat-badge.show{ display: flex !important; }
+}
+
+@media (min-width: 901px){
+  .chat-fab{
+    display: none;
+    bottom: 22px !important;
+    right: 100px !important;
+  }
+  body.logged-in .chat-fab.show{ display: flex !important; }
+}
+
+/* Ensure chat FAB shows when user logs in */
+body.logged-in .chat-fab{ display: none; }
+
+/* ═══════════════ CHAT PANEL — PREMIUM ═══════════════ */
+.chat-panel{
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+}
+.chat-msg-bubble{
+  box-shadow: var(--premium-shadow-sm) !important;
+  border-radius: 20px !important;
+}
+.chat-msg.mine .chat-msg-bubble{
+  box-shadow: 0 6px 16px -6px rgba(102,126,234,.65) !important;
+}
+
+/* ═══════════════ DASHBOARD HEADER — PREMIUM GRADIENT ═══════════════ */
+.dashboard-header-glow{
+  background: linear-gradient(135deg, #1547a8 0%, #2563eb 45%, #3b8bff 100%) !important;
+  box-shadow:
+    0 20px 44px -16px rgba(21,71,168,.7),
+    inset 0 1px 1px rgba(255,255,255,.3),
+    inset 0 -2px 12px rgba(0,0,0,.15) !important;
+  border-radius: 28px !important;
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-header-glow::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(34,211,238,.25), transparent 50%);
+  pointer-events: none;
+}
+
+/* ═══════════════ LEADERBOARD — PREMIUM ═══════════════ */
+.leaderboard-section{
+  background: linear-gradient(155deg, #fef3c7, #fde68a 60%, #fcd34d) !important;
+  box-shadow:
+    0 20px 44px -20px rgba(251,191,36,.5),
+    inset 0 1px 1px rgba(255,255,255,.7) !important;
+  border-radius: 26px !important;
+}
+.lb-card{
+  box-shadow: var(--premium-shadow-sm) !important;
+  transition: transform .28s cubic-bezier(.34,1.56,.64,1) !important;
+}
+.lb-card:active{ transform: scale(.96) !important; }
+
+/* ═══════════════ SECTION TITLES — PREMIUM ═══════════════ */
+.section-title{
+  letter-spacing: -.2px;
+}
+.section-title i{
+  filter: drop-shadow(0 2px 4px rgba(43,124,240,.3));
+}
+
+/* ═══════════════ SMOOTH SCROLL ═══════════════ */
+html{ scroll-behavior: smooth; }
+::-webkit-scrollbar{ width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb{
+  background: linear-gradient(180deg, var(--b400), var(--b600));
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover{
+  background: linear-gradient(180deg, var(--b300), var(--b500));
+}
+
+/* ═══════════════ MOBILE: Remove lag on touch ═══════════════ */
+@media (max-width: 900px){
+  .action-tile, .stat-card-neon, .lb-card, .pala-btn, .nsm-btn-primary{
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+/* ═══════════════ RIPPLE EFFECT for buttons ═══════════════ */
+.action-tile::after,
+.pala-btn::after,
+.btn-load::after,
+.btn-update::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%),
+              rgba(255,255,255,.5) 0%,
+              transparent 60%);
+  opacity: 0;
+  transition: opacity .4s;
+}
+.action-tile:active::after,
+.pala-btn:active::after,
+.btn-load:active::after,
+.btn-update:active::after{
+  opacity: 1;
+  transition: opacity 0s;
+}
+
+/* ═══════════════ PREMIUM MODALS ═══════════════ */
+.modal-glass{
+  box-shadow:
+    0 40px 90px -30px rgba(15,23,42,.6),
+    0 0 0 1px rgba(180,200,230,.3),
+    inset 0 1px 0 rgba(255,255,255,.9) !important;
+  border-radius: 28px !important;
+}
+
+/* ═══════════════ PREMIUM TOASTS ═══════════════ */
+.toast-item{
+  box-shadow:
+    0 20px 50px -18px rgba(0,0,0,.7),
+    0 0 0 1px rgba(255,255,255,.15),
+    inset 0 1px 1px rgba(255,255,255,.25) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* ═══════════════ PREMIUM AI FAB ═══════════════ */
+.ai-fab{
+  box-shadow:
+    0 22px 55px -16px rgba(34,211,238,1),
+    0 0 0 1px rgba(255,255,255,.2),
+    inset 0 1px 1px rgba(255,255,255,.4) !important;
+}
+.ai-fab:active{ transform: scale(.92) !important; }
+
+/* ═══════════════ PREMIUM AVATAR CUSTOMIZER ═══════════════ */
+.avatar-customizer-modal{
+  background: linear-gradient(135deg, rgba(108,92,231,.96), rgba(236,72,153,.96));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.avatar-customizer-card{
+  box-shadow: 0 50px 100px -30px rgba(0,0,0,.6),
+              inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+.av-preview-inner{
+  box-shadow: 0 20px 45px -15px rgba(102,126,234,.8),
+              inset 0 2px 4px rgba(255,255,255,.3) !important;
+  transition: background .4s cubic-bezier(.34,1.56,.64,1) !important;
+}
+
+/* ═══════════════ APP-LIKE SAFE AREAS ═══════════════ */
+@supports (padding: max(0px)){
+  body.logged-in{
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ═══════════════ REDUCED MOTION ═══════════════ */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ═══════════════ DARK MODE PREMIUM ═══════════════ */
+body.light-mode{
+  background: linear-gradient(155deg, #f0f6ff, #e6eeff 30%, #dae6ff 60%, #c9dcff);
+}
+body.light-mode .action-grid{
+  background: linear-gradient(150deg, #ffffff, #f8fafc) !important;
+}
+body.light-mode .stat-card-neon{
+  background: linear-gradient(150deg, #ffffff, #f8fafc) !important;
+}
+
+/* ═══════════════ CHAT FAB PULSE (notification) ═══════════════ */
+@keyframes chatFabPulse{
+  0%, 100%{
+    box-shadow:
+      0 16px 38px -10px rgba(34,197,94,.9),
+      0 0 0 0 rgba(34,197,94,.6),
+      0 0 0 1px rgba(255,255,255,.2);
+  }
+  50%{
+    box-shadow:
+      0 16px 38px -10px rgba(34,197,94,1),
+      0 0 0 14px rgba(34,197,94,0),
+      0 0 0 1px rgba(255,255,255,.2);
+  }
+}
+.chat-fab.has-unread{
+  animation: chatFabPulse 2s ease-in-out infinite !important;
+}
+
+/* ═══════════════ SHOW CHAT FAB ON LOGIN ═══════════════ */
+body.logged-in .chat-fab{
+  display: none;
+}
+body.logged-in:not(.ai-panel-open):not(.modal-open) .chat-fab.show{
+  display: flex !important;
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🎬 AUTO-SHOW CHAT FAB AFTER LOGIN                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+
+  // Show chat FAB whenever user logs in
+  function showChatFab(){
+    var fab = document.getElementById('chatFab');
+    if(!fab) return;
+    if(currentUser && !isAdminMode){
+      fab.classList.add('show');
+    } else {
+      fab.classList.remove('show');
+    }
+  }
+
+  // Watch dashboard visibility
+  var dash = document.getElementById('dashboardSection');
+  if(dash){
+    new MutationObserver(function(){
+      if(dash.style.display === 'block') setTimeout(showChatFab, 300);
+      else showChatFab();
+    }).observe(dash, {attributes: true, attributeFilter: ['style']});
+  }
+
+  // Also watch body.logged-in class
+  new MutationObserver(showChatFab).observe(document.body, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+
+  // Initial
+  setTimeout(showChatFab, 2000);
+  setTimeout(showChatFab, 5000);
+
+  console.log('✅ Chat FAB auto-show hooked');
+})();
+</script>
 </body>
 </html>
