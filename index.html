@@ -19835,5 +19835,1294 @@ body.logged-in:not(.ai-panel-open):not(.modal-open) .chat-fab.show{
   console.log('✅ Fee Table Fix v3 loaded — run debugFeeState() to verify');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🚀 NOORUSSALAM MADRASA v26.3 — COMPREHENSIVE FIX           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══ PART 1: MISSING CSS — Better Mobile + Close Buttons ═══ -->
+<style id="v263-mobile-close-fix">
+/* ═══════════════ CLOSE BUTTONS EVERYWHERE ═══════════════ */
+.modal-close-x,
+.panel-close-x{
+  position: absolute; top: 12px; right: 12px;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(255,255,255,.95);
+  border: 1px solid rgba(100,116,139,.25);
+  color: #0f172a; font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; box-shadow: 0 4px 12px -4px rgba(0,0,0,.25);
+  transition: all .2s;
+}
+.modal-close-x:hover,
+.panel-close-x:hover{ transform: scale(1.08); background: #fff; }
+.modal-close-x:active,
+.panel-close-x:active{ transform: scale(.94); }
+
+/* ═══════════════ MOBILE ADMIN TABLES — CARD VIEW ═══════════════ */
+@media (max-width: 900px){
+  /* Hide tables, show cards on mobile for admin */
+  .admin-table-wrap.mobile-cards table thead{ display: none !important; }
+  .admin-table-wrap.mobile-cards table,
+  .admin-table-wrap.mobile-cards tbody,
+  .admin-table-wrap.mobile-cards tr,
+  .admin-table-wrap.mobile-cards td{
+    display: block !important; width: 100% !important;
+  }
+  .admin-table-wrap.mobile-cards tr{
+    background: #fff !important;
+    border-radius: 14px !important;
+    margin-bottom: 10px !important;
+    padding: 12px !important;
+    box-shadow: 0 4px 14px -8px rgba(0,0,0,.15) !important;
+    border: 1px solid rgba(180,200,230,.5) !important;
+  }
+  .admin-table-wrap.mobile-cards td{
+    padding: 6px 0 !important;
+    border: none !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-size: .82rem !important;
+  }
+  .admin-table-wrap.mobile-cards td::before{
+    content: attr(data-label) !important;
+    font-weight: 800 !important;
+    color: #1e40af !important;
+    font-size: .7rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: .5px !important;
+    flex-shrink: 0 !important;
+    min-width: 80px !important;
+  }
+  .admin-table-wrap.mobile-cards td:first-child{
+    justify-content: flex-start !important;
+    border-bottom: 1px solid rgba(59,130,246,.1) !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 6px !important;
+  }
+  .admin-table-wrap.mobile-cards td:first-child::before{ display: none !important; }
+  .admin-table-wrap.mobile-cards td:last-child{
+    padding-top: 10px !important;
+    border-top: 1px solid rgba(59,130,246,.1) !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+  }
+  .admin-table-wrap.mobile-cards td:last-child::before{ display: none !important; }
+  .admin-table-wrap.mobile-cards td:last-child .btn-sm{
+    flex: 1 1 auto !important; min-width: 60px !important;
+  }
+
+  /* Chats */
+  .chat-panel .chat-sidebar{ border-right: none !important; }
+  .chat-main{ padding-bottom: max(0px, env(safe-area-inset-bottom)) !important; }
+
+  /* Fix modal heights on mobile */
+  .modal-glass{
+    max-height: calc(100dvh - 20px) !important;
+    border-radius: 22px !important;
+    margin: 10px !important;
+  }
+  #globalModal > div{
+    max-height: calc(100dvh - 20px) !important;
+  }
+
+  /* Prevent horizontal scroll everywhere */
+  body, html{ overflow-x: hidden !important; }
+  #adminSection, #dashboardSection{ overflow-x: hidden !important; }
+}
+
+/* ═══════════════ INFO TOOLTIP ON ACTION TILES ═══════════════ */
+.action-tile{ position: relative; }
+.action-tile .tile-help{
+  position: absolute; top: 4px; right: 4px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(30,107,224,.15);
+  color: #1e40af; font-size: .58rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  cursor: help; border: 1px solid rgba(30,107,224,.3);
+  z-index: 3;
+}
+.action-tile .tile-tooltip{
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15,23,42,.95); color: #fff;
+  padding: 8px 12px; border-radius: 10px;
+  font-size: .68rem; font-weight: 600; white-space: nowrap;
+  max-width: 220px; white-space: normal; text-align: center;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+  z-index: 100; line-height: 1.4;
+  box-shadow: 0 8px 20px -6px rgba(0,0,0,.5);
+}
+.action-tile .tile-tooltip::after{
+  content: ''; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: rgba(15,23,42,.95);
+}
+.action-tile:hover .tile-tooltip,
+.action-tile:active .tile-tooltip{ opacity: 1; }
+
+@media (max-width: 900px){
+  .action-tile .tile-help{ width: 14px; height: 14px; font-size: .5rem; top: 2px; right: 2px; }
+  .action-tile .tile-tooltip{ font-size: .62rem; max-width: 160px; }
+}
+</style>
+
+<!-- ═══ PART 2: CLOSE BUTTONS INJECTION + MISSING FUNCTIONS ═══ -->
+<script id="v263-critical-functions">
+(function(){
+  'use strict';
+  console.log('🔧 v26.3 Critical Fix loading...');
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 1️⃣  MISSING CREATION FUNCTIONS                              */
+  /* ═══════════════════════════════════════════════════════════ */
+  window._creationLikesCache = {};
+  window._creationCommentsCache = {};
+
+  window.openCreationLightbox = async function(id){
+    var c = (window.allCreations || []).find(function(x){ return x.id === id; });
+    if(!c){ showToast('⚠️ ലഭ്യമല്ല', 'error'); return; }
+    window.currentCreationId = id;
+
+    var lb = document.getElementById('creationLightbox');
+    if(!lb) return;
+
+    var img = document.getElementById('clImage');
+    var pdf = document.getElementById('clPdfViewer');
+    var dlBtn = document.getElementById('clDownloadBtn');
+    var ft = c.file_type || 'image';
+    var url = c.file_url || c.image_url;
+
+    // Reset
+    if(img){ img.style.display = 'none'; img.src = ''; }
+    if(pdf){ pdf.style.display = 'none'; pdf.src = ''; }
+    if(dlBtn){ dlBtn.style.display = 'none'; }
+
+    if(ft === 'text'){
+      // Show text content
+      var titleEl = document.getElementById('clTitle');
+      if(titleEl){
+        titleEl.insertAdjacentHTML('afterend',
+          '<div id="clTextContent" class="cl-text-content">' + escapeHtml(c.text_content || '') + '</div>');
+      }
+      if(img) img.style.display = 'none';
+    } else if(ft === 'pdf'){
+      if(pdf){ pdf.src = url; pdf.style.display = 'block'; }
+      if(dlBtn){ dlBtn.href = url; dlBtn.style.display = 'inline-flex'; }
+    } else {
+      if(img){ img.src = url; img.style.display = 'block'; }
+    }
+
+    // Meta
+    document.getElementById('clTitle').textContent = c.title || '';
+    document.getElementById('clAuthor').textContent = '✍️ ' + (c.studentName || c.studentid || '—');
+    document.getElementById('clCategory').textContent = getCategoryLabel(c.category);
+    document.getElementById('clDate').textContent = formatDate(c.created_at);
+    document.getElementById('clDescription').textContent = c.description || '';
+    document.getElementById('clLikeCount').textContent = c.likes || 0;
+
+    // Delete button — only owner
+    var delBtn = document.getElementById('clDeleteBtn');
+    if(delBtn) delBtn.style.display = (currentUser && c.studentid === currentUser.studentId) ? 'inline-flex' : 'none';
+
+    // Load comments
+    if(typeof window.loadCreationComments === 'function') window.loadCreationComments(id);
+
+    lb.classList.add('open');
+  };
+
+  window.closeCreationLightbox = function(){
+    var lb = document.getElementById('creationLightbox');
+    if(lb) lb.classList.remove('open');
+    var txt = document.getElementById('clTextContent');
+    if(txt) txt.remove();
+  };
+
+  window.toggleCreationLike = async function(){
+    if(!currentUser){ showToast('Login ചെയ്യൂ', 'error'); return; }
+    var id = window.currentCreationId;
+    if(!id) return;
+    var c = (window.allCreations || []).find(function(x){ return x.id === id; });
+    if(!c) return;
+
+    var likeKey = 'noor_like_' + id + '_' + currentUser.studentId;
+    var alreadyLiked = localStorage.getItem(likeKey) === '1';
+    var newLikes = Math.max(0, (c.likes || 0) + (alreadyLiked ? -1 : 1));
+
+    try{
+      await supabaseClient.from('student_creations').update({ likes: newLikes }).eq('id', id);
+      c.likes = newLikes;
+      localStorage.setItem(likeKey, alreadyLiked ? '0' : '1');
+      var countEl = document.getElementById('clLikeCount');
+      if(countEl) countEl.textContent = newLikes;
+      var btn = document.getElementById('clLikeBtn');
+      if(btn) btn.classList.toggle('liked', !alreadyLiked);
+      if(!alreadyLiked && typeof confetti !== 'undefined')
+        confetti({ particleCount: 40, spread: 60, origin: { y: .7 } });
+    } catch(e){ showToast('❌ Like failed', 'error'); }
+  };
+
+  window.deleteCreation = async function(){
+    var id = window.currentCreationId;
+    if(!id) return;
+    if(!confirm('ഈ സൃഷ്ടി ഡിലീറ്റ് ചെയ്യണോ?')) return;
+    try{
+      await supabaseClient.from('student_creations').delete().eq('id', id);
+      showToast('🗑️ Deleted', 'success');
+      closeCreationLightbox();
+      if(typeof loadCreationsGallery === 'function') loadCreationsGallery();
+    } catch(e){ showToast('❌ ' + e.message, 'error'); }
+  };
+
+  window.loadCreationComments = async function(id){
+    var list = document.getElementById('clCommentsList');
+    if(!list) return;
+    list.innerHTML = '<div style="text-align:center;padding:10px;"><div class="spinner-sm"></div></div>';
+    try{
+      var r = await supabaseClient.from('creation_comments').select('*').eq('creation_id', id).order('created_at', { ascending: true });
+      var comments = r.data || [];
+      document.getElementById('clCommentCount').textContent = comments.length;
+      if(comments.length === 0){
+        list.innerHTML = '<div class="cl-comments-empty">ആദ്യ കമന്റ് നിങ്ങളുടേതാകട്ടെ! 💬</div>';
+        return;
+      }
+      list.innerHTML = comments.map(function(cm){
+        var mine = currentUser && cm.studentid === currentUser.studentId;
+        return '<div class="cl-comment-item">' +
+          '<div class="cl-comment-avatar">' + escapeHtml((cm.student_name || 'S').charAt(0).toUpperCase()) + '</div>' +
+          '<div class="cl-comment-body"><div class="cl-comment-header">' +
+          '<span class="cl-comment-author">' + escapeHtml(cm.student_name || cm.studentid) + '</span>' +
+          '<span class="cl-comment-time">' + timeAgo(cm.created_at) + '</span></div>' +
+          '<p class="cl-comment-text">' + escapeHtml(cm.comment) + '</p></div>' +
+          (mine ? '<button class="cl-comment-del" onclick="deleteComment(' + cm.id + ')"><i class="fas fa-times"></i></button>' : '') +
+          '</div>';
+      }).join('');
+      list.scrollTop = list.scrollHeight;
+    } catch(e){
+      list.innerHTML = '<div class="cl-comments-empty">Error loading comments</div>';
+    }
+  };
+
+  window.submitComment = async function(e){
+    e.preventDefault();
+    if(!currentUser){ showToast('Login ചെയ്യൂ', 'error'); return; }
+    var input = document.getElementById('clCommentInput');
+    var text = (input.value || '').trim();
+    if(!text) return;
+    var btn = document.getElementById('clCommentSendBtn');
+    if(btn) btn.disabled = true;
+    try{
+      await supabaseClient.from('creation_comments').insert({
+        creation_id: window.currentCreationId,
+        studentid: currentUser.studentId,
+        student_name: currentUser.name,
+        comment: text
+      });
+      input.value = '';
+      await window.loadCreationComments(window.currentCreationId);
+    } catch(e){ showToast('❌ ' + e.message, 'error'); }
+    if(btn) btn.disabled = false;
+  };
+
+  window.deleteComment = async function(id){
+    if(!confirm('കമന്റ് ഡിലീറ്റ് ചെയ്യണോ?')) return;
+    try{
+      await supabaseClient.from('creation_comments').delete().eq('id', id);
+      await window.loadCreationComments(window.currentCreationId);
+    } catch(e){ showToast('❌ ' + e.message, 'error'); }
+  };
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 2️⃣  CREATION UPLOAD — Missing functions                    */
+  /* ═══════════════════════════════════════════════════════════ */
+  window.openUploadCreationModal = function(){
+    if(!currentUser){ showToast('Login ചെയ്യൂ', 'error'); return; }
+    var m = document.getElementById('uploadCreationModal');
+    if(m) m.style.display = 'flex';
+    window.creationFileBlob = null;
+    window.creationFileType = 'image';
+  };
+  window.closeUploadCreationModal = function(){
+    var m = document.getElementById('uploadCreationModal');
+    if(m) m.style.display = 'none';
+  };
+
+  window.switchCreationMode = function(mode){
+    document.querySelectorAll('.creation-mode-tab').forEach(function(t){
+      t.classList.toggle('active', t.dataset.mode === mode);
+    });
+    var upArea = document.getElementById('creationUploadArea');
+    var txArea = document.getElementById('creationTextArea');
+    if(upArea) upArea.style.display = (mode === 'upload') ? 'block' : 'none';
+    if(txArea) txArea.style.display = (mode === 'text') ? 'block' : 'none';
+    window._creationMode = mode;
+  };
+
+  window.updateCreationTextMeta = function(){
+    var t = document.getElementById('creationTextContent');
+    var c = document.getElementById('creationTextCount');
+    if(!t || !c) return;
+    var len = t.value.length;
+    c.innerHTML = '<span style="color:' + (len < 20 ? '#b45309' : '#059669') + ';font-weight:800;">' + len + '</span> / 5000';
+  };
+
+  window.handleCreationImagePick = function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    window.creationFileBlob = file;
+    window.creationFileType = file.type.startsWith('image/') ? 'image' : 'pdf';
+
+    var preview = document.getElementById('cipPreview');
+    var placeholder = document.getElementById('cipPlaceholder');
+    if(file.type.startsWith('image/')){
+      var r = new FileReader();
+      r.onload = function(ev){
+        if(preview){ preview.src = ev.target.result; preview.style.display = 'block'; }
+        if(placeholder) placeholder.style.display = 'none';
+      };
+      r.readAsDataURL(file);
+    } else {
+      if(preview) preview.style.display = 'none';
+      if(placeholder){
+        placeholder.style.display = 'block';
+        placeholder.innerHTML = '<i class="fas fa-file-pdf" style="font-size:3rem;color:#dc2626;display:block;margin-bottom:10px;"></i>' +
+          '<div style="color:#0f172a;font-weight:800;font-size:.85rem;">' + escapeHtml(file.name) + '</div>' +
+          '<div style="color:#64748b;font-size:.72rem;margin-top:4px;">PDF തിരഞ്ഞെടുത്തു ✓</div>';
+      }
+    }
+  };
+
+  window.submitCreation = async function(e){
+    e.preventDefault();
+    if(!currentUser){ showToast('Login ചെയ്യൂ', 'error'); return; }
+    var title = (document.getElementById('creationTitle').value || '').trim();
+    var category = document.getElementById('creationCategory').value;
+    var description = (document.getElementById('creationDescription').value || '').trim();
+    var mode = window._creationMode || 'upload';
+    if(!title){ showToast('⚠️ ശീർഷകം നൽകുക', 'error'); return; }
+
+    var btn = document.getElementById('creationSubmitBtn');
+    if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner-sm"></div> അപ്‌ലോഡ്...'; }
+
+    try{
+      var payload = {
+        studentid: currentUser.studentId,
+        title: title,
+        category: category,
+        description: description || null,
+        approved: false,
+        likes: 0
+      };
+
+      if(mode === 'text'){
+        var text = (document.getElementById('creationTextContent').value || '').trim();
+        if(text.length < 20){ showToast('⚠️ കുറഞ്ഞത് 20 അക്ഷരം', 'error'); throw new Error('short'); }
+        payload.file_type = 'text';
+        payload.text_content = text;
+        payload.file_url = null;
+      } else {
+        if(!window.creationFileBlob){ showToast('⚠️ ഫയൽ തിരഞ്ഞെടുക്കുക', 'error'); throw new Error('nofile'); }
+        var fn = 'creation_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        var ext = window.creationFileBlob.name ? window.creationFileBlob.name.split('.').pop() : 'png';
+        var fullName = fn + '.' + ext;
+        var up = await supabaseClient.storage.from('creations').upload(fullName, window.creationFileBlob, {
+          cacheControl: '3600', upsert: false, contentType: window.creationFileBlob.type
+        });
+        if(up.error) throw up.error;
+        var pub = supabaseClient.storage.from('creations').getPublicUrl(fullName);
+        payload.file_url = pub.data.publicUrl;
+        payload.file_type = window.creationFileType || 'image';
+      }
+
+      var r = await supabaseClient.from('student_creations').insert(payload);
+      if(r.error) throw r.error;
+
+      showToast('✅ അയച്ചു! Admin approve ചെയ്താൽ കാണാം', 'success');
+      if(typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 80 });
+      closeUploadCreationModal();
+      if(typeof loadCreationsGallery === 'function') loadCreationsGallery();
+    } catch(err){
+      if(err.message !== 'short' && err.message !== 'nofile'){
+        showToast('❌ ' + (err.message || 'Upload failed'), 'error');
+      }
+    }
+    if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fas fa-upload"></i> പോസ്റ്റ് ചെയ്യുക'; }
+  };
+
+  window.filterCreationsGallery = function(){
+    var q = (document.getElementById('creationsSearchInput') || {}).value || '';
+    var cat = (document.getElementById('creationsCategoryFilter') || {}).value || '';
+    var onlyMine = (document.getElementById('creationsOnlyMine') || {}).checked;
+    q = q.toLowerCase().trim();
+
+    var filtered = (window.allCreations || []).filter(function(c){
+      if(cat && c.category !== cat) return false;
+      if(onlyMine && currentUser && c.studentid !== currentUser.studentId) return false;
+      if(q){
+        var hay = ((c.title || '') + ' ' + (c.description || '') + ' ' + (c.text_content || '')).toLowerCase();
+        if(hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    var grid = document.getElementById('creationsGrid');
+    if(!grid) return;
+    if(!filtered.length){
+      grid.innerHTML = '<div class="creations-empty">ഒന്നും കണ്ടെത്തിയില്ല 🌟</div>';
+      return;
+    }
+    grid.innerHTML = filtered.map(function(c){
+      var thumb = '';
+      var ft = c.file_type || 'image';
+      var url = c.file_url || c.image_url;
+      if(ft === 'text'){
+        var p = (c.text_content || '').substring(0, 80);
+        thumb = '<div style="width:100%;height:100%;background:linear-gradient(140deg,#ddd6fe,#fce7f3);padding:14px;font-size:.75rem;color:#0f172a;overflow:hidden;line-height:1.4;">' + escapeHtml(p) + '</div>';
+      } else if(ft === 'pdf'){
+        thumb = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#fee2e2;font-size:3rem;">📄</div>';
+      } else {
+        thumb = '<img src="' + url + '" loading="lazy" alt="">';
+      }
+      return '<div class="creation-card" onclick="openCreationLightbox(' + c.id + ')">' +
+        '<div class="creation-thumb">' + thumb +
+        '<span class="creation-cat-chip">' + getCategoryLabel(c.category) + '</span></div>' +
+        '<div class="creation-body"><h4 class="creation-title">' + escapeHtml(c.title) + '</h4>' +
+        '<div class="creation-meta"><span class="creation-likes"><i class="fas fa-heart"></i> ' + (c.likes || 0) + '</span>' +
+        '<span>' + timeAgo(c.created_at) + '</span></div></div></div>';
+    }).join('');
+  };
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 3️⃣  CHAT — FIX: other students receive messages            */
+  /* ═══════════════════════════════════════════════════════════ */
+  var _chatRealtimeChannel = null;
+
+  window.sendChatMessage = async function(){
+    if(!currentUser || !currentUser.class){
+      showToast('⚠️ Class info ലഭ്യമല്ല', 'error'); return;
+    }
+    var input = document.getElementById('chatInput');
+    var text = (input.value || '').trim();
+    if(!text) return;
+
+    var btn = document.getElementById('chatSendBtn');
+    if(btn) btn.disabled = true;
+    input.value = '';
+    input.style.height = 'auto';
+
+    try{
+      var r = await supabaseClient.from('class_messages').insert({
+        class: String(currentUser.class),
+        sender_id: currentUser.studentId,
+        student_name: currentUser.name,
+        message: text
+      });
+      if(r.error) throw r.error;
+
+      // Optimistic
+      var optimistic = {
+        class: String(currentUser.class),
+        sender_id: currentUser.studentId,
+        student_name: currentUser.name,
+        message: text,
+        created_at: new Date().toISOString()
+      };
+      if(!window._chatMessagesCache) window._chatMessagesCache = [];
+      window._chatMessagesCache.push(optimistic);
+      renderChatMessagesUI(window._chatMessagesCache);
+      subscribeChatRealtime();
+    } catch(e){
+      console.error('Send chat error:', e);
+      showToast('❌ അയക്കാൻ പറ്റിയില്ല: ' + e.message, 'error');
+      input.value = text; // restore
+    }
+    if(btn) btn.disabled = false;
+  };
+
+  async function loadClassMessagesInitial(){
+    if(!currentUser || !currentUser.class) return;
+    var container = document.getElementById('chatMessages');
+    if(!container) return;
+    container.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm"></div></div>';
+    try{
+      var r = await supabaseClient.from('class_messages')
+        .select('*').eq('class', String(currentUser.class))
+        .order('created_at', { ascending: true }).limit(100);
+      window._chatMessagesCache = r.data || [];
+      renderChatMessagesUI(window._chatMessagesCache);
+      subscribeChatRealtime();
+    } catch(e){
+      console.error('load class msgs:', e);
+      container.innerHTML = '<div class="chat-empty"><i class="fas fa-triangle-exclamation"></i>Error loading messages</div>';
+    }
+  }
+
+  function renderChatMessagesUI(messages){
+    var container = document.getElementById('chatMessages');
+    if(!container) return;
+    if(!messages || !messages.length){
+      container.innerHTML = '<div class="chat-empty"><i class="fas fa-comment-dots"></i><div>ആദ്യ സന്ദേശം അയക്കൂ! 💬</div></div>';
+      return;
+    }
+    var html = '', lastDate = null;
+    var myId = currentUser ? currentUser.studentId : '';
+    messages.forEach(function(m){
+      var d = new Date(m.created_at);
+      var dk = d.toDateString();
+      if(dk !== lastDate){
+        html += '<div class="chat-date-separator">' + formatDate(m.created_at) + '</div>';
+        lastDate = dk;
+      }
+      var mine = m.sender_id === myId;
+      var t = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      var ini = (m.student_name || 'S').charAt(0).toUpperCase();
+      html += '<div class="chat-msg ' + (mine ? 'mine' : 'other') + '">';
+      if(!mine) html += '<div class="chat-msg-avatar">' + ini + '</div>';
+      html += '<div class="chat-msg-bubble-wrap">';
+      if(!mine) html += '<div class="chat-msg-sender">' + escapeHtml(m.student_name || 'Student') + '</div>';
+      html += '<div class="chat-msg-bubble">' + escapeHtml(m.message) + '</div>';
+      html += '<div class="chat-msg-time">' + t + '</div></div></div>';
+    });
+    container.innerHTML = html;
+    setTimeout(function(){ container.scrollTop = container.scrollHeight; }, 80);
+  }
+
+  function subscribeChatRealtime(){
+    if(!supabaseClient || !currentUser || !currentUser.class) return;
+    if(_chatRealtimeChannel){
+      try{ supabaseClient.removeChannel(_chatRealtimeChannel); } catch(e){}
+      _chatRealtimeChannel = null;
+    }
+    try{
+      _chatRealtimeChannel = supabaseClient
+        .channel('classchat_' + currentUser.class + '_' + Date.now())
+        .on('postgres_changes', {
+          event: 'INSERT', schema: 'public', table: 'class_messages',
+          filter: 'class=eq.' + currentUser.class
+        }, function(payload){
+          if(!payload.new) return;
+          // Avoid duplicate (already added optimistically)
+          var exists = (window._chatMessagesCache || []).some(function(x){
+            return x.sender_id === payload.new.sender_id
+              && x.message === payload.new.message
+              && Math.abs(new Date(x.created_at) - new Date(payload.new.created_at)) < 5000;
+          });
+          if(exists) return;
+          if(!window._chatMessagesCache) window._chatMessagesCache = [];
+          window._chatMessagesCache.push(payload.new);
+          renderChatMessagesUI(window._chatMessagesCache);
+          if(payload.new.sender_id !== currentUser.studentId){
+            if(navigator.vibrate) try{ navigator.vibrate(40); } catch(e){}
+            var badge = document.getElementById('chatBadge');
+            if(badge && !document.getElementById('chatPanel').classList.contains('open')){
+              var c = parseInt(badge.textContent || '0') + 1;
+              badge.textContent = c > 99 ? '99+' : c;
+              badge.classList.add('show');
+            }
+          }
+        })
+        .subscribe(function(status){
+          console.log('💬 Class chat status:', status);
+        });
+    } catch(e){ console.error('subscribe chat:', e); }
+  }
+
+  // Override openChatPanel to use our new loader
+  var _origOpenChat = window.openChatPanel;
+  window.openChatPanel = async function(){
+    if(!currentUser){ showToast('Login ചെയ്യൂ', 'error'); return; }
+    var panel = document.getElementById('chatPanel');
+    if(!panel) return;
+    panel.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if(window.innerWidth <= 900){
+      var sb = document.getElementById('chatSidebar');
+      var mn = document.getElementById('chatMain');
+      if(sb) sb.classList.remove('hidden-mobile');
+      if(mn) mn.classList.remove('show-mobile');
+    }
+    var badge = document.getElementById('chatBadge');
+    if(badge){ badge.textContent = '0'; badge.classList.remove('show'); }
+    await loadClassMessagesInitial();
+  };
+
+  window.closeChatPanel = function(){
+    var panel = document.getElementById('chatPanel');
+    if(panel) panel.classList.remove('open');
+    document.body.style.overflow = '';
+    if(_chatRealtimeChannel){
+      try{ supabaseClient.removeChannel(_chatRealtimeChannel); } catch(e){}
+      _chatRealtimeChannel = null;
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 4️⃣  AUTO-INJECT CLOSE BUTTONS                              */
+  /* ═══════════════════════════════════════════════════════════ */
+  function injectCloseButtons(){
+    var targets = [
+      { id: 'avatarCustomizerModal', closeFn: 'closeAvatarCustomizer' },
+      { id: 'uploadCreationModal', closeFn: 'closeUploadCreationModal' },
+      { id: 'creationLightbox', closeFn: 'closeCreationLightbox' }
+    ];
+    targets.forEach(function(t){
+      var el = document.getElementById(t.id);
+      if(!el) return;
+      if(el.querySelector('.modal-close-x')) return;
+      // Only inject if there's no obvious close button already
+      var hasClose = el.querySelector('.cl-close, .btn-cancel, [onclick*="close"]');
+      if(hasClose) return;
+      var btn = document.createElement('button');
+      btn.className = 'modal-close-x';
+      btn.innerHTML = '<i class="fas fa-times"></i>';
+      btn.onclick = function(){ if(typeof window[t.closeFn] === 'function') window[t.closeFn](); };
+      el.appendChild(btn);
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 5️⃣  ESC KEY CLOSE — handles ALL modals                     */
+  /* ═══════════════════════════════════════════════════════════ */
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Escape') return;
+    var handled = false;
+    var checks = [
+      { sel: '#creationLightbox.open', fn: 'closeCreationLightbox' },
+      { sel: '#avatarCustomizerModal.open', fn: 'closeAvatarCustomizer' },
+      { sel: '#chatPanel.open', fn: 'closeChatPanel' },
+      { sel: '#uploadCreationModal', style: 'flex', fn: 'closeUploadCreationModal' }
+    ];
+    checks.forEach(function(c){
+      if(handled) return;
+      var el = c.sel ? document.querySelector(c.sel) : null;
+      if(c.style && !el){
+        el = document.getElementById(c.sel.replace('#', ''));
+        if(el && el.style.display !== 'flex') el = null;
+      }
+      if(el){
+        handled = true;
+        if(typeof window[c.fn] === 'function') window[c.fn]();
+      }
+    });
+  });
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 6️⃣  TOOLTIPS FOR CONFUSING OPTIONS                         */
+  /* ═══════════════════════════════════════════════════════════ */
+  var TILE_HELP = {
+    results:       'പരീക്ഷാ ഫലം, ഗ്രേഡ്, റാങ്ക് എന്നിവ കാണുക',
+    attendance:    'മാസം തോറുമുള്ള ഹാജർ വിവരം',
+    moral:         'മൂല്യബോധം / നൈതിക ഗ്രേഡുകൾ',
+    profile:       'നിങ്ങളുടെ വ്യക്തിഗത വിവരങ്ങൾ',
+    marks:         'ഓരോ പരീക്ഷയിലെയും മാർക്കുകൾ',
+    timetable:     'ക്ലാസ് സമയക്രമം',
+    homework:      'അധ്യാപകർ നൽകിയ വീട്ടുജോലികൾ',
+    library:       'പഠന സാമഗ്രികൾ, PDF, വീഡിയോ',
+    idcard:        'ഡിജിറ്റൽ ID കാർഡ് (PNG/PDF)',
+    palathulli:    'സമ്പാദ്യ പദ്ധതി — പാസ്ബുക്ക്',
+    extracurricular:'കലാ-കായിക-സാഹിത്യ മേഖലകളിലെ മാർക്ക്',
+    competitions:  'മൽസരങ്ങളിൽ നേടിയ സ്ഥാനങ്ങൾ',
+    creations:     'നിങ്ങളുടെ കലാസൃഷ്ടികൾ (ചിത്രം, കഥ, കവിത)',
+    report:        'PDF academic റിപ്പോർട്ട് ഡൗൺലോഡ്',
+    studentzone:   'പഠന സ്റ്റാറ്റിസ്റ്റിക്സ്',
+    fees:          'വരിസംഖ്യ വിവരങ്ങൾ + UPI പേയ്‌മെന്റ്',
+    calendar:      'വരാനിരിക്കുന്ന പരിപാടികൾ',
+    notes:         'നിങ്ങളുടെ സ്വന്തം കുറിപ്പുകൾ',
+    badges:        'നേട്ടങ്ങളുടെ ബാഡ്ജുകൾ',
+    notice:        'പ്രധാന അറിയിപ്പുകൾ',
+    topper:        'ടോപ്പർ പോസ്റ്റർ ഡൗൺലോഡ്',
+    lessons:       'പാഠ്യപദ്ധതി — പൂർത്തിയായതും ബാക്കിയുള്ളതും',
+    downloads:     'അധ്യാപകർ അപ്‌ലോഡ് ചെയ്ത ഫയലുകൾ',
+    quiz:          'ആഴ്ചതോറുമുള്ള ക്വിസ് — XP നേടാം',
+    rewards:       'XP ഉപയോഗിച്ച് സമ്മാനങ്ങൾ നേടാം',
+    tasbeeh:       'ഡിജിറ്റൽ തസ്‌ബീഹ് കൗണ്ടർ',
+    avatar_custom: 'അവതാരിന്റെ നിറം മാറ്റുക',
+    class_chat:    'ക്ലാസ്സിലെ മറ്റു കുട്ടികളുമായി ചാറ്റ്'
+  };
+
+  function addTooltipsToTiles(){
+    var grid = document.getElementById('quickActionsGrid');
+    if(!grid) return;
+    grid.querySelectorAll('.action-tile').forEach(function(tile){
+      var action = tile.dataset.action;
+      if(!action || !TILE_HELP[action]) return;
+      if(tile.querySelector('.tile-help')) return;
+      var help = document.createElement('span');
+      help.className = 'tile-help';
+      help.textContent = '?';
+      var tip = document.createElement('span');
+      tip.className = 'tile-tooltip';
+      tip.textContent = TILE_HELP[action];
+      tile.appendChild(help);
+      tile.appendChild(tip);
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 7️⃣  INIT                                                    */
+  /* ═══════════════════════════════════════════════════════════ */
+  function init(){
+    injectCloseButtons();
+    addTooltipsToTiles();
+    console.log('✅ v26.3 Critical fix ready');
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 1200);
+      setTimeout(init, 3000);
+    });
+  } else {
+    setTimeout(init, 1200);
+    setTimeout(init, 3000);
+  }
+
+  // Re-inject when dashboard becomes visible
+  var dash = document.getElementById('dashboardSection');
+  if(dash){
+    new MutationObserver(function(){
+      if(dash.style.display === 'block'){
+        setTimeout(function(){ injectCloseButtons(); addTooltipsToTiles(); }, 800);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Chat FAB visibility
+  var _cfWatcher = setInterval(function(){
+    var fab = document.getElementById('chatFab');
+    if(!fab) return;
+    if(currentUser && !isAdminMode) fab.classList.add('show');
+    else fab.classList.remove('show');
+  }, 2000);
+
+  console.log('✅ v26.3 Fix loaded — Missing functions + Close buttons + Chat fix + Tooltips');
+})();
+</script>
+
+<!-- ═══ PART 3: SQL — Run in Supabase SQL Editor ═══ -->
+<!--
+-- 1. class_messages table for chat
+CREATE TABLE IF NOT EXISTS class_messages (
+  id BIGSERIAL PRIMARY KEY,
+  class TEXT NOT NULL,
+  sender_id TEXT NOT NULL,
+  student_name TEXT,
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_class_messages_class ON class_messages(class, created_at DESC);
+
+-- 2. Enable realtime
+ALTER PUBLICATION supabase_realtime ADD TABLE class_messages;
+
+-- 3. RLS — allow all authenticated (adjust as needed)
+ALTER TABLE class_messages ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_class_messages" ON class_messages;
+CREATE POLICY "allow_all_class_messages" ON class_messages
+  FOR ALL USING (true) WITH CHECK (true);
+
+-- 4. creation_comments table
+CREATE TABLE IF NOT EXISTS creation_comments (
+  id BIGSERIAL PRIMARY KEY,
+  creation_id BIGINT NOT NULL,
+  studentid TEXT NOT NULL,
+  student_name TEXT,
+  comment TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_creation_comments ON creation_comments(creation_id, created_at);
+
+ALTER PUBLICATION supabase_realtime ADD TABLE creation_comments;
+
+ALTER TABLE creation_comments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_creation_comments" ON creation_comments;
+CREATE POLICY "allow_all_creation_comments" ON creation_comments
+  FOR ALL USING (true) WITH CHECK (true);
+
+-- 5. Storage bucket for creations (run in Dashboard > Storage)
+-- Create bucket: creations (public)
+-- Create bucket: downloads (public)
+-->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🚀 v26.4 — ADMIN MOBILE + MISSING PDF + FULL VISIBILITY    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══ PART A: CSS — Admin Tables → Mobile Cards ═══ -->
+<style id="v264-admin-mobile-cards">
+@media (max-width: 900px) {
+
+  /* ═══════════════ ADMIN TABLES → CARD VIEW ═══════════════ */
+  .admin-table-wrap.card-mode table,
+  .admin-table-wrap.card-mode tbody,
+  .admin-table-wrap.card-mode tr,
+  .admin-table-wrap.card-mode td {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .admin-table-wrap.card-mode thead {
+    display: none !important;
+  }
+
+  .admin-table-wrap.card-mode tr {
+    background: #fff !important;
+    border: 1px solid rgba(180,200,230,.5) !important;
+    border-radius: 16px !important;
+    padding: 14px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 4px 14px -8px rgba(0,0,0,.15) !important;
+    position: relative !important;
+  }
+
+  .admin-table-wrap.card-mode td {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 7px 0 !important;
+    border: none !important;
+    border-bottom: 1px dashed rgba(59,130,246,.12) !important;
+    font-size: .82rem !important;
+    color: #0f172a !important;
+    text-align: right !important;
+  }
+
+  .admin-table-wrap.card-mode td:last-child {
+    border-bottom: none !important;
+    margin-top: 10px !important;
+    padding-top: 12px !important;
+    border-top: 1.5px solid rgba(59,130,246,.2) !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    text-align: left !important;
+  }
+
+  /* Label from data-label attribute */
+  .admin-table-wrap.card-mode td::before {
+    content: attr(data-label) !important;
+    font-weight: 800 !important;
+    color: #1e40af !important;
+    font-size: .68rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: .6px !important;
+    flex: 0 0 auto !important;
+    text-align: left !important;
+    padding-top: 2px !important;
+  }
+
+  /* First cell (usually #, Name) = Card header */
+  .admin-table-wrap.card-mode td:first-child {
+    border-bottom: 1px solid rgba(59,130,246,.15) !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 6px !important;
+    font-weight: 900 !important;
+    font-size: .94rem !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  .admin-table-wrap.card-mode td:first-child::before {
+    display: none !important;
+  }
+
+  /* Class group header rows */
+  .admin-table-wrap.card-mode tr[style*="linear-gradient"] {
+    background: linear-gradient(100deg,#1e40af,#2563eb) !important;
+    padding: 12px 16px !important;
+  }
+
+  .admin-table-wrap.card-mode tr[style*="linear-gradient"] td {
+    color: #fff !important;
+    border: none !important;
+    text-align: left !important;
+    padding: 0 !important;
+  }
+
+  .admin-table-wrap.card-mode tr[style*="linear-gradient"] td::before {
+    display: none !important;
+  }
+
+  /* Inputs — full width in mobile card */
+  .admin-table-wrap.card-mode td input[type="number"],
+  .admin-table-wrap.card-mode td input[type="text"] {
+    width: 100px !important;
+    padding: 8px 10px !important;
+    font-size: 15px !important;
+    text-align: center !important;
+  }
+
+  .admin-table-wrap.card-mode td select {
+    width: auto !important;
+    min-width: 80px !important;
+    padding: 6px 10px !important;
+    font-size: 14px !important;
+  }
+
+  .admin-table-wrap.card-mode td img {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 50% !important;
+  }
+
+  /* Action buttons — full row grid */
+  .admin-table-wrap.card-mode td:last-child .btn-sm {
+    flex: 1 1 auto !important;
+    min-width: 60px !important;
+    min-height: 38px !important;
+    padding: 8px 12px !important;
+    font-size: .78rem !important;
+  }
+
+  /* ═══════════════ MODAL HEIGHTS — FIX ═══════════════ */
+  #globalModal > div,
+  .modal-glass {
+    max-height: calc(100dvh - 16px) !important;
+    margin: 8px !important;
+  }
+
+  #globalModal #modalContentBody {
+    padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  }
+
+  /* ═══════════════ HARD PREVENT OVERFLOW ═══════════════ */
+  #adminSection, #adminSection *,
+  #dashboardSection, #dashboardSection * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ═══════════════ ADMIN TABS — BIGGER TOUCH TARGETS ═══════════════ */
+  .admin-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+    gap: 6px !important;
+    padding: 4px 0 12px !important;
+  }
+
+  .admin-tab {
+    min-height: 46px !important;
+    padding: 8px 6px !important;
+    font-size: .68rem !important;
+    border-radius: 14px !important;
+    white-space: normal !important;
+    line-height: 1.25 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    word-break: break-word !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .admin-tabs {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+</style>
+
+<!-- ═══ PART B: JS — Missing PDF + Full Visibility Control ═══ -->
+<script id="v264-complete-fix">
+(function(){
+  'use strict';
+  console.log('🚀 v26.4 loading...');
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 1️⃣  MISSING: downloadStudentsPDF()                          */
+  /* ═══════════════════════════════════════════════════════════ */
+  window.downloadStudentsPDF = async function(){
+    var list = window.filteredStudentsAdmin || window.studentsAdminData || [];
+    if(!list.length){
+      if(typeof showToast === 'function') showToast('⚠️ No students data', 'error');
+      return;
+    }
+    if(typeof showLoading === 'function') showLoading(true);
+    try{
+      var ok = await (window.waitForPDFLibs ? window.waitForPDFLibs(6000) : Promise.resolve(true));
+      if(!ok){ showLoading(false); showToast('⚠️ PDF library loading', 'error'); return; }
+
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+
+      try{ if(typeof setupMalayalamPDF === 'function') await setupMalayalamPDF(doc); } catch(e){}
+
+      var pw = doc.internal.pageSize.getWidth();
+      var header = 'All Classes';
+      if(currentAdminClass && currentAdminClass !== 'all') header = 'Class ' + currentAdminClass;
+
+      doc.setFillColor(21,71,168);
+      doc.rect(0,0,pw,80,'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(18);
+      doc.setFont(undefined,'bold');
+      doc.text('NOORUSSALAM MADRASA', pw/2, 32, { align:'center' });
+      doc.setFontSize(11);
+      doc.setFont(undefined,'normal');
+      doc.text('Students List — ' + header + ' — Total: ' + list.length, pw/2, 55, { align:'center' });
+      doc.setTextColor(0,0,0);
+
+      var rows = list.map(function(s, i){
+        return [
+          i + 1,
+          s.roll || '—',
+          s.studentid || '',
+          s.name || '',
+          s.class || '',
+          s.fathername || '—',
+          s.phone || '—',
+          s.is_blocked ? 'BLOCKED' : 'Active'
+        ];
+      });
+
+      doc.autoTable({
+        startY: 100,
+        head: [['#','Roll','Student ID','Name','Class','Father','Phone','Status']],
+        body: rows,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 5 },
+        headStyles: { fillColor: [30,107,224], textColor: 255, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [248,250,252] },
+        columnStyles: {
+          0: { cellWidth: 25, halign:'center' },
+          1: { cellWidth: 40, halign:'center' },
+          2: { cellWidth: 80 },
+          3: { cellWidth: 130 },
+          4: { cellWidth: 40, halign:'center' },
+          5: { cellWidth: 130 },
+          6: { cellWidth: 90 },
+          7: { cellWidth: 70, halign:'center' }
+        }
+      });
+
+      var fname = 'Students_' + (currentAdminClass || 'all') + '_' + new Date().toISOString().split('T')[0] + '.pdf';
+      doc.save(fname);
+      if(typeof showToast === 'function') showToast('✅ PDF Downloaded (' + list.length + ' students)', 'success');
+      if(typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+    } catch(e){
+      console.error('downloadStudentsPDF error:', e);
+      if(typeof showToast === 'function') showToast('❌ PDF failed: ' + e.message, 'error');
+    }
+    if(typeof showLoading === 'function') showLoading(false);
+  };
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 2️⃣  AUTO-APPLY card-mode to admin tables                   */
+  /* ═══════════════════════════════════════════════════════════ */
+  function applyCardMode(){
+    if(window.innerWidth > 900) return;
+    document.querySelectorAll('.admin-table-wrap table').forEach(function(table){
+      // Read headers
+      var headers = [];
+      table.querySelectorAll('thead th').forEach(function(th){
+        headers.push((th.textContent || '').trim());
+      });
+      if(!headers.length) return;
+
+      // Apply data-label to each td
+      table.querySelectorAll('tbody tr').forEach(function(row){
+        if(row.querySelector('td[colspan]')) return;
+        var cells = row.querySelectorAll('td');
+        cells.forEach(function(cell, i){
+          if(!cell.hasAttribute('data-label') && headers[i]){
+            cell.setAttribute('data-label', headers[i]);
+          }
+        });
+      });
+
+      // Add card-mode class to wrapper
+      var wrap = table.closest('.admin-table-wrap');
+      if(wrap && !wrap.classList.contains('card-mode')){
+        wrap.classList.add('card-mode');
+      }
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 3️⃣  ENHANCED VISIBILITY — Includes AI/Chat/New tiles       */
+  /* ═══════════════════════════════════════════════════════════ */
+  window._extendedVisibility = {
+    ai_fab: true,
+    chat_fab: true,
+    daily_hub: true,
+    ticker: true,
+    quiz_tile: true,
+    rewards_tile: true,
+    tasbeeh_tile: true,
+    avatar_tile: true,
+    chat_tile: true
+  };
+
+  // Load extended settings on settings page
+  var _origRenderVisibilityUI = window.renderVisibilityUI;
+  window.renderVisibilityUI = function(){
+    if(typeof _origRenderVisibilityUI === 'function') _origRenderVisibilityUI();
+
+    // Add extended controls
+    var aGrid = document.getElementById('visActionsGrid');
+    if(!aGrid || aGrid.querySelector('[data-ext="true"]')) return;
+
+    var extras = [
+      { key: 'ai_fab', label: 'AI Assistant', icon: 'fa-robot' },
+      { key: 'chat_fab', label: 'Class Chat FAB', icon: 'fa-comments' },
+      { key: 'daily_hub', label: 'Daily Hub (Prayer/Islamic/Exam)', icon: 'fa-mosque' },
+      { key: 'ticker', label: 'Login Ticker', icon: 'fa-bullhorn' },
+      { key: 'quiz_tile', label: 'Quiz Tile', icon: 'fa-question-circle' },
+      { key: 'rewards_tile', label: 'Rewards Tile', icon: 'fa-gift' },
+      { key: 'tasbeeh_tile', label: 'Tasbeeh Tile', icon: 'fa-circle-notch' },
+      { key: 'avatar_tile', label: 'Avatar Customizer', icon: 'fa-palette' },
+      { key: 'chat_tile', label: 'Chat Tile', icon: 'fa-comment-dots' }
+    ];
+
+    extras.forEach(function(m){
+      var el = document.createElement('label');
+      el.className = 'vis-toggle ' + (window._extendedVisibility[m.key] ? '' : 'off');
+      el.setAttribute('data-ext', 'true');
+      el.id = 'vis_ext_' + m.key;
+      el.innerHTML =
+        '<span class="vis-name"><i class="fas ' + m.icon + '"></i>' + m.label + '</span>' +
+        '<input type="checkbox" ' + (window._extendedVisibility[m.key] ? 'checked' : '') +
+        ' onchange="window.toggleExtendedVisibility(\'' + m.key + '\', this.checked)">' +
+        '<span class="vis-switch"></span>';
+      aGrid.appendChild(el);
+    });
+  };
+
+  window.toggleExtendedVisibility = function(key, val){
+    window._extendedVisibility[key] = val;
+    var wrap = document.getElementById('vis_ext_' + key);
+    if(wrap) wrap.classList.toggle('off', !val);
+    // Apply immediately
+    applyExtendedVisibility();
+  };
+
+  function applyExtendedVisibility(){
+    var ev = window._extendedVisibility;
+
+    // AI FAB
+    var aiFab = document.getElementById('aiFab');
+    if(aiFab) aiFab.style.display = ev.ai_fab ? '' : 'none';
+
+    // Chat FAB
+    var chatFab = document.getElementById('chatFab');
+    if(chatFab){
+      if(ev.chat_fab && currentUser) chatFab.classList.add('show');
+      else chatFab.classList.remove('show');
+    }
+
+    // Daily Hub
+    var hub = document.getElementById('dailyHub');
+    if(hub) hub.style.display = ev.daily_hub ? '' : 'none';
+
+    // Login ticker
+    var ticker = document.getElementById('nsmTicker');
+    if(ticker && !currentUser) ticker.style.display = ev.ticker ? 'flex' : 'none';
+
+    // Quick action tiles
+    var tileMap = {
+      quiz_tile: 'quiz',
+      rewards_tile: 'rewards',
+      tasbeeh_tile: 'tasbeeh',
+      avatar_tile: 'avatar_custom',
+      chat_tile: 'class_chat'
+    };
+    Object.keys(tileMap).forEach(function(k){
+      var tile = document.querySelector('.action-tile[data-action="' + tileMap[k] + '"]');
+      if(tile) tile.style.display = ev[k] ? '' : 'none';
+    });
+  }
+  window.applyExtendedVisibility = applyExtendedVisibility;
+
+  // Override saveStudentPortalVisibility to include extended
+  var _origSaveVisibility = window.saveStudentPortalVisibility;
+  window.saveStudentPortalVisibility = async function(){
+    if(typeof _origSaveVisibility === 'function') await _origSaveVisibility();
+    try{
+      await supabaseClient.from('settings').upsert({
+        key: 'studentPortalExtendedVisibility',
+        value: JSON.stringify(window._extendedVisibility)
+      }, { onConflict: 'key' });
+      showToast('✅ Extended visibility saved', 'success');
+    } catch(e){ console.warn('Extended save:', e); }
+  };
+
+  // Load extended settings
+  async function loadExtendedVisibility(){
+    try{
+      var r = await supabaseClient.from('settings').select('value').eq('key', 'studentPortalExtendedVisibility').maybeSingle();
+      if(r.data && r.data.value){
+        try{
+          window._extendedVisibility = Object.assign(window._extendedVisibility, JSON.parse(r.data.value));
+        } catch(e){}
+      }
+    } catch(e){}
+    applyExtendedVisibility();
+  }
+
+  // Hook into applyStudentPortalVisibility
+  var _origApplyVis = window.applyStudentPortalVisibility;
+  window.applyStudentPortalVisibility = function(st){
+    if(typeof _origApplyVis === 'function') _origApplyVis(st);
+    applyExtendedVisibility();
+  };
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 4️⃣  INIT                                                    */
+  /* ═══════════════════════════════════════════════════════════ */
+  function init(){
+    applyCardMode();
+    loadExtendedVisibility();
+    console.log('✅ v26.4 — Admin mobile + PDF + Extended visibility ready');
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 1000);
+      setTimeout(applyCardMode, 2500);
+      setTimeout(applyCardMode, 4500);
+    });
+  } else {
+    setTimeout(init, 1000);
+    setTimeout(applyCardMode, 2500);
+  }
+
+  // Re-apply on dashboard/admin visibility
+  new MutationObserver(function(){
+    setTimeout(applyCardMode, 500);
+  }).observe(document.body, { childList: true, subtree: true });
+
+  // Also on window resize
+  var _rt;
+  window.addEventListener('resize', function(){
+    clearTimeout(_rt);
+    _rt = setTimeout(applyCardMode, 300);
+  });
+
+  // Force card-mode when admin tab content loads
+  new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      if(m.addedNodes.length){
+        m.addedNodes.forEach(function(n){
+          if(n.nodeType === 1 && n.querySelector && n.querySelector('table')){
+            setTimeout(applyCardMode, 300);
+          }
+        });
+      }
+    });
+  }).observe(document.body, { childList: true, subtree: true });
+
+  console.log('✅ v26.4 complete');
+})();
+</script>
+
+<!-- ═══ PART C: SQL — Run in Supabase SQL Editor ═══ -->
+<!--
+-- Extended visibility settings storage
+INSERT INTO settings (key, value)
+VALUES ('studentPortalExtendedVisibility',
+  '{"ai_fab":true,"chat_fab":true,"daily_hub":true,"ticker":true,"quiz_tile":true,"rewards_tile":true,"tasbeeh_tile":true,"avatar_tile":true,"chat_tile":true}')
+ON CONFLICT (key) DO NOTHING;
+-->
 </body>
 </html>
