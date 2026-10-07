@@ -22445,5 +22445,88 @@ window.printFeeReportPDF = function() {
   showToast('📄 Please use Download button in Fee tab', 'info');
 };
 </script>
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 🎢 TICKER SPEED FIX — Mobile Optimized        -->
+<!-- ═══════════════════════════════════════════════ -->
+<style>
+/* 🚀 GPU Acceleration for smooth animation */
+.nsm-ticker-track {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+/* 📱 Mobile — Faster animation */
+@media (max-width: 900px) {
+  .nsm-ticker-track {
+    /* 40s → 18s (2x faster) */
+    animation-duration: 18s !important;
+    /* Extra GPU boost */
+    will-change: transform;
+  }
+  
+  /* ഇനി കുറച്ച് spacing — text വായിക്കാൻ എളുപ്പം */
+  .nsm-ticker-item {
+    padding: 0 30px !important;
+  }
+}
+</style>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ═══════════════════════════════════════════ */
+  /* 🎢 DYNAMIC TICKER SPEED                     */
+  /* Content width-നു അനുസരിച്ച് speed adjust   */
+  /* ═══════════════════════════════════════════ */
+  function fixTickerSpeed() {
+    var track = document.getElementById('nsmTickerTrack');
+    if (!track) return;
+    
+    // Wait for content to render
+    requestAnimationFrame(function() {
+      // Track is duplicated (items + items), so half width = one cycle
+      var oneCycleWidth = track.scrollWidth / 2;
+      if (oneCycleWidth <= 0) return;
+      
+      // Aim for ~60 pixels per second (comfortable reading speed)
+      var speed = 60; // px/s
+      var duration = Math.max(12, oneCycleWidth / speed);
+      
+      // Cap max at 25s to avoid ultra-slow on tiny screens
+      duration = Math.min(duration, 25);
+      
+      track.style.animationDuration = duration + 's';
+      console.log('🎢 Ticker speed set to', duration.toFixed(1) + 's for ' + oneCycleWidth.toFixed(0) + 'px content');
+    });
+  }
+
+  // Run after ticker loads
+  setTimeout(fixTickerSpeed, 1500);
+  setTimeout(fixTickerSpeed, 3000);
+  setTimeout(fixTickerSpeed, 6000);
+
+  // Re-run when ticker content changes (new notifications)
+  var _origLoadTicker = window.loadTickerMessages;
+  if (typeof _origLoadTicker === 'function') {
+    window.loadTickerMessages = async function() {
+      await _origLoadTicker.apply(this, arguments);
+      setTimeout(fixTickerSpeed, 500);
+    };
+  }
+
+  // Orientation change
+  window.addEventListener('orientationchange', function() {
+    setTimeout(fixTickerSpeed, 800);
+  });
+
+  console.log('✅ Ticker speed fix loaded');
+})();
+</script>
 </body>
 </html>
