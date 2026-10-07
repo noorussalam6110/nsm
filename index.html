@@ -5543,6 +5543,527 @@ body.modal-open .chat-fab{display:none !important;}
   }
 }
 </style>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎯 v23.0 STYLE ADMIN — Mobile Single Screen Restore   -->
+<!-- Paste right before </head>                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="v23-style-admin-mobile">
+@media (max-width: 900px) {
+
+  /* ─────────────────────────────────────────────────── */
+  /* 1️⃣ ADMIN TABS — v23.0 PILL STYLE + WRAP             */
+  /* ─────────────────────────────────────────────────── */
+  .admin-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+    gap: 6px !important;
+    padding: 4px 0 12px !important;
+    scroll-snap-type: none !important;
+  }
+  .admin-tab {
+    flex: 0 1 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    font-size: .72rem !important;
+    font-weight: 700 !important;
+    min-height: 38px !important;
+    border-radius: 40px !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    line-height: 1.2 !important;
+    /* v23.0 base styles */
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid rgba(100,116,139,.15) !important;
+  }
+  .admin-tab.active {
+    background: linear-gradient(100deg,#1e6be0,#1547a8) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 2️⃣ ADMIN TOOLBAR — v23.0 NATURAL WRAP               */
+  /* ─────────────────────────────────────────────────── */
+  .admin-toolbar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+  }
+  .admin-toolbar label {
+    font-size: .78rem !important;
+    font-weight: 700 !important;
+    color: #475569 !important;
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+  }
+  .admin-toolbar input,
+  .admin-toolbar select,
+  .admin-toolbar .modal-form-input {
+    flex: 1 1 130px !important;
+    width: auto !important;
+    min-width: 130px !important;
+    min-height: 40px !important;
+    font-size: 14px !important;
+    padding: 8px 14px !important;
+    border-radius: 30px !important;
+  }
+  .admin-toolbar .btn-load,
+  .admin-toolbar .btn-update,
+  .admin-toolbar .btn-pdf {
+    flex: 0 0 auto !important;
+    min-height: 40px !important;
+    padding: 9px 16px !important;
+    font-size: .78rem !important;
+    border-radius: 30px !important;
+    width: auto !important;
+  }
+  .admin-toolbar .btn-load[onclick*="Add"],
+  .admin-toolbar .btn-update[onclick*="Add"],
+  .admin-toolbar .btn-update[onclick*="Bulk"] {
+    /* Add/Bulk buttons — keep visible */
+    flex: 0 0 auto !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 3️⃣ TABLES — v23.0 NATURAL STYLE                     */
+  /* ─────────────────────────────────────────────────── */
+  .admin-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border: 1px solid rgba(180,200,230,.5) !important;
+    border-radius: 18px !important;
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 12px 0 16px !important;
+  }
+  .admin-table-wrap table {
+    display: table !important;
+    width: 100% !important;
+    min-width: 300px !important;
+    border-collapse: collapse !important;
+    background: #fff !important;
+    font-size: .78rem !important;
+    color: #0f172a !important;
+  }
+  .admin-table-wrap thead { display: table-header-group !important; }
+  .admin-table-wrap tbody { display: table-row-group !important; }
+  .admin-table-wrap tr {
+    display: table-row !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .admin-table-wrap th {
+    display: table-cell !important;
+    padding: 10px 8px !important;
+    font-size: .6rem !important;
+    text-align: left !important;
+    background: #f0f6ff !important;
+    border-bottom: 1.5px solid rgba(59,130,246,.2) !important;
+    white-space: nowrap !important;
+    letter-spacing: .8px !important;
+    font-weight: 800 !important;
+    color: #1e40af !important;
+    text-transform: uppercase !important;
+  }
+  .admin-table-wrap td {
+    display: table-cell !important;
+    padding: 9px 8px !important;
+    font-size: .78rem !important;
+    text-align: left !important;
+    border-bottom: 1px solid rgba(59,130,246,.08) !important;
+    vertical-align: middle !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    color: #0f172a !important;
+  }
+  .admin-table-wrap td::before {
+    content: none !important;
+    display: none !important;
+  }
+  .admin-table-wrap tr[style*="linear-gradient"] td {
+    background: linear-gradient(100deg,#1e40af,#2563eb) !important;
+    color: #fff !important;
+    padding: 10px 12px !important;
+    font-weight: 900 !important;
+    font-size: .85rem !important;
+  }
+  .admin-table-wrap td img {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+  }
+  .admin-table-wrap input[type="number"],
+  .admin-table-wrap input[type="text"] {
+    width: 68px !important;
+    padding: 7px 8px !important;
+    font-size: 14px !important;
+    border-radius: 30px !important;
+    text-align: center !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 4️⃣ ACTION BUTTONS — TOUCH-FRIENDLY (40x40 min)      */
+  /* ─────────────────────────────────────────────────── */
+  .admin-table-wrap .btn-sm {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    padding: 7px 10px !important;
+    font-size: .85rem !important;
+    margin: 2px 3px 2px 0 !important;
+    border-radius: 10px !important;
+    line-height: 1 !important;
+  }
+  .admin-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  .admin-actions .btn-sm {
+    min-width: 38px !important;
+    min-height: 38px !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 5️⃣ SUMMARY — v23.0 AUTO-FIT GRID                    */
+  /* ─────────────────────────────────────────────────── */
+  .admin-summary {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+  .admin-summary .stat {
+    padding: 12px 8px !important;
+    border-radius: 14px !important;
+  }
+  .admin-summary .stat .num { font-size: 1.1rem !important; }
+  .admin-summary .stat .label { font-size: .54rem !important; }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 6️⃣ CLASS SELECTOR — v23.0 COMPACT                   */
+  /* ─────────────────────────────────────────────────── */
+  .class-selector-panel {
+    padding: 18px 14px !important;
+    border-radius: 22px !important;
+    margin-bottom: 14px !important;
+  }
+  .class-selector-panel h3 {
+    font-size: 1.05rem !important;
+    gap: 8px !important;
+  }
+  .class-selector-panel p { font-size: .76rem !important; }
+  .class-selector-panel select {
+    min-width: 100% !important;
+    width: 100% !important;
+    font-size: 15px !important;
+    padding: 12px 40px 12px 18px !important;
+    border-radius: 14px !important;
+    min-height: 48px !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 7️⃣ HEADER — v23.0 STACKED                            */
+  /* ─────────────────────────────────────────────────── */
+  #adminSection .dashboard-header-glow {
+    padding: 14px 14px 18px !important;
+    border-radius: 0 0 22px 22px !important;
+    margin: -10px -12px 14px -12px !important;
+    gap: 10px !important;
+  }
+  #adminSection .dashboard-header-glow .hdr-actions {
+    display: flex !important;
+    gap: 8px !important;
+    width: 100% !important;
+    justify-content: flex-end !important;
+  }
+  #adminSection .dashboard-header-glow .hdr-actions .btn-load,
+  #adminSection .dashboard-header-glow .hdr-actions .btn-exit {
+    min-height: 42px !important;
+    padding: 10px 14px !important;
+    font-size: .8rem !important;
+    flex: 1 1 auto !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 8️⃣ LOGIN LOGS — v23.0 COMPACT ROW                   */
+  /* ─────────────────────────────────────────────────── */
+  .login-log-item {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+  }
+  .login-log-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1rem !important;
+  }
+  .login-log-name { font-size: .84rem !important; }
+  .login-log-meta { font-size: .66rem !important; gap: 6px !important; }
+  .login-log-time { font-size: .74rem !important; }
+  .login-log-del {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 9️⃣ SETTINGS TAB — v23.0 COMPACT                     */
+  /* ─────────────────────────────────────────────────── */
+  #adminSettingsTab > div {
+    padding: 16px 12px !important;
+    border-radius: 16px !important;
+  }
+  #adminSettingsTab .mb-4 {
+    padding: 14px !important;
+    border-radius: 14px !important;
+    margin-bottom: 12px !important;
+  }
+  #adminSettingsTab h5 { font-size: .9rem !important; }
+  #adminSettingsTab .modal-form-input,
+  #adminSettingsTab input,
+  #adminSettingsTab select,
+  #adminSettingsTab textarea {
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    min-height: 42px !important;
+  }
+  #adminSettingsTab textarea { min-height: 100px !important; }
+  #adminSettingsTab .btn-update,
+  #adminSettingsTab .btn-load,
+  #adminSettingsTab .btn-cancel {
+    min-height: 42px !important;
+    padding: 10px 18px !important;
+    font-size: .8rem !important;
+    border-radius: 12px !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 🔟 PREVENT OVERFLOW                                  */
+  /* ─────────────────────────────────────────────────── */
+  #adminSection {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+  #adminSection .container {
+    padding: 10px 12px 100px !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* EXTRA SMALL (≤ 400px) — slight adjustments             */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .admin-tab {
+    padding: 7px 10px !important;
+    font-size: .68rem !important;
+    min-height: 36px !important;
+  }
+  .admin-toolbar input,
+  .admin-toolbar select {
+    flex: 1 1 100% !important;
+    min-width: 100% !important;
+  }
+  .admin-toolbar .btn-load,
+  .admin-toolbar .btn-update,
+  .admin-toolbar .btn-pdf {
+    flex: 1 1 calc(50% - 4px) !important;
+  }
+}
+</style>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔘 TOOLBAR + ACTION BUTTONS — v23.0 NATURAL STYLE      -->
+<!-- Paste after previous patch, before </head>             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="v23-natural-buttons">
+@media (max-width: 900px) {
+
+  /* ─────────────────────────────────────────────────── */
+  /* 1️⃣ TOOLBAR BUTTONS — NATURAL WIDTH (v23.0)          */
+  /* ─────────────────────────────────────────────────── */
+  .admin-toolbar .btn-load,
+  .admin-toolbar .btn-update,
+  .admin-toolbar .btn-pdf,
+  .admin-toolbar .btn-cancel {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    min-height: 40px !important;
+    padding: 9px 18px !important;
+    font-size: .78rem !important;
+    font-weight: 700 !important;
+    border-radius: 40px !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Add / Bulk Add buttons — prominent gradient */
+  .admin-toolbar .btn-update[onclick*="open"],
+  .admin-toolbar .btn-update[onclick*="Bulk"] {
+    background: linear-gradient(100deg, #22d3ee, #2b7cf0) !important;
+    color: #fff !important;
+  }
+
+  /* Refresh button — blue gradient */
+  .admin-toolbar .btn-load[onclick*="Refresh"],
+  .admin-toolbar .btn-load[onclick*="Load"] {
+    background: linear-gradient(100deg, #1e6be0, #1547a8) !important;
+    color: #fff !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 2️⃣ BOTTOM ACTION ROW (Update / Clear / Save)        */
+  /* ─────────────────────────────────────────────────── */
+  .admin-tab-content > .d-flex.gap-3.justify-content-end,
+  .admin-tab-content > div.d-flex.gap-3,
+  #marksWrap ~ .d-flex.gap-3,
+  #extraWrap ~ .d-flex.gap-3,
+  #gradesWrap ~ .d-flex.gap-3,
+  #attendanceWrap ~ .d-flex.gap-3 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    padding: 0 4px !important;
+    margin-top: 12px !important;
+    justify-content: stretch !important;
+    flex-wrap: wrap !important;
+  }
+
+  .admin-tab-content > .d-flex.gap-3.justify-content-end > button,
+  .admin-tab-content > div.d-flex.gap-3 > button,
+  #marksWrap ~ .d-flex.gap-3 > button,
+  #extraWrap ~ .d-flex.gap-3 > button,
+  #gradesWrap ~ .d-flex.gap-3 > button,
+  #attendanceWrap ~ .d-flex.gap-3 > button {
+    width: 100% !important;
+    min-height: 46px !important;
+    padding: 12px 16px !important;
+    font-size: .84rem !important;
+    font-weight: 800 !important;
+    border-radius: 30px !important;
+    justify-content: center !important;
+    flex: 1 1 auto !important;
+  }
+
+  /* If only 1 button (Cancel alone), keep 50% width */
+  .admin-tab-content > .d-flex.gap-3.justify-content-end:has(> button:only-child) {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 3️⃣ TABLE ACTION BUTTONS — ROUND (v23.0)             */
+  /* ─────────────────────────────────────────────────── */
+  .admin-table-wrap .btn-sm {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    padding: 7px 10px !important;
+    font-size: .88rem !important;
+    font-weight: 700 !important;
+    border-radius: 30px !important;
+    margin: 2px 3px 2px 0 !important;
+    line-height: 1 !important;
+    box-shadow: 0 2px 6px -2px rgba(0,0,0,.15) !important;
+  }
+
+  /* Approve button — green gradient */
+  .admin-table-wrap .btn-sm.approve {
+    background: linear-gradient(100deg, #059669, #34d399) !important;
+    color: #fff !important;
+  }
+
+  /* Reject button — red gradient */
+  .admin-table-wrap .btn-sm.reject {
+    background: linear-gradient(100deg, #b91c1c, #f87171) !important;
+    color: #fff !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 4️⃣ FILTER/LOAD BUTTONS — MAIN ACTION SIZE            */
+  /* ─────────────────────────────────────────────────── */
+  /* Primary load/save buttons in filter rows */
+  .admin-tab-content .btn-load,
+  .admin-tab-content .btn-update {
+    min-height: 42px !important;
+    padding: 10px 18px !important;
+    font-size: .8rem !important;
+    font-weight: 800 !important;
+    border-radius: 40px !important;
+  }
+
+  /* Small table buttons — but not too small */
+  .admin-table-wrap .btn-sm[style*="padding:5px"] {
+    min-width: 38px !important;
+    min-height: 38px !important;
+    padding: 6px 10px !important;
+    font-size: .82rem !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 5️⃣ ADMIN VIEW BANNER (Viewing as)                  */
+  /* ─────────────────────────────────────────────────── */
+  .admin-view-banner {
+    padding: 10px 14px !important;
+    font-size: .78rem !important;
+    border-radius: 40px !important;
+    gap: 8px !important;
+  }
+  .admin-view-banner button {
+    padding: 8px 14px !important;
+    font-size: .72rem !important;
+    min-height: 36px !important;
+    border-radius: 30px !important;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /* 6️⃣ SUBMIT BUTTONS IN MODALS                          */
+  /* ─────────────────────────────────────────────────── */
+  .modal-glass .btn-update,
+  .modal-glass .btn-cancel,
+  .modal-glass .btn-gradient,
+  .modal-glass .btn-load {
+    min-height: 46px !important;
+    padding: 12px 20px !important;
+    font-size: .86rem !important;
+    border-radius: 30px !important;
+    font-weight: 800 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* EXTRA SMALL — toolbar wraps gracefully                  */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .admin-toolbar {
+    gap: 6px !important;
+  }
+  .admin-toolbar .btn-load,
+  .admin-toolbar .btn-update,
+  .admin-toolbar .btn-pdf {
+    padding: 8px 12px !important;
+    font-size: .72rem !important;
+    min-height: 38px !important;
+  }
+  .admin-tab-content > .d-flex.gap-3.justify-content-end,
+  .admin-tab-content > div.d-flex.gap-3 {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
 </head>
 <body>
 
