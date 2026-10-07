@@ -20779,5 +20779,1503 @@ VALUES (
 )
 ON CONFLICT (key) DO NOTHING;
 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 📸 v31.0 — INSTAGRAM-STYLE CREATIVE FEED                   -->
+<!-- Applied to both Logged-in Gallery + Public Feed             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══ PART 1: Instagram Feed CSS ═══ -->
+<style id="instagram-feed-styles-v31">
+/* ═══════════════════════════════════════════════════════ */
+/* 📱 FEED WRAPPER                                          */
+/* ═══════════════════════════════════════════════════════ */
+.ig-feed-wrap {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 16px 12px 120px;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📌 INSTAGRAM POST CARD                                   */
+/* ═══════════════════════════════════════════════════════ */
+.ig-post {
+  background: #fff;
+  border-radius: 18px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px -10px rgba(15,23,42,.18);
+  border: 1px solid rgba(180,200,230,.45);
+  animation: igPostIn .4s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes igPostIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── POST HEADER ─── */
+.ig-post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+.ig-post-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6);
+  padding: 2.5px;
+  flex-shrink: 0;
+  position: relative;
+}
+.ig-post-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  background: #fff;
+}
+.ig-post-avatar .initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #3b8bff, #22d3ee);
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.05rem;
+  border: 2.5px solid #fff;
+}
+.ig-post-author-info {
+  flex: 1;
+  min-width: 0;
+}
+.ig-post-author-name {
+  font-size: .9rem;
+  font-weight: 800;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ig-post-author-meta {
+  font-size: .7rem;
+  color: #64748b;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ig-post-cat-badge {
+  display: inline-block;
+  font-size: .6rem;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: linear-gradient(100deg, #ec4899, #8b5cf6);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+.ig-pending-badge {
+  display: inline-block;
+  font-size: .6rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: linear-gradient(100deg, #f59e0b, #fbbf24);
+  color: #03132e;
+  font-weight: 900;
+  margin-left: 6px;
+  animation: pendingPulse 2s ease-in-out infinite;
+}
+@keyframes pendingPulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: .6; }
+}
+.ig-post-menu {
+  background: transparent;
+  border: none;
+  color: #0f172a;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .2s;
+  flex-shrink: 0;
+}
+.ig-post-menu:hover { background: #f1f5f9; }
+.ig-post-menu:active { transform: scale(.9); }
+
+/* ─── POST MEDIA ─── */
+.ig-post-media {
+  width: 100%;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ig-post-media img {
+  width: 100%;
+  display: block;
+  max-height: 700px;
+  object-fit: contain;
+  background: #000;
+}
+.ig-post-media.pdf-media {
+  background: linear-gradient(140deg, #fee2e2, #fce7f3);
+  padding: 50px 20px;
+  text-align: center;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.ig-post-media.pdf-media i {
+  font-size: 4.5rem;
+  color: #dc2626;
+  display: block;
+  margin-bottom: 10px;
+}
+.ig-post-media.text-media {
+  background: linear-gradient(140deg, #ede9fe, #fce7f3 50%, #dbeafe);
+  padding: 26px 22px 30px;
+  cursor: pointer;
+  position: relative;
+}
+.ig-post-text-content {
+  font-family: 'Anek Malayalam', serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #0f172a;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow: hidden;
+  position: relative;
+}
+.ig-post-text-content::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 80px;
+  background: linear-gradient(180deg, transparent, rgba(237,233,254,.98));
+  pointer-events: none;
+}
+.ig-heart-burst {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0);
+  font-size: 7rem;
+  color: #fff;
+  text-shadow: 0 4px 30px rgba(237,73,86,.9);
+  pointer-events: none;
+  z-index: 10;
+  animation: heartBurst .85s ease-out forwards;
+}
+@keyframes heartBurst {
+  0% { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+  30% { transform: translate(-50%,-50%) scale(1.35); opacity: 1; }
+  60% { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(1); opacity: 0; }
+}
+
+/* ─── ACTIONS BAR ─── */
+.ig-post-actions-bar {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px 0;
+  gap: 2px;
+}
+.ig-action-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #0f172a;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .15s ease;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  border-radius: 50%;
+}
+.ig-action-btn:hover { transform: scale(1.12); background: rgba(241,245,249,.5); }
+.ig-action-btn:active { transform: scale(.85); }
+.ig-action-btn.liked { color: #ed4956; }
+.ig-action-btn.liked i::before {
+  content: "\f004";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+}
+.ig-action-btn .fa-heart.liked-anim,
+.ig-action-btn.liked i {
+  animation: likePop .45s ease;
+}
+@keyframes likePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.4); }
+  60% { transform: scale(.9); }
+  100% { transform: scale(1); }
+}
+.ig-action-btn i {
+  display: block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 1.4rem;
+}
+.ig-action-spacer { flex: 1; }
+.ig-action-btn.saved i::before {
+  content: "\f02e";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+}
+
+/* ─── LIKES COUNT ─── */
+.ig-post-likes {
+  padding: 6px 16px 4px;
+  font-size: .88rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.ig-post-likes b {
+  font-weight: 900;
+}
+
+/* ─── CAPTION ─── */
+.ig-post-caption {
+  padding: 4px 16px 8px;
+  font-size: .88rem;
+  line-height: 1.5;
+  color: #0f172a;
+  word-break: break-word;
+}
+.ig-post-caption .caption-author {
+  font-weight: 800;
+  margin-right: 6px;
+}
+.ig-post-caption .caption-title {
+  font-weight: 800;
+  color: #0f172a;
+  display: block;
+  margin-bottom: 3px;
+  font-size: .94rem;
+}
+.ig-post-caption .caption-text {
+  color: #475569;
+  display: block;
+  white-space: pre-wrap;
+}
+
+/* ─── COMMENTS PREVIEW ─── */
+.ig-post-comments-preview {
+  padding: 4px 16px 8px;
+}
+.ig-view-comments {
+  background: transparent;
+  border: none;
+  font-size: .82rem;
+  color: #64748b;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.ig-view-comments:hover { color: #0f172a; }
+.ig-comment-line {
+  font-size: .86rem;
+  line-height: 1.45;
+  margin-bottom: 4px;
+  color: #0f172a;
+  word-break: break-word;
+}
+.ig-comment-line b {
+  font-weight: 800;
+  margin-right: 6px;
+}
+
+/* ─── TIMESTAMP ─── */
+.ig-post-time {
+  padding: 0 16px 10px;
+  font-size: .68rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  font-weight: 700;
+}
+
+/* ─── INLINE COMMENT FORM ─── */
+.ig-post-comment-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(100,116,139,.12);
+  background: #fff;
+  margin: 0;
+}
+.ig-comment-form-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #3b8bff, #22d3ee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: .85rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.ig-comment-form-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.ig-comment-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: .88rem;
+  padding: 8px 0;
+  color: #0f172a;
+  min-width: 0;
+}
+.ig-comment-input::placeholder {
+  color: #94a3b8;
+}
+.ig-comment-input:disabled {
+  cursor: not-allowed;
+  color: #94a3b8;
+}
+.ig-comment-submit {
+  background: transparent;
+  border: none;
+  color: #0095f6;
+  font-weight: 800;
+  font-size: .88rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  font-family: inherit;
+  opacity: .35;
+  transition: opacity .2s;
+  flex-shrink: 0;
+}
+.ig-comment-submit.active,
+.ig-comment-submit:not(:disabled):hover {
+  opacity: 1;
+}
+.ig-comment-submit:disabled {
+  cursor: not-allowed;
+  opacity: .3;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📌 TOP BAR (Logged-in Gallery)                          */
+/* ═══════════════════════════════════════════════════════ */
+.ig-feed-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(180,200,230,.5);
+  padding: 12px 16px;
+  margin: -16px -16px 16px;
+  box-shadow: 0 4px 20px -12px rgba(0,0,0,.12);
+}
+.ig-feed-topbar-inner {
+  max-width: 620px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ig-feed-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  background: linear-gradient(120deg, #ec4899, #8b5cf6, #3b8bff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.ig-feed-logo i {
+  background: linear-gradient(120deg, #ec4899, #8b5cf6, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.3rem;
+}
+.ig-topbar-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.ig-topbar-btn {
+  background: transparent;
+  border: none;
+  color: #0f172a;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.15rem;
+  transition: .2s;
+  flex-shrink: 0;
+}
+.ig-topbar-btn:hover { background: #f1f5f9; }
+.ig-topbar-btn:active { transform: scale(.9); }
+.ig-topbar-btn.primary {
+  background: linear-gradient(120deg, #ec4899, #8b5cf6);
+  color: #fff;
+  width: auto;
+  padding: 0 18px;
+  border-radius: 30px;
+  height: 40px;
+  font-weight: 800;
+  font-size: .82rem;
+  gap: 7px;
+  box-shadow: 0 8px 20px -8px rgba(236,72,153,.7);
+}
+.ig-topbar-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 12px 24px -8px rgba(236,72,153,.9); }
+.ig-topbar-btn.primary i { font-size: .9rem; }
+
+/* ─── SEARCH BAR ─── */
+.ig-search-bar {
+  max-width: 620px;
+  margin: 0 auto 12px;
+  padding: 0;
+}
+.ig-search-bar input {
+  width: 100%;
+  padding: 11px 18px;
+  border-radius: 30px;
+  border: 1.5px solid rgba(100,116,139,.2);
+  background: #f8fafc;
+  font-family: inherit;
+  font-size: .88rem;
+  outline: none;
+  color: #0f172a;
+  transition: all .25s;
+}
+.ig-search-bar input:focus {
+  border-color: #8b5cf6;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(139,92,246,.12);
+}
+
+/* ─── FILTER CHIPS ─── */
+.ig-filter-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+  scrollbar-width: none;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.ig-filter-chips::-webkit-scrollbar { display: none; }
+.ig-chip {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: 1.5px solid rgba(100,116,139,.2);
+  background: #fff;
+  color: #475569;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .76rem;
+  cursor: pointer;
+  transition: all .25s;
+  white-space: nowrap;
+}
+.ig-chip:hover {
+  border-color: rgba(139,92,246,.4);
+  color: #7c3aed;
+}
+.ig-chip.active {
+  background: linear-gradient(100deg, #ec4899, #8b5cf6);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 16px -6px rgba(236,72,153,.6);
+}
+
+/* ─── MOTIVATION BANNER ─── */
+.ig-motivation {
+  max-width: 620px;
+  margin: 0 auto 16px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #fef3c7, #fce7f3, #dbeafe);
+  border-radius: 16px;
+  border: 1.5px solid rgba(139,92,246,.25);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: .82rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+.ig-motivation i {
+  font-size: 1.4rem;
+  color: #8b5cf6;
+  flex-shrink: 0;
+  animation: motivational 2.5s ease-in-out infinite;
+}
+@keyframes motivational {
+  0%,100% { transform: scale(1) rotate(-5deg); }
+  50% { transform: scale(1.15) rotate(5deg); }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📌 SKELETON LOADING                                     */
+/* ═══════════════════════════════════════════════════════ */
+.ig-skeleton {
+  background: #fff;
+  border-radius: 18px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(180,200,230,.45);
+}
+.ig-skel-header { display: flex; gap: 12px; padding: 14px; }
+.ig-skel-circle {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: igShimmer 1.4s infinite;
+  flex-shrink: 0;
+}
+.ig-skel-lines { flex: 1; padding-top: 4px; }
+.ig-skel-line {
+  height: 12px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: igShimmer 1.4s infinite;
+}
+.ig-skel-media {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: igShimmer 1.4s infinite;
+}
+@keyframes igShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── EMPTY STATE ─── */
+.ig-empty {
+  text-align: center;
+  padding: 70px 24px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.ig-empty-icon {
+  font-size: 5rem;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6, #3b8bff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: igEmptyFloat 3s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes igEmptyFloat {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+.ig-empty h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+.ig-empty p {
+  font-size: .88rem;
+  color: #64748b;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📌 PUBLIC FEED OVERRIDES                                */
+/* ═══════════════════════════════════════════════════════ */
+#publicFeedOverlay .pf-feed {
+  padding: 0 !important;
+  background: linear-gradient(180deg, #f8fafc, #f0f6ff);
+}
+#publicFeedOverlay .pf-feed-inner {
+  max-width: 100% !important;
+  padding: 16px 12px 120px;
+}
+#publicFeedOverlay .pf-header {
+  background: rgba(255,255,255,.97) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 0 4px 20px -12px rgba(0,0,0,.12) !important;
+}
+#publicFeedOverlay .pf-cta-banner {
+  max-width: 620px;
+  margin: 0 auto 16px !important;
+  background: linear-gradient(135deg, #fef3c7, #fce7f3) !important;
+  border: 1.5px solid rgba(236,72,153,.3) !important;
+  border-radius: 18px !important;
+}
+#publicFeedOverlay .ig-feed-wrap {
+  padding: 0;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📌 LOGGED-IN CREATIONS OVERLAY                          */
+/* ═══════════════════════════════════════════════════════ */
+#creationsOverlay .creations-container {
+  max-width: 100% !important;
+  padding-bottom: 40px !important;
+}
+#creationsOverlay.creations-overlay {
+  padding: 0 !important;
+  background: linear-gradient(180deg, #f8fafc, #eef4ff 60%, #e0e9ff) !important;
+}
+#creationsOverlay .creations-header,
+#creationsOverlay .creations-toolbar,
+#creationsOverlay .creations-grid {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📱 MOBILE RESPONSIVE                                    */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .ig-feed-wrap { padding: 10px 0 120px; }
+  .ig-post {
+    border-radius: 0;
+    margin-bottom: 10px;
+    border-left: none;
+    border-right: none;
+  }
+  .ig-feed-topbar {
+    margin: -12px -12px 12px;
+    padding: 10px 14px;
+  }
+  .ig-post-media img { max-height: 500px; }
+  .ig-post-text-content { font-size: .94rem; line-height: 1.7; }
+  .ig-post-author-name { font-size: .86rem; }
+  .ig-post-caption { font-size: .86rem; }
+  .ig-action-btn { font-size: 1.35rem; padding: 7px; }
+  .ig-action-btn i { width: 22px; height: 22px; line-height: 22px; font-size: 1.3rem; }
+  .ig-post-avatar { width: 42px; height: 42px; }
+  .ig-comment-form-avatar { width: 30px; height: 30px; }
+  .ig-feed-topbar-inner { flex-wrap: wrap; }
+  .ig-search-bar { padding: 0 4px; }
+  .ig-filter-chips { padding-left: 8px; padding-right: 8px; }
+}
+
+/* Dark mode adaptations */
+body:not(.light-mode) .ig-post {
+  background: rgba(20,25,40,.9);
+  border-color: rgba(140,190,255,.2);
+}
+body:not(.light-mode) .ig-post-author-name,
+body:not(.light-mode) .ig-post-caption,
+body:not(.light-mode) .ig-post-likes,
+body:not(.light-mode) .ig-comment-line { color: #eaf2ff; }
+body:not(.light-mode) .ig-post-caption .caption-text { color: #9db8dd; }
+body:not(.light-mode) .ig-post-comment-form { background: rgba(20,25,40,.9); }
+</style>
+
+<!-- ═══ PART 2: Instagram Feed JS ═══ -->
+<script id="instagram-feed-js-v31">
+(function(){
+  'use strict';
+  console.log('📸 Instagram Feed v31.0 loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 CORE: Render Instagram-style post                    */
+  /* ═══════════════════════════════════════════════════════ */
+  function renderIGPost(c, opts) {
+    opts = opts || {};
+    var isPublic = !!opts.isPublic;
+    var isOwner = currentUser && c.studentid === currentUser.studentId;
+    var author = {
+      name: c.studentName || 'Student',
+      class: c.studentClass || '',
+      photo: c.studentPhoto || ''
+    };
+    var hasAvatarPhoto = author.photo && (author.photo.startsWith('http') || author.photo.startsWith('data:'));
+    var avatarInner = hasAvatarPhoto
+      ? '<img src="' + author.photo + '" alt="" loading="lazy">'
+      : '<div class="initial">' + (author.name || 'S').charAt(0).toUpperCase() + '</div>';
+
+    var ft = c.file_type || 'image';
+    var mediaUrl = c.file_url || c.image_url;
+    var mediaHtml = '';
+
+    if (ft === 'text') {
+      var txt = (c.text_content || '').trim();
+      var preview = txt.length > 500 ? txt.substring(0, 500) + '…' : txt;
+      mediaHtml = '<div class="ig-post-media text-media" onclick="openCreationLightbox(' + c.id + ')">' +
+          '<div class="ig-post-text-content">' + escapeHtml(preview) + '</div>' +
+        '</div>';
+    } else if (ft === 'pdf') {
+      mediaHtml = '<div class="ig-post-media pdf-media" onclick="openCreationLightbox(' + c.id + ')">' +
+          '<i class="fas fa-file-pdf"></i>' +
+          '<div style="color:#0f172a;font-weight:800;font-size:1.05rem;">PDF Document</div>' +
+          '<div style="color:#64748b;font-size:.8rem;margin-top:4px;">ടാപ്പ് ചെയ്ത് കാണുക</div>' +
+        '</div>';
+    } else {
+      mediaHtml = '<div class="ig-post-media" ' +
+        'ondblclick="igDoubleTapLike(event, ' + c.id + ')" ' +
+        'onclick="igMediaClick(event, ' + c.id + ')" ' +
+        'data-post-id="' + c.id + '">' +
+        '<img src="' + mediaUrl + '" alt="' + escapeHtml(c.title || '') + '" loading="lazy" draggable="false">' +
+        '</div>';
+    }
+
+    var pendingBadge = '';
+    if (isOwner && !c.approved) {
+      pendingBadge = '<span class="ig-pending-badge">⏳ Pending</span>';
+    }
+
+    var liked = (window._igLikeCache && window._igLikeCache[c.id]) ? true : false;
+    var likedClass = liked ? ' liked' : '';
+
+    // Caption
+    var captionHtml = '';
+    if (c.title || c.description) {
+      captionHtml = '<div class="ig-post-caption">' +
+        '<span class="caption-author">' + escapeHtml(author.name) + '</span>' +
+        (c.title ? '<span class="caption-title">' + escapeHtml(c.title) + '</span>' : '') +
+        (c.description ? '<span class="caption-text">' + escapeHtml(c.description) + '</span>' : '') +
+        '</div>';
+    }
+
+    // Comment form
+    var commentForm = '';
+    if (!currentUser || isPublic) {
+      commentForm = '<div class="ig-post-comment-form">' +
+        '<div class="ig-comment-form-avatar" style="background:#cbd5e1;">?</div>' +
+        '<input class="ig-comment-input" placeholder="Login to comment..." disabled>' +
+        '<button type="button" class="ig-comment-submit" onclick="' + 
+          (isPublic ? 'loginFromFeed()' : 'openPublicCreationsFeed()') + '">Login</button>' +
+        '</div>';
+    } else {
+      var myAvatar = currentUser.photo && currentUser.photo.startsWith('http')
+        ? '<img src="' + currentUser.photo + '" alt="">'
+        : (currentUser.name || 'S').charAt(0).toUpperCase();
+      commentForm = '<form class="ig-post-comment-form" onsubmit="event.preventDefault();igSubmitQuickComment(event,' + c.id + ')">' +
+        '<div class="ig-comment-form-avatar">' + myAvatar + '</div>' +
+        '<input class="ig-comment-input" placeholder="Add a comment..." maxlength="300" autocomplete="off" oninput="igCommentInputChange(this,' + c.id + ')">' +
+        '<button type="submit" class="ig-comment-submit" id="igCS_' + c.id + '">Post</button>' +
+        '</form>';
+    }
+
+    // Time
+    var timeHtml = '<div class="ig-post-time">' + timeAgo(c.created_at) + '</div>';
+
+    // Menu button (owner)
+    var menuBtn = isOwner
+      ? '<button class="ig-post-menu" onclick="event.stopPropagation();igDeletePost(' + c.id + ')" title="Delete">' +
+          '<i class="fas fa-ellipsis-h"></i>' +
+        '</button>'
+      : '';
+
+    return '<article class="ig-post" data-post-id="' + c.id + '">' +
+      '<header class="ig-post-header">' +
+        '<div class="ig-post-avatar">' + avatarInner + '</div>' +
+        '<div class="ig-post-author-info">' +
+          '<div class="ig-post-author-name">' +
+            escapeHtml(author.name) + pendingBadge +
+          '</div>' +
+          '<div class="ig-post-author-meta">' +
+            (author.class ? '<span><i class="fas fa-graduation-cap" style="font-size:.65rem;"></i> Class ' + escapeHtml(author.class) + '</span>' : '') +
+            '<span class="ig-post-cat-badge">' + getCategoryLabel(c.category) + '</span>' +
+          '</div>' +
+        '</div>' +
+        menuBtn +
+      '</header>' +
+      mediaHtml +
+      '<div class="ig-post-actions-bar">' +
+        '<button class="ig-action-btn' + likedClass + '" onclick="igToggleLike(' + c.id + ')" data-like-btn="' + c.id + '">' +
+          '<i class="' + (liked ? 'fas' : 'far') + ' fa-heart"></i>' +
+        '</button>' +
+        '<button class="ig-action-btn" onclick="openCreationLightbox(' + c.id + ')">' +
+          '<i class="far fa-comment"></i>' +
+        '</button>' +
+        '<button class="ig-action-btn" onclick="igSharePost(' + c.id + ')">' +
+          '<i class="far fa-paper-plane"></i>' +
+        '</button>' +
+        '<div class="ig-action-spacer"></div>' +
+        '<button class="ig-action-btn" onclick="igSavePost(' + c.id + ')" id="igSave_' + c.id + '">' +
+          '<i class="far fa-bookmark"></i>' +
+        '</button>' +
+      '</div>' +
+      '<div class="ig-post-likes"><b data-like-count="' + c.id + '">' + (c.likes || 0) + '</b> likes</div>' +
+      captionHtml +
+      timeHtml +
+      commentForm +
+    '</article>';
+  }
+
+  window._igLikeCache = {};
+  window._igSaveCache = {};
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 SKELETON LOADER                                      */
+  /* ═══════════════════════════════════════════════════════ */
+  function igSkeleton(n) {
+    var html = '';
+    for (var i = 0; i < (n || 3); i++) {
+      html += '<div class="ig-skeleton">' +
+        '<div class="ig-skel-header">' +
+          '<div class="ig-skel-circle"></div>' +
+          '<div class="ig-skel-lines">' +
+            '<div class="ig-skel-line" style="width:55%;"></div>' +
+            '<div class="ig-skel-line" style="width:30%;"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ig-skel-media"></div>' +
+      '</div>';
+    }
+    return html;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 EMPTY STATE                                          */
+  /* ═══════════════════════════════════════════════════════ */
+  function igEmptyState(title, sub, showBtn, isPublic) {
+    return '<div class="ig-empty">' +
+      '<div class="ig-empty-icon">🎨</div>' +
+      '<h3>' + title + '</h3>' +
+      '<p>' + sub + '</p>' +
+      (showBtn ? '<button class="ig-topbar-btn primary" onclick="' + 
+        (isPublic ? 'loginFromFeed()' : 'openUploadCreationModal()') + '">' +
+        '<i class="fas fa-' + (isPublic ? 'sign-in-alt' : 'plus') + '"></i> ' +
+        (isPublic ? 'Login ചെയ്യുക' : 'പുതിയത്') +
+        '</button>' : '') +
+    '</div>';
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 OVERRIDE: Logged-in Gallery (creationsOverlay)      */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origLoadGallery = window.loadCreationsGallery;
+  window.loadCreationsGallery = async function() {
+    var container = document.getElementById('creationsOverlay');
+    if (!container) return;
+    var innerContainer = container.querySelector('.creations-container');
+    if (!innerContainer) return;
+
+    // Rebuild inner container completely with IG layout
+    innerContainer.innerHTML = 
+      '<div class="ig-feed-topbar">' +
+        '<div class="ig-feed-topbar-inner">' +
+          '<div class="ig-feed-logo"><i class="fas fa-palette"></i> കലാസൃഷ്ടികൾ</div>' +
+          '<div class="ig-topbar-actions">' +
+            '<button class="ig-topbar-btn primary" onclick="openUploadCreationModal()">' +
+              '<i class="fas fa-plus"></i> പുതിയത്' +
+            '</button>' +
+            '<button class="ig-topbar-btn" onclick="closeCreationsGallery()" title="Close">' +
+              '<i class="fas fa-times"></i>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ig-search-bar">' +
+        '<input type="text" id="igSearchInput" placeholder="🔍 തിരയുക..." oninput="igFilterFeed(this.value)">' +
+      '</div>' +
+      '<div class="ig-filter-chips" id="igFilterChips"></div>' +
+      '<div class="ig-motivation">' +
+        '<i class="fas fa-lightbulb"></i>' +
+        '<div>നിങ്ങളുടെ സൃഷ്ടികൾ പങ്കുവെക്കൂ! Admin approve ചെയ്തതിനു ശേഷം എല്ലാവർക്കും കാണാം 🌟</div>' +
+      '</div>' +
+      '<div class="ig-feed-wrap" id="igFeedWrap">' + igSkeleton(3) + '</div>';
+
+    // Render filter chips
+    renderIGFilterChips();
+
+    // Fetch data
+    try {
+      var sid = currentUser ? currentUser.studentId : '__none__';
+      var r = await supabaseClient.from('student_creations')
+        .select('*')
+        .or('approved.eq.true,and(approved.eq.false,studentid.eq.' + sid + ')')
+        .order('created_at', { ascending: false })
+        .limit(200);
+
+      allCreations = (r.data || []).map(function(c) {
+        return Object.assign({}, c, {
+          file_url: c.file_url || c.image_url || null,
+          file_type: c.file_type || 'image',
+          text_content: c.text_content || null
+        });
+      });
+
+      if (allCreations.length === 0) {
+        document.getElementById('igFeedWrap').innerHTML = igEmptyState(
+          'ഇതുവരെ സൃഷ്ടികൾ ഇല്ല',
+          'ആദ്യ സൃഷ്ടി നിങ്ങളുടേതാകട്ടെ! 🎨',
+          true, false
+        );
+        return;
+      }
+
+      // Get student info
+      var sids = Array.from(new Set(allCreations.map(function(c) { return c.studentid; })));
+      var smap = {};
+      if (sids.length > 0) {
+        var sr = await supabaseClient.from('students')
+          .select('studentid, name, class, photo')
+          .in('studentid', sids);
+        (sr.data || []).forEach(function(s) {
+          smap[s.studentid] = { name: s.name, class: s.class, photo: s.photo };
+        });
+      }
+      allCreations = allCreations.map(function(c) {
+        return Object.assign({}, c, {
+          studentName: smap[c.studentid] ? smap[c.studentid].name : 'Student',
+          studentClass: smap[c.studentid] ? smap[c.studentid].class : '',
+          studentPhoto: smap[c.studentid] ? smap[c.studentid].photo : ''
+        });
+      });
+
+      // Load like cache for current user
+      if (currentUser) {
+        try {
+          var ids = allCreations.map(function(c) { return c.id; });
+          var lr = await supabaseClient.from('creation_likes')
+            .select('creation_id')
+            .eq('studentid', currentUser.studentId)
+            .in('creation_id', ids);
+          (lr.data || []).forEach(function(l) {
+            window._igLikeCache[l.creation_id] = true;
+          });
+        } catch(e) {}
+      }
+
+      // Load saved posts
+      try {
+        var saved = JSON.parse(localStorage.getItem('ig_saved_' + (currentUser ? currentUser.studentId : 'guest')) || '[]');
+        saved.forEach(function(id) { window._igSaveCache[id] = true; });
+      } catch(e) {}
+
+      filteredCreationsList = allCreations.slice();
+      renderIGFeed();
+
+    } catch(e) {
+      console.error('Gallery load error:', e);
+      document.getElementById('igFeedWrap').innerHTML = 
+        '<div class="ig-empty"><div class="ig-empty-icon">⚠️</div><h3>Error</h3><p>' + escapeHtml(e.message) + '</p></div>';
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 RENDER FEED (both public + logged-in)                */
+  /* ═══════════════════════════════════════════════════════ */
+  function renderIGFeed() {
+    var wrap = document.getElementById('igFeedWrap');
+    if (!wrap) return;
+
+    if (!filteredCreationsList || filteredCreationsList.length === 0) {
+      wrap.innerHTML = igEmptyState('ഒന്നും കണ്ടെത്തിയില്ല', 'വേറെ filter പരീക്ഷിച്ചു നോക്കൂ', false);
+      return;
+    }
+
+    wrap.innerHTML = filteredCreationsList.map(function(c) {
+      return renderIGPost(c, { isPublic: false });
+    }).join('');
+  }
+  window.renderIGFeed = renderIGFeed;
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 FILTER CHIPS                                         */
+  /* ═══════════════════════════════════════════════════════ */
+  function renderIGFilterChips() {
+    var chips = document.getElementById('igFilterChips');
+    if (!chips) return;
+    var categories = [
+      { key: '', label: '🌟 എല്ലാം' },
+      { key: 'drawing', label: '🎨 ചിത്രരചന' },
+      { key: 'writing', label: '✍️ രചന' },
+      { key: 'poem', label: '📝 കവിത' },
+      { key: 'story', label: '📖 കഥ' },
+      { key: 'craft', label: '🔨 കരകൗശലം' },
+      { key: 'photography', label: '📷 ഫോട്ടോ' },
+      { key: 'calligraphy', label: '🖋️ കാലിഗ്രഫി' },
+      { key: 'other', label: '🌟 മറ്റുള്ളവ' },
+      { key: '__mine__', label: '👤 എന്റേത്' }
+    ];
+    chips.innerHTML = categories.map(function(c) {
+      return '<button class="ig-chip' + (c.key === '' ? ' active' : '') + 
+        '" data-cat="' + c.key + '" onclick="igApplyFilter(\'' + c.key + '\')">' + c.label + '</button>';
+    }).join('');
+  }
+
+  var _igActiveFilter = '';
+  var _igSearchQuery = '';
+
+  window.igApplyFilter = function(cat) {
+    _igActiveFilter = cat;
+    document.querySelectorAll('.ig-chip').forEach(function(chip) {
+      chip.classList.toggle('active', chip.dataset.cat === cat);
+    });
+    applyIGFilters();
+  };
+
+  window.igFilterFeed = function(q) {
+    _igSearchQuery = (q || '').toLowerCase().trim();
+    applyIGFilters();
+  };
+
+  function applyIGFilters() {
+    filteredCreationsList = allCreations.filter(function(c) {
+      // Category filter
+      if (_igActiveFilter === '__mine__') {
+        if (!currentUser || c.studentid !== currentUser.studentId) return false;
+      } else if (_igActiveFilter) {
+        if (c.category !== _igActiveFilter) return false;
+      }
+      // Search filter
+      if (_igSearchQuery) {
+        var hay = ((c.title || '') + ' ' + (c.description || '') + ' ' + (c.text_content || '') + ' ' + (c.studentName || '')).toLowerCase();
+        if (hay.indexOf(_igSearchQuery) === -1) return false;
+      }
+      return true;
+    });
+    renderIGFeed();
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 LIKE / DOUBLE-TAP / SAVE / SHARE                     */
+  /* ═══════════════════════════════════════════════════════ */
+  var _igLastTap = {};
+
+  window.igMediaClick = function(event, postId) {
+    var now = Date.now();
+    if (_igLastTap[postId] && (now - _igLastTap[postId]) < 300) {
+      // Double tap
+      delete _igLastTap[postId];
+      igDoubleTapLike(event, postId);
+      return;
+    }
+    _igLastTap[postId] = now;
+    // Single tap opens lightbox after brief delay (to detect double tap)
+    setTimeout(function() {
+      if (_igLastTap[postId] === now) {
+        delete _igLastTap[postId];
+        openCreationLightbox(postId);
+      }
+    }, 320);
+  };
+
+  window.igDoubleTapLike = function(event, postId) {
+    // Show heart burst
+    if (event && event.currentTarget) {
+      var media = event.currentTarget;
+      var heart = document.createElement('div');
+      heart.className = 'ig-heart-burst';
+      heart.innerHTML = '❤️';
+      media.appendChild(heart);
+      setTimeout(function() { heart.remove(); }, 900);
+    }
+    if (navigator.vibrate) try { navigator.vibrate(30); } catch(e) {}
+    // Force like (not toggle)
+    forceLikePost(postId);
+  };
+
+  async function forceLikePost(postId) {
+    if (!currentUser) { showToast('❤️ Like ചെയ്യാൻ Login', 'info'); return; }
+    if (window._igLikeCache[postId]) return; // already liked
+    await doToggleLike(postId, true);
+  }
+
+  window.igToggleLike = function(postId) {
+    if (!currentUser) { showToast('❤️ Login ചെയ്യൂ', 'info'); return; }
+    var wasLiked = !!window._igLikeCache[postId];
+    doToggleLike(postId, !wasLiked);
+  };
+
+  async function doToggleLike(postId, shouldLike) {
+    var c = allCreations.find(function(x) { return x.id === postId; });
+    if (!c) return;
+    var oldLikes = c.likes || 0;
+    var newLikes = shouldLike ? oldLikes + 1 : Math.max(0, oldLikes - 1);
+
+    // Optimistic UI
+    c.likes = newLikes;
+    if (shouldLike) window._igLikeCache[postId] = true;
+    else delete window._igLikeCache[postId];
+    updateLikeUI(postId, shouldLike, newLikes);
+
+    if (shouldLike && navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+
+    try {
+      if (shouldLike) {
+        await supabaseClient.from('creation_likes').insert({
+          creation_id: postId,
+          studentid: currentUser.studentId
+        });
+      } else {
+        await supabaseClient.from('creation_likes').delete()
+          .eq('creation_id', postId)
+          .eq('studentid', currentUser.studentId);
+      }
+      await supabaseClient.from('student_creations').update({ likes: newLikes }).eq('id', postId);
+      if (shouldLike && typeof confetti !== 'undefined') {
+        confetti({ particleCount: 30, spread: 60, origin: { y: 0.7 }, colors: ['#ed4956','#ec4899','#f472b6'] });
+      }
+    } catch(e) {
+      // Revert on error
+      c.likes = oldLikes;
+      if (shouldLike) delete window._igLikeCache[postId];
+      else window._igLikeCache[postId] = true;
+      updateLikeUI(postId, !shouldLike, oldLikes);
+      showToast('❌ ' + e.message, 'error');
+    }
+  }
+
+  function updateLikeUI(postId, liked, count) {
+    var btn = document.querySelector('[data-like-btn="' + postId + '"]');
+    if (btn) {
+      btn.classList.toggle('liked', liked);
+      var icon = btn.querySelector('i');
+      if (icon) {
+        icon.className = (liked ? 'fas' : 'far') + ' fa-heart';
+        icon.style.animation = '';
+        void icon.offsetWidth;
+        if (liked) icon.style.animation = 'likePop .45s ease';
+      }
+    }
+    var countEl = document.querySelector('[data-like-count="' + postId + '"]');
+    if (countEl) countEl.textContent = count;
+  }
+
+  /* ─── SAVE ─── */
+  window.igSavePost = function(postId) {
+    if (!currentUser) { showToast('Login ചെയ്യൂ', 'info'); return; }
+    var key = 'ig_saved_' + currentUser.studentId;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+    var idx = saved.indexOf(postId);
+    if (idx > -1) {
+      saved.splice(idx, 1);
+      delete window._igSaveCache[postId];
+      showToast('Removed from saved', 'info');
+    } else {
+      saved.push(postId);
+      window._igSaveCache[postId] = true;
+      showToast('🔖 Saved!', 'success');
+    }
+    try { localStorage.setItem(key, JSON.stringify(saved)); } catch(e) {}
+    var btn = document.getElementById('igSave_' + postId);
+    if (btn) {
+      var icon = btn.querySelector('i');
+      if (icon) icon.className = (window._igSaveCache[postId] ? 'fas' : 'far') + ' fa-bookmark';
+    }
+  };
+
+  /* ─── SHARE ─── */
+  window.igSharePost = async function(postId) {
+    var c = allCreations.find(function(x) { return x.id === postId; });
+    if (!c) return;
+    var text = '🎨 ' + (c.title || '') + ' by ' + (c.studentName || 'Student') + ' — Noorussalam Madrasa';
+    var url = window.location.origin + '?public=1';
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: c.title, text: text, url: url });
+        return;
+      } catch(e) {}
+    }
+    // Fallback to WhatsApp
+    var wa = 'https://wa.me/?text=' + encodeURIComponent(text + '\n' + url);
+    window.open(wa, '_blank');
+  };
+
+  /* ─── COMMENT ─── */
+  window.igCommentInputChange = function(input, postId) {
+    var btn = document.getElementById('igCS_' + postId);
+    if (btn) {
+      btn.classList.toggle('active', input.value.trim().length > 0);
+    }
+  };
+
+  window.igSubmitQuickComment = async function(event, postId) {
+    event.preventDefault();
+    if (!currentUser) { showToast('Login ചെയ്യൂ', 'error'); return; }
+    var form = event.target;
+    var input = form.querySelector('.ig-comment-input');
+    var text = (input.value || '').trim();
+    if (!text) return;
+    var btn = form.querySelector('.ig-comment-submit');
+    if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
+    try {
+      var r = await supabaseClient.from('creation_comments').insert({
+        creation_id: postId,
+        studentid: currentUser.studentId,
+        student_name: currentUser.name,
+        comment: text
+      });
+      if (r.error) throw r.error;
+      input.value = '';
+      if (btn) { btn.classList.remove('active'); btn.textContent = 'Post'; btn.disabled = false; }
+      showToast('✅ Comment added', 'success');
+      // Reload comments in lightbox if open
+      if (window.currentCreationId === postId) {
+        if (typeof loadCreationComments === 'function') loadCreationComments(postId);
+      }
+    } catch(e) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Post'; }
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  /* ─── DELETE ─── */
+  window.igDeletePost = async function(postId) {
+    if (!confirm('ഈ സൃഷ്ടി ഡിലീറ്റ് ചെയ്യണോ?')) return;
+    try {
+      await supabaseClient.from('student_creations').delete().eq('id', postId);
+      showToast('🗑️ Deleted', 'success');
+      // Remove from feed
+      var postEl = document.querySelector('.ig-post[data-post-id="' + postId + '"]');
+      if (postEl) {
+        postEl.style.transition = 'all .4s ease';
+        postEl.style.opacity = '0';
+        postEl.style.transform = 'scale(.9)';
+        setTimeout(function() { postEl.remove(); }, 400);
+      }
+      allCreations = allCreations.filter(function(c) { return c.id !== postId; });
+      filteredCreationsList = filteredCreationsList.filter(function(c) { return c.id !== postId; });
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 OVERRIDE: Public Feed (publicFeedOverlay)            */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origLoadPublic = window.loadPublicCreationsFeed;
+  window.loadPublicCreationsFeed = async function() {
+    var container = document.getElementById('publicFeedContainer');
+    if (!container) return;
+
+    // Rebuild with IG feed layout
+    container.innerHTML = 
+      '<div class="ig-feed-wrap" id="igPublicFeedWrap">' + igSkeleton(3) + '</div>';
+
+    try {
+      var r = await supabaseClient.from('student_creations')
+        .select('*')
+        .eq('approved', true)
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      _publicFeedCache = (r.data || []).map(function(c) {
+        return Object.assign({}, c, {
+          file_url: c.file_url || c.image_url || null,
+          file_type: c.file_type || 'image',
+          text_content: c.text_content || null
+        });
+      });
+
+      if (_publicFeedCache.length === 0) {
+        document.getElementById('igPublicFeedWrap').innerHTML = igEmptyState(
+          'ഇതുവരെ സൃഷ്ടികൾ ഇല്ല',
+          'ആദ്യ സൃഷ്ടി വരുമ്പോൾ ഇവിടെ കാണാം',
+          true, true
+        );
+        return;
+      }
+
+      // Get student info
+      var sids = Array.from(new Set(_publicFeedCache.map(function(c) { return c.studentid; })));
+      var smap = {};
+      if (sids.length > 0) {
+        var sr = await supabaseClient.from('students')
+          .select('studentid, name, class, photo')
+          .in('studentid', sids);
+        (sr.data || []).forEach(function(s) {
+          smap[s.studentid] = { name: s.name, class: s.class, photo: s.photo };
+        });
+      }
+      _publicFeedCache = _publicFeedCache.map(function(c) {
+        return Object.assign({}, c, {
+          studentName: smap[c.studentid] ? smap[c.studentid].name : 'Student',
+          studentClass: smap[c.studentid] ? smap[c.studentid].class : '',
+          studentPhoto: smap[c.studentid] ? smap[c.studentid].photo : ''
+        });
+      });
+
+      // Load user's likes if logged in
+      if (currentUser) {
+        try {
+          var ids = _publicFeedCache.map(function(c) { return c.id; });
+          var lr = await supabaseClient.from('creation_likes')
+            .select('creation_id')
+            .eq('studentid', currentUser.studentId)
+            .in('creation_id', ids);
+          (lr.data || []).forEach(function(l) {
+            window._igLikeCache[l.creation_id] = true;
+          });
+        } catch(e) {}
+      }
+
+      // Also populate allCreations so lightbox works
+      _publicFeedCache.forEach(function(c) {
+        if (!allCreations.find(function(x) { return x.id === c.id; })) {
+          allCreations.push(c);
+        }
+      });
+
+      // Render feed
+      var feedWrap = document.getElementById('igPublicFeedWrap');
+      var loginBanner = !currentUser
+        ? '<div class="ig-motivation" style="background:linear-gradient(135deg,#ecfeff,#fce7f3);border-color:rgba(236,72,153,.35);">' +
+            '<i class="fas fa-heart" style="color:#ec4899;"></i>' +
+            '<div>ഇഷ്ടമുള്ള സൃഷ്ടികൾ ❤️ ചെയ്യാനും കമന്റ് ചെയ്യാനും <b style="color:#ec4899;cursor:pointer;" onclick="loginFromFeed()">Login ചെയ്യുക</b></div>' +
+          '</div>'
+        : '';
+      feedWrap.innerHTML = loginBanner + _publicFeedCache.map(function(c) {
+        return renderIGPost(c, { isPublic: true });
+      }).join('');
+
+    } catch(e) {
+      console.error('Public feed error:', e);
+      document.getElementById('igPublicFeedWrap').innerHTML = 
+        '<div class="ig-empty"><div class="ig-empty-icon">⚠️</div><h3>Error</h3><p>' + escapeHtml(e.message) + '</p></div>';
+    }
+  };
+
+  /* Override old card renderer */
+  window.renderPublicFeedCard = function() { return ''; };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 CLEAN UP OLD OVERLAYS                                */
+  /* ═══════════════════════════════════════════════════════ */
+  function cleanupOldStyles() {
+    // Hide old toolbar in creations overlay
+    var overlay = document.getElementById('creationsOverlay');
+    if (overlay) {
+      overlay.querySelectorAll('.creations-header, .creations-toolbar, .creations-grid').forEach(function(el) {
+        el.style.display = 'none';
+      });
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 OPEN OVERRIDES                                       */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origOpenGallery = window.openCreationsGallery;
+  window.openCreationsGallery = function() {
+    if (!currentUser) { showToast('Login first', 'error'); return; }
+    var overlay = document.getElementById('creationsOverlay');
+    if (overlay) {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      cleanupOldStyles();
+      if (typeof loadCreationsGallery === 'function') loadCreationsGallery();
+    }
+  };
+
+  var _origOpenPublic = window.openPublicCreationsFeed;
+  window.openPublicCreationsFeed = async function() {
+    var overlay = document.getElementById('publicFeedOverlay');
+    if (!overlay) return;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (typeof loadPublicCreationsFeed === 'function') await loadPublicCreationsFeed();
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 HOOK: Extend filterCreationsGallery for IG feed     */
+  /* ═══════════════════════════════════════════════════════ */
+  window.filterCreationsGallery = function() {
+    // Uses IG filters instead
+    var searchEl = document.getElementById('creationsSearchInput');
+    var catEl = document.getElementById('creationsCategoryFilter');
+    var mineEl = document.getElementById('creationsOnlyMine');
+    if (searchEl) _igSearchQuery = (searchEl.value || '').toLowerCase().trim();
+    if (catEl) _igActiveFilter = catEl.value || '';
+    if (mineEl && mineEl.checked) _igActiveFilter = '__mine__';
+    applyIGFilters();
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 REFRESH COMMENT COUNT ON LIGHTBOX OPEN              */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origOpenLightbox = window.openCreationLightbox;
+  if (typeof _origOpenLightbox === 'function') {
+    window.openCreationLightbox = async function(id) {
+      // Ensure creation exists in cache for lightbox
+      if (!allCreations.find(function(x) { return x.id === id; })) {
+        var c = _publicFeedCache.find(function(x) { return x.id === id; });
+        if (c) allCreations.push(c);
+      }
+      return _origOpenLightbox.apply(this, arguments);
+    };
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📸 INIT                                                 */
+  /* ═══════════════════════════════════════════════════════ */
+  console.log('✅ Instagram Feed v31.0 loaded');
+  console.log('   • Instagram-style posts');
+  console.log('   • Double-tap to like ❤️');
+  console.log('   • Inline comment forms');
+  console.log('   • Save & Share buttons');
+  console.log('   • Skeleton loading');
+  console.log('   • Filter chips');
+  console.log('   • Works for both logged-in & public feeds');
+})();
+</script>
+
+<!-- ═══ PART 3: SQL — Optional (for enhanced features) ═══ -->
+<!--
+-- Ensure creation_likes table exists (for like tracking)
+CREATE TABLE IF NOT EXISTS creation_likes (
+  id BIGSERIAL PRIMARY KEY,
+  creation_id BIGINT NOT NULL,
+  studentid TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(creation_id, studentid)
+);
+
+ALTER TABLE creation_likes ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_creation_likes" ON creation_likes;
+CREATE POLICY "allow_all_creation_likes" ON creation_likes
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_id, studentid);
+-->
 </body>
 </html>
