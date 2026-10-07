@@ -2943,8 +2943,9 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
 });
 
 document.getElementById('logoutBtn').addEventListener('click',logout);
-document.getElementById('adminLogoutBtn').addEventListener('click',logout);
-
+var _adminLogoutBtn = document.getElementById('adminLogoutBtn');
+if(_adminLogoutBtn) _adminLogoutBtn.addEventListener('click',logout);
+  
 function logout(){
   if(adminImpersonating){returnToAdmin();return;}
   currentUser=null;isAdminMode=false;currentAdminClass='';
@@ -13517,6 +13518,105 @@ Object.assign(window,{
 console.log('✅ PART 3 loaded — AI + Chat + Quiz + Rewards + Kids + Social + Final');
 console.log('🎉 ALL 3 PARTS LOADED — Noorussalam Madrasa v26.0');
 </script>
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🛠️ v26.0 PATCH — Null Element Safety Net                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script id="null-safety-patch">
+(function(){
+  'use strict';
+  
+  console.log('🛠️ Applying null-safety patch...');
 
+  function applyPatch(){
+    // ─── Fix 1: Rebind admin logout safely ───
+    var adminLogoutBtn = document.getElementById('adminLogoutBtn');
+    if(adminLogoutBtn && typeof window.logout === 'function'){
+      // Remove existing listeners by cloning
+      var newBtn = adminLogoutBtn.cloneNode(true);
+      adminLogoutBtn.parentNode.replaceChild(newBtn, adminLogoutBtn);
+      newBtn.addEventListener('click', window.logout);
+      console.log('✅ Admin logout rebound safely');
+    }
+
+    // ─── Fix 2: Null-safe showLoading ───
+    window.showLoading = function(s){
+      var el = document.getElementById('loadingOverlay');
+      if(el) el.style.display = s ? 'flex' : 'none';
+    };
+
+    // ─── Fix 3: Null-safe openModal ───
+    window.openModal = function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.display = 'flex';
+      if(typeof window.updateModalState === 'function') window.updateModalState();
+    };
+
+    // ─── Fix 4: Null-safe closeModal ───
+    window.closeModal = function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+      if(typeof window.updateModalState === 'function') window.updateModalState();
+    };
+
+    // ─── Fix 5: Null-safe logout (aiFab/aiPanel safe) ───
+    if(typeof window.logout === 'function'){
+      var _originalLogout = window.logout;
+      window.logout = function(){
+        try {
+          var aiFab = document.getElementById('aiFab');
+          var aiPanel = document.getElementById('aiPanel');
+          // Pre-add safety
+          if(!aiFab) {
+            var tempFab = document.createElement('div');
+            tempFab.id = 'aiFab';
+            tempFab.style.display = 'none';
+            document.body.appendChild(tempFab);
+          }
+          if(!aiPanel) {
+            var tempPanel = document.createElement('div');
+            tempPanel.id = 'aiPanel';
+            tempPanel.style.display = 'none';
+            document.body.appendChild(tempPanel);
+          }
+        } catch(e) {}
+        return _originalLogout.apply(this, arguments);
+      };
+    }
+
+    // ─── Fix 6: Global error logger (helps debug) ───
+    window.addEventListener('error', function(e){
+      if(e.message && e.message.includes("Cannot read properties of null")){
+        console.warn('⚠️ Null-access error caught:', e.message, '\n📍 Location:', e.filename, ':', e.lineno);
+      }
+    });
+
+    // ─── Fix 7: Ensure chat/AI FAB hide properly ───
+    var styleFix = document.createElement('style');
+    styleFix.textContent = `
+      body.chat-panel-open .chat-fab,
+      body.chat-panel-open .ai-fab,
+      body.ai-panel-open .chat-fab,
+      body.ai-panel-open .ai-fab,
+      body.modal-open .chat-fab,
+      body.modal-open .ai-fab {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+    `;
+    document.head.appendChild(styleFix);
+
+    console.log('✅ Null-safety patch applied successfully');
+  }
+
+  // Run after all scripts loaded
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', applyPatch);
+  } else {
+    // Small delay to ensure all scripts have run
+    setTimeout(applyPatch, 100);
+  }
+})();
+</script>
 </body>
 </html>
