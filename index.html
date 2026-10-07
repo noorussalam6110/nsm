@@ -3623,6 +3623,11 @@ setTimeout(loadMalayalamFontForPDF, 2000);
       <button class="admin-tab" data-tab="logins" onclick="switchAdminTab('logins')">📊 Logins</button>
       <button class="admin-tab" data-tab="lessons" onclick="switchAdminTab('lessons')">📖 പാഠങ്ങൾ</button>
       <button class="admin-tab" data-tab="downloads" onclick="switchAdminTab('downloads')">📥 Downloads</button>
+      <button class="admin-tab" data-tab="quiz" onclick="switchAdminTab('quiz')">🎯 Quiz</button>
+      <button class="admin-tab" data-tab="rewards" onclick="switchAdminTab('rewards')">🎁 Rewards</button>
+      <button class="admin-tab" data-tab="missions" onclick="switchAdminTab('missions')">🎯 Missions</button>
+      <button class="admin-tab" data-tab="survey" onclick="switchAdminTab('survey')">📋 Survey</button>
+      <button class="admin-tab" data-tab="security" onclick="switchAdminTab('security')">🔐 Security</button>
     </div>
 
     <div id="adminPaymentsTab" class="admin-tab-content">
@@ -3873,6 +3878,61 @@ setTimeout(loadMalayalamFontForPDF, 2000);
     <h4>മുകളിൽ ക്ലാസ് തിരഞ്ഞെടുക്കുക</h4>
     <p>Class select ചെയ്താൽ manage ചെയ്യാം</p>
   </div>
+  <!-- 🎯 QUIZ MANAGEMENT TAB -->
+<div id="adminQuizTab" class="admin-tab-content" style="display:none;">
+  <div class="admin-toolbar">
+    <button class="btn-load" onclick="loadQuizAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <button class="btn-update" onclick="openQuizFormAdmin()"><i class="fas fa-plus"></i> Add Question</button>
+    <button class="btn-update" onclick="openBulkQuizForm()" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;"><i class="fas fa-layer-group"></i> Bulk Import</button>
+    <input type="text" id="quizSearchAdmin" placeholder="🔍 Search" oninput="filterQuizAdmin()">
+  </div>
+  <div class="admin-summary" id="quizSummaryAdmin"></div>
+  <div class="admin-table-wrap" id="quizAdminWrap"></div>
+</div>
+
+<!-- 🎁 REWARDS MANAGEMENT TAB -->
+<div id="adminRewardsTab" class="admin-tab-content" style="display:none;">
+  <div class="admin-toolbar">
+    <button class="btn-load" onclick="loadRewardsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <button class="btn-update" onclick="openRewardFormAdmin()"><i class="fas fa-plus"></i> Add Reward</button>
+  </div>
+  <div class="admin-summary" id="rewardsSummaryAdmin"></div>
+  <div class="admin-table-wrap" id="rewardsAdminWrap"></div>
+</div>
+
+<!-- 🎯 MISSIONS MANAGEMENT TAB -->
+<div id="adminMissionsTab" class="admin-tab-content" style="display:none;">
+  <div class="admin-toolbar">
+    <button class="btn-load" onclick="loadMissionsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <button class="btn-update" onclick="openMissionFormAdmin()"><i class="fas fa-plus"></i> Add Mission</button>
+  </div>
+  <div class="admin-table-wrap" id="missionsAdminWrap"></div>
+</div>
+
+<!-- 📋 SURVEY MANAGEMENT TAB -->
+<div id="adminSurveyTab" class="admin-tab-content" style="display:none;">
+  <div class="admin-toolbar">
+    <button class="btn-load" onclick="loadSurveyAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <button class="btn-update" onclick="openSurveyQuestionForm()"><i class="fas fa-plus"></i> Add Question</button>
+    <button class="btn-update" onclick="toggleSurveyStatus()" id="surveyToggleBtn" style="background:linear-gradient(100deg,#059669,#34d399);color:#fff;"><i class="fas fa-power-off"></i> Toggle Status</button>
+  </div>
+  <div id="surveyStatusBanner"></div>
+  <div class="admin-table-wrap" id="surveyQuestionsWrap"></div>
+  <hr style="margin:24px 0;border-color:rgba(100,116,139,.2);">
+  <h5 style="color:#0f172a;margin-bottom:12px;"><i class="fas fa-inbox"></i> Student Responses</h5>
+  <button class="btn-load mb-3" onclick="loadSurveyResponses()"><i class="fas fa-sync-alt"></i> Load Responses</button>
+  <div class="admin-table-wrap" id="surveyResponsesWrap"></div>
+</div>
+
+<!-- 🔐 SECURITY & BLOCKS TAB -->
+<div id="adminSecurityTab" class="admin-tab-content" style="display:none;">
+  <div class="admin-toolbar">
+    <button class="btn-load" onclick="loadBlockedStudents()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <input type="text" id="blockedSearch" placeholder="🔍 Search blocked students" oninput="filterBlockedStudents()">
+  </div>
+  <div class="admin-summary" id="securitySummaryAdmin"></div>
+  <div class="admin-table-wrap" id="blockedStudentsWrap"></div>
+</div>
 
   <!-- Settings Tab -->
   <div id="adminSettingsTab" class="admin-tab-content" style="display:none;margin-top:24px;">
@@ -18800,7 +18860,7 @@ body.modal-open .chat-fab { display: none !important; }
         html += `<div class="chat-date-separator">${dateLabel}</div>`;
       }
 
-      const isMine = m.sender_id === myId;
+      const isMine = (m.sender_id || m.studentid) === myId;
       const sender = isDM ? 
         (isMine ? currentUser : CHAT_STATE.activeFriendData) :
         (avatarMap[m.sender_id] || { name: m.student_name || 'Student', studentid: m.sender_id });
@@ -19331,6 +19391,576 @@ body.modal-open .chat-fab { display: none !important; }
     obs.observe(dash, { attributes: true, attributeFilter: ['style'] });
   }
 })();
+</script>
+<script>
+// ═══════════════════════════════════════════════════
+// ✅ AUTO CLOSE BUTTONS — All Modals
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  var modals = [
+    {id: 'quizModal', fn: 'closeQuizModal'},
+    {id: 'rewardsModal', fn: 'closeRewardsModal'},
+    {id: 'addFriendModal', fn: 'closeAddFriendModal'},
+    {id: 'avatarCustomizerModal', fn: 'closeAvatarCustomizer'},
+    {id: 'levelupPopup', fn: 'closeLevelupPopup'}
+  ];
+  
+  setTimeout(function() {
+    modals.forEach(function(m) {
+      var modal = document.getElementById(m.id);
+      if (!modal) return;
+      var card = modal.querySelector('div[class*="card"], div[class*="content"]');
+      if (!card || card.querySelector('.x-btn')) return;
+      
+      card.style.position = 'relative';
+      var btn = document.createElement('button');
+      btn.className = 'x-btn';
+      btn.innerHTML = '✕';
+      btn.style.cssText = 'position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:#f1f5f9;border:none;color:#475569;font-size:1.2rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;';
+      btn.onclick = function() {
+        var f = window[m.fn];
+        if (f) f();
+        else modal.classList.remove('open');
+      };
+      card.appendChild(btn);
+    });
+    
+    // Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Escape') return;
+      modals.forEach(function(m) {
+        var modal = document.getElementById(m.id);
+        if (modal && (modal.style.display === 'flex' || modal.classList.contains('open'))) {
+          var f = window[m.fn];
+          if (f) f();
+          else modal.classList.remove('open');
+        }
+      });
+    });
+  }, 2000);
+});
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════
+// 🎯 ADMIN MANAGEMENT — Quiz + Rewards + Missions + Survey
+// ═══════════════════════════════════════════════════════════
+
+var quizAdminData = [];
+var filteredQuizAdmin = [];
+var rewardsAdminData = [];
+var missionsAdminData = [];
+var surveyQuestionsData = [];
+var surveyResponsesData = [];
+var blockedStudentsData = [];
+
+// ═══════════════════════════════════════════════════
+// 🎯 QUIZ MANAGEMENT
+// ═══════════════════════════════════════════════════
+async function loadQuizAdmin() {
+  var wrap = document.getElementById('quizAdminWrap');
+  wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+  try {
+    var r = await supabaseClient.from('quiz_questions').select('*').order('id', { ascending: false });
+    quizAdminData = r.data || [];
+    
+    var active = quizAdminData.filter(q => q.is_active).length;
+    document.getElementById('quizSummaryAdmin').innerHTML = 
+      '<div class="stat"><div class="num">' + quizAdminData.length + '</div><div class="label">Total</div></div>' +
+      '<div class="stat"><div class="num green">' + active + '</div><div class="label">Active</div></div>' +
+      '<div class="stat"><div class="num orange">' + (quizAdminData.length - active) + '</div><div class="label">Inactive</div></div>';
+    
+    filterQuizAdmin();
+  } catch(e) {
+    wrap.innerHTML = '<div class="empty-state">Error: ' + e.message + '</div>';
+  }
+}
+
+function filterQuizAdmin() {
+  var q = (document.getElementById('quizSearchAdmin')?.value || '').toLowerCase().trim();
+  filteredQuizAdmin = quizAdminData.filter(function(item) {
+    return !q || (item.question || '').toLowerCase().indexOf(q) > -1;
+  });
+  renderQuizAdmin();
+}
+
+function renderQuizAdmin() {
+  var wrap = document.getElementById('quizAdminWrap');
+  if (!filteredQuizAdmin.length) {
+    wrap.innerHTML = '<div class="empty-state">No questions. Add പഠനം ആരംഭിക്കൂ!</div>';
+    return;
+  }
+  var h = '<table><thead><tr><th>#</th><th>Question</th><th>Answer</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  filteredQuizAdmin.forEach(function(q, i) {
+    h += '<tr>';
+    h += '<td>' + (i+1) + '</td>';
+    h += '<td><strong>' + escapeHtml(q.question) + '</strong><br><small style="color:#64748b;">A: ' + escapeHtml(q.option_a) + ' | B: ' + escapeHtml(q.option_b) + (q.option_c ? ' | C: ' + escapeHtml(q.option_c) : '') + (q.option_d ? ' | D: ' + escapeHtml(q.option_d) : '') + '</small></td>';
+    h += '<td><span style="background:#ecfdf5;color:#059669;padding:3px 10px;border-radius:20px;font-weight:900;">' + q.correct_answer + '</span></td>';
+    h += '<td>' + (q.is_active ? '✅' : '🚫') + '</td>';
+    h += '<td>';
+    h += '<button class="btn-sm approve" onclick="editQuizAdmin(' + q.id + ')" title="Edit">✏️</button> ';
+    h += '<button class="btn-sm" style="background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;padding:5px 10px;" onclick="toggleQuizActive(' + q.id + ',' + !q.is_active + ')">' + (q.is_active ? '🚫' : '✅') + '</button> ';
+    h += '<button class="btn-sm reject" onclick="deleteQuizAdmin(' + q.id + ')">🗑️</button>';
+    h += '</td></tr>';
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+function openQuizFormAdmin(id) {
+  var q = id ? quizAdminData.find(x => x.id === id) : {};
+  modalTitleSpan.innerText = id ? '✏️ Edit Question' : '➕ Add Question';
+  modalBodyDiv.innerHTML = 
+    '<form onsubmit="saveQuizAdmin(event,' + (id || 'null') + ')">' +
+    '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Question *</label>' +
+    '<textarea id="qa_question" class="modal-form-input" required style="min-height:80px;">' + escapeHtml(q.question || '') + '</textarea></div>' +
+    '<div class="row g-2">' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Option A *</label><input type="text" id="qa_a" class="modal-form-input" value="' + escapeHtml(q.option_a || '') + '" required></div>' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Option B *</label><input type="text" id="qa_b" class="modal-form-input" value="' + escapeHtml(q.option_b || '') + '" required></div>' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Option C (optional)</label><input type="text" id="qa_c" class="modal-form-input" value="' + escapeHtml(q.option_c || '') + '"></div>' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Option D (optional)</label><input type="text" id="qa_d" class="modal-form-input" value="' + escapeHtml(q.option_d || '') + '"></div>' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Correct Answer *</label><select id="qa_correct" class="modal-form-input"><option value="A"' + (q.correct_answer === 'A' ? ' selected' : '') + '>A</option><option value="B"' + (q.correct_answer === 'B' ? ' selected' : '') + '>B</option><option value="C"' + (q.correct_answer === 'C' ? ' selected' : '') + '>C</option><option value="D"' + (q.correct_answer === 'D' ? ' selected' : '') + '>D</option></select></div>' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Status</label><select id="qa_active" class="modal-form-input"><option value="true"' + (q.is_active !== false ? ' selected' : '') + '>✅ Active</option><option value="false"' + (q.is_active === false ? ' selected' : '') + '>🚫 Inactive</option></select></div>' +
+    '</div>' +
+    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>' +
+    '</form>';
+  modal.style.display = 'flex';
+}
+
+async function saveQuizAdmin(e, id) {
+  e.preventDefault();
+  var obj = {
+    question: document.getElementById('qa_question').value.trim(),
+    option_a: document.getElementById('qa_a').value.trim(),
+    option_b: document.getElementById('qa_b').value.trim(),
+    option_c: document.getElementById('qa_c').value.trim() || null,
+    option_d: document.getElementById('qa_d').value.trim() || null,
+    correct_answer: document.getElementById('qa_correct').value,
+    is_active: document.getElementById('qa_active').value === 'true'
+  };
+  try {
+    if (id) await supabaseClient.from('quiz_questions').update(obj).eq('id', id);
+    else await supabaseClient.from('quiz_questions').insert(obj);
+    showToast(id ? '✅ Updated' : '✅ Added', 'success');
+    closeModal('globalModal');
+    loadQuizAdmin();
+  } catch(err) { showToast('❌ ' + err.message, 'error'); }
+}
+
+function editQuizAdmin(id) { openQuizFormAdmin(id); }
+
+async function toggleQuizActive(id, status) {
+  try {
+    await supabaseClient.from('quiz_questions').update({ is_active: status }).eq('id', id);
+    showToast(status ? '✅ Activated' : '🚫 Deactivated', 'success');
+    loadQuizAdmin();
+  } catch(e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+async function deleteQuizAdmin(id) {
+  if (!confirm('Delete this question?')) return;
+  try {
+    await supabaseClient.from('quiz_questions').delete().eq('id', id);
+    showToast('🗑️ Deleted', 'info');
+    loadQuizAdmin();
+  } catch(e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+function openBulkQuizForm() {
+  modalTitleSpan.innerText = '📥 Bulk Import Quiz';
+  modalBodyDiv.innerHTML = 
+    '<div style="background:#ecfeff;border:1px solid rgba(8,145,178,.3);border-radius:12px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#0891b2;line-height:1.6;">' +
+    '<b>📝 Format (each line):</b><br>' +
+    '<code>Question|OptionA|OptionB|OptionC|OptionD|Answer</code><br><br>' +
+    '<b>Example:</b><br>' +
+    '<code>ഖുർആനിൽ എത്ര അധ്യായങ്ങൾ?|100|110|114|120|C</code>' +
+    '</div>' +
+    '<textarea id="bulkQuizInput" class="modal-form-input" style="min-height:280px;font-family:monospace;font-size:.8rem;" placeholder="ചോദ്യം|ഓപ്ഷൻA|ഓപ്ഷൻB|ഓപ്ഷൻC|ഓപ്ഷൻD|C"></textarea>' +
+    '<div class="d-flex gap-2 mt-3">' +
+    '<button type="button" class="btn-update flex-grow-1" onclick="saveBulkQuizAdmin()"><i class="fas fa-upload"></i> Import</button>' +
+    '<button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>';
+  modal.style.display = 'flex';
+}
+
+async function saveBulkQuizAdmin() {
+  var input = document.getElementById('bulkQuizInput').value.trim();
+  if (!input) { showToast('No data', 'error'); return; }
+  var questions = [];
+  input.split('\n').filter(l => l.trim()).forEach(function(line) {
+    var parts = line.split('|').map(p => p.trim());
+    if (parts.length >= 6) {
+      questions.push({
+        question: parts[0], option_a: parts[1], option_b: parts[2],
+        option_c: parts[3] || null, option_d: parts[4] || null,
+        correct_answer: parts[5].toUpperCase(), is_active: true
+      });
+    }
+  });
+  if (!questions.length) { showToast('❌ No valid lines', 'error'); return; }
+  try {
+    for (var i = 0; i < questions.length; i += 50) {
+      await supabaseClient.from('quiz_questions').insert(questions.slice(i, i + 50));
+    }
+    showToast('✅ ' + questions.length + ' questions added', 'success');
+    closeModal('globalModal');
+    loadQuizAdmin();
+    if (typeof confetti !== 'undefined') confetti({ particleCount: 100 });
+  } catch(e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+// ═══════════════════════════════════════════════════
+// 🎁 REWARDS MANAGEMENT
+// ═══════════════════════════════════════════════════
+async function loadRewardsAdmin() {
+  var wrap = document.getElementById('rewardsAdminWrap');
+  wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+  try {
+    var r = await supabaseClient.from('rewards_store').select('*').order('cost');
+    rewardsAdminData = r.data || [];
+    document.getElementById('rewardsSummaryAdmin').innerHTML = 
+      '<div class="stat"><div class="num">' + rewardsAdminData.length + '</div><div class="label">Total Rewards</div></div>' +
+      '<div class="stat"><div class="num green">' + rewardsAdminData.filter(x => x.is_active).length + '</div><div class="label">Active</div></div>';
+    renderRewardsAdmin();
+  } catch(e) { wrap.innerHTML = '<div class="empty-state">Error</div>'; }
+}
+
+function renderRewardsAdmin() {
+  var wrap = document.getElementById('rewardsAdminWrap');
+  if (!rewardsAdminData.length) { wrap.innerHTML = '<div class="empty-state">No rewards</div>'; return; }
+  var h = '<table><thead><tr><th>#</th><th>Icon</th><th>Title</th><th>Cost</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  rewardsAdminData.forEach(function(rw, i) {
+    h += '<tr><td>' + (i+1) + '</td><td style="font-size:1.5rem;">' + rw.icon + '</td>';
+    h += '<td><strong>' + escapeHtml(rw.title) + '</strong><br><small style="color:#64748b;">' + escapeHtml(rw.description || '') + '</small></td>';
+    h += '<td><span style="background:#fef3c7;color:#b45309;padding:3px 10px;border-radius:20px;font-weight:900;">⭐ ' + rw.cost + '</span></td>';
+    h += '<td>' + (rw.is_active ? '✅' : '🚫') + '</td>';
+    h += '<td><button class="btn-sm approve" onclick="editRewardAdmin(' + rw.id + ')">✏️</button> <button class="btn-sm reject" onclick="deleteRewardAdmin(' + rw.id + ')">🗑️</button></td></tr>';
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+function openRewardFormAdmin(id) {
+  var rw = id ? rewardsAdminData.find(x => x.id === id) : {};
+  modalTitleSpan.innerText = id ? '✏️ Edit Reward' : '➕ Add Reward';
+  modalBodyDiv.innerHTML = 
+    '<form onsubmit="saveRewardAdmin(event,' + (id || 'null') + ')">' +
+    '<div class="row g-2">' +
+    '<div class="col-md-3"><label style="color:#475569;font-size:.78rem;">Icon</label><input type="text" id="rw_icon" class="modal-form-input" value="' + escapeHtml(rw.icon || '🎁') + '" maxlength="4"></div>' +
+    '<div class="col-md-9"><label style="color:#475569;font-size:.78rem;">Title *</label><input type="text" id="rw_title" class="modal-form-input" value="' + escapeHtml(rw.title || '') + '" required></div>' +
+    '<div class="col-12"><label style="color:#475569;font-size:.78rem;">Description</label><textarea id="rw_desc" class="modal-form-input" style="min-height:60px;">' + escapeHtml(rw.description || '') + '</textarea></div>' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Cost (XP) *</label><input type="number" id="rw_cost" class="modal-form-input" value="' + (rw.cost || 100) + '" required></div>' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Status</label><select id="rw_active" class="modal-form-input"><option value="true"' + (rw.is_active !== false ? ' selected' : '') + '>✅ Active</option><option value="false"' + (rw.is_active === false ? ' selected' : '') + '>🚫 Inactive</option></select></div>' +
+    '</div>' +
+    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div></form>';
+  modal.style.display = 'flex';
+}
+
+async function saveRewardAdmin(e, id) {
+  e.preventDefault();
+  var obj = {
+    icon: document.getElementById('rw_icon').value.trim() || '🎁',
+    title: document.getElementById('rw_title').value.trim(),
+    description: document.getElementById('rw_desc').value.trim() || null,
+    cost: parseInt(document.getElementById('rw_cost').value),
+    is_active: document.getElementById('rw_active').value === 'true'
+  };
+  try {
+    if (id) await supabaseClient.from('rewards_store').update(obj).eq('id', id);
+    else await supabaseClient.from('rewards_store').insert(obj);
+    showToast(id ? '✅ Updated' : '✅ Added', 'success');
+    closeModal('globalModal');
+    loadRewardsAdmin();
+  } catch(e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+function editRewardAdmin(id) { openRewardFormAdmin(id); }
+
+async function deleteRewardAdmin(id) {
+  if (!confirm('Delete?')) return;
+  await supabaseClient.from('rewards_store').delete().eq('id', id);
+  showToast('🗑️ Deleted', 'info');
+  loadRewardsAdmin();
+}
+
+// ═══════════════════════════════════════════════════
+// 🎯 MISSIONS MANAGEMENT
+// ═══════════════════════════════════════════════════
+async function loadMissionsAdmin() {
+  var wrap = document.getElementById('missionsAdminWrap');
+  wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+  try {
+    var r = await supabaseClient.from('daily_missions').select('*').order('id');
+    missionsAdminData = r.data || [];
+    renderMissionsAdmin();
+  } catch(e) { wrap.innerHTML = '<div class="empty-state">Error</div>'; }
+}
+
+function renderMissionsAdmin() {
+  var wrap = document.getElementById('missionsAdminWrap');
+  if (!missionsAdminData.length) { wrap.innerHTML = '<div class="empty-state">No missions</div>'; return; }
+  var h = '<table><thead><tr><th>#</th><th>Key</th><th>Icon</th><th>Title</th><th>XP</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  missionsAdminData.forEach(function(m, i) {
+    h += '<tr><td>' + (i+1) + '</td><td><code style="font-size:.7rem;">' + escapeHtml(m.mission_key) + '</code></td>';
+    h += '<td style="font-size:1.4rem;">' + m.icon + '</td>';
+    h += '<td><strong>' + escapeHtml(m.title) + '</strong><br><small style="color:#64748b;">' + escapeHtml(m.description || '') + '</small></td>';
+    h += '<td><span style="background:#fef3c7;color:#b45309;padding:3px 10px;border-radius:20px;font-weight:900;">+' + m.xp_reward + '</span></td>';
+    h += '<td>' + (m.is_active ? '✅' : '🚫') + '</td>';
+    h += '<td><button class="btn-sm approve" onclick="editMissionAdmin(' + m.id + ')">✏️</button> <button class="btn-sm reject" onclick="deleteMissionAdmin(' + m.id + ')">🗑️</button></td></tr>';
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+function openMissionFormAdmin(id) {
+  var m = id ? missionsAdminData.find(x => x.id === id) : {};
+  modalTitleSpan.innerText = id ? '✏️ Edit Mission' : '➕ Add Mission';
+  modalBodyDiv.innerHTML = 
+    '<form onsubmit="saveMissionAdmin(event,' + (id || 'null') + ')">' +
+    '<div class="row g-2">' +
+    '<div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Mission Key *</label><input type="text" id="m_key" class="modal-form-input" value="' + escapeHtml(m.mission_key || '') + '" required ' + (id ? 'readonly' : '') + ' placeholder="e.g., daily_login"></div>' +
+    '<div class="col-md-3"><label style="color:#475569;font-size:.78rem;">Icon</label><input type="text" id="m_icon" class="modal-form-input" value="' + escapeHtml(m.icon || '🎯') + '" maxlength="4"></div>' +
+    '<div class="col-md-3"><label style="color:#475569;font-size:.78rem;">XP Reward *</label><input type="number" id="m_xp" class="modal-form-input" value="' + (m.xp_reward || 10) + '" required></div>' +
+    '<div class="col-12"><label style="color:#475569;font-size:.78rem;">Title *</label><input type="text" id="m_title" class="modal-form-input" value="' + escapeHtml(m.title || '') + '" required></div>' +
+    '<div class="col-12"><label style="color:#475569;font-size:.78rem;">Description</label><textarea id="m_desc" class="modal-form-input" style="min-height:60px;">' + escapeHtml(m.description || '') + '</textarea></div>' +
+    '</div>' +
+    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div></form>';
+  modal.style.display = 'flex';
+}
+
+async function saveMissionAdmin(e, id) {
+  e.preventDefault();
+  var obj = {
+    mission_key: document.getElementById('m_key').value.trim(),
+    icon: document.getElementById('m_icon').value.trim() || '🎯',
+    title: document.getElementById('m_title').value.trim(),
+    description: document.getElementById('m_desc').value.trim() || null,
+    xp_reward: parseInt(document.getElementById('m_xp').value),
+    is_active: true
+  };
+  try {
+    if (id) await supabaseClient.from('daily_missions').update(obj).eq('id', id);
+    else await supabaseClient.from('daily_missions').insert(obj);
+    showToast(id ? '✅ Updated' : '✅ Added', 'success');
+    closeModal('globalModal');
+    loadMissionsAdmin();
+  } catch(e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+function editMissionAdmin(id) { openMissionFormAdmin(id); }
+
+async function deleteMissionAdmin(id) {
+  if (!confirm('Delete?')) return;
+  await supabaseClient.from('daily_missions').delete().eq('id', id);
+  showToast('🗑️ Deleted', 'info');
+  loadMissionsAdmin();
+}
+
+// ═══════════════════════════════════════════════════
+// 📋 SURVEY MANAGEMENT
+// ═══════════════════════════════════════════════════
+async function loadSurveyAdmin() {
+  var wrap = document.getElementById('surveyQuestionsWrap');
+  wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+  try {
+    // Check enabled status
+    var sr = await supabaseClient.from('survey_settings').select('*');
+    var settings = {};
+    (sr.data || []).forEach(s => settings[s.setting_key] = s.value);
+    var enabled = settings.survey_enabled === 'true';
+    document.getElementById('surveyStatusBanner').innerHTML = 
+      '<div style="padding:14px;background:' + (enabled ? 'linear-gradient(135deg,#ecfdf5,#d1fae5);border:1.5px solid rgba(5,150,105,.4)' : 'linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid rgba(180,83,9,.4)') + ';border-radius:14px;margin-bottom:16px;font-weight:800;color:' + (enabled ? '#059669' : '#b45309') + ';">' +
+      (enabled ? '✅ Survey ENABLED — Students will see popup' : '🚫 Survey DISABLED — Students won\'t see popup') + '</div>';
+    
+    var r = await supabaseClient.from('survey_questions').select('*').order('q_no');
+    surveyQuestionsData = r.data || [];
+    renderSurveyAdmin();
+  } catch(e) { wrap.innerHTML = '<div class="empty-state">Error: ' + e.message + '</div>'; }
+}
+
+function renderSurveyAdmin() {
+  var wrap = document.getElementById('surveyQuestionsWrap');
+  if (!surveyQuestionsData.length) { wrap.innerHTML = '<div class="empty-state">No questions</div>'; return; }
+  var h = '<table><thead><tr><th>#</th><th>Question</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  surveyQuestionsData.forEach(function(q, i) {
+    h += '<tr><td>' + (i+1) + '</td>';
+    h += '<td><strong>' + escapeHtml(q.question_ml) + '</strong></td>';
+    h += '<td>' + (q.is_active ? '✅' : '🚫') + '</td>';
+    h += '<td><button class="btn-sm approve" onclick="editSurveyQuestion(' + q.id + ')">✏️</button> <button class="btn-sm reject" onclick="deleteSurveyQuestion(' + q.id + ')">🗑️</button></td></tr>';
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+function openSurveyQuestionForm(id) {
+  var q = id ? surveyQuestionsData.find(x => x.id === id) : {};
+  modalTitleSpan.innerText = id ? '✏️ Edit Question' : '➕ Add Question';
+  modalBodyDiv.innerHTML = 
+    '<form onsubmit="saveSurveyQuestion(event,' + (id || 'null') + ')">' +
+    '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Question (Malayalam) *</label>' +
+    '<textarea id="sq_text" class="modal-form-input" required style="min-height:80px;">' + escapeHtml(q.question_ml || '') + '</textarea></div>' +
+    '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Placeholder</label>' +
+    '<input type="text" id="sq_placeholder" class="modal-form-input" value="' + escapeHtml(q.placeholder_ml || '') + '"></div>' +
+    '<div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1"><i class="fas fa-save"></i> Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div></form>';
+  modal.style.display = 'flex';
+}
+
+async function saveSurveyQuestion(e, id) {
+  e.preventDefault();
+  var obj = {
+    question_ml: document.getElementById('sq_text').value.trim(),
+    placeholder_ml: document.getElementById('sq_placeholder').value.trim() || null,
+    is_required: true, is_active: true
+  };
+  try {
+    if (id) await supabaseClient.from('survey_questions').update(obj).eq('id', id);
+    else {
+      obj.q_no = surveyQuestionsData.length + 1;
+      await supabaseClient.from('survey_questions').insert(obj);
+    }
+    showToast(id ? '✅ Updated' : '✅ Added', 'success');
+    closeModal('globalModal');
+    loadSurveyAdmin();
+  } catch(e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+function editSurveyQuestion(id) { openSurveyQuestionForm(id); }
+
+async function deleteSurveyQuestion(id) {
+  if (!confirm('Delete?')) return;
+  await supabaseClient.from('survey_questions').delete().eq('id', id);
+  loadSurveyAdmin();
+}
+
+async function toggleSurveyStatus() {
+  try {
+    var r = await supabaseClient.from('survey_settings').select('value').eq('setting_key', 'survey_enabled').single();
+    var current = r.data?.value === 'true';
+    await supabaseClient.from('survey_settings').update({ value: current ? 'false' : 'true' }).eq('setting_key', 'survey_enabled');
+    showToast(current ? '🚫 Survey disabled' : '✅ Survey enabled', 'success');
+    loadSurveyAdmin();
+  } catch(e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+async function loadSurveyResponses() {
+  var wrap = document.getElementById('surveyResponsesWrap');
+  wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+  try {
+    var r = await supabaseClient.from('survey_responses').select('*').order('created_at', { ascending: false });
+    surveyResponsesData = r.data || [];
+    if (!surveyResponsesData.length) { wrap.innerHTML = '<div class="empty-state">No responses yet</div>'; return; }
+    var h = '<table><thead><tr><th>#</th><th>Student</th><th>Class</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Date</th></tr></thead><tbody>';
+    surveyResponsesData.forEach(function(s, i) {
+      h += '<tr><td>' + (i+1) + '</td>';
+      h += '<td><strong>' + escapeHtml(s.student_name || s.studentid) + '</strong></td>';
+      h += '<td>' + escapeHtml(s.student_class || '—') + '</td>';
+      h += '<td><small>' + escapeHtml((s.q1_answer || '—').substring(0, 60)) + '</small></td>';
+      h += '<td><small>' + escapeHtml((s.q2_answer || '—').substring(0, 60)) + '</small></td>';
+      h += '<td><small>' + escapeHtml((s.q3_answer || '—').substring(0, 60)) + '</small></td>';
+      h += '<td><small>' + formatDate(s.created_at) + '</small></td>';
+      h += '</tr>';
+    });
+    h += '</tbody></table>';
+    wrap.innerHTML = h;
+  } catch(e) { wrap.innerHTML = '<div class="empty-state">Error</div>'; }
+}
+
+// ═══════════════════════════════════════════════════
+// 🔐 SECURITY — BLOCKED STUDENTS
+// ═══════════════════════════════════════════════════
+async function loadBlockedStudents() {
+  var wrap = document.getElementById('blockedStudentsWrap');
+  wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+  try {
+    var r = await supabaseClient.from('students').select('*').eq('is_blocked', true);
+    blockedStudentsData = r.data || [];
+    document.getElementById('securitySummaryAdmin').innerHTML = 
+      '<div class="stat"><div class="num orange">' + blockedStudentsData.length + '</div><div class="label">Blocked Students</div></div>';
+    renderBlockedStudents();
+  } catch(e) { wrap.innerHTML = '<div class="empty-state">Error</div>'; }
+}
+
+function filterBlockedStudents() {
+  var q = (document.getElementById('blockedSearch')?.value || '').toLowerCase();
+  var filtered = blockedStudentsData.filter(s => 
+    !q || (s.name || '').toLowerCase().includes(q) || (s.studentid || '').toLowerCase().includes(q)
+  );
+  renderBlockedStudents(filtered);
+}
+
+function renderBlockedStudents(list) {
+  var wrap = document.getElementById('blockedStudentsWrap');
+  var data = list || blockedStudentsData;
+  if (!data.length) { wrap.innerHTML = '<div class="empty-state">No blocked students ✅</div>'; return; }
+  var h = '<table><thead><tr><th>#</th><th>Student</th><th>Class</th><th>Reason</th><th>Blocked Date</th><th>Action</th></tr></thead><tbody>';
+  data.forEach(function(s, i) {
+    h += '<tr style="background:#fee2e2;"><td>' + (i+1) + '</td>';
+    h += '<td><strong>' + escapeHtml(s.name) + '</strong><br><small>' + escapeHtml(s.studentid) + '</small></td>';
+    h += '<td>' + escapeHtml(s.class || '—') + '</td>';
+    h += '<td><small>' + escapeHtml(s.block_reason || '—') + '</small></td>';
+    h += '<td><small>' + (s.blocked_at ? formatDate(s.blocked_at) : '—') + '</small></td>';
+    h += '<td><button class="btn-sm approve" onclick="unblockStudent(\'' + s.studentid + '\')">🔓 Unblock</button></td></tr>';
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+// ═══════════════════════════════════════════════════
+// 🔧 SWITCH ADMIN TAB — Extended
+// ═══════════════════════════════════════════════════
+(function() {
+  var _orig = window.switchAdminTab;
+  window.switchAdminTab = function(tab) {
+    // Hide all tabs
+    document.querySelectorAll('.admin-tab-content').forEach(c => c.style.display = 'none');
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    
+    var tabBtn = document.querySelector('.admin-tab[data-tab="' + tab + '"]');
+    if (tabBtn) tabBtn.classList.add('active');
+    
+    if (tab === 'quiz') {
+      document.getElementById('adminQuizTab').style.display = 'block';
+      loadQuizAdmin();
+      return;
+    }
+    if (tab === 'rewards') {
+      document.getElementById('adminRewardsTab').style.display = 'block';
+      loadRewardsAdmin();
+      return;
+    }
+    if (tab === 'missions') {
+      document.getElementById('adminMissionsTab').style.display = 'block';
+      loadMissionsAdmin();
+      return;
+    }
+    if (tab === 'survey') {
+      document.getElementById('adminSurveyTab').style.display = 'block';
+      loadSurveyAdmin();
+      return;
+    }
+    if (tab === 'security') {
+      document.getElementById('adminSecurityTab').style.display = 'block';
+      loadBlockedStudents();
+      return;
+    }
+    
+    // Call original for other tabs
+    return _orig.call(this, tab);
+  };
+})();
+
+// Export functions
+Object.assign(window, {
+  loadQuizAdmin, filterQuizAdmin, renderQuizAdmin, openQuizFormAdmin, saveQuizAdmin,
+  editQuizAdmin, toggleQuizActive, deleteQuizAdmin, openBulkQuizForm, saveBulkQuizAdmin,
+  loadRewardsAdmin, renderRewardsAdmin, openRewardFormAdmin, saveRewardAdmin,
+  editRewardAdmin, deleteRewardAdmin,
+  loadMissionsAdmin, renderMissionsAdmin, openMissionFormAdmin, saveMissionAdmin,
+  editMissionAdmin, deleteMissionAdmin,
+  loadSurveyAdmin, renderSurveyAdmin, openSurveyQuestionForm, saveSurveyQuestion,
+  editSurveyQuestion, deleteSurveyQuestion, toggleSurveyStatus, loadSurveyResponses,
+  loadBlockedStudents, filterBlockedStudents, renderBlockedStudents
+});
+
+console.log('✅ Admin Management Extended — Quiz, Rewards, Missions, Survey, Security');
 </script>
 </body>
 </html>
