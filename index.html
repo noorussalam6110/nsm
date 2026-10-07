@@ -23486,5 +23486,1666 @@ window.printFeeReportPDF = function() {
   console.log('   Admin → Quiz tab → "View Results" button');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🕌 v35.0 — NAMAZ TRACKER WITH PARENT NOTIFICATION          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══ CSS ═══ -->
+<style id="namaz-tracker-styles">
+/* ═══════════════════════════════════════════════════════ */
+/* 🕌 NAMAZ WIDGET                                          */
+/* ═══════════════════════════════════════════════════════ */
+.namaz-widget {
+  background: linear-gradient(135deg, #059669 0%, #10b981 45%, #34d399 100%);
+  border-radius: 22px;
+  padding: 20px 18px;
+  margin-bottom: 16px;
+  color: #fff;
+  box-shadow: 0 15px 35px -12px rgba(5,150,105,.7);
+  position: relative;
+  overflow: hidden;
+}
+.namaz-widget::before {
+  content: '🕌';
+  position: absolute;
+  top: -30px; right: -20px;
+  font-size: 8rem;
+  opacity: .12;
+  animation: namazMosqueFloat 6s ease-in-out infinite;
+}
+@keyframes namazMosqueFloat {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+.namaz-widget::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.15), transparent 45%);
+  animation: namazShimmer 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes namazShimmer {
+  0%,100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.15); }
+}
+
+.namaz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 2;
+}
+.namaz-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #fff;
+}
+.namaz-title i { font-size: 1.15rem; }
+.namaz-date {
+  font-size: .68rem;
+  background: rgba(255,255,255,.25);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  backdrop-filter: blur(10px);
+}
+
+.namaz-progress-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.namaz-ring-wrap {
+  position: relative;
+  width: 100px; height: 100px;
+  flex-shrink: 0;
+}
+.namaz-ring-wrap svg {
+  transform: rotate(-90deg);
+  width: 100%; height: 100%;
+}
+.namaz-ring-bg { stroke: rgba(255,255,255,.2); }
+.namaz-ring-fill {
+  stroke: #fbbf24;
+  stroke-linecap: round;
+  transition: stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);
+  filter: drop-shadow(0 0 8px rgba(251,191,36,.6));
+}
+.namaz-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.namaz-ring-count {
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+.namaz-ring-count small {
+  font-size: .72rem;
+  opacity: .85;
+  font-weight: 700;
+}
+.namaz-ring-label {
+  font-size: .55rem;
+  letter-spacing: 1.2px;
+  opacity: .85;
+  font-weight: 800;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+.namaz-streak-box {
+  text-align: center;
+  flex: 1;
+  min-width: 90px;
+}
+.namaz-streak-fire {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.2));
+  animation: fireBounce 1.8s ease-in-out infinite;
+}
+@keyframes fireBounce {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.06); }
+}
+.namaz-streak-num {
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+.namaz-streak-num small {
+  font-size: .68rem;
+  opacity: .85;
+  font-weight: 700;
+  margin-left: 3px;
+}
+.namaz-streak-label {
+  font-size: .68rem;
+  opacity: .9;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+/* ─── 5 PRAYERS GRID ─── */
+.namaz-prayers-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 14px;
+}
+.namaz-prayer-btn {
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.25);
+  border-radius: 12px;
+  padding: 10px 4px 8px;
+  cursor: pointer;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  color: #fff;
+  font-family: inherit;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.namaz-prayer-btn:active { transform: scale(.92); }
+.namaz-prayer-btn.done {
+  background: linear-gradient(140deg, #fbbf24, #f59e0b);
+  border-color: transparent;
+  color: #03132e;
+  box-shadow: 0 6px 15px -4px rgba(251,191,36,.7);
+}
+.namaz-prayer-btn.done::after {
+  content: '✓';
+  position: absolute;
+  top: 3px; right: 5px;
+  font-size: .72rem;
+  font-weight: 900;
+  color: #03132e;
+  animation: checkPop .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes checkPop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+.namaz-prayer-ico {
+  font-size: 1.15rem;
+  display: block;
+  margin-bottom: 3px;
+  line-height: 1;
+}
+.namaz-prayer-name {
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  display: block;
+  line-height: 1.15;
+}
+.namaz-prayer-time {
+  font-size: .56rem;
+  opacity: .85;
+  margin-top: 2px;
+  display: block;
+  font-weight: 700;
+}
+
+/* ─── ACTION ROW ─── */
+.namaz-actions {
+  display: flex;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+.namaz-action-btn {
+  flex: 1;
+  background: rgba(255,255,255,.22);
+  border: 1.5px solid rgba(255,255,255,.35);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 8px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .74rem;
+  cursor: pointer;
+  transition: .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.namaz-action-btn:hover { background: rgba(255,255,255,.32); }
+.namaz-action-btn:active { transform: scale(.95); }
+.namaz-action-btn.primary {
+  background: #fff;
+  color: #059669;
+  border-color: #fff;
+}
+.namaz-action-btn.primary:hover { background: #f0fdf4; }
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🕌 NAMAZ MODAL — Weekly/Monthly View                     */
+/* ═══════════════════════════════════════════════════════ */
+.namaz-view-tabs {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 16px;
+}
+.namaz-view-tab {
+  flex: 1;
+  padding: 9px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .76rem;
+  color: #475569;
+  cursor: pointer;
+  transition: .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.namaz-view-tab.active {
+  background: #fff;
+  color: #059669;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.namaz-week-grid {
+  display: grid;
+  grid-template-columns: 60px repeat(5, 1fr) 40px;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.namaz-week-header {
+  padding: 8px 4px;
+  text-align: center;
+  font-size: .62rem;
+  font-weight: 900;
+  color: #1e40af;
+  text-transform: uppercase;
+  background: #f0f6ff;
+  border-radius: 8px;
+  letter-spacing: .3px;
+}
+.namaz-week-day {
+  padding: 10px 6px;
+  font-size: .72rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+.namaz-week-day .date-num {
+  font-size: .95rem;
+  font-weight: 900;
+  color: #1e40af;
+  line-height: 1;
+}
+.namaz-week-day .day-name {
+  font-size: .58rem;
+  color: #64748b;
+  margin-top: 2px;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+.namaz-week-cell {
+  padding: 10px 2px;
+  text-align: center;
+  font-size: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .2s;
+  border: 1.5px solid transparent;
+}
+.namaz-week-cell.done {
+  background: linear-gradient(140deg, #dcfce7, #a7f3d0);
+  color: #065f46;
+  border-color: #059669;
+}
+.namaz-week-cell.not-done {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: rgba(220,38,38,.2);
+}
+.namaz-week-cell.future {
+  background: #f1f5f9;
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+.namaz-week-cell.today {
+  box-shadow: 0 0 0 3px rgba(251,191,36,.5);
+  animation: todayPulse 1.8s ease-in-out infinite;
+}
+@keyframes todayPulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(251,191,36,.5); }
+  50% { box-shadow: 0 0 0 6px rgba(251,191,36,0); }
+}
+.namaz-week-total {
+  padding: 10px 4px;
+  text-align: center;
+  font-size: .78rem;
+  font-weight: 900;
+  border-radius: 8px;
+  background: #fef3c7;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.namaz-week-total.full {
+  background: linear-gradient(140deg, #fbbf24, #f59e0b);
+  color: #03132e;
+}
+
+/* ─── MONTH VIEW ─── */
+.namaz-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.namaz-month-day {
+  aspect-ratio: 1;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: .2s;
+  position: relative;
+  min-height: 44px;
+}
+.namaz-month-day.empty { background: transparent; cursor: default; }
+.namaz-month-day.today {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 2px rgba(251,191,36,.3);
+}
+.namaz-month-day .day-num {
+  font-size: .68rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1;
+}
+.namaz-month-day .day-dots {
+  display: flex;
+  gap: 1.5px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.namaz-month-day .day-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+.namaz-month-day .day-dot.done { background: #059669; }
+.namaz-month-day.complete {
+  background: linear-gradient(140deg, #fef3c7, #fde68a);
+}
+
+/* ─── STATS CARDS ─── */
+.namaz-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.namaz-stat-card {
+  background: linear-gradient(140deg, #fff, #f8fafc);
+  border: 1px solid rgba(180,200,230,.5);
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+}
+.namaz-stat-num {
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #059669;
+}
+.namaz-stat-label {
+  font-size: .62rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🕌 ADMIN NAMAZ TAB                                       */
+/* ═══════════════════════════════════════════════════════ */
+.namaz-admin-cell {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+}
+.namaz-admin-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  border: 1.5px solid rgba(100,116,139,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .58rem;
+  font-weight: 900;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: .2s;
+}
+.namaz-admin-dot.done {
+  background: linear-gradient(140deg, #059669, #34d399);
+  color: #fff;
+  border-color: transparent;
+}
+.namaz-admin-dot:hover:not(.done) {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📱 MOBILE                                                */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 500px) {
+  .namaz-widget { padding: 16px 14px; border-radius: 18px; }
+  .namaz-title { font-size: .92rem; }
+  .namaz-ring-wrap { width: 80px; height: 80px; }
+  .namaz-ring-count { font-size: 1.3rem; }
+  .namaz-streak-num { font-size: 1.4rem; }
+  .namaz-streak-fire { font-size: 1.6rem; }
+  .namaz-prayer-btn { padding: 8px 2px 6px; }
+  .namaz-prayer-ico { font-size: 1rem; }
+  .namaz-prayer-name { font-size: .56rem; }
+  .namaz-prayer-time { font-size: .5rem; }
+  .namaz-week-grid { grid-template-columns: 48px repeat(5, 1fr) 34px; }
+  .namaz-week-cell { padding: 8px 2px; font-size: .86rem; }
+  .namaz-month-day { min-height: 38px; }
+}
+</style>
+
+<!-- ═══ JavaScript ═══ -->
+<script id="namaz-tracker-js">
+(function(){
+  'use strict';
+  console.log('🕌 Namaz Tracker v35.0 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════════
+  var NAMAZ_PRAYERS = [
+    { key: 'fajr',    name: 'Fajr',    ml: 'ഫജ്‌ർ',     icon: '🌅' },
+    { key: 'dhuhr',   name: 'Dhuhr',   ml: 'ളുഹ്‌ർ',     icon: '☀️' },
+    { key: 'asr',     name: 'Asr',     ml: 'അസ്‌ർ',      icon: '🌤️' },
+    { key: 'maghrib', name: 'Maghrib', ml: 'മഗ്‌രിബ്',    icon: '🌇' },
+    { key: 'isha',    name: 'Isha',    ml: 'ഇശാ',       icon: '🌙' }
+  ];
+
+  window.NAMZ_STATE = {
+    today: null,
+    streak: null,
+    weekData: [],
+    monthData: [],
+    prayerTimes: {},
+    view: 'week',
+    parentMobile: null
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📅 DATE HELPERS
+  // ═══════════════════════════════════════════════════════
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+
+  function formatDateML(dateStr) {
+    try {
+      var d = new Date(dateStr + 'T00:00:00');
+      var days = ['ഞായർ','തിങ്കൾ','ചൊവ്വ','ബുധൻ','വ്യാഴം','വെള്ളി','ശനി'];
+      var months = ['ജനു','ഫെബ്രു','മാർ','ഏപ്രി','മേയ്','ജൂൺ','ജൂലൈ','ഓഗ','സെപ്റ്റ','ഒക്ടോ','നവം','ഡിസം'];
+      return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()];
+    } catch(e) { return dateStr; }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD TODAY
+  // ═══════════════════════════════════════════════════════
+  window.loadNamazToday = async function() {
+    if (!supabaseClient || !currentUser) return;
+    var date = todayStr();
+    try {
+      var r = await supabaseClient.from('namaz_log')
+        .select('*')
+        .eq('studentid', currentUser.studentId)
+        .eq('prayer_date', date)
+        .maybeSingle();
+      NAMZ_STATE.today = r.data || {
+        studentid: currentUser.studentId,
+        prayer_date: date,
+        fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false,
+        completed_count: 0, all_completed: false
+      };
+      renderNamazWidget();
+    } catch(e) { console.warn('loadNamazToday:', e); }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD STREAK
+  // ═══════════════════════════════════════════════════════
+  window.loadNamazStreak = async function() {
+    if (!supabaseClient || !currentUser) return;
+    try {
+      var r = await supabaseClient.from('namaz_streaks')
+        .select('*')
+        .eq('studentid', currentUser.studentId)
+        .maybeSingle();
+      if (r.data) {
+        NAMZ_STATE.streak = r.data;
+      } else {
+        NAMZ_STATE.streak = {
+          studentid: currentUser.studentId,
+          current_streak: 0,
+          longest_streak: 0,
+          total_complete_days: 0,
+          total_prayers: 0
+        };
+        try {
+          await supabaseClient.from('namaz_streaks').insert(NAMZ_STATE.streak);
+        } catch(e) {}
+      }
+      renderNamazWidget();
+    } catch(e) { console.warn('loadNamazStreak:', e); }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER WIDGET
+  // ═══════════════════════════════════════════════════════
+  window.renderNamazWidget = function() {
+    var widget = document.getElementById('namazWidget');
+    if (!widget) {
+      widget = document.createElement('div');
+      widget.id = 'namazWidget';
+      widget.className = 'namaz-widget';
+      injectNamazWidget(widget);
+    }
+    if (!NAMZ_STATE.today || !NAMZ_STATE.streak) return;
+
+    var today = NAMZ_STATE.today;
+    var streak = NAMZ_STATE.streak;
+    var completed = today.completed_count || 0;
+    var total = 5;
+    var pct = completed / total;
+    var circumference = 2 * Math.PI * 45;
+    var dashOffset = circumference * (1 - pct);
+
+    // Greeting
+    var hour = new Date().getHours();
+    var greetText = 'ഇന്നത്തെ നമസ്കാരം';
+    if (completed === 5) greetText = '🌟 മാഷാ അല്ലാഹ്! എല്ലാം പൂർത്തിയായി';
+    else if (completed === 0) greetText = 'ഇന്ന് തുടങ്ങാം';
+    else greetText = completed + '/5 പൂർത്തിയായി';
+
+    var html = '';
+    html += '<div class="namaz-header">';
+    html += '<div class="namaz-title"><i class="fas fa-mosque"></i> ' + greetText + '</div>';
+    html += '<div class="namaz-date">' + formatDateML(todayStr()) + '</div>';
+    html += '</div>';
+
+    // Progress ring + streak
+    html += '<div class="namaz-progress-ring">';
+    html += '<div class="namaz-ring-wrap">';
+    html += '<svg viewBox="0 0 100 100">';
+    html += '<circle class="namaz-ring-bg" cx="50" cy="50" r="45" fill="none" stroke-width="6"/>';
+    html += '<circle class="namaz-ring-fill" cx="50" cy="50" r="45" fill="none" stroke-width="6" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + dashOffset + '"/>';
+    html += '</svg>';
+    html += '<div class="namaz-ring-center">';
+    html += '<div class="namaz-ring-count">' + completed + '<small>/5</small></div>';
+    html += '<div class="namaz-ring-label">TODAY</div>';
+    html += '</div></div>';
+
+    html += '<div class="namaz-streak-box">';
+    html += '<div class="namaz-streak-fire">🔥</div>';
+    html += '<div class="namaz-streak-num">' + (streak.current_streak || 0) + '<small>days</small></div>';
+    html += '<div class="namaz-streak-label">Streak</div>';
+    html += '</div>';
+    html += '</div>';
+
+    // 5 prayers grid
+    html += '<div class="namaz-prayers-grid">';
+    NAMAZ_PRAYERS.forEach(function(p) {
+      var done = today[p.key] === true;
+      html += '<button class="namaz-prayer-btn ' + (done ? 'done' : '') + '" onclick="window.toggleNamaz(\'' + p.key + '\')">';
+      html += '<span class="namaz-prayer-ico">' + p.icon + '</span>';
+      html += '<span class="namaz-prayer-name">' + p.name + '</span>';
+      html += '<span class="namaz-prayer-time">' + p.ml + '</span>';
+      html += '</button>';
+    });
+    html += '</div>';
+
+    // Action buttons
+    html += '<div class="namaz-actions">';
+    if (completed < 5) {
+      html += '<button class="namaz-action-btn primary" onclick="window.markAllNamaz()"><i class="fas fa-check-double"></i> എല്ലാം പൂർത്തിയായി</button>';
+    } else {
+      html += '<button class="namaz-action-btn primary" onclick="window.openNamazFullView()" style="background:#fbbf24;color:#03132e;border-color:#fbbf24;"><i class="fas fa-star"></i> ഇന്ന് പൂർത്തിയായി!</button>';
+    }
+    html += '<button class="namaz-action-btn" onclick="window.openNamazFullView()"><i class="fas fa-calendar-alt"></i> View</button>';
+    html += '</div>';
+
+    widget.innerHTML = html;
+  };
+
+  function injectNamazWidget(widget) {
+    var dash = document.getElementById('dashboardSection');
+    if (!dash) return;
+    var container = dash.querySelector('.container');
+    if (!container) return;
+
+    // Insert after prayer hub card
+    var prayerCard = document.getElementById('prayerCard');
+    if (prayerCard && prayerCard.parentNode) {
+      prayerCard.parentNode.insertBefore(widget, prayerCard.nextSibling);
+      return;
+    }
+
+    // Fallback: after dashboard header
+    var header = container.querySelector('.dashboard-header-glow');
+    if (header) header.insertAdjacentElement('afterend', widget);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ✅ TOGGLE PRAYER
+  // ═══════════════════════════════════════════════════════
+  window.toggleNamaz = async function(prayer) {
+    if (!currentUser || !supabaseClient) return;
+    var today = NAMAZ_STATE.today;
+    if (!today) return;
+
+    var newVal = !today[prayer];
+    today[prayer] = newVal;
+
+    // Recalc
+    var count = 0;
+    NAMAZ_PRAYERS.forEach(function(p) {
+      if (today[p.key]) count++;
+    });
+    today.completed_count = count;
+    var wasComplete = today.all_completed;
+    today.all_completed = (count === 5);
+
+    // Optimistic UI
+    renderNamazWidget();
+
+    if (navigator.vibrate) {
+      try { navigator.vibrate(newVal ? [20, 30, 20] : 15); } catch(e) {}
+    }
+
+    try {
+      // Upsert log
+      var payload = {
+        studentid: currentUser.studentId,
+        prayer_date: today.prayer_date,
+        fajr: today.fajr,
+        dhuhr: today.dhuhr,
+        asr: today.asr,
+        maghrib: today.maghrib,
+        isha: today.isha,
+        completed_count: count,
+        all_completed: today.all_completed,
+        marked_by: 'student',
+        updated_at: new Date().toISOString()
+      };
+
+      var upsertResult = await supabaseClient.from('namaz_log').upsert(payload, {
+        onConflict: 'studentid,prayer_date'
+      });
+      if (upsertResult.error) throw upsertResult.error;
+
+      // Award XP per prayer
+      if (newVal && typeof awardXP === 'function') {
+        await awardXP(2, 'Namaz: ' + prayer);
+      }
+
+      // If just completed all 5
+      if (today.all_completed && !wasComplete) {
+        await handleDayComplete();
+      }
+    } catch(e) {
+      console.warn('toggleNamaz error:', e);
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // ✨ MARK ALL
+  // ═══════════════════════════════════════════════════════
+  window.markAllNamaz = async function() {
+    if (!currentUser) return;
+    if (!confirm('ഇന്നത്തെ 5 നമസ്കാരവും പൂർത്തിയായി അടയാളപ്പെടുത്തണോ?')) return;
+
+    var today = NAMAZ_STATE.today;
+    if (!today) return;
+
+    NAMAZ_PRAYERS.forEach(function(p) { today[p.key] = true; });
+    today.completed_count = 5;
+    var wasComplete = today.all_completed;
+    today.all_completed = true;
+
+    renderNamazWidget();
+
+    try {
+      var payload = {
+        studentid: currentUser.studentId,
+        prayer_date: today.prayer_date,
+        fajr: true, dhuhr: true, asr: true, maghrib: true, isha: true,
+        completed_count: 5,
+        all_completed: true,
+        marked_by: 'student',
+        updated_at: new Date().toISOString()
+      };
+
+      var r = await supabaseClient.from('namaz_log').upsert(payload, {
+        onConflict: 'studentid,prayer_date'
+      });
+      if (r.error) throw r.error;
+
+      if (!wasComplete) {
+        await handleDayComplete();
+      }
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎉 HANDLE DAY COMPLETE — Streak + XP + Parent Notify
+  // ═══════════════════════════════════════════════════════
+  async function handleDayComplete() {
+    // Celebration
+    if (typeof confetti !== 'undefined') {
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: .6 },
+        colors: ['#059669','#34d399','#fbbf24','#fcd34d','#22d3ee']
+      });
+    }
+    if (typeof playSound === 'function') playSound('levelup');
+
+    await awardXP(15, '🌟 All 5 prayers!');
+
+    // Update streak
+    await updateNamazStreak();
+
+    // Parent notification
+    await sendParentNamazNotification();
+
+    // Achievement popup
+    if (typeof showAchievement === 'function') {
+      showAchievement('🕌', 'മാഷാ അല്ലാഹ്!', 'ഇന്നത്തെ 5 നമസ്കാരവും പൂർത്തിയായി');
+    } else {
+      showToast('🎉 5/5 prayers complete!', 'success');
+    }
+
+    showToast('🕌 Parent-നു notification അയച്ചു', 'info');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔥 UPDATE STREAK
+  // ═══════════════════════════════════════════════════════
+  async function updateNamazStreak() {
+    if (!currentUser || !supabaseClient) return;
+    try {
+      var r = await supabaseClient.from('namaz_streaks')
+        .select('*')
+        .eq('studentid', currentUser.studentId)
+        .maybeSingle();
+
+      var today = todayStr();
+      var yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      var yStr = yesterday.getFullYear() + '-' +
+        String(yesterday.getMonth() + 1).padStart(2, '0') + '-' +
+        String(yesterday.getDate()).padStart(2, '0');
+
+      var streak = 0, longest = 0, totalComplete = 0, totalPrayers = 0;
+
+      if (r.data) {
+        // Already marked today?
+        if (r.data.last_complete_date === today) {
+          return;
+        }
+        streak = r.data.current_streak || 0;
+        longest = r.data.longest_streak || 0;
+        totalComplete = r.data.total_complete_days || 0;
+        totalPrayers = r.data.total_prayers || 0;
+
+        if (r.data.last_complete_date === yStr) {
+          streak += 1;
+        } else {
+          streak = 1;
+        }
+        totalComplete += 1;
+        if (streak > longest) longest = streak;
+
+        await supabaseClient.from('namaz_streaks').update({
+          current_streak: streak,
+          longest_streak: longest,
+          last_complete_date: today,
+          total_complete_days: totalComplete,
+          total_prayers: totalPrayers + 5,
+          updated_at: new Date().toISOString()
+        }).eq('studentid', currentUser.studentId);
+
+      } else {
+        streak = 1;
+        longest = 1;
+        totalComplete = 1;
+        await supabaseClient.from('namaz_streaks').insert({
+          studentid: currentUser.studentId,
+          current_streak: 1,
+          longest_streak: 1,
+          last_complete_date: today,
+          total_complete_days: 1,
+          total_prayers: 5
+        });
+      }
+
+      // Milestone rewards
+      if (streak === 7) await awardXP(50, '🔥 7-day Namaz streak!');
+      if (streak === 30) await awardXP(200, '🔥 30-day Namaz streak!');
+      if (streak === 100) await awardXP(500, '💎 100-day Namaz streak!');
+
+      await loadNamazStreak();
+    } catch(e) { console.warn('updateStreak:', e); }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📱 PARENT NOTIFICATION
+  // ═══════════════════════════════════════════════════════
+  async function sendParentNamazNotification() {
+    if (!currentUser || !supabaseClient) return;
+    try {
+      // Avoid duplicate same-day notifications
+      var today = todayStr();
+      var check = await supabaseClient.from('namaz_parent_notifications')
+        .select('id')
+        .eq('studentid', currentUser.studentId)
+        .eq('notification_date', today)
+        .eq('notification_type', 'daily_complete')
+        .maybeSingle();
+      if (check.data) return;
+
+      // Get parent mobile from students table
+      var sr = await supabaseClient.from('students')
+        .select('parent_mobile, phone, name, class')
+        .eq('studentid', currentUser.studentId)
+        .maybeSingle();
+      if (!sr.data) return;
+
+      var parentMobile = (sr.data.parent_mobile || sr.data.phone || '').replace(/\D/g, '').slice(-10);
+      if (parentMobile.length !== 10) {
+        console.log('No parent mobile set');
+        return;
+      }
+
+      // Log notification
+      await supabaseClient.from('namaz_parent_notifications').insert({
+        studentid: currentUser.studentId,
+        parent_mobile: parentMobile,
+        notification_date: today,
+        notification_type: 'daily_complete'
+      });
+
+      // Build message
+      var studentName = sr.data.name || 'കുട്ടി';
+      var msg = 'അസ്സലാമു അലൈക്കും 🌟\n\n' +
+                '🎉 *അൽഹംദുലില്ലാഹ്!*\n\n' +
+                '👦 ' + studentName + ' (Class ' + (sr.data.class || '—') + ')\n' +
+                '🕌 ഇന്നത്തെ 5 നമസ്കാരവും പൂർത്തിയായി!\n' +
+                '📅 ' + new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + '\n\n' +
+                '🔥 Streak: ' + (NAMZ_STATE.streak ? NAMZ_STATE.streak.current_streak : 1) + ' days\n\n' +
+                'ജസാക്കല്ലാഹു ഖൈർ 🤲\n' +
+                '_Noorussalam Madrasa_';
+
+      // Store as WhatsApp link
+      var waLink = 'https://wa.me/91' + parentMobile + '?text=' + encodeURIComponent(msg);
+
+      // Try to send via server function, fallback to logging
+      try {
+        // If there's a notification system, use it
+        await supabaseClient.from('notifications').insert({
+          title: '🕌 ' + studentName + ' — 5/5 Namaz',
+          message: studentName + ' ഇന്നത്തെ 5 നമസ്കാരവും പൂർത്തിയാക്കി. ജസാക്കല്ലാഹു ഖൈർ!',
+          type: 'general',
+          target_type: 'student',
+          target_student: currentUser.studentId,
+          link_url: waLink,
+          created_at: new Date().toISOString()
+        });
+      } catch(e) {}
+
+      // Also store WhatsApp URL for parent to view
+      NAMZ_STATE.parentWaLink = waLink;
+      NAMZ_STATE.parentMobile = parentMobile;
+
+      // If permission, show browser notification
+      if (typeof showBrowserNotification === 'function' && Notification.permission === 'granted') {
+        showBrowserNotification('🕌 Parent Notified', studentName + ' completed all 5 prayers');
+      }
+
+      console.log('✅ Parent notification sent');
+    } catch(e) { console.warn('parent notify:', e); }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📊 OPEN FULL VIEW MODAL
+  // ═══════════════════════════════════════════════════════
+  window.openNamazFullView = async function() {
+    if (!currentUser) return;
+    modalTitleSpan.innerText = '🕌 നമസ്കാരം — View';
+    modalBodyDiv.innerHTML = '<div class="text-center py-4"><div class="spinner-sm"></div></div>';
+    modal.style.display = 'flex';
+
+    await loadNamazWeek();
+    await loadNamazMonth();
+
+    renderNamazFullView();
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD WEEK DATA
+  // ═══════════════════════════════════════════════════════
+  async function loadNamazWeek() {
+    if (!currentUser || !supabaseClient) return;
+    try {
+      var end = new Date();
+      var start = new Date();
+      start.setDate(start.getDate() - 6);
+
+      var startStr = start.getFullYear() + '-' +
+        String(start.getMonth() + 1).padStart(2, '0') + '-' +
+        String(start.getDate()).padStart(2, '0');
+      var endStr = end.getFullYear() + '-' +
+        String(end.getMonth() + 1).padStart(2, '0') + '-' +
+        String(end.getDate()).padStart(2, '0');
+
+      var r = await supabaseClient.from('namaz_log')
+        .select('*')
+        .eq('studentid', currentUser.studentId)
+        .gte('prayer_date', startStr)
+        .lte('prayer_date', endStr)
+        .order('prayer_date', { ascending: true });
+
+      var map = {};
+      (r.data || []).forEach(function(log) { map[log.prayer_date] = log; });
+
+      NAMZ_STATE.weekData = [];
+      for (var i = 6; i >= 0; i--) {
+        var d = new Date();
+        d.setDate(d.getDate() - i);
+        var ds = d.getFullYear() + '-' +
+          String(d.getMonth() + 1).padStart(2, '0') + '-' +
+          String(d.getDate()).padStart(2, '0');
+        NAMZ_STATE.weekData.push({
+          date: ds,
+          log: map[ds] || { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false, completed_count: 0, all_completed: false },
+          isToday: i === 0
+        });
+      }
+    } catch(e) { console.warn('loadWeek:', e); }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD MONTH DATA
+  // ═══════════════════════════════════════════════════════
+  async function loadNamazMonth() {
+    if (!currentUser || !supabaseClient) return;
+    try {
+      var today = new Date();
+      var year = today.getFullYear();
+      var month = today.getMonth();
+      var firstDay = new Date(year, month, 1);
+      var lastDay = new Date(year, month + 1, 0);
+
+      var startStr = firstDay.getFullYear() + '-' +
+        String(firstDay.getMonth() + 1).padStart(2, '0') + '-01';
+      var endStr = lastDay.getFullYear() + '-' +
+        String(lastDay.getMonth() + 1).padStart(2, '0') + '-' +
+        String(lastDay.getDate()).padStart(2, '0');
+
+      var r = await supabaseClient.from('namaz_log')
+        .select('*')
+        .eq('studentid', currentUser.studentId)
+        .gte('prayer_date', startStr)
+        .lte('prayer_date', endStr);
+
+      var map = {};
+      (r.data || []).forEach(function(log) { map[log.prayer_date] = log; });
+
+      NAMZ_STATE.monthData = [];
+      var daysInMonth = lastDay.getDate();
+      var firstWeekday = firstDay.getDay();
+
+      // Padding
+      for (var p = 0; p < firstWeekday; p++) {
+        NAMZ_STATE.monthData.push({ empty: true });
+      }
+      for (var d = 1; d <= daysInMonth; d++) {
+        var ds = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+        NAMZ_STATE.monthData.push({
+          day: d,
+          date: ds,
+          log: map[ds] || null,
+          isToday: d === today.getDate(),
+          isFuture: new Date(ds) > new Date()
+        });
+      }
+      NAMZ_STATE.monthName = MALAYALAM_MONTHS ? MALAYALAM_MONTHS[String(month + 1).padStart(2, '0')] : '';
+    } catch(e) { console.warn('loadMonth:', e); }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER FULL VIEW
+  // ═══════════════════════════════════════════════════════
+  function renderNamazFullView() {
+    var html = '';
+
+    // Tabs
+    html += '<div class="namaz-view-tabs">';
+    html += '<button class="namaz-view-tab ' + (NAMZ_STATE.view === 'week' ? 'active' : '') + '" onclick="window.switchNamazView(\'week\')"><i class="fas fa-calendar-week"></i> Weekly</button>';
+    html += '<button class="namaz-view-tab ' + (NAMZ_STATE.view === 'month' ? 'active' : '') + '" onclick="window.switchNamazView(\'month\')"><i class="fas fa-calendar-alt"></i> Monthly</button>';
+    html += '<button class="namaz-view-tab ' + (NAMZ_STATE.view === 'stats' ? 'active' : '') + '" onclick="window.switchNamazView(\'stats\')"><i class="fas fa-chart-simple"></i> Stats</button>';
+    html += '</div>';
+
+    // Content by view
+    html += '<div id="namazViewContent">';
+    if (NAMZ_STATE.view === 'week') html += renderWeekView();
+    else if (NAMZ_STATE.view === 'month') html += renderMonthView();
+    else html += renderStatsView();
+    html += '</div>';
+
+    // Parent notification banner
+    if (NAMZ_STATE.parentWaLink) {
+      html += '<div style="background:linear-gradient(135deg,#dcfce7,#a7f3d0);border:1.5px solid rgba(5,150,105,.4);border-radius:14px;padding:14px;margin-top:16px;">';
+      html += '<div style="font-weight:800;color:#059669;font-size:.86rem;margin-bottom:8px;"><i class="fas fa-phone"></i> Parent-നു അറിയിക്കുക</div>';
+      html += '<a href="' + NAMZ_STATE.parentWaLink + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:#fff;padding:12px;border-radius:12px;text-decoration:none;font-weight:800;font-size:.86rem;">';
+      html += '<i class="fab fa-whatsapp"></i> WhatsApp അയക്കുക';
+      html += '</a></div>';
+    }
+
+    // Close button
+    html += '<div style="margin-top:20px;display:flex;gap:10px;">';
+    html += '<button class="btn-cancel flex-grow-1" onclick="closeModal(\'globalModal\')" style="padding:12px 20px;border-radius:14px;">Close</button>';
+    html += '</div>';
+
+    modalBodyDiv.innerHTML = html;
+  }
+
+  window.switchNamazView = function(view) {
+    NAMZ_STATE.view = view;
+    renderNamazFullView();
+  };
+
+  // ─── WEEK VIEW ───
+  function renderWeekView() {
+    if (!NAMZ_STATE.weekData.length) return '<div class="empty-state">Loading...</div>';
+    var h = '<div class="namaz-week-grid">';
+    // Header
+    h += '<div class="namaz-week-header" style="background:transparent;color:#64748b;">Day</div>';
+    NAMAZ_PRAYERS.forEach(function(p) {
+      h += '<div class="namaz-week-header">' + p.icon + '<br>' + p.name + '</div>';
+    });
+    h += '<div class="namaz-week-header">Total</div>';
+
+    // Rows
+    NAMAZ_STATE.weekData.forEach(function(d) {
+      var dt = new Date(d.date + 'T00:00:00');
+      var days = ['ഞായർ','തിങ്കൾ','ചൊവ്വ','ബുധൻ','വ്യാഴം','വെള്ളി','ശനി'];
+      var short = days[dt.getDay()].substring(0, 3);
+      h += '<div class="namaz-week-day">';
+      h += '<span class="date-num">' + dt.getDate() + '</span>';
+      h += '<span class="day-name">' + short + '</span>';
+      h += '</div>';
+
+      NAMAZ_PRAYERS.forEach(function(p) {
+        var done = d.log[p.key] === true;
+        var cls = done ? 'done' : 'not-done';
+        if (d.isToday) cls += ' today';
+        h += '<div class="namaz-week-cell ' + cls + '">' + (done ? '✓' : '—') + '</div>';
+      });
+
+      var total = d.log.completed_count || 0;
+      var totalCls = total === 5 ? 'full' : '';
+      h += '<div class="namaz-week-total ' + totalCls + '">' + total + '</div>';
+    });
+    h += '</div>';
+    return h;
+  }
+
+  // ─── MONTH VIEW ───
+  function renderMonthView() {
+    if (!NAMZ_STATE.monthData.length) return '<div class="empty-state">Loading...</div>';
+    var h = '';
+    h += '<div style="text-align:center;font-weight:900;color:#059669;font-size:.95rem;margin-bottom:12px;">' + (NAMZ_STATE.monthName || '') + '</div>';
+
+    // Weekday headers
+    h += '<div class="namaz-month-grid">';
+    ['ഞ','തി','ച','ബു','വ്യ','വെ','ശ'].forEach(function(d) {
+      h += '<div style="text-align:center;font-size:.6rem;font-weight:900;color:#64748b;padding:4px;">' + d + '</div>';
+    });
+
+    // Days
+    NAMZ_STATE.monthData.forEach(function(d) {
+      if (d.empty) {
+        h += '<div class="namaz-month-day empty"></div>';
+        return;
+      }
+      var cls = '';
+      if (d.isToday) cls += ' today';
+      if (d.log && d.log.all_completed) cls += ' complete';
+      h += '<div class="namaz-month-day ' + cls + '" onclick="window.toggleNamazDate(\'' + d.date + '\')">';
+      h += '<span class="day-num">' + d.day + '</span>';
+      h += '<div class="day-dots">';
+      NAMAZ_PRAYERS.forEach(function(p) {
+        var done = d.log && d.log[p.key];
+        h += '<div class="day-dot ' + (done ? 'done' : '') + '"></div>';
+      });
+      h += '</div></div>';
+    });
+    h += '</div>';
+
+    // Legend
+    h += '<div style="display:flex;gap:14px;justify-content:center;font-size:.66rem;color:#64748b;font-weight:700;margin-top:8px;flex-wrap:wrap;">';
+    h += '<span><span style="display:inline-block;width:8px;height:8px;background:#059669;border-radius:50%;margin-right:4px;"></span>Done</span>';
+    h += '<span><span style="display:inline-block;width:8px;height:8px;background:#cbd5e1;border-radius:50%;margin-right:4px;"></span>Not done</span>';
+    h += '<span style="background:#fef3c7;padding:2px 8px;border-radius:20px;">🌟 All 5</span>';
+    h += '</div>';
+
+    return h;
+  }
+
+  // ─── STATS VIEW ───
+  function renderStatsView() {
+    var s = NAMZ_STATE.streak || {};
+    var h = '<div class="namaz-stats-grid">';
+    h += '<div class="namaz-stat-card"><div class="namaz-stat-num">' + (s.current_streak || 0) + '</div><div class="namaz-stat-label">Current Streak 🔥</div></div>';
+    h += '<div class="namaz-stat-card"><div class="namaz-stat-num" style="color:#f59e0b;">' + (s.longest_streak || 0) + '</div><div class="namaz-stat-label">Longest Streak</div></div>';
+    h += '<div class="namaz-stat-card"><div class="namaz-stat-num" style="color:#0891b2;">' + (s.total_complete_days || 0) + '</div><div class="namaz-stat-label">Complete Days</div></div>';
+    h += '<div class="namaz-stat-card"><div class="namaz-stat-num" style="color:#ec4899;">' + (s.total_prayers || 0) + '</div><div class="namaz-stat-label">Total Prayers</div></div>';
+    h += '</div>';
+    return h;
+  }
+
+  window.toggleNamazDate = async function(date) {
+    // TODO: historical edit — skip for now
+    showToast('📅 Only today can be edited', 'info');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 ADD QUICK ACTION TILE
+  // ═══════════════════════════════════════════════════════
+  function addNamazTile() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return;
+    if (grid.querySelector('[data-action="namaz"]')) return;
+
+    var tile = document.createElement('div');
+    tile.className = 'action-tile';
+    tile.dataset.action = 'namaz';
+    tile.onclick = function() { window.openNamazFullView(); };
+    tile.innerHTML = 
+      '<div class="action-ico" style="background:linear-gradient(145deg,#059669,#34d399)"><span style="font-size:1.3rem;">🕌</span></div>' +
+      '<h6>നമസ്കാരം</h6>';
+    grid.appendChild(tile);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  async function initNamaz() {
+    if (!currentUser || !supabaseClient) return;
+    await loadNamazToday();
+    await loadNamazStreak();
+    addNamazTile();
+  }
+
+  // Hook into dashboard
+  var dash = document.getElementById('dashboardSection');
+  if (dash) {
+    new MutationObserver(function() {
+      if (dash.style.display === 'block' && currentUser) {
+        setTimeout(initNamaz, 1500);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Hook into login
+  var _origComplete = window.completeLogin;
+  if (typeof _origComplete === 'function') {
+    window.completeLogin = async function(student) {
+      var r = await _origComplete.apply(this, arguments);
+      setTimeout(initNamaz, 2000);
+      return r;
+    };
+  }
+
+  console.log('✅ Namaz Tracker v35.0 loaded');
+})();
+</script>
+
+<!-- ═══ ADMIN PANEL — Namaz Tab ═══ -->
+<script id="namaz-admin-js">
+(function(){
+  'use strict';
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 ADD ADMIN TAB BUTTON
+  // ═══════════════════════════════════════════════════════
+  function addNamazAdminTab() {
+    var tabs = document.getElementById('adminTabs');
+    if (!tabs) return;
+    if (tabs.querySelector('[data-tab="namaz"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'admin-tab';
+    btn.dataset.tab = 'namaz';
+    btn.innerHTML = '🕌 Namaz';
+    btn.onclick = function() { window.switchAdminTab('namaz'); };
+
+    // Insert after 'security' tab or at end
+    var securityTab = tabs.querySelector('[data-tab="security"]');
+    if (securityTab) securityTab.parentNode.insertBefore(btn, securityTab);
+    else tabs.appendChild(btn);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 ADD TAB CONTENT AREA
+  // ═══════════════════════════════════════════════════════
+  function addNamazAdminContent() {
+    var container = document.getElementById('adminMainContent');
+    if (!container) return;
+    if (document.getElementById('adminNamazTab')) return;
+
+    var div = document.createElement('div');
+    div.id = 'adminNamazTab';
+    div.className = 'admin-tab-content';
+    div.style.display = 'none';
+    div.innerHTML = 
+      '<div class="admin-toolbar">' +
+        '<label>Date</label>' +
+        '<input type="date" id="namazAdminDate" />' +
+        '<button class="btn-load" onclick="window.loadNamazAdmin()"><i class="fas fa-sync-alt"></i> Load</button>' +
+        '<button class="btn-load" onclick="window.loadNamazAdminToday()" style="background:linear-gradient(100deg,#059669,#34d399);"><i class="fas fa-calendar-day"></i> Today</button>' +
+        '<input type="text" id="namazAdminSearch" placeholder="🔍 Search student" oninput="window.filterNamazAdmin()" />' +
+        '<button class="btn-pdf" onclick="window.downloadNamazAdminPDF()"><i class="fas fa-file-pdf"></i> PDF</button>' +
+      '</div>' +
+      '<div class="admin-summary" id="namazAdminSummary"></div>' +
+      '<div class="admin-table-wrap" id="namazAdminWrap"></div>';
+
+    container.appendChild(div);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD NAMAZ ADMIN
+  // ═══════════════════════════════════════════════════════
+  window.loadNamazAdmin = async function() {
+    if (!currentAdminClass) {
+      showToast('⚠️ Select class first', 'error');
+      return;
+    }
+    var dateEl = document.getElementById('namazAdminDate');
+    var date = dateEl && dateEl.value ? dateEl.value : (function() {
+      var d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    })();
+    if (dateEl) dateEl.value = date;
+
+    var wrap = document.getElementById('namazAdminWrap');
+    wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+
+    try {
+      // Get students
+      var q = supabaseClient.from('students').select('studentid, name, class, roll');
+      if (currentAdminClass !== 'all') q = q.eq('class', currentAdminClass);
+      q = q.order('roll').order('name');
+      var sr = await q;
+      var students = sr.data || [];
+
+      // Get namaz log for that date
+      var ids = students.map(function(s) { return s.studentid; });
+      var logs = {};
+      if (ids.length > 0) {
+        var lr = await supabaseClient.from('namaz_log')
+          .select('*')
+          .eq('prayer_date', date)
+          .in('studentid', ids);
+        (lr.data || []).forEach(function(l) { logs[l.studentid] = l; });
+      }
+
+      window._namazAdminData = students.map(function(s) {
+        return Object.assign({}, s, {
+          log: logs[s.studentid] || {
+            fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false,
+            completed_count: 0, all_completed: false
+          }
+        });
+      });
+      window._namazAdminDate = date;
+
+      renderNamazAdmin();
+
+    } catch(e) {
+      console.error('loadNamazAdmin:', e);
+      wrap.innerHTML = '<div class="empty-state" style="color:#dc2626;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  window.loadNamazAdminToday = function() {
+    var d = new Date();
+    var ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    var el = document.getElementById('namazAdminDate');
+    if (el) el.value = ds;
+    window.loadNamazAdmin();
+  };
+
+  window.filterNamazAdmin = function() {
+    var q = (document.getElementById('namazAdminSearch')?.value || '').toLowerCase().trim();
+    var data = window._namazAdminData || [];
+    var filtered = data.filter(function(s) {
+      return !q || (s.name || '').toLowerCase().includes(q) || (s.studentid || '').toLowerCase().includes(q);
+    });
+    renderNamazAdminTable(filtered);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER TABLE
+  // ═══════════════════════════════════════════════════════
+  function renderNamazAdmin() {
+    var data = window._namazAdminData || [];
+    
+    // Summary
+    var complete = data.filter(function(s) { return s.log.all_completed; }).length;
+    var partial = data.filter(function(s) { return !s.log.all_completed && s.log.completed_count > 0; }).length;
+    var none = data.filter(function(s) { return s.log.completed_count === 0; }).length;
+    var totalPrayers = data.reduce(function(sum, s) { return sum + (s.log.completed_count || 0); }, 0);
+    var maxPrayers = data.length * 5;
+    var pct = maxPrayers > 0 ? Math.round(totalPrayers / maxPrayers * 100) : 0;
+
+    var summary = document.getElementById('namazAdminSummary');
+    if (summary) {
+      summary.innerHTML = 
+        '<div class="stat"><div class="num green">' + complete + '</div><div class="label">✅ Complete (5/5)</div></div>' +
+        '<div class="stat"><div class="num orange">' + partial + '</div><div class="label">⏳ Partial</div></div>' +
+        '<div class="stat"><div class="num">' + none + '</div><div class="label">❌ None</div></div>' +
+        '<div class="stat"><div class="num">' + pct + '%</div><div class="label">Class %</div></div>';
+    }
+
+    renderNamazAdminTable(data);
+  }
+
+  function renderNamazAdminTable(data) {
+    var wrap = document.getElementById('namazAdminWrap');
+    if (!data.length) {
+      wrap.innerHTML = '<div class="empty-state">No students</div>';
+      return;
+    }
+
+    var h = '<table><thead><tr>';
+    h += '<th>#</th><th>Roll</th><th>Student</th><th>Class</th>';
+    NAMAZ_PRAYERS_ADMIN.forEach(function(p) {
+      h += '<th style="text-align:center;">' + p.icon + ' ' + p.name + '</th>';
+    });
+    h += '<th style="text-align:center;">Total</th>';
+    h += '</tr></thead><tbody>';
+
+    data.forEach(function(s, i) {
+      h += '<tr>';
+      h += '<td>' + (i + 1) + '</td>';
+      h += '<td><strong style="color:#0891b2;">' + escapeHtml(s.roll || '—') + '</strong></td>';
+      h += '<td><strong>' + escapeHtml(s.name) + '</strong><br><small style="color:#94a3b8;">' + escapeHtml(s.studentid) + '</small></td>';
+      h += '<td>' + escapeHtml(s.class || '—') + '</td>';
+
+      NAMAZ_PRAYERS_ADMIN.forEach(function(p) {
+        var done = s.log[p.key] === true;
+        h += '<td style="text-align:center;">';
+        h += '<span class="namaz-admin-dot ' + (done ? 'done' : '') + '" ' +
+             'onclick="window.toggleNamazAdmin(\'' + s.studentid + '\',\'' + p.key + '\')" ' +
+             'title="' + (done ? 'Marked' : 'Not done') + '">' +
+             (done ? '✓' : '—') +
+             '</span>';
+        h += '</td>';
+      });
+
+      var total = s.log.completed_count || 0;
+      var totalColor = total === 5 ? '#059669' : total >= 3 ? '#b45309' : '#dc2626';
+      h += '<td style="text-align:center;"><strong style="color:' + totalColor + ';font-size:1rem;">' + total + '/5</strong></td>';
+      h += '</tr>';
+    });
+
+    h += '</tbody></table>';
+    wrap.innerHTML = h;
+  }
+
+  var NAMAZ_PRAYERS_ADMIN = [
+    { key: 'fajr', name: 'Fajr', icon: '🌅' },
+    { key: 'dhuhr', name: 'Dhuhr', icon: '☀️' },
+    { key: 'asr', name: 'Asr', icon: '🌤️' },
+    { key: 'maghrib', name: 'Maghrib', icon: '🌇' },
+    { key: 'isha', name: 'Isha', icon: '🌙' }
+  ];
+
+  // ═══════════════════════════════════════════════════════
+  // ✅ TOGGLE FROM ADMIN
+  // ═══════════════════════════════════════════════════════
+  window.toggleNamazAdmin = async function(studentid, prayer) {
+    var data = window._namazAdminData || [];
+    var s = data.find(function(x) { return x.studentid === studentid; });
+    if (!s) return;
+
+    s.log[prayer] = !s.log[prayer];
+
+    var count = 0;
+    NAMAZ_PRAYERS_ADMIN.forEach(function(p) { if (s.log[p.key]) count++; });
+    s.log.completed_count = count;
+    s.log.all_completed = count === 5;
+
+    // Optimistic UI
+    renderNamazAdmin();
+
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
+
+    try {
+      var payload = {
+        studentid: studentid,
+        prayer_date: window._namazAdminDate,
+        fajr: s.log.fajr,
+        dhuhr: s.log.dhuhr,
+        asr: s.log.asr,
+        maghrib: s.log.maghrib,
+        isha: s.log.isha,
+        completed_count: count,
+        all_completed: count === 5,
+        marked_by: 'admin',
+        updated_at: new Date().toISOString()
+      };
+
+      var r = await supabaseClient.from('namaz_log').upsert(payload, {
+        onConflict: 'studentid,prayer_date'
+      });
+      if (r.error) throw r.error;
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📄 PDF EXPORT
+  // ═══════════════════════════════════════════════════════
+  window.downloadNamazAdminPDF = async function() {
+    var data = window._namazAdminData || [];
+    if (!data.length) { showToast('⚠️ No data', 'error'); return; }
+
+    showLoading(true);
+    try {
+      var ok = await window.waitForPDFLibs ? window.waitForPDFLibs(6000) : true;
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+      if (typeof setupMalayalamPDF === 'function') {
+        try { await setupMalayalamPDF(doc); } catch(e) {}
+      }
+
+      var pw = doc.internal.pageSize.getWidth();
+      var date = window._namazAdminDate || 'Today';
+      var clsLabel = currentAdminClass === 'all' ? 'All Classes' : 'Class ' + currentAdminClass;
+
+      doc.setFillColor(5, 150, 105);
+      doc.rect(0, 0, pw, 80, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text('NOORUSSALAM MADRASA', pw / 2, 32, { align: 'center' });
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'normal');
+      doc.text('Namaz Tracker — ' + clsLabel + ' — ' + date, pw / 2, 55, { align: 'center' });
+      doc.setTextColor(0, 0, 0);
+
+      var rows = data.map(function(s, i) {
+        return [
+          i + 1,
+          s.roll || '—',
+          s.name || '',
+          s.class || '',
+          s.log.fajr ? '✓' : '—',
+          s.log.dhuhr ? '✓' : '—',
+          s.log.asr ? '✓' : '—',
+          s.log.maghrib ? '✓' : '—',
+          s.log.isha ? '✓' : '—',
+          (s.log.completed_count || 0) + '/5'
+        ];
+      });
+
+      doc.autoTable({
+        startY: 100,
+        head: [['#', 'Roll', 'Name', 'Class', 'Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Total']],
+        body: rows,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 5 },
+        headStyles: { fillColor: [5, 150, 105], textColor: 255, fontStyle: 'bold' },
+        columnStyles: {
+          0: { cellWidth: 25, halign: 'center' },
+          1: { cellWidth: 40, halign: 'center' },
+          2: { cellWidth: 140 },
+          3: { cellWidth: 40, halign: 'center' },
+          4: { cellWidth: 55, halign: 'center' },
+          5: { cellWidth: 55, halign: 'center' },
+          6: { cellWidth: 55, halign: 'center' },
+          7: { cellWidth: 60, halign: 'center' },
+          8: { cellWidth: 55, halign: 'center' },
+          9: { cellWidth: 55, halign: 'center', fontStyle: 'bold' }
+        }
+      });
+
+      doc.save('Namaz_' + clsLabel.replace(' ', '_') + '_' + date + '.pdf');
+      showToast('✅ PDF Downloaded', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+    showLoading(false);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK INTO switchAdminTab
+  // ═══════════════════════════════════════════════════════
+  var _origSwitch = window.switchAdminTab;
+  if (typeof _origSwitch === 'function') {
+    window.switchAdminTab = function(tab) {
+      if (tab === 'namaz') {
+        document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.style.display = 'none'; });
+        document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+        var btn = document.querySelector('.admin-tab[data-tab="namaz"]');
+        if (btn) btn.classList.add('active');
+        var tabEl = document.getElementById('adminNamazTab');
+        if (tabEl) tabEl.style.display = 'block';
+        window.loadNamazAdminToday();
+        return;
+      }
+      return _origSwitch.apply(this, arguments);
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    addNamazAdminTab();
+    addNamazAdminContent();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 1500);
+      setTimeout(init, 3000);
+    });
+  } else {
+    setTimeout(init, 1500);
+    setTimeout(init, 3000);
+  }
+
+  var adminEl = document.getElementById('adminSection');
+  if (adminEl) {
+    new MutationObserver(function() {
+      if (adminEl.style.display === 'block') {
+        setTimeout(init, 500);
+      }
+    }).observe(adminEl, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  console.log('✅ Namaz Admin loaded');
+})();
+</script>
 </body>
 </html>
