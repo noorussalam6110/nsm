@@ -19414,29 +19414,34 @@ body.logged-in:not(.ai-panel-open):not(.modal-open) .chat-fab.show{
 <!-- 🔧 FEE TABLE FIX v26.2 — Correct Scope Handling            -->
 <!-- Paste right before </body> (after previous scripts)        -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<script id="fee-table-scope-fix">
+<script id="fee-table-scope-fix-v3">
 (function(){
   'use strict';
-  console.log('🔧 Loading Fee Table Scope Fix...');
+  console.log('🔧 Loading Fee Table Fix v3 (Correct Scope)...');
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* IMPORTANT: feeParentsData & filteredFeeParents are      */
-  /* declared with `let` in original script → they live in   */
-  /* script-scope, NOT window. We must reference them        */
-  /* directly by name (no window. prefix).                   */
-  /* ═══════════════════════════════════════════════════════ */
-
-  /* Helper: safely get data array (works whether or not the */
-  /* lexical binding is accessible)                          */
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 LEXICAL REFERENCE RESOLVER                               */
+  /*     `let` declarations don't become window properties —     */
+  /*     we must reference them by name so JS engine finds them  */
+  /*     in the enclosing script scope chain.                    */
+  /* ═══════════════════════════════════════════════════════════ */
   function _getFeeData() {
     try {
-      // Direct lexical reference — works in same doc
       if (typeof feeParentsData !== 'undefined' && Array.isArray(feeParentsData)) {
         return feeParentsData;
       }
-    } catch (e) { /* TDZ or not accessible */ }
-    // Fallback to window
-    return (window.feeParentsData || []);
+    } catch (e) {}
+    return window.feeParentsData || [];
+  }
+
+  function _getFeeSettings() {
+    // ⭐ THE CRITICAL FIX: reference FEE_SETTINGS_CACHE lexically
+    try {
+      if (typeof FEE_SETTINGS_CACHE !== 'undefined' && FEE_SETTINGS_CACHE) {
+        return FEE_SETTINGS_CACHE;
+      }
+    } catch (e) {}
+    return window.FEE_SETTINGS_CACHE || {};
   }
 
   function _getSearchQuery() {
@@ -19444,27 +19449,51 @@ body.logged-in:not(.ai-panel-open):not(.modal-open) .chat-fab.show{
     return el ? String(el.value || '').toLowerCase().trim() : '';
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Status Resolver                                      */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Status Resolver — with CORRECT settings                  */
+  /* ═══════════════════════════════════════════════════════════ */
   window._getFeeParentStatus = function(p) {
     try {
-      var br = computeFeeBreakdown(p, window.FEE_SETTINGS_CACHE || {});
+      var settings = _getFeeSettings();
+      var br = computeFeeBreakdown(p, settings);
+
+      // Log for debugging (first few only to avoid console spam)
+      if (!window._feeDebugCount) window._feeDebugCount = 0;
+      if (window._feeDebugCount < 3) {
+        console.log('🧮 Fee status for', p.parent_name, ':', {
+          settings: {
+            monthlyFee: settings.monthlyFee,
+            startMonth: settings.startMonth,
+            monthsElapsed: settings.monthsElapsed
+          },
+          result: {
+            monthsElapsed: br.monthsElapsed,
+            paidMonths: br.paidMonths,
+            pendingMonths: br.pendingMonths,
+            previousBalance: br.previousBalance,
+            totalPending: br.totalPending,
+            status: br.status
+          }
+        });
+        window._feeDebugCount++;
+      }
+
       if (br.totalPending > 0) return 'pending';
-      return 'paid';  // paid OR advance = "paid"
+      return 'paid';
     } catch (e) {
+      console.error('_getFeeParentStatus error:', e);
       return 'pending';
     }
   };
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Filter State                                         */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Filter State                                             */
+  /* ═══════════════════════════════════════════════════════════ */
   window._currentFeeFilter = window._currentFeeFilter || 'all';
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Update Filter Button Counts                          */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Update Counts (uses correct settings)                    */
+  /* ═══════════════════════════════════════════════════════════ */
   window.updateFeeFilterCounts = function() {
     var data = _getFeeData();
     var all = data.length;
@@ -19482,112 +19511,109 @@ body.logged-in:not(.ai-panel-open):not(.modal-open) .chat-fab.show{
     if (el2) el2.textContent = pending;
     if (el3) el3.textContent = paid;
 
-    console.log('📊 Fee counts:', { all: all, pending: pending, paid: paid });
+    console.log('📊 Counts →', { all, pending, paid });
   };
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 MAIN FIX — filterFeeParents with correct scope       */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 MAIN FILTER                                              */
+  /* ═══════════════════════════════════════════════════════════ */
   window.filterFeeParents = function() {
     var data = _getFeeData();
     var q = _getSearchQuery();
     var filter = window._currentFeeFilter || 'all';
 
-    console.log('🔍 Filtering fee parents:', {
-      total: data.length,
-      query: q,
-      filter: filter
-    });
+    console.log('🔍 Filtering:', { total: data.length, filter, query: q });
 
     var result = data.filter(function(p) {
-      // ─── Search match ───
+      // Search
       if (q) {
         var idsTxt = (p.student_ids || []).join(' ').toLowerCase();
         var namesTxt = (p.student_names || '').toLowerCase();
         var parentName = (p.parent_name || '').toLowerCase();
         var mobile = String(p.mobile || '');
-
-        var matches = parentName.indexOf(q) > -1 ||
-                      mobile.indexOf(q) > -1 ||
-                      idsTxt.indexOf(q) > -1 ||
-                      namesTxt.indexOf(q) > -1;
-
+        var matches = parentName.indexOf(q) > -1
+                   || mobile.indexOf(q) > -1
+                   || idsTxt.indexOf(q) > -1
+                   || namesTxt.indexOf(q) > -1;
         if (!matches) return false;
       }
-
-      // ─── Status filter ───
+      // Status
       if (filter !== 'all') {
-        if (window._getFeeParentStatus(p) !== filter) return false;
+        var status = window._getFeeParentStatus(p);
+        if (status !== filter) return false;
       }
-
       return true;
     });
 
-    console.log('✅ Filtered result:', result.length);
+    console.log('✅ Filtered:', result.length, 'records');
 
-    // ⭐ CRITICAL: assign to the LEXICAL variable so
-    // renderFeeParentsTable() (which reads it directly) works
-    try {
-      filteredFeeParents = result;
-    } catch (e) {
-      console.warn('Could not assign lexical filteredFeeParents:', e);
-    }
-
-    // Also mirror to window for any other readers
+    // ⭐ Set BOTH lexical and window references
+    try { filteredFeeParents = result; } catch (e) {}
     window.filteredFeeParents = result;
 
-    // Update counts
     window.updateFeeFilterCounts();
 
-    // Re-render table — reads the lexical `filteredFeeParents`
     if (typeof renderFeeParentsTable === 'function') {
-      try {
-        renderFeeParentsTable();
-      } catch (e) {
-        console.error('renderFeeParentsTable error:', e);
-      }
+      try { renderFeeParentsTable(); }
+      catch (e) { console.error('render error:', e); }
     }
   };
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Apply Filter (button click)                          */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Apply filter on button click                             */
+  /* ═══════════════════════════════════════════════════════════ */
   window.applyFeeFilter = function(filter) {
     window._currentFeeFilter = filter || 'all';
-
     document.querySelectorAll('.fee-filter-btn').forEach(function(btn) {
       btn.classList.toggle('active', btn.dataset.feeFilter === filter);
     });
-
     window.filterFeeParents();
+    if (typeof confetti !== 'undefined' && filter !== 'all') {
+      confetti({ particleCount: 20, spread: 40, origin: { y: .8 } });
+    }
   };
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Override loadFeeParentsAdmin — inject filter UI      */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Override loadFeeParentsAdmin                             */
+  /* ═══════════════════════════════════════════════════════════ */
   var _prevLoadFee = window.loadFeeParentsAdmin;
   window.loadFeeParentsAdmin = async function() {
     if (typeof _prevLoadFee === 'function') {
       await _prevLoadFee();
     }
 
-    // Reset filter to 'all' on tab open
+    // ⭐ Mirror lexical vars to window AFTER load succeeds
+    try {
+      window.feeParentsData = feeParentsData;
+      window.filteredFeeParents = filteredFeeParents;
+      window.FEE_SETTINGS_CACHE = FEE_SETTINGS_CACHE;
+      console.log('🔗 Mirrored to window:', {
+        feeParentsData: (window.feeParentsData || []).length,
+        FEE_SETTINGS_CACHE: Object.keys(window.FEE_SETTINGS_CACHE || {}),
+        startMonth: window.FEE_SETTINGS_CACHE?.startMonth,
+        monthlyFee: window.FEE_SETTINGS_CACHE?.monthlyFee
+      });
+    } catch (e) {
+      console.warn('Mirror failed:', e);
+    }
+
+    // Reset to 'all'
     window._currentFeeFilter = 'all';
     document.querySelectorAll('.fee-filter-btn').forEach(function(btn) {
       btn.classList.toggle('active', btn.dataset.feeFilter === 'all');
     });
 
-    // Wait a tick for summary to render, then update counts + re-filter
+    // Small delay to let summary render, then update counts + filter
     setTimeout(function() {
       window.updateFeeFilterCounts();
       window.filterFeeParents();
-    }, 250);
+    }, 300);
   };
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Inject Filter UI (idempotent)                        */
-  /* ═══════════════════════════════════════════════════════ */
-  function _injectFeeFilterUI() {
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Inject filter UI                                         */
+  /* ═══════════════════════════════════════════════════════════ */
+  function _injectFilterUI() {
     var tab = document.getElementById('adminFeeParentsTab');
     if (!tab) return;
     if (tab.querySelector('.fee-filter-row')) return;
@@ -19595,7 +19621,7 @@ body.logged-in:not(.ai-panel-open):not(.modal-open) .chat-fab.show{
     var summary = document.getElementById('feeAdminSummary');
     if (!summary) return;
 
-    var html =
+    summary.insertAdjacentHTML('afterend',
       '<div class="fee-filter-row">' +
         '<span class="fee-filter-label"><i class="fas fa-filter"></i> Filter:</span>' +
         '<button type="button" class="fee-filter-btn active" data-fee-filter="all" onclick="window.applyFeeFilter(\'all\')">' +
@@ -19607,89 +19633,206 @@ body.logged-in:not(.ai-panel-open):not(.modal-open) .chat-fab.show{
         '<button type="button" class="fee-filter-btn paid" data-fee-filter="paid" onclick="window.applyFeeFilter(\'paid\')">' +
           '<i class="fas fa-check-circle"></i> Paid <span class="fee-filter-count" id="feeCountPaid">0</span>' +
         '</button>' +
-      '</div>';
-
-    summary.insertAdjacentHTML('afterend', html);
+      '</div>');
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Hook into tab click                                  */
-  /* ═══════════════════════════════════════════════════════ */
-  function _hookFeeTab() {
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Hook fee tab click                                       */
+  /* ═══════════════════════════════════════════════════════════ */
+  function _hookTab() {
     var feeTab = document.querySelector('.admin-tab[data-tab="feeparents"]');
-    if (feeTab && !feeTab._scopeFixHooked) {
-      feeTab._scopeFixHooked = true;
+    if (feeTab && !feeTab._feeV3Hooked) {
+      feeTab._feeV3Hooked = true;
       feeTab.addEventListener('click', function() {
         setTimeout(function() {
-          _injectFeeFilterUI();
+          _injectFilterUI();
           window._currentFeeFilter = 'all';
           document.querySelectorAll('.fee-filter-btn').forEach(function(btn) {
             btn.classList.toggle('active', btn.dataset.feeFilter === 'all');
           });
           window.updateFeeFilterCounts();
           window.filterFeeParents();
-        }, 400);
+        }, 500);
       });
     }
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Search input — live filter (rebind since override)   */
-  /* ═══════════════════════════════════════════════════════ */
-  function _bindSearchInput() {
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Bind search input                                        */
+  /* ═══════════════════════════════════════════════════════════ */
+  function _bindSearch() {
     var input = document.getElementById('feeParentSearch');
-    if (!input || input._scopeFixBound) return;
-    input._scopeFixBound = true;
-    // Keep the inline oninput working — re-assign to safe handler
+    if (!input || input._feeV3Bound) return;
+    input._feeV3Bound = true;
     input.oninput = function() { window.filterFeeParents(); };
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Periodic watchdog — re-inject if user navigates back */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 PDF Export — uses current filter (with correct settings) */
+  /* ═══════════════════════════════════════════════════════════ */
+  window.downloadFeeParentsPDF = async function() {
+    var list = _getFeeData();
+    var filter = window._currentFeeFilter || 'all';
+
+    // Apply same filter logic
+    var q = _getSearchQuery();
+    list = list.filter(function(p) {
+      if (q) {
+        var idsTxt = (p.student_ids || []).join(' ').toLowerCase();
+        var namesTxt = (p.student_names || '').toLowerCase();
+        var parentName = (p.parent_name || '').toLowerCase();
+        var mobile = String(p.mobile || '');
+        var matches = parentName.indexOf(q) > -1 || mobile.indexOf(q) > -1
+                   || idsTxt.indexOf(q) > -1 || namesTxt.indexOf(q) > -1;
+        if (!matches) return false;
+      }
+      if (filter !== 'all') {
+        if (window._getFeeParentStatus(p) !== filter) return false;
+      }
+      return true;
+    });
+
+    if (!list.length) {
+      showToast('⚠️ No data for this filter', 'error');
+      return;
+    }
+
+    var filterLabel = filter === 'all' ? 'All Records'
+                    : filter === 'pending' ? 'Pending Only'
+                    : 'Paid Only';
+
+    showLoading(true);
+    try {
+      var ok = await window.waitForPDFLibs(6000);
+      if (!ok) { showLoading(false); showToast('⚠️ PDF library loading', 'error'); return; }
+
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+
+      try {
+        if (typeof setupMalayalamPDF === 'function') await setupMalayalamPDF(doc);
+      } catch (e) {}
+
+      var pw = doc.internal.pageSize.getWidth();
+      doc.setFillColor(21, 71, 168);
+      doc.rect(0, 0, pw, 80, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text('NOORUSSALAM MADRASA', pw / 2, 32, { align: 'center' });
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'normal');
+      doc.text('Fee Report — ' + filterLabel + ' — ' + new Date().toLocaleDateString('en-IN'),
+               pw / 2, 55, { align: 'center' });
+      doc.setTextColor(0, 0, 0);
+
+      var settings = _getFeeSettings();
+      var rows = list.map(function(p, i) {
+        var br = computeFeeBreakdown(p, settings);
+        var status = br.totalPending > 0 ? 'Pending'
+                   : br.totalPending < 0 ? 'Advance' : 'Paid';
+        return [
+          i + 1,
+          p.parent_name || '',
+          (p.student_ids || []).join(', '),
+          p.student_names || '',
+          p.mobile || '',
+          formatFeeMonthEN(p.last_paid_month),
+          br.paidMonths,
+          br.pendingMonths,
+          'Rs.' + br.totalPending.toLocaleString(),
+          status
+        ];
+      });
+
+      var totalDue = 0;
+      list.forEach(function(p) {
+        var br = computeFeeBreakdown(p, settings);
+        totalDue += br.totalPending;
+      });
+
+      doc.autoTable({
+        startY: 100,
+        head: [['#', 'Parent', 'UIDs', 'Students', 'Mobile', 'Last Paid', 'Paid', 'Pend', 'Due', 'Status']],
+        body: rows,
+        foot: [['', '', '', '', '', '', '', '', 'Total: Rs.' + totalDue.toLocaleString(), '']],
+        theme: 'grid',
+        styles: { fontSize: 7.5, cellPadding: 4 },
+        headStyles: { fillColor: [30, 107, 224], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        footStyles: { fillColor: [240, 245, 255], textColor: [0, 0, 0], fontStyle: 'bold' }
+      });
+
+      doc.save('Fee_Report_' + filter + '_' + new Date().toISOString().split('T')[0] + '.pdf');
+      showToast('✅ PDF Downloaded (' + list.length + ' records)', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+    } catch (err) {
+      console.error('PDF error:', err);
+      showToast('❌ PDF failed: ' + err.message, 'error');
+    }
+    showLoading(false);
+  };
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Watchdog — auto-reinject if tab is revisited             */
+  /* ═══════════════════════════════════════════════════════════ */
   setInterval(function() {
     var tab = document.getElementById('adminFeeParentsTab');
     if (tab && tab.style.display === 'block') {
-      _injectFeeFilterUI();
-      _bindSearchInput();
-      _hookFeeTab();
-    }
-  }, 2500);
+      _injectFilterUI();
+      _bindSearch();
+      _hookTab();
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 Init on DOM ready                                    */
-  /* ═══════════════════════════════════════════════════════ */
+      // Auto-mirror in case tab was loaded before our override
+      try {
+        if (!window.FEE_SETTINGS_CACHE || !Object.keys(window.FEE_SETTINGS_CACHE).length) {
+          window.FEE_SETTINGS_CACHE = FEE_SETTINGS_CACHE;
+          window.feeParentsData = feeParentsData;
+          window.filteredFeeParents = filteredFeeParents;
+        }
+      } catch (e) {}
+    }
+  }, 3000);
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* 🎯 Init                                                      */
+  /* ═══════════════════════════════════════════════════════════ */
   function _init() {
-    _injectFeeFilterUI();
-    _bindSearchInput();
-    _hookFeeTab();
-    console.log('✅ Fee Table Scope Fix initialized');
+    _injectFilterUI();
+    _bindSearch();
+    _hookTab();
+    console.log('✅ Fee Table v3 loaded — Due students will NOT appear in Paid list');
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(_init, 1800);
-    });
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(_init, 1800); });
   } else {
     setTimeout(_init, 1800);
   }
 
-  /* Expose debug helper */
+  /* Debug helper */
   window.debugFeeState = function() {
     var data = _getFeeData();
-    console.log('📋 feeParentsData.length:', data.length);
-    console.log('📋 window.feeParentsData:', window.feeParentsData);
-    console.log('📋 _currentFeeFilter:', window._currentFeeFilter);
-    console.log('📋 filteredFeeParents (window):', window.filteredFeeParents);
-    try {
-      console.log('📋 filteredFeeParents (lexical):', filteredFeeParents);
-    } catch (e) {
-      console.log('📋 filteredFeeParents lexical not accessible:', e.message);
-    }
-    console.log('📋 First record:', data[0]);
+    var settings = _getFeeSettings();
+    console.log('═══════════════════════════════════');
+    console.log('📋 TOTAL PARENTS:', data.length);
+    console.log('📋 SETTINGS:', settings);
+    console.log('📋 FILTER:', window._currentFeeFilter);
+    console.log('═══════════════════════════════════');
+    var pending = 0, paid = 0;
+    data.forEach(function(p) {
+      var st = window._getFeeParentStatus(p);
+      if (st === 'pending') pending++; else paid++;
+    });
+    console.log('📊 PENDING:', pending, '| PAID:', paid);
+    console.log('═══════════════════════════════════');
+    console.log('📋 First 5 records with status:');
+    data.slice(0, 5).forEach(function(p) {
+      var br = computeFeeBreakdown(p, settings);
+      console.log('  •', p.parent_name, '→', window._getFeeParentStatus(p), '| Due: ₹' + br.totalPending);
+    });
   };
 
-  console.log('✅ Fee Table Scope Fix loaded — try debugFeeState() in console');
+  console.log('✅ Fee Table Fix v3 loaded — run debugFeeState() to verify');
 })();
 </script>
 </body>
