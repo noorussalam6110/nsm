@@ -27596,5 +27596,98 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   console.log('   💡 Teacher modal-ൽ scroll ഇപ്പോൾ പ്രവർത്തിക്കും');
 })();
 </script>
+<script id="teacher-scroll-fix-v52">
+(function(){
+  'use strict';
+  console.log('🔧 Teacher Scroll Fix v52.0');
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 FORCE-FIX the teacher modal — runs every 200ms
+  // ═══════════════════════════════════════════════════════
+  function forceFixTeacherModal() {
+    var m = document.getElementById('teacherPwdModal');
+    if (!m) return;
+    if (m.dataset.fixed === '1') return; // already fixed
+    m.dataset.fixed = '1';
+
+    console.log('🔧 Applying scroll fix to teacher modal...');
+
+    // ─── 1. Remove any inline height/top/bottom ───
+    m.style.height = 'auto';
+    m.style.maxHeight = 'none';
+    m.style.top = '0';
+    m.style.bottom = '0';
+    m.style.left = '0';
+    m.style.right = '0';
+
+    // ─── 2. REMOVE flex layout (this is the main culprit) ───
+    m.style.display = 'block';
+    m.style.flexDirection = '';
+    m.style.alignItems = '';
+    m.style.justifyContent = '';
+
+    // ─── 3. Force scroll ───
+    m.style.overflowY = 'auto';
+    m.style.overflowX = 'hidden';
+    m.style.webkitOverflowScrolling = 'touch';
+    m.style.overscrollBehavior = 'contain';
+    m.style.padding = '20px';
+    m.style.boxSizing = 'border-box';
+
+    // ─── 4. Fix inner card — remove margin auto ───
+    var card = m.querySelector('div');
+    if (card) {
+      card.style.margin = '0 auto';
+      card.style.maxWidth = '440px';
+      card.style.width = '100%';
+      card.style.boxSizing = 'border-box';
+      // Add top/bottom margin for spacing
+      card.style.marginTop = '20px';
+      card.style.marginBottom = '40px';
+    }
+
+    console.log('✅ Teacher modal scroll fix applied');
+  }
+
+  // ─── Watch for teacher modal appearing ───
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      m.addedNodes.forEach(function(n) {
+        if (n.nodeType === 1 && n.id === 'teacherPwdModal') {
+          setTimeout(forceFixTeacherModal, 10);
+        }
+      });
+    });
+  });
+
+  if (document.body) {
+    observer.observe(document.body, { childList: true });
+  } else {
+    document.addEventListener('DOMContentLoaded', function() {
+      observer.observe(document.body, { childList: true });
+    });
+  }
+
+  // Also run periodically in case observer misses it
+  setInterval(forceFixTeacherModal, 300);
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 Also override promptTeacherPassword completely
+  // ═══════════════════════════════════════════════════════
+  var _origPrompt = window.promptTeacherPassword;
+  window.promptTeacherPassword = function(teacher) {
+    // Small delay so the modal is in DOM, then apply fix
+    setTimeout(forceFixTeacherModal, 20);
+    setTimeout(forceFixTeacherModal, 100);
+    setTimeout(forceFixTeacherModal, 300);
+    // Also let the original run
+    if (typeof _origPrompt === 'function') {
+      return _origPrompt.call(this, teacher);
+    }
+  };
+
+  console.log('✅ Teacher Scroll Fix v52.0 ready');
+})();
+</script>
 </body>
 </html>
