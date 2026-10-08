@@ -27434,5 +27434,1383 @@ window.printFeeReportPDF = function() {
   console.log('✅ Fee Filter v37.3 ready');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔄 v38.0 — XP REWARD RESET SYSTEM                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<style id="xp-reset-styles">
+/* ═══════════════════════════════════════════════════════ */
+/* 🎛️ XP MANAGEMENT TAB                                      */
+/* ═══════════════════════════════════════════════════════ */
+.xp-reset-panel {
+  background: linear-gradient(135deg, #fef3c7, #fce7f3, #dbeafe);
+  border: 2px solid rgba(139,92,246,.35);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.xp-reset-title {
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.xp-reset-sub {
+  font-size: .78rem;
+  color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.xp-reset-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.xp-reset-btn {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .82rem;
+  cursor: pointer;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  -webkit-tap-highlight-color: transparent;
+}
+.xp-reset-btn:active { transform: scale(.96); }
+.xp-reset-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.xp-reset-btn:disabled { opacity: .5; cursor: not-allowed; }
+.xp-reset-btn.warn {
+  background: linear-gradient(100deg, #f59e0b, #fbbf24);
+  color: #03132e;
+  box-shadow: 0 8px 20px -8px rgba(251,191,36,.7);
+}
+.xp-reset-btn.danger {
+  background: linear-gradient(100deg, #dc2626, #ef4444);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(220,38,38,.7);
+}
+.xp-reset-btn.info {
+  background: linear-gradient(100deg, #3b82f6, #60a5fa);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(59,130,246,.7);
+}
+.xp-reset-btn.success {
+  background: linear-gradient(100deg, #059669, #34d399);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(5,150,105,.7);
+}
+
+.xp-reset-note {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  border-left: 4px solid #8b5cf6;
+  font-size: .8rem;
+  color: #475569;
+  line-height: 1.6;
+}
+.xp-reset-note strong { color: #7c3aed; }
+
+/* ═══════════════════════════════════════════════════════ */
+/* 👥 STUDENT TABLE                                          */
+/* ═══════════════════════════════════════════════════════ */
+.xp-student-checkbox {
+  width: 20px; height: 20px;
+  cursor: pointer;
+  accent-color: #8b5cf6;
+}
+.xp-current-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 900;
+  font-size: .74rem;
+  background: linear-gradient(100deg, #8b5cf6, #a78bfa);
+  color: #fff;
+}
+.xp-current-total {
+  font-weight: 900;
+  color: #f59e0b;
+  font-size: .86rem;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📢 STUDENT INFO BANNER                                    */
+/* ═══════════════════════════════════════════════════════ */
+.xp-info-banner {
+  background: linear-gradient(135deg, #fef3c7, #fce7f3);
+  border: 1.5px solid rgba(139,92,246,.35);
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative;
+  animation: xpInfoIn .5s ease;
+}
+@keyframes xpInfoIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.xp-info-banner .xp-info-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  animation: xpIconBob 2.5s ease-in-out infinite;
+}
+@keyframes xpIconBob {
+  0%,100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-3px) rotate(8deg); }
+}
+.xp-info-banner .xp-info-content {
+  flex: 1;
+  min-width: 0;
+}
+.xp-info-banner .xp-info-title {
+  font-weight: 900;
+  color: #7c3aed;
+  font-size: .88rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.xp-info-banner .xp-info-text {
+  font-size: .78rem;
+  color: #475569;
+  line-height: 1.55;
+}
+.xp-info-banner .xp-info-text strong { color: #0f172a; }
+.xp-info-banner .xp-info-close {
+  background: rgba(139,92,246,.15);
+  border: none;
+  color: #7c3aed;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📱 MOBILE RESPONSIVE                                     */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .xp-reset-panel { padding: 16px 14px; border-radius: 16px; }
+  .xp-reset-title { font-size: .94rem; }
+  .xp-reset-actions { grid-template-columns: 1fr; }
+  .xp-reset-btn { min-height: 48px; font-size: .78rem; }
+}
+</style>
+
+<script id="xp-reset-js">
+(function(){
+  'use strict';
+  console.log('🔄 XP Reset System v38.0 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════════
+  window._xpAdminData = window._xpAdminData || [];
+  window._xpSelected = window._xpSelected || new Set();
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD XP DATA
+  // ═══════════════════════════════════════════════════════
+  window.loadXPAdmin = async function() {
+    if (!currentAdminClass) {
+      showToast('⚠️ Class select ചെയ്യൂ', 'error');
+      return;
+    }
+
+    var wrap = document.getElementById('xpAdminWrap');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+
+    try {
+      // Fetch students
+      var q = supabaseClient.from('students').select('studentid, name, class, roll');
+      if (currentAdminClass !== 'all') q = q.eq('class', currentAdminClass);
+      q = q.order('class').order('roll').order('name');
+      var sr = await q;
+      var students = sr.data || [];
+
+      // Fetch XP data
+      var ids = students.map(function(s) { return s.studentid; });
+      var xpMap = {};
+      if (ids.length > 0) {
+        var xr = await supabaseClient.from('student_xp')
+          .select('*')
+          .in('studentid', ids);
+        (xr.data || []).forEach(function(x) { xpMap[x.studentid] = x; });
+      }
+
+      window._xpAdminData = students.map(function(s) {
+        var x = xpMap[s.studentid] || { xp: 0, level: 1, total_earned: 0 };
+        return Object.assign({}, s, {
+          xp: x.xp || 0,
+          level: x.level || 1,
+          total_earned: x.total_earned || 0
+        });
+      });
+
+      window._xpSelected = new Set();
+      renderXPAdmin();
+
+    } catch(e) {
+      console.error('loadXPAdmin:', e);
+      wrap.innerHTML = '<div class="empty-state" style="color:#dc2626;">Error: ' + e.message + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER
+  // ═══════════════════════════════════════════════════════
+  function renderXPAdmin() {
+    var wrap = document.getElementById('xpAdminWrap');
+    if (!wrap) return;
+    var data = window._xpAdminData || [];
+
+    if (data.length === 0) {
+      wrap.innerHTML = '<div class="empty-state">No students</div>';
+      return;
+    }
+
+    var totalXP = data.reduce(function(s, x) { return s + (x.total_earned || 0); }, 0);
+    var avgXP = data.length > 0 ? Math.round(totalXP / data.length) : 0;
+    var maxXP = Math.max.apply(null, data.map(function(x) { return x.total_earned || 0; }));
+    var topStudent = data.find(function(x) { return (x.total_earned || 0) === maxXP; });
+
+    var h = '';
+    h += '<div class="admin-summary">';
+    h += '<div class="stat"><div class="num">' + data.length + '</div><div class="label">Students</div></div>';
+    h += '<div class="stat"><div class="num orange">' + totalXP.toLocaleString() + '</div><div class="label">Total XP</div></div>';
+    h += '<div class="stat"><div class="num green">' + avgXP + '</div><div class="label">Avg XP</div></div>';
+    h += '<div class="stat"><div class="num" style="color:#7c3aed;">' + (topStudent ? (topStudent.name || '').split(' ')[0] : '—') + '</div><div class="label">Top (' + maxXP + ')</div></div>';
+    h += '</div>';
+
+    h += '<div class="admin-table-wrap"><table>';
+    h += '<thead><tr>';
+    h += '<th style="width:40px;"><input type="checkbox" class="xp-student-checkbox" id="xpSelectAll" onchange="window.xpToggleAll(this.checked)"></th>';
+    h += '<th>Roll</th><th>Student</th><th>Class</th><th>Level</th><th>Current XP</th><th>Total XP</th>';
+    h += '</tr></thead><tbody>';
+
+    data.forEach(function(s) {
+      var checked = window._xpSelected.has(s.studentid) ? 'checked' : '';
+      h += '<tr>';
+      h += '<td><input type="checkbox" class="xp-student-checkbox xp-row-check" data-sid="' + s.studentid + '" ' + checked + ' onchange="window.xpToggleOne(this)"></td>';
+      h += '<td><strong style="color:#0891b2;">' + (s.roll || '—') + '</strong></td>';
+      h += '<td><strong>' + (s.name || '') + '</strong><br><small style="color:#94a3b8;">' + s.studentid + '</small></td>';
+      h += '<td>' + (s.class || '') + '</td>';
+      h += '<td><span class="xp-current-level">⭐ Lv ' + s.level + '</span></td>';
+      h += '<td class="xp-current-total">' + (s.xp || 0) + '</td>';
+      h += '<td style="color:#7c3aed;font-weight:900;font-size:.9rem;">' + (s.total_earned || 0) + '</td>';
+      h += '</tr>';
+    });
+
+    h += '</tbody></table></div>';
+    wrap.innerHTML = h;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ✅ SELECTION
+  // ═══════════════════════════════════════════════════════
+  window.xpToggleAll = function(checked) {
+    window._xpSelected = new Set();
+    if (checked) {
+      (window._xpAdminData || []).forEach(function(s) { window._xpSelected.add(s.studentid); });
+    }
+    document.querySelectorAll('.xp-row-check').forEach(function(cb) {
+      cb.checked = checked;
+    });
+  };
+
+  window.xpToggleOne = function(cb) {
+    var sid = cb.dataset.sid;
+    if (cb.checked) window._xpSelected.add(sid);
+    else window._xpSelected.delete(sid);
+
+    // Update select all
+    var selectAll = document.getElementById('xpSelectAll');
+    if (selectAll) {
+      var total = (window._xpAdminData || []).length;
+      selectAll.checked = window._xpSelected.size === total;
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 RESET — Selected Students
+  // ═══════════════════════════════════════════════════════
+  window.resetXPSelected = async function() {
+    var ids = Array.from(window._xpSelected);
+    if (ids.length === 0) {
+      showToast('⚠️ Students select ചെയ്യൂ', 'error');
+      return;
+    }
+    if (!confirm('🔄 ' + ids.length + ' students-ന്റെ XP reset ചെയ്യണോ?\n\nഇത് പഴയ XP പൂർണ്ണമായി നഷ്ടപ്പെടുത്തും.')) return;
+    await resetXPForIds(ids, 'selected');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 RESET — Entire Class
+  // ═══════════════════════════════════════════════════════
+  window.resetXPClass = async function() {
+    var data = window._xpAdminData || [];
+    if (data.length === 0) {
+      showToast('⚠️ No students', 'error');
+      return;
+    }
+    var clsLabel = currentAdminClass === 'all' ? 'ALL Classes' : 'Class ' + currentAdminClass;
+    if (!confirm('🔄 ' + clsLabel + '-ലെ ' + data.length + ' students-ന്റെ XP reset ചെയ്യണോ?\n\n⚠️ ഇത് വലിയ change ആണ്!')) return;
+    var ids = data.map(function(s) { return s.studentid; });
+    await resetXPForIds(ids, 'class');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 RESET — CORE LOGIC
+  // ═══════════════════════════════════════════════════════
+  async function resetXPForIds(ids, type) {
+    if (!supabaseClient || ids.length === 0) return;
+    
+    showLoading(true);
+    var success = 0;
+    var failed = 0;
+
+    try {
+      // Batch delete and reset
+      for (var i = 0; i < ids.length; i += 50) {
+        var batch = ids.slice(i, i + 50);
+        
+        // Delete XP records (they'll be recreated with 0 on next access)
+        try {
+          await supabaseClient.from('student_xp').delete().in('studentid', batch);
+          success += batch.length;
+        } catch(e) {
+          console.warn('Delete batch failed:', e);
+          failed += batch.length;
+        }
+      }
+
+      // Reset streaks, missions (optional)
+      try {
+        await supabaseClient.from('namaz_streaks').delete().in('studentid', ids);
+      } catch(e) {}
+      
+      try {
+        await supabaseClient.from('student_streaks').delete().in('studentid', ids);
+      } catch(e) {}
+
+      // Reset missions (today only)
+      try {
+        var today = new Date().toISOString().split('T')[0];
+        await supabaseClient.from('student_missions').delete().in('studentid', ids).eq('mission_date', today);
+      } catch(e) {}
+
+      // Reset tasbeeh
+      try {
+        await supabaseClient.from('tasbeeh_log').delete().in('studentid', ids);
+      } catch(e) {}
+
+      // Log the reset
+      await logXPReset(ids, type);
+
+      // Send notification to affected students
+      await notifyXPReset(ids, type);
+
+      // Success feedback
+      showLoading(false);
+      
+      if (failed > 0) {
+        showToast('⚠️ ' + success + ' reset, ' + failed + ' failed', 'warning');
+      } else {
+        showToast('✅ ' + success + ' students-ന്റെ XP reset ചെയ്തു', 'success');
+        if (typeof confetti !== 'undefined') {
+          confetti({ particleCount: 100, spread: 80, origin: { y: .7 }, colors: ['#7c3aed','#ec4899','#fbbf24'] });
+        }
+      }
+
+      // Reload table
+      setTimeout(window.loadXPAdmin, 800);
+
+    } catch(e) {
+      console.error('Reset error:', e);
+      showLoading(false);
+      showToast('❌ ' + e.message, 'error');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📝 LOG RESET
+  // ═══════════════════════════════════════════════════════
+  async function logXPReset(ids, type) {
+    try {
+      // Try to log to audit table
+      await supabaseClient.from('audit_logs').insert({
+        user_id: 'ADMIN',
+        user_type: 'admin',
+        action: 'XP_RESET_' + (type || 'manual').toUpperCase(),
+        table_name: 'student_xp',
+        record_id: ids.length + '_students',
+        new_data: { count: ids.length, students: ids.slice(0, 20) },
+        user_agent: navigator.userAgent.substring(0, 200)
+      });
+    } catch(e) { /* Ignore if no audit table */ }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📢 NOTIFY STUDENTS
+  // ═══════════════════════════════════════════════════════
+  async function notifyXPReset(ids, type) {
+    if (!ids || ids.length === 0) return;
+    
+    var title = '🔄 XP Reward Reset';
+    var message = type === 'class'
+      ? 'ക്ലാസ്സിലെ എല്ലാ students-ന്റെയും XP reset ചെയ്തു. ഇനി പുതിയതായി XP നേടാം! 🌟'
+      : 'നിങ്ങളുടെ XP reset ചെയ്തിരിക്കുന്നു. പുതിയ ലക്ഷ്യങ്ങളോടെ തുടങ്ങാം! 🌟';
+
+    try {
+      // Send individual notification to each student
+      var notifications = ids.map(function(sid) {
+        return {
+          title: title,
+          message: message,
+          type: 'important',
+          target_type: 'student',
+          target_student: sid,
+          link_url: null
+        };
+      });
+
+      // Batch insert
+      for (var i = 0; i < notifications.length; i += 100) {
+        await supabaseClient.from('notifications').insert(notifications.slice(i, i + 100));
+      }
+
+      console.log('📢 Notified', ids.length, 'students');
+    } catch(e) {
+      console.warn('Notification error:', e);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 INDIVIDUAL RESET — from row button
+  // ═══════════════════════════════════════════════════════
+  window.resetXPSingle = async function(studentid, name) {
+    if (!confirm('🔄 ' + (name || studentid) + '-ന്റെ XP reset ചെയ്യണോ?')) return;
+    await resetXPForIds([studentid], 'single');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎛️ ADD ADMIN TAB
+  // ═══════════════════════════════════════════════════════
+  function addXPTab() {
+    var tabs = document.getElementById('adminTabs');
+    if (!tabs) return;
+    if (tabs.querySelector('[data-tab="xpreset"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'admin-tab';
+    btn.dataset.tab = 'xpreset';
+    btn.innerHTML = '🔄 XP Reset';
+    btn.onclick = function() { window.switchAdminTab('xpreset'); };
+
+    // Insert after rewards
+    var rewardsTab = tabs.querySelector('[data-tab="rewards"]');
+    if (rewardsTab) rewardsTab.parentNode.insertBefore(btn, rewardsTab.nextSibling);
+    else tabs.appendChild(btn);
+  }
+
+  function addXPTabContent() {
+    var container = document.getElementById('adminMainContent');
+    if (!container) return;
+    if (document.getElementById('adminXpResetTab')) return;
+
+    var div = document.createElement('div');
+    div.id = 'adminXpResetTab';
+    div.className = 'admin-tab-content';
+    div.style.display = 'none';
+    div.innerHTML = 
+      '<div class="xp-reset-panel">' +
+        '<div class="xp-reset-title"><i class="fas fa-arrows-rotate"></i> XP Reward Reset System</div>' +
+        '<div class="xp-reset-sub">Students-ന്റെ XP, Streak, Missions reset ചെയ്യാൻ ഈ പാനൽ ഉപയോഗിക്കുക. Reset ചെയ്യുമ്പോൾ ഓരോ student-നും notification പോകും.</div>' +
+        '<div class="xp-reset-actions">' +
+          '<button class="xp-reset-btn info" onclick="window.loadXPAdmin()"><i class="fas fa-sync-alt"></i> Refresh Data</button>' +
+          '<button class="xp-reset-btn warn" onclick="window.resetXPSelected()"><i class="fas fa-user-minus"></i> Reset Selected</button>' +
+          '<button class="xp-reset-btn danger" onclick="window.resetXPClass()"><i class="fas fa-users-slash"></i> Reset Entire Class</button>' +
+        '</div>' +
+        '<div class="xp-reset-note">' +
+          '<strong>⚠️ ശ്രദ്ധിക്കുക:</strong> XP reset ചെയ്യുമ്പോൾ XP + Level + Total Earned + Streak + Today\'s Missions എല്ലാം reset ആകും. Students-നു "നിങ്ങളുടെ XP reset ചെയ്തിരിക്കുന്നു" എന്ന notification പോകും.' +
+        '</div>' +
+      '</div>' +
+      '<div id="xpAdminWrap"></div>';
+
+    container.appendChild(div);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK switchAdminTab
+  // ═══════════════════════════════════════════════════════
+  var _origSwitch = window.switchAdminTab;
+  window.switchAdminTab = function(tab) {
+    if (tab === 'xpreset') {
+      document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.style.display = 'none'; });
+      document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+      var btn = document.querySelector('.admin-tab[data-tab="xpreset"]');
+      if (btn) btn.classList.add('active');
+      var tabEl = document.getElementById('adminXpResetTab');
+      if (tabEl) tabEl.style.display = 'block';
+      window.loadXPAdmin();
+      return;
+    }
+    return _origSwitch.apply(this, arguments);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📢 STUDENT INFO BANNER — Shows if recently reset
+  // ═══════════════════════════════════════════════════════
+  async function checkXPResetNotification() {
+    if (!currentUser || !supabaseClient) return;
+    
+    try {
+      // Check if XP is 0 but was previously higher (reset happened)
+      var lr = localStorage.getItem('xp_last_total_' + currentUser.studentId);
+      var lastTotal = lr ? parseInt(lr) : -1;
+      
+      var xr = await supabaseClient.from('student_xp')
+        .select('total_earned')
+        .eq('studentid', currentUser.studentId)
+        .maybeSingle();
+      
+      var currentTotal = xr.data ? (xr.data.total_earned || 0) : 0;
+      
+      // If we previously had XP, now it's 0 — reset happened
+      if (lastTotal > 0 && currentTotal === 0) {
+        showXPResetBanner();
+      }
+      
+      // Save current
+      localStorage.setItem('xp_last_total_' + currentUser.studentId, currentTotal);
+    } catch(e) { console.warn('XP check:', e); }
+  }
+
+  function showXPResetBanner() {
+    // Remove existing
+    var old = document.getElementById('xpInfoBanner');
+    if (old) old.remove();
+
+    var banner = document.createElement('div');
+    banner.id = 'xpInfoBanner';
+    banner.className = 'xp-info-banner';
+    banner.innerHTML = 
+      '<div class="xp-info-icon">🔄</div>' +
+      '<div class="xp-info-content">' +
+        '<div class="xp-info-title"><i class="fas fa-info-circle"></i> XP Reward Reset ചെയ്തു</div>' +
+        '<div class="xp-info-text">അഡ്മിൻ നിങ്ങളുടെ <strong>XP, Level, Streak</strong> എന്നിവ reset ചെയ്തിരിക്കുന്നു. <br>ഇനി പുതിയ ലക്ഷ്യങ്ങളോടെ <strong>വീണ്ടും XP നേടാം!</strong> 🌟</div>' +
+      '</div>' +
+      '<button class="xp-info-close" onclick="this.parentNode.remove()"><i class="fas fa-times"></i></button>';
+
+    // Insert after XP widget
+    var xpWidget = document.getElementById('xpWidget');
+    if (xpWidget && xpWidget.parentNode) {
+      xpWidget.parentNode.insertBefore(banner, xpWidget.nextSibling);
+    } else {
+      var dash = document.querySelector('#dashboardSection .container');
+      var header = dash ? dash.querySelector('.dashboard-header-glow') : null;
+      if (header) header.insertAdjacentElement('afterend', banner);
+    }
+  }
+
+  // Check on dashboard load
+  var dash = document.getElementById('dashboardSection');
+  if (dash) {
+    new MutationObserver(function() {
+      if (dash.style.display === 'block' && currentUser) {
+        setTimeout(checkXPResetNotification, 3000);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Check after login
+  var _origLogin = window.completeLogin;
+  if (typeof _origLogin === 'function') {
+    window.completeLogin = async function(student) {
+      var r = await _origLogin.apply(this, arguments);
+      setTimeout(checkXPResetNotification, 4000);
+      return r;
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    addXPTab();
+    addXPTabContent();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 1500);
+      setTimeout(init, 3000);
+    });
+  } else {
+    setTimeout(init, 1500);
+    setTimeout(init, 3000);
+  }
+
+  var adminEl = document.getElementById('adminSection');
+  if (adminEl) {
+    new MutationObserver(function() {
+      if (adminEl.style.display === 'block') {
+        setTimeout(init, 500);
+      }
+    }).observe(adminEl, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🧪 DEBUG
+  // ═══════════════════════════════════════════════════════
+  window.debugXpReset = function() {
+    console.log('═══ 🔄 XP Reset Debug ═══');
+    console.log('Students loaded:', (window._xpAdminData || []).length);
+    console.log('Selected:', window._xpSelected.size);
+    console.log('Admin class:', currentAdminClass);
+    console.log('═══════════════════════');
+  };
+
+  console.log('✅ XP Reset System v38.0 ready');
+  console.log('   • Admin → XP Reset tab');
+  console.log('   • Individual + Class reset');
+  console.log('   • Student notification');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🎁 v39.0 — XP BONUS (Manual Add by Admin)                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<style id="xp-bonus-styles">
+/* ═══════════════════════════════════════════════════════ */
+/* 🎁 XP BONUS PANEL                                        */
+/* ═══════════════════════════════════════════════════════ */
+.xp-bonus-panel {
+  background: linear-gradient(135deg, #ecfdf5, #fef3c7, #fce7f3);
+  border: 2px solid rgba(5,150,105,.35);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.xp-bonus-title {
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.xp-bonus-sub {
+  font-size: .78rem;
+  color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Quick Preset Buttons */
+.xp-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.xp-preset-btn {
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: #fff;
+  color: #0f172a;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: .86rem;
+  cursor: pointer;
+  transition: all .2s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 60px;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 6px -2px rgba(0,0,0,.1);
+}
+.xp-preset-btn:hover { transform: translateY(-3px); }
+.xp-preset-btn:active { transform: scale(.95); }
+.xp-preset-btn.active {
+  background: linear-gradient(140deg, #059669, #34d399);
+  color: #fff;
+  border-color: #059669;
+  box-shadow: 0 6px 16px -6px rgba(5,150,105,.6);
+}
+.xp-preset-btn .preset-num { font-size: 1.15rem; }
+.xp-preset-btn .preset-lbl { font-size: .6rem; opacity: .85; font-weight: 700; letter-spacing: .3px; }
+
+/* Custom Amount Input */
+.xp-bonus-form {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1.5px solid rgba(180,200,230,.5);
+}
+.xp-bonus-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.xp-bonus-field {
+  flex: 1;
+  min-width: 140px;
+}
+.xp-bonus-field label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 800;
+  color: #475569;
+  margin-bottom: 5px;
+}
+.xp-bonus-field input,
+.xp-bonus-field select,
+.xp-bonus-field textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid rgba(100,116,139,.25);
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  background: #f8fafc;
+  outline: none;
+  transition: all .2s;
+}
+.xp-bonus-field input:focus,
+.xp-bonus-field select:focus,
+.xp-bonus-field textarea:focus {
+  border-color: #059669;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(5,150,105,.12);
+}
+.xp-bonus-field textarea {
+  min-height: 60px;
+  resize: vertical;
+  font-size: 14px;
+}
+
+/* Action Buttons */
+.xp-bonus-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+.xp-bonus-btn {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .84rem;
+  cursor: pointer;
+  transition: all .25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  -webkit-tap-highlight-color: transparent;
+}
+.xp-bonus-btn:active { transform: scale(.96); }
+.xp-bonus-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.xp-bonus-btn:disabled { opacity: .5; cursor: not-allowed; }
+.xp-bonus-btn.success {
+  background: linear-gradient(100deg, #059669, #34d399);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(5,150,105,.7);
+}
+.xp-bonus-btn.warn {
+  background: linear-gradient(100deg, #f59e0b, #fbbf24);
+  color: #03132e;
+  box-shadow: 0 8px 20px -8px rgba(251,191,36,.7);
+}
+.xp-bonus-btn.info {
+  background: linear-gradient(100deg, #3b82f6, #60a5fa);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(59,130,246,.7);
+}
+
+/* Selection info */
+.xp-bonus-selection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(5,150,105,.1);
+  border-radius: 12px;
+  font-size: .8rem;
+  font-weight: 800;
+  color: #059669;
+  margin-bottom: 12px;
+}
+.xp-bonus-selection i { font-size: 1rem; }
+
+/* Success flash */
+.xp-bonus-flash {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: linear-gradient(135deg, #059669, #34d399);
+  color: #fff;
+  padding: 30px 50px;
+  border-radius: 24px;
+  font-weight: 900;
+  font-size: 1.4rem;
+  text-align: center;
+  box-shadow: 0 30px 80px -20px rgba(5,150,105,.9);
+  z-index: 100005;
+  transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+  font-family: 'Anek Malayalam', sans-serif;
+}
+.xp-bonus-flash.show { transform: translate(-50%, -50%) scale(1); }
+.xp-bonus-flash .flash-icon { font-size: 3rem; display: block; margin-bottom: 8px; }
+.xp-bonus-flash .flash-sub { font-size: .8rem; opacity: .9; margin-top: 6px; font-weight: 700; }
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📱 MOBILE RESPONSIVE                                     */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .xp-bonus-panel { padding: 16px 14px; border-radius: 16px; }
+  .xp-bonus-title { font-size: .94rem; }
+  .xp-preset-grid { grid-template-columns: repeat(3, 1fr); }
+  .xp-bonus-actions { grid-template-columns: 1fr; }
+  .xp-bonus-btn { min-height: 48px; font-size: .78rem; }
+  .xp-bonus-flash { padding: 24px 32px; font-size: 1.15rem; }
+  .xp-bonus-flash .flash-icon { font-size: 2.4rem; }
+}
+</style>
+
+<script id="xp-bonus-js">
+(function(){
+  'use strict';
+  console.log('🎁 XP Bonus System v39.0 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════════
+  window._xpBonusAmount = 0;
+  window._xpBonusReason = '';
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 PRESET AMOUNTS
+  // ═══════════════════════════════════════════════════════
+  var PRESETS = [
+    { amount: 5,    label: 'Small Boost',    icon: '⭐', color: '#3b82f6' },
+    { amount: 10,   label: 'Good Job',       icon: '🌟', color: '#0891b2' },
+    { amount: 25,   label: 'Great Work',     icon: '✨', color: '#8b5cf6' },
+    { amount: 50,   label: 'Excellent',      icon: '💫', color: '#ec4899' },
+    { amount: 100,  label: 'Outstanding',    icon: '🏆', color: '#f59e0b' },
+    { amount: 200,  label: 'Legendary',      icon: '👑', color: '#dc2626' }
+  ];
+
+  function renderPresets() {
+    var grid = document.getElementById('xpPresetGrid');
+    if (!grid) return;
+    
+    var html = PRESETS.map(function(p) {
+      var active = window._xpBonusAmount === p.amount ? ' active' : '';
+      return '<button class="xp-preset-btn' + active + '" data-amount="' + p.amount + '" onclick="window.selectXPBonusPreset(' + p.amount + ')">' +
+        '<div class="preset-num">' + p.icon + '</div>' +
+        '<div class="preset-lbl">+' + p.amount + ' XP</div>' +
+        '</button>';
+    }).join('');
+    
+    // Add "Custom" button
+    html += '<button class="xp-preset-btn' + (window._xpBonusAmount > 0 && !PRESETS.find(function(p) { return p.amount === window._xpBonusAmount; }) ? ' active' : '') + '" onclick="window.focusCustomXPInput()">' +
+      '<div class="preset-num">✏️</div>' +
+      '<div class="preset-lbl">Custom</div>' +
+      '</button>';
+    
+    grid.innerHTML = html;
+  }
+
+  window.selectXPBonusPreset = function(amount) {
+    window._xpBonusAmount = amount;
+    var customInput = document.getElementById('xpBonusCustomAmount');
+    if (customInput) customInput.value = '';
+    renderPresets();
+    updateSelectionInfo();
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
+  };
+
+  window.focusCustomXPInput = function() {
+    var inp = document.getElementById('xpBonusCustomAmount');
+    if (inp) {
+      inp.focus();
+      inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  // Custom input change
+  function onCustomAmountChange() {
+    var inp = document.getElementById('xpBonusCustomAmount');
+    if (!inp) return;
+    var v = parseInt(inp.value) || 0;
+    v = Math.max(0, Math.min(10000, v));
+    window._xpBonusAmount = v;
+    renderPresets();
+    updateSelectionInfo();
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 UPDATE SELECTION INFO
+  // ═══════════════════════════════════════════════════════
+  function updateSelectionInfo() {
+    var info = document.getElementById('xpBonusSelection');
+    if (!info) return;
+    
+    var count = window._xpSelected ? window._xpSelected.size : 0;
+    var amount = window._xpBonusAmount || 0;
+    
+    if (count === 0) {
+      info.innerHTML = '<i class="fas fa-info-circle"></i> Students select ചെയ്യൂ (table-ൽ checkbox ✅)';
+    } else if (amount === 0) {
+      info.innerHTML = '<i class="fas fa-users"></i> ' + count + ' students selected — ഇനി XP amount select ചെയ്യൂ';
+    } else {
+      info.innerHTML = '<i class="fas fa-gift"></i> <b>' + count + '</b> students × <b>+' + amount + ' XP</b> = <b>' + (count * amount) + ' XP total</b>';
+    }
+  }
+  window.updateXPBonusSelection = updateSelectionInfo;
+
+  // ═══════════════════════════════════════════════════════
+  // 🎁 APPLY XP BONUS — Selected Students
+  // ═══════════════════════════════════════════════════════
+  window.applyXPBonusSelected = async function() {
+    var ids = window._xpSelected ? Array.from(window._xpSelected) : [];
+    var amount = window._xpBonusAmount || 0;
+    var reason = (document.getElementById('xpBonusReason')?.value || '').trim();
+
+    if (ids.length === 0) {
+      showToast('⚠️ Students select ചെയ്യൂ', 'error');
+      return;
+    }
+    if (amount <= 0) {
+      showToast('⚠️ XP amount select ചെയ്യൂ', 'error');
+      return;
+    }
+
+    var confirmMsg = '🎁 XP Bonus Confirm\n\n' +
+      '👥 Students: ' + ids.length + '\n' +
+      '⭐ XP per student: +' + amount + '\n' +
+      '📊 Total XP: ' + (ids.length * amount) + '\n' +
+      (reason ? '📝 Reason: ' + reason + '\n' : '') +
+      '\nApply ചെയ്യണോ?';
+    
+    if (!confirm(confirmMsg)) return;
+
+    await applyXPBonus(ids, amount, reason, 'selected');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎁 APPLY XP BONUS — Entire Class
+  // ═══════════════════════════════════════════════════════
+  window.applyXPBonusClass = async function() {
+    var data = window._xpAdminData || [];
+    var amount = window._xpBonusAmount || 0;
+    var reason = (document.getElementById('xpBonusReason')?.value || '').trim();
+
+    if (data.length === 0) {
+      showToast('⚠️ No students', 'error');
+      return;
+    }
+    if (amount <= 0) {
+      showToast('⚠️ XP amount select ചെയ്യൂ', 'error');
+      return;
+    }
+
+    var clsLabel = currentAdminClass === 'all' ? 'ALL Classes' : 'Class ' + currentAdminClass;
+    var confirmMsg = '🎁 XP Bonus to ' + clsLabel + '\n\n' +
+      '👥 Students: ' + data.length + '\n' +
+      '⭐ XP per student: +' + amount + '\n' +
+      '📊 Total XP: ' + (data.length * amount) + '\n' +
+      (reason ? '📝 Reason: ' + reason + '\n' : '') +
+      '\nApply ചെയ്യണോ?';
+    
+    if (!confirm(confirmMsg)) return;
+
+    var ids = data.map(function(s) { return s.studentid; });
+    await applyXPBonus(ids, amount, reason, 'class');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎁 CORE: Apply XP Bonus
+  // ═══════════════════════════════════════════════════════
+  async function applyXPBonus(ids, amount, reason, type) {
+    if (!supabaseClient || ids.length === 0) return;
+
+    showLoading(true);
+    var success = 0;
+    var failed = 0;
+
+    // Helper: calculate level from total XP
+    function levelFromTotalXP(total) {
+      var lvl = 1;
+      while ((lvl * (lvl + 1) / 2) * 100 <= total) lvl++;
+      return lvl;
+    }
+
+    function xpProgressForLevel(total) {
+      var lvl = levelFromTotalXP(total);
+      var start = (lvl * (lvl + 1) / 2) * 100; // Wrong formula check
+      // Correct: totalXPForLevel(N) = (N*(N+1)/2)*100
+      var totalXPForLevel = function(n) { return (n * (n + 1) / 2) * 100; };
+      var start2 = totalXPForLevel(lvl);
+      var end = totalXPForLevel(lvl + 1);
+      var current = total - start2;
+      var needed = end - start2;
+      return { current: current, needed: needed, percent: Math.min(100, Math.round(current / needed * 100)) };
+    }
+
+    try {
+      // Fetch all existing XP records
+      var xr = await supabaseClient.from('student_xp')
+        .select('*').in('studentid', ids);
+      
+      var existing = {};
+      (xr.data || []).forEach(function(x) { existing[x.studentid] = x; });
+
+      // Build upsert payload
+      var upserts = [];
+      ids.forEach(function(sid) {
+        var old = existing[sid] || { xp: 0, level: 1, total_earned: 0 };
+        var oldTotal = old.total_earned || 0;
+        var newTotal = oldTotal + amount;
+        var oldLevel = levelFromTotalXP(oldTotal);
+        var newLevel = levelFromTotalXP(newTotal);
+        var progress = xpProgressForLevel(newTotal);
+
+        upserts.push({
+          studentid: sid,
+          xp: progress.current,
+          level: newLevel,
+          total_earned: newTotal,
+          last_earned_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+      });
+
+      // Upsert in batches
+      for (var i = 0; i < upserts.length; i += 50) {
+        var batch = upserts.slice(i, i + 50);
+        try {
+          var r = await supabaseClient.from('student_xp').upsert(batch, { onConflict: 'studentid' });
+          if (r.error) throw r.error;
+          success += batch.length;
+        } catch(e) {
+          console.error('Batch failed:', e);
+          failed += batch.length;
+        }
+      }
+
+      // Log the action
+      try {
+        await supabaseClient.from('audit_logs').insert({
+          user_id: 'ADMIN',
+          user_type: 'admin',
+          action: 'XP_BONUS_' + (type || 'manual').toUpperCase(),
+          table_name: 'student_xp',
+          record_id: ids.length + '_students',
+          new_data: { amount: amount, count: ids.length, reason: reason, students: ids.slice(0, 20) },
+          user_agent: navigator.userAgent.substring(0, 200)
+        });
+      } catch(e) {}
+
+      // Send notifications to students
+      if (success > 0) {
+        try {
+          var notifs = ids.slice(0, success).map(function(sid) {
+            return {
+              title: '🎁 +' + amount + ' XP Bonus!',
+              message: reason || ('അഡ്മിൻ നിങ്ങൾക്ക് ' + amount + ' XP bonus നൽകി! 🌟'),
+              type: 'important',
+              target_type: 'student',
+              target_student: sid,
+              link_url: null
+            };
+          });
+          for (var j = 0; j < notifs.length; j += 100) {
+            await supabaseClient.from('notifications').insert(notifs.slice(j, j + 100));
+          }
+        } catch(e) {
+          console.warn('Notify error:', e);
+        }
+      }
+
+      showLoading(false);
+
+      // Success feedback
+      if (failed > 0) {
+        showToast('⚠️ ' + success + ' XP added, ' + failed + ' failed', 'warning');
+      } else {
+        showXPBonusFlash(amount, success);
+        showToast('✅ ' + success + ' students-നു +' + amount + ' XP നൽകി!', 'success');
+      }
+
+      // Reset form
+      window._xpBonusAmount = 0;
+      window._xpSelected = new Set();
+      var reasonInput = document.getElementById('xpBonusReason');
+      if (reasonInput) reasonInput.value = '';
+      var customInput = document.getElementById('xpBonusCustomAmount');
+      if (customInput) customInput.value = '';
+
+      // Reload table
+      setTimeout(function() {
+        if (typeof window.loadXPAdmin === 'function') window.loadXPAdmin();
+      }, 1200);
+
+    } catch(e) {
+      console.error('XP Bonus error:', e);
+      showLoading(false);
+      showToast('❌ ' + e.message, 'error');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ✨ SUCCESS FLASH ANIMATION
+  // ═══════════════════════════════════════════════════════
+  function showXPBonusFlash(amount, count) {
+    var old = document.getElementById('xpBonusFlash');
+    if (old) old.remove();
+
+    var flash = document.createElement('div');
+    flash.id = 'xpBonusFlash';
+    flash.className = 'xp-bonus-flash';
+    flash.innerHTML = 
+      '<div class="flash-icon">🎁</div>' +
+      '<div style="font-size:1.6rem;font-weight:900;">+' + amount + ' XP</div>' +
+      '<div class="flash-sub">' + count + ' students-നു നൽകി!</div>';
+    document.body.appendChild(flash);
+    
+    setTimeout(function() { flash.classList.add('show'); }, 50);
+    setTimeout(function() {
+      flash.classList.remove('show');
+      setTimeout(function() { flash.remove(); }, 500);
+    }, 1800);
+
+    // Confetti
+    if (typeof confetti !== 'undefined') {
+      confetti({
+        particleCount: 150, spread: 100, origin: { y: .5 },
+        colors: ['#059669','#34d399','#fbbf24','#fcd34d','#22d3ee','#ec4899']
+      });
+    }
+
+    // Sound
+    if (typeof playSound === 'function') {
+      try { playSound('levelup'); } catch(e) {}
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎛️ ADD ADMIN TAB — XP Bonus
+  // ═══════════════════════════════════════════════════════
+  function addXPBonusTab() {
+    var tabs = document.getElementById('adminTabs');
+    if (!tabs) return;
+    if (tabs.querySelector('[data-tab="xpbonus"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'admin-tab';
+    btn.dataset.tab = 'xpbonus';
+    btn.innerHTML = '🎁 XP Bonus';
+    btn.onclick = function() { window.switchAdminTab('xpbonus'); };
+
+    // Insert after XP Reset
+    var resetTab = tabs.querySelector('[data-tab="xpreset"]');
+    if (resetTab) resetTab.parentNode.insertBefore(btn, resetTab.nextSibling);
+    else tabs.appendChild(btn);
+  }
+
+  function addXPBonusContent() {
+    var container = document.getElementById('adminMainContent');
+    if (!container) return;
+    if (document.getElementById('adminXpBonusTab')) return;
+
+    var div = document.createElement('div');
+    div.id = 'adminXpBonusTab';
+    div.className = 'admin-tab-content';
+    div.style.display = 'none';
+    div.innerHTML = 
+      '<div class="xp-bonus-panel">' +
+        '<div class="xp-bonus-title"><i class="fas fa-gift"></i> XP Bonus — Manual Add</div>' +
+        '<div class="xp-bonus-sub">Students-നു admin manually XP നൽകാം. Preset amounts select ചെയ്യുക അല്ലെങ്കിൽ custom amount type ചെയ്യുക. Students-നു notification auto-pോകും.</div>' +
+        
+        // Selection info
+        '<div class="xp-bonus-selection" id="xpBonusSelection">' +
+          '<i class="fas fa-info-circle"></i> Students select ചെയ്യൂ (table-ൽ checkbox ✅)' +
+        '</div>' +
+        
+        // Presets
+        '<div style="font-size:.76rem;font-weight:800;color:#475569;margin-bottom:8px;">🎯 Quick Presets:</div>' +
+        '<div class="xp-preset-grid" id="xpPresetGrid"></div>' +
+        
+        // Custom + Reason
+        '<div class="xp-bonus-form">' +
+          '<div class="xp-bonus-row">' +
+            '<div class="xp-bonus-field">' +
+              '<label>✏️ Custom XP Amount</label>' +
+              '<input type="number" id="xpBonusCustomAmount" placeholder="e.g., 75" min="1" max="10000" oninput="this.value=this.value.replace(/[^0-9]/g,\'\');window.updateXPBonusSelection && window.updateXPBonusSelection()">' +
+            '</div>' +
+          '</div>' +
+          '<div class="xp-bonus-field">' +
+            '<label>📝 Reason (Optional — students-നു കാണിക്കും)</label>' +
+            '<textarea id="xpBonusReason" placeholder="e.g., മികച്ച പെരുമാറ്റത്തിന് 🏆" maxlength="200"></textarea>' +
+          '</div>' +
+        '</div>' +
+        
+        // Actions
+        '<div class="xp-bonus-actions">' +
+          '<button class="xp-bonus-btn info" onclick="window.loadXPAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>' +
+          '<button class="xp-bonus-btn success" onclick="window.applyXPBonusSelected()"><i class="fas fa-user-plus"></i> Give to Selected</button>' +
+          '<button class="xp-bonus-btn warn" onclick="window.applyXPBonusClass()"><i class="fas fa-users"></i> Give to Entire Class</button>' +
+        '</div>' +
+        
+        // Note
+        '<div style="margin-top:14px;background:#fff;border-radius:12px;padding:12px 16px;border-left:4px solid #059669;font-size:.76rem;color:#475569;line-height:1.6;">' +
+          '<strong style="color:#059669;">💡 എങ്ങനെ ഉപയോഗിക്കാം:</strong><br>' +
+          '1️⃣ Students-നെ table-ൽ നിന്ന് select ചെയ്യൂ (checkbox ✅)<br>' +
+          '2️⃣ Preset button click ചെയ്യൂ അല്ലെങ്കിൽ custom amount type ചെയ്യൂ<br>' +
+          '3️⃣ Reason എഴുതൂ (optional)<br>' +
+          '4️⃣ "Give to Selected" click ചെയ്യൂ → XP add + notification!' +
+        '</div>' +
+      '</div>' +
+      '<div id="xpAdminWrap"></div>';
+
+    container.appendChild(div);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK switchAdminTab
+  // ═══════════════════════════════════════════════════════
+  var _origSwitch = window.switchAdminTab;
+  window.switchAdminTab = function(tab) {
+    if (tab === 'xpbonus') {
+      document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.style.display = 'none'; });
+      document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+      var btn = document.querySelector('.admin-tab[data-tab="xpbonus"]');
+      if (btn) btn.classList.add('active');
+      var tabEl = document.getElementById('adminXpBonusTab');
+      if (tabEl) tabEl.style.display = 'block';
+      
+      // Render presets + load data
+      renderPresets();
+      updateSelectionInfo();
+      window.loadXPAdmin();
+      return;
+    }
+    return _origSwitch.apply(this, arguments);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK — update selection info when checkbox changes
+  // ═══════════════════════════════════════════════════════
+  var _origToggle = window.xpToggleOne;
+  window.xpToggleOne = function(cb) {
+    if (typeof _origToggle === 'function') _origToggle(cb);
+    updateSelectionInfo();
+  };
+  var _origToggleAll = window.xpToggleAll;
+  window.xpToggleAll = function(checked) {
+    if (typeof _origToggleAll === 'function') _origToggleAll(checked);
+    updateSelectionInfo();
+  };
+
+  // Custom amount input handler
+  function bindCustomInput() {
+    var inp = document.getElementById('xpBonusCustomAmount');
+    if (!inp || inp._bound) return;
+    inp._bound = true;
+    inp.addEventListener('input', function() {
+      var v = parseInt(this.value) || 0;
+      v = Math.max(0, Math.min(10000, v));
+      window._xpBonusAmount = v;
+      renderPresets();
+      updateSelectionInfo();
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    addXPBonusTab();
+    addXPBonusContent();
+    bindCustomInput();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 1600);
+      setTimeout(init, 3200);
+    });
+  } else {
+    setTimeout(init, 1600);
+    setTimeout(init, 3200);
+  }
+
+  var adminEl = document.getElementById('adminSection');
+  if (adminEl) {
+    new MutationObserver(function() {
+      if (adminEl.style.display === 'block') {
+        setTimeout(init, 500);
+      }
+    }).observe(adminEl, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🧪 DEBUG
+  // ═══════════════════════════════════════════════════════
+  window.debugXPBonus = function() {
+    console.log('═══ 🎁 XP Bonus Debug ═══');
+    console.log('Selected students:', window._xpSelected ? window._xpSelected.size : 0);
+    console.log('Current amount:', window._xpBonusAmount);
+    console.log('Loaded data:', (window._xpAdminData || []).length);
+    console.log('Current class:', currentAdminClass);
+    console.log('═════════════════════════');
+  };
+
+  console.log('✅ XP Bonus System v39.0 ready');
+  console.log('   • Admin → XP Bonus tab');
+  console.log('   • Presets + Custom amounts');
+  console.log('   • Individual + Batch add');
+})();
+</script>
 </body>
 </html>
