@@ -31604,5 +31604,242 @@ body.perf-mode-low {
   console.log('   💡 Type perfDebug() for stats');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🖥️ v73.0 — CATEGORIES MOBILE-ONLY, DESKTOP ORIGINAL    -->
+<!-- Fix: Quick Access categories apply only on mobile       -->
+<!-- Desktop: original grid layout (no categories)           -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="quick-access-v73-js">
+(function(){
+  'use strict';
+  console.log('🖥️ v73 Mobile-only Categories loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 💾 Save original grid HTML (before any rebuild)         */
+  /* ═══════════════════════════════════════════════════════ */
+  var _originalGridHTML = null;
+  var _originalGridClasses = null;
+
+  function captureOriginal() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid || _originalGridHTML !== null) return;
+
+    // Only capture if not already rebuilt with categories
+    if (grid.dataset.v71built === '1' || grid.dataset.v70built === '1') {
+      return; // Already modified, skip
+    }
+
+    _originalGridHTML = grid.innerHTML;
+    _originalGridClasses = grid.className;
+    console.log('✅ Original grid HTML captured');
+  }
+
+  // Capture immediately (before v70/v71 rebuilds)
+  captureOriginal();
+  setTimeout(captureOriginal, 500);
+  setTimeout(captureOriginal, 1000);
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📱 MOBILE ONLY — Apply categories                        */
+  /* ═══════════════════════════════════════════════════════ */
+  function isMobile() {
+    return window.innerWidth <= 900;
+  }
+
+  function applyMobileLayout() {
+    if (!isMobile()) return;
+    if (typeof window.rebuildV71 === 'function') {
+      window.rebuildV71();
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🖥️ DESKTOP — Restore original grid                      */
+  /* ═══════════════════════════════════════════════════════ */
+  function applyDesktopLayout() {
+    if (isMobile()) return;
+
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return;
+
+    // Only restore if currently showing categories
+    if (grid.dataset.v71built !== '1' && grid.dataset.v70built !== '1') {
+      return; // Already original
+    }
+
+    if (_originalGridHTML === null) {
+      console.log('⚠️ Original HTML not captured — skipping restore');
+      return;
+    }
+
+    // Restore original HTML
+    grid.innerHTML = _originalGridHTML;
+    grid.className = _originalGridClasses || 'action-grid';
+
+    // Clear build flags
+    delete grid.dataset.v70built;
+    delete grid.dataset.v71built;
+
+    // Restore original title
+    var title = document.getElementById('quickActionsTitle');
+    if (title) title.classList.remove('qa-hidden');
+
+    // Re-apply visibility
+    setTimeout(function(){
+      if (typeof window.applyStudentPortalVisibility === 'function') {
+        try { window.applyStudentPortalVisibility(); } catch(e) {}
+      }
+      if (typeof window.cleanupQuickActions === 'function') {
+        try { window.cleanupQuickActions(); } catch(e) {}
+      }
+    }, 100);
+
+    console.log('✅ Desktop original layout restored');
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 AUTO-SWITCH on window resize                         */
+  /* ═══════════════════════════════════════════════════════ */
+  var _lastMode = null;
+  var _resizeTimer = null;
+
+  function checkLayout() {
+    var mobile = isMobile();
+    if (_lastMode === mobile) return; // No change
+    _lastMode = mobile;
+
+    if (mobile) {
+      // Mobile: apply categories
+      setTimeout(applyMobileLayout, 200);
+    } else {
+      // Desktop: restore original
+      setTimeout(applyDesktopLayout, 200);
+    }
+  }
+
+  window.addEventListener('resize', function() {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(checkLayout, 400);
+  });
+
+  window.addEventListener('orientationchange', function() {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(checkLayout, 600);
+  });
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🛡️ BLOCK v70/v71 REBUILD ON DESKTOP                     */
+  /* Override their rebuild functions to no-op on desktop    */
+  /* ═══════════════════════════════════════════════════════ */
+  function blockDesktopRebuild() {
+    // Block v70
+    if (typeof window.rebuildQuickActions_v70 === 'function') {
+      var _orig70 = window.rebuildQuickActions_v70;
+      window.rebuildQuickActions_v70 = function() {
+        if (!isMobile()) return false;
+        return _orig70.apply(this, arguments);
+      };
+    }
+
+    // Block v71
+    if (typeof window.rebuildV71 === 'function') {
+      var _orig71 = window.rebuildV71;
+      window.rebuildV71 = function() {
+        if (!isMobile()) return false;
+        return _orig71.apply(this, arguments);
+      };
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 WATCH Dashboard — apply correct layout on show       */
+  /* ═══════════════════════════════════════════════════════ */
+  function watchDashboard() {
+    var dash = document.getElementById('dashboardSection');
+    if (!dash || dash._v73watch) return;
+    dash._v73watch = true;
+
+    new MutationObserver(function(){
+      if (dash.style.display === 'block') {
+        setTimeout(function(){
+          blockDesktopRebuild();
+          checkLayout();
+        }, 1500);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🚀 INIT                                                  */
+  /* ═══════════════════════════════════════════════════════ */
+  function init() {
+    blockDesktopRebuild();
+    watchDashboard();
+    _lastMode = isMobile();
+
+    // Apply correct layout immediately
+    var dash = document.getElementById('dashboardSection');
+    if (dash && dash.style.display === 'block') {
+      setTimeout(function(){
+        if (isMobile()) {
+          applyMobileLayout();
+        } else {
+          applyDesktopLayout();
+        }
+      }, 2000);
+    }
+
+    // Periodic safety check — enforce correct layout
+    setInterval(function(){
+      var grid = document.getElementById('quickActionsGrid');
+      if (!grid) return;
+
+      var hasCategories = grid.dataset.v71built === '1' || grid.dataset.v70built === '1';
+      var shouldHaveCategories = isMobile();
+
+      if (shouldHaveCategories && !hasCategories) {
+        applyMobileLayout();
+      } else if (!shouldHaveCategories && hasCategories) {
+        applyDesktopLayout();
+      }
+    }, 5000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 2000);
+      setTimeout(init, 4000);
+    });
+  } else {
+    setTimeout(init, 2000);
+    setTimeout(init, 4000);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🐛 DEBUG helper                                          */
+  /* ═══════════════════════════════════════════════════════ */
+  window.debugLayout = function() {
+    var grid = document.getElementById('quickActionsGrid');
+    console.log('=== LAYOUT DEBUG v73 ===');
+    console.log('Screen width:', window.innerWidth);
+    console.log('Is mobile?', isMobile());
+    console.log('Original HTML captured?', _originalGridHTML !== null);
+    if (grid) {
+      console.log('Grid has v70 flag?', grid.dataset.v70built === '1');
+      console.log('Grid has v71 flag?', grid.dataset.v71built === '1');
+      console.log('Grid classes:', grid.className);
+      console.log('Grid inner children:', grid.children.length);
+      console.log('Has .qa-category?', grid.querySelectorAll('.qa-category').length);
+      console.log('Has .action-tile (flat)?', grid.querySelectorAll(':scope > .action-tile').length);
+    }
+  };
+
+  window.forceDesktopLayout = applyDesktopLayout;
+  window.forceMobileLayout = applyMobileLayout;
+
+  console.log('✅ v73 Mobile-only Categories ready');
+  console.log('   💡 Type debugLayout() to check status');
+})();
+</script>
 </body>
 </html>
