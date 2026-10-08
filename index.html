@@ -25564,5 +25564,194 @@ window.printFeeReportPDF = function() {
   console.log('   💡 Type debugNamaz() in console for diagnostics');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🎯 v36.0 — Dashboard Reorder + Hide Tasbeeh               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script id="dashboard-reorder-v36">
+(function(){
+  'use strict';
+  console.log('🎯 Dashboard Reorder v36.0 loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 PRIORITY ORDER — Header-ന് താഴെ ഈ ക്രമത്തിൽ          */
+  /* ═══════════════════════════════════════════════════════ */
+  var DESIRED_ORDER = [
+    '.student-welcome-banner',      // 1. Good morning greeting
+    '#leaderboardSection',          // 2. Top Winners
+    '#palathulliSection',           // 3. Palathulli സമ്പാദ്യം
+    '#dailyHub',                    // 4. Prayer + Islamic + Exam
+    '#xpWidget',                    // 5. XP Level
+    '#streakWidget',                // 6. Streak Fire
+    '#missionsWidget',              // 7. Daily Missions
+    '#statsGridSection',            // 8. Stats cards
+    '#madrasaRankCard',             // 9. Overall Madrasa Rank
+    '#chartsSection',               // 10. Charts
+    '#quickActionsTitle',           // 11. Quick Actions title
+    '#quickActionsGrid',            // 12. Quick Actions tiles
+    '#feedEventsRow',               // 13. Feed + Events
+    '#monthlyProgressSection'       // 14. Monthly Progress
+  ];
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔧 REORDER FUNCTION                                     */
+  /* ═══════════════════════════════════════════════════════ */
+  function reorderDashboard() {
+    var container = document.querySelector('#dashboardSection .container');
+    if (!container) return;
+
+    var header = container.querySelector('.dashboard-header-glow');
+    if (!header) return;
+
+    // Walk through desired order, moving each element
+    var prevEl = header;
+    var moved = 0;
+
+    DESIRED_ORDER.forEach(function(selector) {
+      var el = container.querySelector(':scope > ' + selector);
+      if (!el) return;
+
+      // Skip if already in correct position
+      if (prevEl.nextElementSibling === el) {
+        prevEl = el;
+        return;
+      }
+
+      // Move element to be right after prevEl
+      container.insertBefore(el, prevEl.nextElementSibling);
+      prevEl = el;
+      moved++;
+    });
+
+    if (moved > 0) {
+      console.log('✅ Dashboard reordered —', moved, 'sections moved');
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🚫 HIDE TASBEEH WIDGET FROM DASHBOARD                    */
+  /* ═══════════════════════════════════════════════════════ */
+  function hideTasbeeh() {
+    var tas = document.getElementById('tasbeehWidget');
+    if (tas) {
+      tas.style.display = 'none';
+      // Also remove from DOM to save memory
+      if (tas.parentNode) {
+        tas.remove();
+      }
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔧 COMBINED FIX                                          */
+  /* ═══════════════════════════════════════════════════════ */
+  function applyFix() {
+    hideTasbeeh();
+    reorderDashboard();
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* ⏱️ RUN AT MULTIPLE POINTS (widgets are dynamic)          */
+  /* ═══════════════════════════════════════════════════════ */
+  // Immediate
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(applyFix, 500);
+      setTimeout(applyFix, 1500);
+      setTimeout(applyFix, 3000);
+      setTimeout(applyFix, 5000);
+      setTimeout(applyFix, 8000);
+    });
+  } else {
+    setTimeout(applyFix, 500);
+    setTimeout(applyFix, 1500);
+    setTimeout(applyFix, 3000);
+    setTimeout(applyFix, 5000);
+    setTimeout(applyFix, 8000);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 👁️ MUTATION OBSERVER — Auto-reapply when widgets appear  */
+  /* ═══════════════════════════════════════════════════════ */
+  var dash = document.getElementById('dashboardSection');
+  if (dash) {
+    var obs = new MutationObserver(function(mutations) {
+      // Only reorder if widgets were added/changed
+      var needsFix = false;
+      mutations.forEach(function(m) {
+        if (m.type === 'childList' && m.addedNodes.length > 0) {
+          needsFix = true;
+        }
+        if (m.type === 'attributes' && m.target.classList && 
+            (m.target.classList.contains('student-welcome-banner') ||
+             m.target.id === 'xpWidget' ||
+             m.target.id === 'streakWidget' ||
+             m.target.id === 'missionsWidget')) {
+          needsFix = true;
+        }
+      });
+      if (needsFix) {
+        setTimeout(applyFix, 200);
+      }
+    });
+    obs.observe(dash, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 HOOK INTO completeLogin — reorder after login         */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origLogin = window.completeLogin;
+  if (typeof _origLogin === 'function') {
+    window.completeLogin = async function(student) {
+      var r = await _origLogin.apply(this, arguments);
+      setTimeout(applyFix, 800);
+      setTimeout(applyFix, 2000);
+      setTimeout(applyFix, 4000);
+      return r;
+    };
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 PERIODIC CHECK (fallback)                             */
+  /* ═══════════════════════════════════════════════════════ */
+  setInterval(function() {
+    if (document.getElementById('dashboardSection')?.style.display === 'block' && currentUser) {
+      hideTasbeeh();
+      // Only reorder if something is out of place
+      var container = document.querySelector('#dashboardSection .container');
+      var header = container?.querySelector('.dashboard-header-glow');
+      if (header && header.nextElementSibling) {
+        var secondEl = header.nextElementSibling;
+        if (!secondEl.classList.contains('student-welcome-banner')) {
+          reorderDashboard();
+        }
+      }
+    }
+  }, 8000);
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🧪 DEBUG FUNCTION                                        */
+  /* ═══════════════════════════════════════════════════════ */
+  window.debugDashboardOrder = function() {
+    var container = document.querySelector('#dashboardSection .container');
+    if (!container) { console.log('❌ No dashboard'); return; }
+    console.log('═══ 📋 Current Dashboard Order ═══');
+    Array.from(container.children).forEach(function(child, i) {
+      var id = child.id ? '#' + child.id : '';
+      var cls = child.className ? '.' + child.className.split(' ')[0] : '';
+      var visible = child.style.display === 'none' ? ' ❌ hidden' : '';
+      console.log((i+1) + '. ' + (child.tagName) + id + cls + visible);
+    });
+    console.log('═══════════════════════════');
+  };
+
+  console.log('✅ Dashboard Reorder v36.0 ready');
+  console.log('   💡 Type debugDashboardOrder() to see current order');
+})();
+</script>
 </body>
 </html>
