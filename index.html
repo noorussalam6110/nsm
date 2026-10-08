@@ -26012,12 +26012,6 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   font-size: 16px !important;
 }
 
-/* Ensure body doesn't scroll behind modal */
-body:has(#teacherPwdModal) {
-  overflow: hidden !important;
-  position: fixed !important;
-  width: 100% !important;
-}
 
 /* 📱 Teacher tabs — horizontal scroll on mobile */
 @media (max-width: 600px) {
@@ -26192,45 +26186,43 @@ body:has(#teacherPwdModal) {
   // 🔑 TEACHER PASSWORD MODAL
   // ═══════════════════════════════════════════════════════
   function promptTeacherPassword(teacher) {
-    // Remove existing
+    // Remove existing if any
     var oldM = document.getElementById('teacherPwdModal');
     if (oldM) oldM.remove();
 
     var modal = document.createElement('div');
     modal.id = 'teacherPwdModal';
-    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;height:100vh;background:linear-gradient(135deg,rgba(5,14,43,.95),rgba(3,8,28,.98));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:9999999;display:flex;align-items:flex-start;justify-content:center;padding:20px;padding-top:max(20px,env(safe-area-inset-top,20px));padding-bottom:max(20px,env(safe-area-inset-bottom,20px));overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;';
-    
-    // 📱 CRITICAL: Sync height with visualViewport (keyboard-aware)
-    function syncModalHeight() {
-      var m = document.getElementById('teacherPwdModal');
-      if (!m) return;
-      if (window.visualViewport) {
-        var vv = window.visualViewport;
-        var h = vv.height;
-        var top = vv.offsetTop;
-        m.style.height = h + 'px';
-        m.style.top = top + 'px';
-        m.style.bottom = 'auto';
-      } else {
-        m.style.height = '100vh';
-        m.style.top = '0';
-      }
-    }
-    setTimeout(syncModalHeight, 50);
-    
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', syncModalHeight);
-      window.visualViewport.addEventListener('scroll', syncModalHeight);
-    }
-    window.addEventListener('resize', syncModalHeight);
-    window.addEventListener('orientationchange', function() { setTimeout(syncModalHeight, 200); });
+
+    // ✅ SIMPLE: fixed overlay, uses visualViewport for keyboard
+    modal.style.cssText = [
+      'position: fixed',
+      'top: 0',
+      'left: 0',
+      'right: 0',
+      'bottom: 0',
+      'background: linear-gradient(135deg, rgba(5,14,43,.95), rgba(3,8,28,.98))',
+      'backdrop-filter: blur(20px)',
+      '-webkit-backdrop-filter: blur(20px)',
+      'z-index: 9999999',
+      'display: flex',
+      'flex-direction: column',
+      'align-items: center',
+      'padding: 20px',
+      'overflow-y: scroll',
+      'overflow-x: hidden',
+      '-webkit-overflow-scrolling: touch',
+      'overscroll-behavior: contain'
+    ].join(';') + ';';
+
     modal.innerHTML = 
-      '<div style="max-width:440px;width:100%;margin:auto 0;flex-shrink:0;background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.3);border-radius:26px;padding:30px 26px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 60px -20px rgba(34,211,238,.5);position:relative;overflow:hidden;">' +        '<div style="position:absolute;top:-1.5px;left:12%;right:12%;height:2.5px;border-radius:3px;background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#fff,#3b8bff,#22d3ee,transparent);background-size:250% 100%;animation:cardGoldenFlow 4s linear infinite;filter:drop-shadow(0 0 10px rgba(34,211,238,.9));"></div>' +
+      // Card wrapper — with margin auto for vertical centering
+      '<div style="margin: auto 0; max-width: 440px; width: 100%; flex-shrink: 0; background: linear-gradient(155deg, rgba(255,255,255,.15), rgba(255,255,255,.05)); border: 1.5px solid rgba(255,255,255,.3); border-radius: 26px; padding: 30px 26px; box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), 0 0 60px -20px rgba(34,211,238,.5); position: relative;">' +
+        '<div style="position:absolute;top:-1.5px;left:12%;right:12%;height:2.5px;border-radius:3px;background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#fff,#3b8bff,#22d3ee,transparent);background-size:250% 100%;animation:cardGoldenFlow 4s linear infinite;"></div>' +
         '<div style="text-align:center;margin-bottom:22px;">' +
-          '<div style="width:80px;height:80px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:#fff;box-shadow:0 12px 30px -10px rgba(34,211,238,.8),0 0 0 8px rgba(34,211,238,.15);">' +
+          '<div style="width:80px;height:80px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:#fff;box-shadow:0 12px 30px -10px rgba(34,211,238,.8);">' +
             '<i class="fas fa-chalkboard-teacher"></i>' +
           '</div>' +
-          '<h2 style="color:#fff;font-size:1.25rem;font-weight:800;margin:0 0 6px;text-shadow:0 2px 10px rgba(0,0,0,.8);">അസ്സലാമു അലൈക്കും, ' + escapeHtml(teacher.name.split(' ')[0]) + ' 👋</h2>' +
+          '<h2 style="color:#fff;font-size:1.25rem;font-weight:800;margin:0 0 6px;">അസ്സലാമു അലൈക്കും, ' + escapeHtml(teacher.name.split(' ')[0]) + ' 👋</h2>' +
           '<p style="color:#a9cdff;font-size:.82rem;margin:0;">ഉസ്താദ് ലോഗിൻ</p>' +
         '</div>' +
         '<div style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;gap:10px;align-items:center;">' +
@@ -26242,83 +26234,206 @@ body:has(#teacherPwdModal) {
         '</div>' +
         '<form id="teacherPwdForm">' +
           '<div style="margin-bottom:14px;">' +
-            '<label style="color:#fff;font-size:.78rem;font-weight:800;display:block;margin-bottom:6px;text-shadow:0 2px 6px rgba(0,0,0,.7);">🔐 Password</label>' +
-            '<div style="position:relative;display:flex;align-items:center;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.28);border-radius:14px;padding:0 14px;">' +
-              '<i class="fas fa-lock" style="color:#ffd966;margin-right:10px;font-size:.95rem;"></i>' +
-              '<input type="password" id="teacherPwdInput" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" style="flex:1;border:none;outline:none;background:transparent;padding:13px 0;color:#fff;font-family:inherit;font-size:16px;font-weight:700;">' +
-              '<i class="fas fa-eye" id="teacherPwdEye" style="cursor:pointer;color:#ffd966;padding:6px;font-size:.9rem;"></i>' +
+            '<label style="color:#fff;font-size:.78rem;font-weight:800;display:block;margin-bottom:6px;">🔐 Password</label>' +
+            '<div style="display:flex;align-items:center;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.28);border-radius:14px;padding:0 14px;">' +
+              '<i class="fas fa-lock" style="color:#ffd966;margin-right:10px;"></i>' +
+              '<input type="password" id="teacherPwdInput" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" style="flex:1;border:none;outline:none;background:transparent;padding:14px 0;color:#fff;font-family:inherit;font-size:16px;font-weight:700;">' +
+              '<i class="fas fa-eye" id="teacherPwdEye" style="cursor:pointer;color:#ffd966;padding:8px;font-size:.95rem;"></i>' +
             '</div>' +
           '</div>' +
-          '<button type="submit" id="teacherLoginBtn" style="width:100%;border:none;padding:15px;border-radius:14px;background:linear-gradient(100deg,#0891b2,#22d3ee,#3b8bff);background-size:220% 100%;animation:btnBlueFlow 6s ease infinite;color:#fff;font-family:inherit;font-weight:800;font-size:.94rem;letter-spacing:.8px;cursor:pointer;box-shadow:0 16px 34px -14px rgba(34,211,238,.95);display:flex;align-items:center;justify-content:center;gap:10px;">' +
+          '<button type="submit" id="teacherLoginBtn" style="width:100%;border:none;padding:15px;border-radius:14px;background:linear-gradient(100deg,#0891b2,#22d3ee,#3b8bff);color:#fff;font-family:inherit;font-weight:800;font-size:.94rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">' +
             '<i class="fas fa-sign-in-alt" style="color:#ffd966;"></i>' +
             '<span>പ്രവേശിക്കുക</span>' +
           '</button>' +
-          '<button type="button" id="teacherCancelBtn" style="width:100%;margin-top:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;">' +
+          '<button type="button" id="teacherCancelBtn" style="width:100%;margin-top:10px;padding:13px;border-radius:14px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;">' +
             '<i class="fas fa-arrow-left"></i> തിരികെ' +
           '</button>' +
+          '<div style="height:80px;"></div>' +
         '</form>' +
       '</div>';
 
     document.body.appendChild(modal);
 
-    // 📱 Keyboard-aware scroll — input focus ചെയ്യുമ്പോൾ auto-scroll
-    function scrollInputIntoView() {
-      var inp = document.getElementById('teacherPwdInput');
-      if (!inp) return;
-      setTimeout(function() {
-        try {
-          inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } catch(e) {
-          inp.scrollIntoView();
-        }
-      }, 150);
+    // 📱 KEYBOARD-AWARE: Sync modal height with visualViewport
+    var vv = window.visualViewport;
+    function syncHeight() {
+      var m = document.getElementById('teacherPwdModal');
+      if (!m) return;
+      if (vv) {
+        // Modal shrinks to visible area (above keyboard)
+        m.style.height = vv.height + 'px';
+        m.style.top = vv.offsetTop + 'px';
+        m.style.bottom = 'auto';
+      }
     }
+    syncHeight();
+    if (vv) {
+      vv.addEventListener('resize', syncHeight);
+      vv.addEventListener('scroll', syncHeight);
+    }
+    window.addEventListener('resize', syncHeight);
+
+    // Prevent body scroll
+    var prevBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    // Cleanup helper
+    function cleanup() {
+      document.body.style.overflow = prevBodyOverflow || '';
+      if (vv) {
+        vv.removeEventListener('resize', syncHeight);
+        vv.removeEventListener('scroll', syncHeight);
+      }
+      window.removeEventListener('resize', syncHeight);
+    }
+    modal._cleanup = cleanup;
+
+    // Focus & auto-scroll input
+    setTimeout(function() {
+      var inp = document.getElementById('teacherPwdInput');
+      if (inp) {
+        inp.focus();
+        setTimeout(function() {
+          try { inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+          catch(e) { inp.scrollIntoView(); }
+        }, 400);
+      }
+    }, 300);
+
+    // Password eye toggle
+    document.getElementById('teacherPwdEye').onclick = function() {
+      var inp = document.getElementById('teacherPwdInput');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      this.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    };
+
+    // Cancel
+    document.getElementById('teacherCancelBtn').onclick = function() {
+      cleanup();
+      modal.remove();
+      var s = document.getElementById('studentId');
+      if (s) { s.value = ''; setTimeout(function() { s.focus(); }, 100); }
+    };
+
+    // Submit
+    document.getElementById('teacherPwdForm').onsubmit = async function(e) {
+      e.preventDefault();
+      var pwd = document.getElementById('teacherPwdInput').value;
+      if (!pwd) { showToast('Password നൽകുക', 'error'); return; }
+      if (pwd !== teacher.password) {
+        showToast('❌ തെറ്റായ Password', 'error');
+        var inp = document.getElementById('teacherPwdInput');
+        inp.value = '';
+        inp.focus();
+        return;
+      }
+      var btn = document.getElementById('teacherLoginBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+      cleanup();
+      modal.remove();
+      await enterTeacherDashboard(teacher);
+    };
+  }
+  function promptTeacherPassword(teacher) {
+    var oldM = document.getElementById('teacherPwdModal');
+    if (oldM) oldM.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'teacherPwdModal';
+    modal.style.cssText = [
+      'position:fixed',
+      'top:0','left:0','right:0','bottom:0',
+      'background:linear-gradient(135deg,rgba(5,14,43,.95),rgba(3,8,28,.98))',
+      'backdrop-filter:blur(20px)',
+      '-webkit-backdrop-filter:blur(20px)',
+      'z-index:9999999',
+      'display:flex',
+      'flex-direction:column',
+      'align-items:center',
+      'padding:20px',
+      'overflow-y:auto',
+      'overflow-x:hidden',
+      '-webkit-overflow-scrolling:touch',
+      'overscroll-behavior:contain'
+    ].join(';') + ';';
+
+    modal.innerHTML = 
+      '<div style="margin:auto 0;max-width:440px;width:100%;flex-shrink:0;background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.3);border-radius:26px;padding:30px 26px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9);position:relative;">' +
+        '<div style="text-align:center;margin-bottom:22px;">' +
+          '<div style="width:80px;height:80px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:#fff;">' +
+            '<i class="fas fa-chalkboard-teacher"></i>' +
+          '</div>' +
+          '<h2 style="color:#fff;font-size:1.25rem;font-weight:800;margin:0 0 6px;">അസ്സലാമു അലൈക്കും, ' + escapeHtml(teacher.name.split(' ')[0]) + ' 👋</h2>' +
+          '<p style="color:#a9cdff;font-size:.82rem;margin:0;">ഉസ്താദ് ലോഗിൻ</p>' +
+        '</div>' +
+        '<div style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;gap:10px;align-items:center;">' +
+          '<i class="fas fa-user-shield" style="color:#22d3ee;font-size:1.1rem;"></i>' +
+          '<div style="font-size:.74rem;color:#fff;line-height:1.5;">' +
+            '<b>' + escapeHtml(teacher.teacher_id) + '</b> • ' + escapeHtml(teacher.name) + '<br>' +
+            '<span style="color:#a9cdff;">Class' + (teacher.classes && teacher.classes.length ? ' ' + teacher.classes.join(', ') : '') + ' • ' + escapeHtml(teacher.subject || 'General') + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<form id="teacherPwdForm">' +
+          '<div style="margin-bottom:14px;">' +
+            '<label style="color:#fff;font-size:.78rem;font-weight:800;display:block;margin-bottom:6px;">🔐 Password</label>' +
+            '<div style="display:flex;align-items:center;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.28);border-radius:14px;padding:0 14px;">' +
+              '<i class="fas fa-lock" style="color:#ffd966;margin-right:10px;"></i>' +
+              '<input type="password" id="teacherPwdInput" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" style="flex:1;border:none;outline:none;background:transparent;padding:14px 0;color:#fff;font-family:inherit;font-size:16px;font-weight:700;">' +
+              '<i class="fas fa-eye" id="teacherPwdEye" style="cursor:pointer;color:#ffd966;padding:8px;font-size:.95rem;"></i>' +
+            '</div>' +
+          '</div>' +
+          '<button type="submit" id="teacherLoginBtn" style="width:100%;border:none;padding:15px;border-radius:14px;background:linear-gradient(100deg,#0891b2,#22d3ee,#3b8bff);color:#fff;font-family:inherit;font-weight:800;font-size:.94rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">' +
+            '<i class="fas fa-sign-in-alt" style="color:#ffd966;"></i>' +
+            '<span>പ്രവേശിക്കുക</span>' +
+          '</button>' +
+          '<button type="button" id="teacherCancelBtn" style="width:100%;margin-top:10px;padding:13px;border-radius:14px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;">' +
+            '<i class="fas fa-arrow-left"></i> തിരികെ' +
+          '</button>' +
+          '<div style="height:100px;"></div>' +
+        '</form>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    var vv = window.visualViewport;
+    function syncHeight() {
+      var m = document.getElementById('teacherPwdModal');
+      if (!m || !vv) return;
+      m.style.height = vv.height + 'px';
+      m.style.top = vv.offsetTop + 'px';
+      m.style.bottom = 'auto';
+    }
+    syncHeight();
+    if (vv) {
+      vv.addEventListener('resize', syncHeight);
+      vv.addEventListener('scroll', syncHeight);
+    }
+    window.addEventListener('resize', syncHeight);
+
+    var prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    function cleanup() {
+      document.body.style.overflow = prevOverflow || '';
+      if (vv) {
+        vv.removeEventListener('resize', syncHeight);
+        vv.removeEventListener('scroll', syncHeight);
+      }
+      window.removeEventListener('resize', syncHeight);
+    }
+    modal._cleanup = cleanup;
 
     setTimeout(function() {
       var inp = document.getElementById('teacherPwdInput');
       if (inp) {
         inp.focus();
-        scrollInputIntoView();
+        setTimeout(function() {
+          try { inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+          catch(e) { inp.scrollIntoView(); }
+        }, 500);
       }
     }, 300);
-
-    // Visual viewport resize — keyboard open/close detect
-    if (window.visualViewport) {
-      var vv = window.visualViewport;
-      var onVVResize = function() {
-        var m = document.getElementById('teacherPwdModal');
-        if (!m) return;
-        var kb = window.innerHeight - vv.height;
-        if (kb > 150) {
-          // Keyboard open — allow scroll
-          m.style.alignItems = 'flex-end';
-          m.style.paddingBottom = (kb + 20) + 'px';
-          scrollInputIntoView();
-        } else {
-          // Keyboard closed — reset
-          m.style.alignItems = 'flex-start';
-          m.style.paddingBottom = 'max(20px, env(safe-area-inset-bottom, 20px))';
-        }
-      };
-      vv.addEventListener('resize', onVVResize);
-      vv.addEventListener('scroll', onVVResize);
-      // Cleanup on close
-      modal._cleanupVV = function() {
-        try {
-          vv.removeEventListener('resize', onVVResize);
-          vv.removeEventListener('scroll', onVVResize);
-        } catch(e) {}
-      };
-    }
-
-    // Mouse drag-to-scroll (desktop) + touch scroll (mobile) — already native via overflow
-    var card = modal.querySelector('div');
-    if (card) {
-      // Prevent card drag from interfering with inner inputs
-      card.addEventListener('touchstart', function(e) {
-        // Just allow native scroll
-      }, { passive: true });
-    }
 
     document.getElementById('teacherPwdEye').onclick = function() {
       var inp = document.getElementById('teacherPwdInput');
@@ -26327,14 +26442,7 @@ body:has(#teacherPwdModal) {
     };
 
     document.getElementById('teacherCancelBtn').onclick = function() {
-      // Cleanup VV listeners
-      try {
-        if (window.visualViewport) {
-          window.visualViewport.removeEventListener('resize', syncModalHeight);
-          window.visualViewport.removeEventListener('scroll', syncModalHeight);
-        }
-        window.removeEventListener('resize', syncModalHeight);
-      } catch(e) {}
+      cleanup();
       modal.remove();
       var s = document.getElementById('studentId');
       if (s) { s.value = ''; setTimeout(function() { s.focus(); }, 100); }
@@ -26344,7 +26452,6 @@ body:has(#teacherPwdModal) {
       e.preventDefault();
       var pwd = document.getElementById('teacherPwdInput').value;
       if (!pwd) { showToast('Password നൽകുക', 'error'); return; }
-      
       if (pwd !== teacher.password) {
         showToast('❌ തെറ്റായ Password', 'error');
         var inp = document.getElementById('teacherPwdInput');
@@ -26352,18 +26459,10 @@ body:has(#teacherPwdModal) {
         inp.focus();
         return;
       }
-
       var btn = document.getElementById('teacherLoginBtn');
       btn.disabled = true;
-      btn.innerHTML = '<span class="sec-spinner"></span> Loading...';
-
-      try {
-        if (window.visualViewport) {
-          window.visualViewport.removeEventListener('resize', syncModalHeight);
-          window.visualViewport.removeEventListener('scroll', syncModalHeight);
-        }
-        window.removeEventListener('resize', syncModalHeight);
-      } catch(e) {}
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+      cleanup();
       modal.remove();
       await enterTeacherDashboard(teacher);
     };
