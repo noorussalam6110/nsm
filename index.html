@@ -22459,25 +22459,25 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   // ═══════════════════════════════════════════════════════
   // 🎨 RENDER FULL VIEW
   // ═══════════════════════════════════════════════════════
-  function renderNamazFullView() {
+  window.renderNamazFullView = function() {
     var html = '';
 
     // Tabs
     html += '<div class="namaz-view-tabs">';
-    html += '<button class="namaz-view-tab ' + (NAMZ_STATE.view === 'week' ? 'active' : '') + '" onclick="window.switchNamazView(\'week\')"><i class="fas fa-calendar-week"></i> Weekly</button>';
-    html += '<button class="namaz-view-tab ' + (NAMZ_STATE.view === 'month' ? 'active' : '') + '" onclick="window.switchNamazView(\'month\')"><i class="fas fa-calendar-alt"></i> Monthly</button>';
-    html += '<button class="namaz-view-tab ' + (NAMZ_STATE.view === 'stats' ? 'active' : '') + '" onclick="window.switchNamazView(\'stats\')"><i class="fas fa-chart-simple"></i> Stats</button>';
+    html += '<button class="namaz-view-tab ' + (window.NAMZ_STATE.view === 'week' ? 'active' : '') + '" onclick="window.switchNamazView(\'week\')"><i class="fas fa-calendar-week"></i> Weekly</button>';
+    html += '<button class="namaz-view-tab ' + (window.NAMZ_STATE.view === 'month' ? 'active' : '') + '" onclick="window.switchNamazView(\'month\')"><i class="fas fa-calendar-alt"></i> Monthly</button>';
+    html += '<button class="namaz-view-tab ' + (window.NAMZ_STATE.view === 'stats' ? 'active' : '') + '" onclick="window.switchNamazView(\'stats\')"><i class="fas fa-chart-simple"></i> Stats</button>';
     html += '</div>';
 
     // Content by view
     html += '<div id="namazViewContent">';
-    if (NAMZ_STATE.view === 'week') html += renderWeekView();
-    else if (NAMZ_STATE.view === 'month') html += renderMonthView();
-    else html += renderStatsView();
+    if (window.NAMZ_STATE.view === 'week') html += window.renderWeekView();
+    else if (window.NAMZ_STATE.view === 'month') html += window.renderMonthView();
+    else html += window.renderStatsView();
     html += '</div>';
 
     // Parent notification banner
-    if (NAMZ_STATE.parentWaLink) {
+    if (window.NAMZ_STATE.parentWaLink) {
       html += '<div style="background:linear-gradient(135deg,#dcfce7,#a7f3d0);border:1.5px solid rgba(5,150,105,.4);border-radius:14px;padding:14px;margin-top:16px;">';
       html += '<div style="font-weight:800;color:#059669;font-size:.86rem;margin-bottom:8px;"><i class="fas fa-phone"></i> Parent-നു അറിയിക്കുക</div>';
       html += '<a href="' + NAMZ_STATE.parentWaLink + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:#fff;padding:12px;border-radius:12px;text-decoration:none;font-weight:800;font-size:.86rem;">';
@@ -22494,13 +22494,13 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   }
 
   window.switchNamazView = function(view) {
-    NAMZ_STATE.view = view;
-    renderNamazFullView();
+    if (window.NAMZ_STATE) window.NAMZ_STATE.view = view;
+    if (typeof window.renderNamazFullView === 'function') window.renderNamazFullView();
   };
 
   // ─── WEEK VIEW ───
-  function renderWeekView() {
-    if (!NAMZ_STATE.weekData || NAMZ_STATE.weekData.length === 0) {
+  window.renderWeekView = function() {
+    if (!window.NAMZ_STATE || !window.NAMZ_STATE.weekData || window.NAMZ_STATE.weekData.length === 0) {
       return '<div style="padding:30px 20px;text-align:center;color:#64748b;">' +
         '<i class="fas fa-calendar-week" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i>' +
         '<div style="font-weight:800;color:#0f172a;">ഡാറ്റ ലഭ്യമല്ല</div>' +
@@ -22541,8 +22541,8 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   }
 
   // ─── MONTH VIEW ───
-  function renderMonthView() {
-    if (!NAMZ_STATE.monthData || NAMZ_STATE.monthData.length === 0) {
+  window.renderMonthView = function() {
+    if (!window.NAMZ_STATE || !window.NAMZ_STATE.monthData || window.NAMZ_STATE.monthData.length === 0) {
       return '<div style="padding:30px 20px;text-align:center;color:#64748b;">' +
         '<i class="fas fa-calendar-alt" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i>' +
         '<div style="font-weight:800;color:#0f172a;">ഡാറ്റ ലഭ്യമല്ല</div>' +
@@ -22588,8 +22588,8 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   }
 
   // ─── STATS VIEW ───
-  function renderStatsView() {
-    var s = NAMZ_STATE.streak || {};
+  window.renderStatsView = function() {
+    var s = (window.NAMZ_STATE && window.NAMZ_STATE.streak) || {};
     var h = '<div class="namaz-stats-grid">';
     h += '<div class="namaz-stat-card"><div class="namaz-stat-num">' + (s.current_streak || 0) + '</div><div class="namaz-stat-label">Current Streak 🔥</div></div>';
     h += '<div class="namaz-stat-card"><div class="namaz-stat-num" style="color:#f59e0b;">' + (s.longest_streak || 0) + '</div><div class="namaz-stat-label">Longest Streak</div></div>';
@@ -22649,6 +22649,14 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
       var r = await _origComplete.apply(this, arguments);
       setTimeout(initNamaz, 2000);
       return r;
+    };
+  }
+
+  // ✅ SAFETY: Ensure NAMZ_STATE + render functions are global
+  if (!window.NAMZ_STATE) {
+    window.NAMZ_STATE = {
+      today: null, streak: null, weekData: [], monthData: [],
+      prayerTimes: {}, view: 'week', parentMobile: null, parentWaLink: null
     };
   }
 
