@@ -25977,6 +25977,59 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   window.isTeacherMode = false;
 
   // ═══════════════════════════════════════════════════════
+  // 👑 SUPER ADMIN LOGIN
+  // ═══════════════════════════════════════════════════════
+  async function enterSuperAdmin() {
+    try {
+      window.isAdminMode = true;
+      window.isTeacherMode = false;
+      window.currentUser = null;
+      window.currentTeacher = null;
+      window.currentAdminClass = '';
+
+      // Remove any existing teacher dashboard
+      var td = document.getElementById('teacherDashboard');
+      if (td) td.remove();
+
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('adminSection').style.display = 'block';
+      document.getElementById('dashboardSection').style.display = 'none';
+      document.getElementById('aiFab').classList.remove('show');
+
+      if (typeof notifChannel !== 'undefined' && notifChannel) {
+        try { supabaseClient.removeChannel(notifChannel); } catch(e) {}
+        notifChannel = null;
+      }
+      if (typeof stopLeaderboardAutoScroll === 'function') stopLeaderboardAutoScroll();
+
+      // Load settings
+      if (typeof loadAllSettings === 'function') await loadAllSettings();
+
+      // Reset admin UI
+      var clsSel = document.getElementById('adminClassSelector');
+      if (clsSel) clsSel.value = '';
+      var mc = document.getElementById('adminMainContent');
+      if (mc) mc.style.display = 'none';
+      var ncm = document.getElementById('noClassMsg');
+      if (ncm) ncm.style.display = 'block';
+      var scb = document.getElementById('selectedClassBadge');
+      if (scb) scb.style.display = 'none';
+      var ast = document.getElementById('adminSettingsTab');
+      if (ast) ast.style.display = 'none';
+
+      localStorage.setItem('noor_last_id', 'MADRASA2026');
+      showToast('🔐 Super Admin Panel', 'success');
+      if (typeof enableBodyScroll === 'function') enableBodyScroll();
+      if (typeof showLoading === 'function') showLoading(false);
+    } catch(err) {
+      console.error('enterSuperAdmin error:', err);
+      showToast('❌ ' + err.message, 'error');
+      if (typeof showLoading === 'function') showLoading(false);
+    }
+  }
+  window.enterSuperAdmin = enterSuperAdmin;
+
+  // ═══════════════════════════════════════════════════════
   // 🔐 HOOK INTO LOGIN — Detect Teacher ID
   // ═══════════════════════════════════════════════════════
   
