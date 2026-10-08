@@ -30519,358 +30519,174 @@ body.dragging, html.dragging {
 })();
 </script>
 <!-- ═══════════════════════════════════════════════════════ -->
-<!-- ✅ v68.0 — TEACHER SCROLL FIX (ADD-ONLY, no delete)     -->
-<!-- Desktop login modal + Mobile dashboard swipe           -->
+<!-- ✅ v69.0 — TEACHER DASHBOARD SCROLL FIX (ROOT CAUSE)    -->
+<!-- Removes login-active lock when teacher views open       -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<style id="teacher-scroll-fix-v68">
-
-/* ─── DESKTOP: Teacher Login Modal (fix flex-centering trap) ─── */
-@media (min-width: 901px) {
-  #teacherLoginV60.open {
-    display: block !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding: 40px 20px 80px !important;
-    box-sizing: border-box !important;
-    z-index: 9999999 !important;
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-  }
-
-  #teacherLoginV60 .tv60-card {
-    display: block !important;
-    position: relative !important;
-    margin: 0 auto !important;
-    max-width: 440px !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    flex-shrink: 0 !important;
-    overflow: visible !important;
-  }
-}
-
-/* ─── MOBILE: Teacher Dashboard Scroll ─── */
-@media (max-width: 900px) {
-  #teacherDashboardV60.open {
-    display: block !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-y !important;
-    overscroll-behavior-y: contain !important;
-    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-}
-
-/* ─── DESKTOP: Teacher Dashboard (normal page scroll) ─── */
-@media (min-width: 901px) {
-  #teacherDashboardV60.open {
-    display: block !important;
-    position: relative !important;
-    min-height: 100vh !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow-y: visible !important;
-    overflow-x: hidden !important;
-  }
-}
-
-/* ─── Inner scrollable areas (mobile-friendly) ─── */
-#teacherDashboardV60 .td60-panel,
-#teacherDashboardV60 .td60-table-wrap,
-#teacherDashboardV60 .td60-chat-messages,
-#teacherDashboardV60 .td60-tabs,
-#teacherDashboardV60 .td60-class-tabs {
-  -webkit-overflow-scrolling: touch !important;
-  touch-action: pan-y !important;
-}
-
-/* ─── Prevent body scroll lock when teacher views are open ─── */
-body.teacher-view-active {
-  overflow: auto !important;
-  position: relative !important;
+<style id="teacher-dashboard-scroll-v69">
+/* When teacher dashboard is open — force scroll enable */
+body.teacher-view-open {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   height: auto !important;
+  max-height: none !important;
+  position: relative !important;
   top: auto !important;
+  left: auto !important;
+  width: auto !important;
+  overscroll-behavior: auto !important;
 }
-
-/* ─── Dragging cursor feedback ─── */
-#teacherLoginV60.dragging,
-#teacherDashboardV60.dragging,
-#teacherLoginV60.dragging *,
-#teacherDashboardV60.dragging * {
-  cursor: grabbing !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
+html:has(body.teacher-view-open) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+#teacherDashboardV60.open {
+  min-height: 100vh !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+  position: relative !important;
 }
 </style>
 
-<script id="teacher-scroll-fix-v68-js">
+<script id="teacher-dashboard-scroll-v69-js">
 (function(){
   'use strict';
-  console.log('✅ v68 Teacher Scroll Fix loading...');
+  console.log('✅ Teacher Dashboard Scroll Fix v69 loading...');
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🧹 1. RELEASE ANY BODY/HTML SCROLL LOCKS                */
-  /* When teacher views are active, remove overflow:hidden   */
-  /* ═══════════════════════════════════════════════════════ */
-  function releaseScrollLocks() {
-    var loginModal = document.getElementById('teacherLoginV60');
-    var teacherDash = document.getElementById('teacherDashboardV60');
+  // ───────────────────────────────────────────────────
+  // 🎯 WATCH: when teacher dashboard opens → unlock scroll
+  // ───────────────────────────────────────────────────
+  function forceUnlockForTeacher() {
+    var dash = document.getElementById('teacherDashboardV60');
+    if (!dash) return;
 
-    var loginOpen = loginModal && loginModal.classList.contains('open');
-    var dashOpen = teacherDash && teacherDash.classList.contains('open');
-
-    if (loginOpen || dashOpen) {
-      // Remove inline overflow locks
-      if (document.documentElement.style.overflow === 'hidden') {
-        document.documentElement.style.overflow = '';
-      }
-      if (document.body.style.overflow === 'hidden') {
-        document.body.style.overflow = '';
-      }
-      if (document.body.style.position === 'fixed') {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.width = '';
-      }
+    if (dash.classList.contains('open')) {
+      // 1. Remove login-active lock
       document.body.classList.remove('login-active');
       document.body.classList.remove('modal-open');
-      document.body.classList.add('teacher-view-active');
+      // 2. Add teacher-view-open class
+      document.body.classList.add('teacher-view-open');
+      // 3. Clear ALL inline scroll locks
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+      document.documentElement.style.position = '';
+      document.body.style.overflow = '';
+      document.body.style.overflowY = '';
+      document.body.style.height = '';
+      document.body.style.maxHeight = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.width = '';
     } else {
-      document.body.classList.remove('teacher-view-active');
+      // Dashboard closed → cleanup
+      document.body.classList.remove('teacher-view-open');
     }
   }
 
-  // Run periodically
-  setInterval(releaseScrollLocks, 400);
-  document.addEventListener('DOMContentLoaded', releaseScrollLocks);
+  // ───────────────────────────────────────────────────
+  // 🎯 WRAP enterTeacherDashboard — run unlock after
+  // ───────────────────────────────────────────────────
+  var _wrapped = false;
+  function wrapEnter() {
+    if (_wrapped) return;
+    if (typeof window.enterTeacherDashboard !== 'function') return;
+    _wrapped = true;
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🖱️ 2. MOUSE DRAG-TO-SCROLL (Desktop only)              */
-  /* Works on teacher login modal + teacher dashboard        */
-  /* ═══════════════════════════════════════════════════════ */
-  function makeDraggable(el) {
-    if (!el || el._v68drag) return;
-    el._v68drag = true;
-
-    var isDown = false;
-    var isDragging = false;
-    var startY = 0;
-    var startTop = 0;
-    var lastY = 0;
-    var lastT = 0;
-    var velocity = 0;
-    var raf = null;
-    var THRESHOLD = 5;
-
-    el.addEventListener('mousedown', function(e) {
-      if (e.button !== 0) return;
-      // Skip interactive elements
-      if (e.target.closest('input, textarea, select, button, a, label, [contenteditable], [role="button"]')) return;
-      // Skip touch devices
-      if ('ontouchstart' in window && e.pointerType === 'touch') return;
-
-      isDown = true;
-      isDragging = false;
-      startY = e.clientY;
-      startTop = el.scrollTop;
-      lastY = e.clientY;
-      lastT = performance.now();
-      velocity = 0;
-      if (raf) { cancelAnimationFrame(raf); raf = null; }
-    });
-
-    document.addEventListener('mousemove', function(e) {
-      if (!isDown) return;
-      var dy = e.clientY - startY;
-
-      if (!isDragging && Math.abs(dy) > THRESHOLD) {
-        isDragging = true;
-        el.classList.add('dragging');
-      }
-
-      if (isDragging) {
-        el.scrollTop = startTop - dy;
-        var now = performance.now();
-        var dt = now - lastT;
-        if (dt > 0) {
-          velocity = (lastY - e.clientY) / dt * 16.67;
-        }
-        lastY = e.clientY;
-        lastT = now;
-        e.preventDefault();
-      }
-    }, { passive: false });
-
-    document.addEventListener('mouseup', function() {
-      if (!isDown) return;
-      isDown = false;
-      el.classList.remove('dragging');
-
-      if (isDragging) {
-        // Momentum scroll
-        function momentum() {
-          velocity *= 0.94;
-          if (Math.abs(velocity) < 0.5) { raf = null; return; }
-          var max = el.scrollHeight - el.clientHeight;
-          var newTop = el.scrollTop + velocity;
-          if (newTop < 0) { newTop = 0; velocity = 0; }
-          if (newTop > max) { newTop = max; velocity = 0; }
-          el.scrollTop = newTop;
-          raf = requestAnimationFrame(momentum);
-        }
-        raf = requestAnimationFrame(momentum);
-      }
-      isDragging = false;
-    });
+    var _orig = window.enterTeacherDashboard;
+    window.enterTeacherDashboard = async function(teacher) {
+      var r = await _orig.apply(this, arguments);
+      // Force unlock immediately + on delays
+      forceUnlockForTeacher();
+      setTimeout(forceUnlockForTeacher, 100);
+      setTimeout(forceUnlockForTeacher, 500);
+      setTimeout(forceUnlockForTeacher, 1500);
+      setTimeout(forceUnlockForTeacher, 3000);
+      return r;
+    };
+    console.log('✅ enterTeacherDashboard wrapped');
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🔗 3. ATTACH DRAG TO TEACHER VIEWS                      */
-  /* ═══════════════════════════════════════════════════════ */
-  function attachDrag() {
-    var loginModal = document.getElementById('teacherLoginV60');
-    if (loginModal) makeDraggable(loginModal);
+  // ───────────────────────────────────────────────────
+  // 🎯 WATCH class changes on teacher dashboard
+  // ───────────────────────────────────────────────────
+  function watchDashboard() {
+    var dash = document.getElementById('teacherDashboardV60');
+    if (!dash || dash._v69watched) return;
+    dash._v69watched = true;
 
-    var teacherDash = document.getElementById('teacherDashboardV60');
-    if (teacherDash) makeDraggable(teacherDash);
+    new MutationObserver(function() {
+      forceUnlockForTeacher();
+    }).observe(dash, { attributes: true, attributeFilter: ['class'] });
+
+    // Initial check
+    forceUnlockForTeacher();
   }
 
-  // Attach at multiple points
+  // ───────────────────────────────────────────────────
+  // 🎯 SAFETY: cleanup when teacher logs out
+  // ───────────────────────────────────────────────────
+  var _logoutWrapped = false;
+  function wrapLogout() {
+    if (_logoutWrapped) return;
+    if (typeof window.teacherLogout !== 'function') return;
+    _logoutWrapped = true;
+
+    var _origOut = window.teacherLogout;
+    window.teacherLogout = function() {
+      document.body.classList.remove('teacher-view-open');
+      return _origOut.apply(this, arguments);
+    };
+  }
+
+  // ───────────────────────────────────────────────────
+  // 🎯 RUN at multiple points
+  // ───────────────────────────────────────────────────
+  function init() {
+    wrapEnter();
+    wrapLogout();
+    watchDashboard();
+    forceUnlockForTeacher();
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(attachDrag, 1500);
-      setTimeout(attachDrag, 3000);
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 1000);
+      setTimeout(init, 2500);
+      setTimeout(init, 5000);
     });
   } else {
-    setTimeout(attachDrag, 1500);
-    setTimeout(attachDrag, 3000);
+    setTimeout(init, 1000);
+    setTimeout(init, 2500);
+    setTimeout(init, 5000);
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 4. WATCH TEACHER MODAL CLASS CHANGES                 */
-  /* Re-attach drag whenever modal opens                     */
-  /* ═══════════════════════════════════════════════════════ */
-  function watchTeacherViews() {
-    var loginModal = document.getElementById('teacherLoginV60');
-    var teacherDash = document.getElementById('teacherDashboardV60');
+  // Safety net — check every 800ms
+  setInterval(forceUnlockForTeacher, 800);
 
-    if (loginModal && !loginModal._v68watched) {
-      loginModal._v68watched = true;
-      new MutationObserver(function() {
-        if (loginModal.classList.contains('open')) {
-          setTimeout(attachDrag, 200);
-          releaseScrollLocks();
-          loginModal.scrollTop = 0; // reset to top
-        }
-      }).observe(loginModal, { attributes: true, attributeFilter: ['class'] });
-    }
-
-    if (teacherDash && !teacherDash._v68watched) {
-      teacherDash._v68watched = true;
-      new MutationObserver(function() {
-        if (teacherDash.classList.contains('open')) {
-          setTimeout(attachDrag, 200);
-          releaseScrollLocks();
-        }
-      }).observe(teacherDash, { attributes: true, attributeFilter: ['class'] });
-    }
-  }
-
-  setTimeout(watchTeacherViews, 1200);
-  setTimeout(watchTeacherViews, 2500);
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 📱 5. MOBILE SWIPE — Native Touch Scroll Support        */
-  /* Ensures touch scroll works on teacher dashboard         */
-  /* ═══════════════════════════════════════════════════════ */
-  function enableTouchScroll(el) {
-    if (!el || el._v68touch) return;
-    el._v68touch = true;
-
-    // Force CSS
-    el.style.setProperty('-webkit-overflow-scrolling', 'touch');
-    el.style.setProperty('touch-action', 'pan-y');
-    el.style.setProperty('overscroll-behavior-y', 'contain');
-  }
-
-  function initTouchScroll() {
-    var teacherDash = document.getElementById('teacherDashboardV60');
-    if (teacherDash) enableTouchScroll(teacherDash);
-
-    var loginModal = document.getElementById('teacherLoginV60');
-    if (loginModal) enableTouchScroll(loginModal);
-  }
-
-  setTimeout(initTouchScroll, 1500);
-  setTimeout(initTouchScroll, 3500);
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🔄 6. RE-APPLY EVERY 3s (in case DOM changes)           */
-  /* ═══════════════════════════════════════════════════════ */
-  setInterval(function() {
-    releaseScrollLocks();
-    attachDrag();
-    initTouchScroll();
-  }, 3000);
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🐛 7. DEBUG HELPER                                      */
-  /* ═══════════════════════════════════════════════════════ */
-  window.debugTeacherScroll = function() {
-    console.log('=== TEACHER SCROLL DEBUG v68 ===');
-    var m = document.getElementById('teacherLoginV60');
+  // ───────────────────────────────────────────────────
+  // 🐛 DEBUG helper
+  // ───────────────────────────────────────────────────
+  window.debugTeacherDash = function(){
     var d = document.getElementById('teacherDashboardV60');
-
-    if (m) {
-      var sm = getComputedStyle(m);
-      console.log('LOGIN MODAL:');
-      console.log('  Open?', m.classList.contains('open'));
-      console.log('  Display:', sm.display);
-      console.log('  Overflow-Y:', sm.overflowY);
-      console.log('  ScrollHeight:', m.scrollHeight, '| ClientHeight:', m.clientHeight);
-      console.log('  Can Scroll?', m.scrollHeight > m.clientHeight);
-    }
-
+    console.log('=== TEACHER DASH DEBUG v69 ===');
+    console.log('Body classes:', document.body.className);
+    console.log('Body style.overflow:', document.body.style.overflow || '(empty)');
+    console.log('Body style.position:', document.body.style.position || '(empty)');
+    console.log('HTML style.overflow:', document.documentElement.style.overflow || '(empty)');
     if (d) {
       var sd = getComputedStyle(d);
-      console.log('TEACHER DASHBOARD:');
-      console.log('  Open?', d.classList.contains('open'));
-      console.log('  Display:', sd.display);
-      console.log('  Position:', sd.position);
-      console.log('  Overflow-Y:', sd.overflowY);
-      console.log('  ScrollHeight:', d.scrollHeight, '| ClientHeight:', d.clientHeight);
-      console.log('  Can Scroll?', d.scrollHeight > d.clientHeight);
+      console.log('Dashboard open?', d.classList.contains('open'));
+      console.log('Dashboard display:', sd.display);
+      console.log('Dashboard height:', sd.height);
+      console.log('Dashboard scrollHeight:', d.scrollHeight);
+      console.log('Dashboard clientHeight:', d.clientHeight);
     }
-
-    console.log('BODY:');
-    console.log('  Overflow:', document.body.style.overflow);
-    console.log('  Position:', document.body.style.position);
-    console.log('  Class:', document.body.className);
+    console.log('Can page scroll?', document.body.scrollHeight > window.innerHeight);
   };
 
-  console.log('✅ v68 Teacher Scroll Fix ready');
-  console.log('   💡 Run debugTeacherScroll() for diagnostics');
+  console.log('✅ v69 ready — type debugTeacherDash() to check');
 })();
 </script>
 </body>
