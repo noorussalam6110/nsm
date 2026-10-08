@@ -22328,15 +22328,40 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   // 📊 OPEN FULL VIEW MODAL
   // ═══════════════════════════════════════════════════════
   window.openNamazFullView = async function() {
-    if (!currentUser) return;
+    if (!currentUser) { showToast('Login first', 'error'); return; }
     modalTitleSpan.innerText = '🕌 നമസ്കാരം — View';
     modalBodyDiv.innerHTML = '<div class="text-center py-4"><div class="spinner-sm"></div></div>';
     modal.style.display = 'flex';
 
-    await loadNamazWeek();
-    await loadNamazMonth();
+    // ✅ SAFETY: Always render within 1.5s max
+    var _rendered = false;
+    function _safeRender() {
+      if (_rendered) return;
+      _rendered = true;
+      try {
+        renderNamazFullView();
+      } catch(e) {
+        console.error('renderNamazFullView error:', e);
+        modalBodyDiv.innerHTML = 
+          '<div style="padding:30px;text-align:center;color:#dc2626;">' +
+            '<i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i>' +
+            '<div style="font-weight:800;">Render Error</div>' +
+            '<div style="font-size:.76rem;margin-top:6px;">' + (e.message || 'unknown') + '</div>' +
+          '</div>';
+      }
+    }
+    var _timeoutId = setTimeout(_safeRender, 1500);
 
-    renderNamazFullView();
+    // Load data (parallel) with individual timeouts
+    try {
+      await Promise.all([
+        loadNamazWeek().catch(function(e){ console.warn('week load err:', e); }),
+        loadNamazMonth().catch(function(e){ console.warn('month load err:', e); })
+      ]);
+    } catch(e) { console.warn('Namaz load err:', e); }
+
+    clearTimeout(_timeoutId);
+    _safeRender();
   };
 
   // ═══════════════════════════════════════════════════════
@@ -22475,7 +22500,13 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 
   // ─── WEEK VIEW ───
   function renderWeekView() {
-    if (!NAMZ_STATE.weekData.length) return '<div class="empty-state">Loading...</div>';
+    if (!NAMZ_STATE.weekData || NAMZ_STATE.weekData.length === 0) {
+      return '<div style="padding:30px 20px;text-align:center;color:#64748b;">' +
+        '<i class="fas fa-calendar-week" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i>' +
+        '<div style="font-weight:800;color:#0f172a;">ഡാറ്റ ലഭ്യമല്ല</div>' +
+        '<div style="font-size:.76rem;margin-top:6px;">Supabase-ൽ <b>namaz_log</b> table check ചെയ്യുക</div>' +
+        '</div>';
+    }
     var h = '<div class="namaz-week-grid">';
     // Header
     h += '<div class="namaz-week-header" style="background:transparent;color:#64748b;">Day</div>';
@@ -22511,7 +22542,12 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 
   // ─── MONTH VIEW ───
   function renderMonthView() {
-    if (!NAMZ_STATE.monthData.length) return '<div class="empty-state">Loading...</div>';
+    if (!NAMZ_STATE.monthData || NAMZ_STATE.monthData.length === 0) {
+      return '<div style="padding:30px 20px;text-align:center;color:#64748b;">' +
+        '<i class="fas fa-calendar-alt" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i>' +
+        '<div style="font-weight:800;color:#0f172a;">ഡാറ്റ ലഭ്യമല്ല</div>' +
+        '</div>';
+    }
     var h = '';
     h += '<div style="text-align:center;font-weight:900;color:#059669;font-size:.95rem;margin-bottom:12px;">' + (NAMZ_STATE.monthName || '') + '</div>';
 
