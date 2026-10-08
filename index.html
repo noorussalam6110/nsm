@@ -16190,7 +16190,7 @@ body.modal-open .chat-fab { display: none !important; }
       </div>
     </div>
     <button class="chat-add-friend-btn" onclick="window.openAddFriendModal()">
-      <i class="fas fa-user-plus"></i> Add Friend by Student ID
+      <i class="fas fa-user-plus"></i> Add New Friend
     </button>
   </div>
 
@@ -16255,28 +16255,92 @@ body.modal-open .chat-fab { display: none !important; }
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ -->
-<!-- 👥 ADD FRIEND MODAL                                      -->
+<!-- 👥 ADD FRIEND MODAL (v2 — Student Picker)               -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <div id="addFriendModal" class="add-friend-modal">
-  <div class="add-friend-card">
+  <div class="add-friend-card" style="max-width:520px;">
     <h3><i class="fas fa-user-plus"></i> Add Friend</h3>
-    <p class="add-friend-sub">Student ID നൽകി friend request അയക്കൂ</p>
+    <p class="add-friend-sub">പേര് type ചെയ്ത് തിരയുക, കിട്ടുന്ന student-നെ tap ചെയ്യൂ</p>
     
-    <input type="text" id="addFriendInput" class="add-friend-input" 
-           placeholder="e.g., NSM001" maxlength="20"
-           oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');">
-    
-    <button class="add-friend-btn" onclick="window.sendFriendRequest()">
-      <i class="fas fa-paper-plane"></i> Send Request
-    </button>
+    <!-- Search Input -->
+    <div style="position:relative;margin-bottom:12px;">
+      <i class="fas fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;"></i>
+      <input type="text" id="addFriendSearch" class="add-friend-input" 
+             placeholder="🔍 പേരോ class-ഓ type ചെയ്യൂ..."
+             style="padding-left:40px;text-transform:none;letter-spacing:0;"
+             oninput="window.filterAddFriendList(this.value)"
+             autocomplete="off">
+    </div>
+
+    <!-- Filter chips -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+      <button type="button" class="af-filter-chip active" data-filter="all" onclick="window.setAddFriendFilter('all', this)">🌟 എല്ലാം</button>
+      <button type="button" class="af-filter-chip" data-filter="same_class" onclick="window.setAddFriendFilter('same_class', this)">📚 എന്റെ ക്ലാസ്</button>
+      <button type="button" class="af-filter-chip" data-filter="other_class" onclick="window.setAddFriendFilter('other_class', this)">🏫 മറ്റു ക്ലാസുകൾ</button>
+    </div>
+
+    <!-- Student List -->
+    <div id="addFriendList" style="max-height:340px;overflow-y:auto;border:1.5px solid rgba(100,116,139,.2);border-radius:14px;background:#f8fafc;padding:8px;">
+      <div style="text-align:center;padding:24px;color:#94a3b8;font-size:.84rem;">
+        <div class="spinner-sm" style="margin:0 auto 8px;"></div>
+        Loading students...
+      </div>
+    </div>
 
     <div id="addFriendResult" class="add-friend-result"></div>
 
-    <div style="margin-top:16px;text-align:center;">
-      <button onclick="window.closeAddFriendModal()" class="btn-cancel" style="padding:10px 24px;border-radius:60px;font-size:.82rem;">Close</button>
+    <div style="margin-top:14px;text-align:center;">
+      <button onclick="window.closeAddFriendModal()" class="btn-cancel" style="padding:10px 24px;border-radius:60px;font-size:.82rem;width:100%;">Close</button>
     </div>
   </div>
 </div>
+
+<style>
+.af-filter-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(100,116,139,.25);
+  background: #fff;
+  color: #475569;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: .72rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+.af-filter-chip:hover { border-color: rgba(34,197,94,.4); color: #059669; }
+.af-filter-chip.active {
+  background: linear-gradient(100deg, #22c55e, #10b981);
+  color: #fff;
+  border-color: transparent;
+}
+.af-student-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1.5px solid rgba(100,116,139,.12);
+  border-radius: 12px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.af-student-item:hover {
+  border-color: rgba(34,197,94,.5);
+  background: #f0fdf4;
+  transform: translateX(3px);
+}
+.af-student-item:active {
+  transform: scale(.98);
+}
+.af-student-item.sent {
+  opacity: .55;
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+.af-student-item.sent:hover { transform: none; border-color: rgba(100,116,139,.12); }
+</style>
 
 <script id="social-pack-js">
 /* ═══════════════════════════════════════════════════════ */
@@ -17294,11 +17358,209 @@ body.modal-open .chat-fab { display: none !important; }
   // ═══════════════════════════════════════════════════
   // 👥 FRIEND SYSTEM
   // ═══════════════════════════════════════════════════
-  window.openAddFriendModal = function() {
+  // ═══════════════════════════════════════════════════════
+  // 👥 ADD FRIEND — Student Picker System
+  // ═══════════════════════════════════════════════════════
+  window._afAllStudents = [];
+  window._afSearchQuery = '';
+  window._afFilter = 'all';
+  window._afSentIds = new Set();
+
+  window.openAddFriendModal = async function() {
     document.getElementById('addFriendModal').classList.add('open');
-    document.getElementById('addFriendInput').value = '';
     document.getElementById('addFriendResult').className = 'add-friend-result';
-    setTimeout(() => document.getElementById('addFriendInput').focus(), 200);
+    var s = document.getElementById('addFriendSearch');
+    if (s) s.value = '';
+    window._afSearchQuery = '';
+    window._afFilter = 'all';
+    document.querySelectorAll('.af-filter-chip').forEach(function(c) {
+      c.classList.toggle('active', c.dataset.filter === 'all');
+    });
+    await loadAddFriendStudents();
+  };
+
+  async function loadAddFriendStudents() {
+    var listEl = document.getElementById('addFriendList');
+    if (!listEl) return;
+    listEl.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:.84rem;"><div class="spinner-sm" style="margin:0 auto 8px;"></div>Loading students...</div>';
+
+    try {
+      // Fetch all students except self
+      var r = await supabaseClient.from('students')
+        .select('studentid, name, class, roll, photo')
+        .neq('studentid', currentUser.studentId)
+        .order('class').order('roll').order('name');
+
+      window._afAllStudents = r.data || [];
+
+      // Fetch existing friendship IDs to mark
+      try {
+        var fr = await supabaseClient.from('friendships')
+          .select('*')
+          .or('student_a.eq.' + currentUser.studentId + ',student_b.eq.' + currentUser.studentId);
+        window._afSentIds = new Set();
+        (fr.data || []).forEach(function(f) {
+          var other = f.student_a === currentUser.studentId ? f.student_b : f.student_a;
+          window._afSentIds.add(other);
+        });
+      } catch(e) {}
+
+      renderAddFriendList();
+    } catch(e) {
+      listEl.innerHTML = '<div style="text-align:center;padding:24px;color:#dc2626;font-size:.84rem;">Error: ' + e.message + '</div>';
+    }
+  }
+
+  function renderAddFriendList() {
+    var listEl = document.getElementById('addFriendList');
+    if (!listEl) return;
+
+    var q = (window._afSearchQuery || '').toLowerCase().trim();
+    var filter = window._afFilter;
+    var myClass = String(currentUser.class || '');
+
+    var filtered = window._afAllStudents.filter(function(s) {
+      // Filter
+      if (filter === 'same_class' && String(s.class) !== myClass) return false;
+      if (filter === 'other_class' && String(s.class) === myClass) return false;
+
+      // Search
+      if (q) {
+        var hay = (s.name + ' ' + s.studentid + ' ' + (s.class || '')).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:.84rem;">' +
+        '<i class="fas fa-user-slash" style="font-size:2rem;opacity:.4;display:block;margin-bottom:8px;"></i>' +
+        (q ? 'ഈ പേരിൽ ആരും കണ്ടില്ല' : 'No students found') +
+        '</div>';
+      return;
+    }
+
+    // Group by class
+    var byClass = {};
+    filtered.forEach(function(s) {
+      var c = s.class || '?';
+      if (!byClass[c]) byClass[c] = [];
+      byClass[c].push(s);
+    });
+
+    var html = '';
+    Object.keys(byClass).sort(function(a, b) { return parseInt(a) - parseInt(b); }).forEach(function(cls) {
+      html += '<div style="font-size:.68rem;font-weight:900;color:#1e40af;text-transform:uppercase;letter-spacing:1px;padding:8px 6px 4px;display:flex;align-items:center;gap:6px;">';
+      html += '<i class="fas fa-users" style="font-size:.7rem;"></i> Class ' + cls;
+      html += '<span style="background:#eff6ff;padding:1px 8px;border-radius:20px;font-size:.6rem;">' + byClass[cls].length + '</span>';
+      html += '</div>';
+
+      byClass[cls].forEach(function(s) {
+        var isSent = window._afSentIds.has(s.studentid);
+        var hasPhoto = s.photo && (s.photo.startsWith('http') || s.photo.startsWith('data:'));
+        var initial = (s.name || 'S').charAt(0).toUpperCase();
+        var avatar = hasPhoto
+          ? '<img src="' + s.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+          : initial;
+
+        html += '<div class="af-student-item' + (isSent ? ' sent' : '') + '" ' +
+          (isSent ? '' : 'onclick="window.sendFriendRequestTo(\'' + s.studentid + '\')"') + '>';
+        html += '<div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(140deg,#3b8bff,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.9rem;overflow:hidden;">' + avatar + '</div>';
+        html += '<div style="flex:1;min-width:0;">';
+        html += '<div style="font-weight:800;color:#0f172a;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + s.name + '</div>';
+        html += '<div style="font-size:.68rem;color:#64748b;margin-top:1px;">Roll ' + (s.roll || '—') + ' • ' + s.studentid + '</div>';
+        html += '</div>';
+        html += '<div style="flex-shrink:0;">';
+        if (isSent) {
+          html += '<span style="font-size:.66rem;font-weight:800;color:#059669;background:#d1fae5;padding:4px 10px;border-radius:20px;">✓ Sent</span>';
+        } else {
+          html += '<span style="font-size:.66rem;font-weight:800;color:#fff;background:linear-gradient(100deg,#22c55e,#10b981);padding:5px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;"><i class="fas fa-plus" style="font-size:.6rem;"></i> Add</span>';
+        }
+        html += '</div>';
+        html += '</div>';
+      });
+    });
+
+    listEl.innerHTML = html;
+  }
+
+  window.filterAddFriendList = function(q) {
+    window._afSearchQuery = q;
+    renderAddFriendList();
+  };
+
+  window.setAddFriendFilter = function(f, btn) {
+    window._afFilter = f;
+    document.querySelectorAll('.af-filter-chip').forEach(function(c) {
+      c.classList.toggle('active', c.dataset.filter === f);
+    });
+    renderAddFriendList();
+  };
+
+  window.sendFriendRequestTo = async function(targetId) {
+    if (!targetId) return;
+    if (targetId === currentUser.studentId) {
+      showToast('❌ സ്വന്തം ID ആണ്', 'error');
+      return;
+    }
+
+    var result = document.getElementById('addFriendResult');
+    var target = window._afAllStudents.find(function(s) { return s.studentid === targetId; });
+    if (!target) return;
+
+    // Optimistically mark as sent
+    window._afSentIds.add(targetId);
+    renderAddFriendList();
+
+    try {
+      var existing = await supabaseClient.from('friendships')
+        .select('*')
+        .or('and(student_a.eq.' + currentUser.studentId + ',student_b.eq.' + targetId + '),and(student_a.eq.' + targetId + ',student_b.eq.' + currentUser.studentId + ')')
+        .maybeSingle();
+
+      if (existing.data) {
+        result.className = 'add-friend-result show error';
+        if (existing.data.status === 'accepted') result.textContent = '✅ Already friends';
+        else if (existing.data.requested_by === currentUser.studentId) result.textContent = '⏳ Request already sent';
+        else result.textContent = '✅ They sent you a request — check Requests tab!';
+        return;
+      }
+
+      var a = currentUser.studentId < targetId ? currentUser.studentId : targetId;
+      var b = currentUser.studentId < targetId ? targetId : currentUser.studentId;
+
+      var r = await supabaseClient.from('friendships').insert({
+        student_a: a, student_b: b,
+        status: 'pending',
+        requested_by: currentUser.studentId
+      });
+      if (r.error) throw r.error;
+
+      result.className = 'add-friend-result show success';
+      result.textContent = '✅ Request sent to ' + target.name + '!';
+      showToast('✅ Request sent to ' + target.name, 'success');
+
+      if (typeof confetti !== 'undefined') {
+        confetti({ particleCount: 60, spread: 60, origin: { y: .7 } });
+      }
+      if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+
+      // Clear previous message after 3s
+      setTimeout(function() {
+        result.className = 'add-friend-result';
+      }, 3000);
+    } catch(e) {
+      // Revert
+      window._afSentIds.delete(targetId);
+      renderAddFriendList();
+      result.className = 'add-friend-result show error';
+      result.textContent = '❌ ' + e.message;
+    }
+  };
+
+  // Legacy fallback — still works if anything calls sendFriendRequest
+  window.sendFriendRequest = function() {
+    showToast('ℹ️ List-ൽ നിന്ന് student select ചെയ്യൂ', 'info');
   };
 
   window.closeAddFriendModal = function() {
