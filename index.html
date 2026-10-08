@@ -10879,7 +10879,6 @@ Object.assign(window,{
   loadFeeParentsAdmin,filterFeeParents,openFeeParentForm,saveFeeParent,
   editFeeParent,deleteFeeParent,markFeePaid,openFeeSettingsForm,saveFeeSettingsFromForm,
   saveDailyGreeting,clearDailyGreeting,
-  openFeePrintDialog, printFeeReportPDF,
   viewPaymentHistoryAdmin, sendFeeWhatsAppAdmin,
   gradeFromMarks10: function(m){ return calculateGradeFromPercent(Number(m)*10); }
 });
@@ -22516,7 +22515,7 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
     h += '<div class="namaz-week-header">Total</div>';
 
     // Rows
-    NAMAZ_STATE.weekData.forEach(function(d) {
+    NAMZ_STATE.weekData.forEach(function(d) {
       var dt = new Date(d.date + 'T00:00:00');
       var days = ['ഞായർ','തിങ്കൾ','ചൊവ്വ','ബുധൻ','വ്യാഴം','വെള്ളി','ശനി'];
       var short = days[dt.getDay()].substring(0, 3);
@@ -25328,6 +25327,192 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   console.log('   • Admin → XP Bonus tab');
   console.log('   • Presets + Custom amounts');
   console.log('   • Individual + Batch add');
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════ */
+/* 🛡️ v40.0 — BULLETPROOF NAMAZ RENDER (Final Override)    */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  console.log('🛡️ Bulletproof Namaz Render loading...');
+
+  var PRAYERS = [
+    { key: 'fajr',    name: 'Fajr',    icon: '🌅' },
+    { key: 'dhuhr',   name: 'Dhuhr',   icon: '☀️' },
+    { key: 'asr',     name: 'Asr',     icon: '🌤️' },
+    { key: 'maghrib', name: 'Maghrib', icon: '🌇' },
+    { key: 'isha',    name: 'Isha',    icon: '🌙' }
+  ];
+
+  // Ensure NAMZ_STATE exists globally
+  if (!window.NAMZ_STATE) {
+    window.NAMZ_STATE = {
+      today: null, streak: null,
+      weekData: [], monthData: [],
+      prayerTimes: {}, view: 'week',
+      parentMobile: null, parentWaLink: null
+    };
+  }
+
+  // Safe state getter
+  function S() {
+    return window.NAMZ_STATE || {
+      today: null, streak: null, weekData: [], monthData: [],
+      view: 'week', parentWaLink: null, monthName: ''
+    };
+  }
+
+  /* ─── WEEK VIEW ─── */
+  window.renderWeekView = function() {
+    var state = S();
+    var wd = state.weekData || [];
+    if (wd.length === 0) {
+      return '<div style="padding:30px 20px;text-align:center;color:#64748b;">' +
+        '<i class="fas fa-calendar-week" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i>' +
+        '<div style="font-weight:800;color:#0f172a;">ഡാറ്റ ലഭ്യമല്ല</div>' +
+        '<div style="font-size:.74rem;margin-top:6px;">Supabase-ൽ namaz_log check ചെയ്യുക</div></div>';
+    }
+    var h = '<div class="namaz-week-grid">';
+    h += '<div class="namaz-week-header" style="background:transparent;color:#64748b;">Day</div>';
+    PRAYERS.forEach(function(p) {
+      h += '<div class="namaz-week-header">' + p.icon + '<br>' + p.name + '</div>';
+    });
+    h += '<div class="namaz-week-header">Total</div>';
+
+    wd.forEach(function(d) {
+      var dt;
+      try { dt = new Date(d.date + 'T00:00:00'); } catch(e) { dt = new Date(); }
+      var days = ['ഞായർ','തിങ്കൾ','ചൊവ്വ','ബുധൻ','വ്യാഴം','വെള്ളി','ശനി'];
+      var short = (days[dt.getDay()] || 'Day').substring(0, 3);
+
+      h += '<div class="namaz-week-day">';
+      h += '<span class="date-num">' + dt.getDate() + '</span>';
+      h += '<span class="day-name">' + short + '</span></div>';
+
+      PRAYERS.forEach(function(p) {
+        var done = d.log && d.log[p.key] === true;
+        var cls = done ? 'done' : 'not-done';
+        if (d.isToday) cls += ' today';
+        h += '<div class="namaz-week-cell ' + cls + '">' + (done ? '✓' : '—') + '</div>';
+      });
+
+      var total = (d.log && d.log.completed_count) || 0;
+      var totalCls = total === 5 ? 'full' : '';
+      h += '<div class="namaz-week-total ' + totalCls + '">' + total + '</div>';
+    });
+    h += '</div>';
+    return h;
+  };
+
+  /* ─── MONTH VIEW ─── */
+  window.renderMonthView = function() {
+    var state = S();
+    var md = state.monthData || [];
+    if (md.length === 0) {
+      return '<div style="padding:30px 20px;text-align:center;color:#64748b;">' +
+        '<i class="fas fa-calendar-alt" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i>' +
+        '<div style="font-weight:800;color:#0f172a;">ഡാറ്റ ലഭ്യമല്ല</div></div>';
+    }
+    var h = '';
+    h += '<div style="text-align:center;font-weight:900;color:#059669;font-size:.95rem;margin-bottom:12px;">' + (state.monthName || '') + '</div>';
+    h += '<div class="namaz-month-grid">';
+    ['ഞ','തി','ച','ബു','വ്യ','വെ','ശ'].forEach(function(d) {
+      h += '<div style="text-align:center;font-size:.6rem;font-weight:900;color:#64748b;padding:4px;">' + d + '</div>';
+    });
+    md.forEach(function(d) {
+      if (d.empty) { h += '<div class="namaz-month-day empty"></div>'; return; }
+      var cls = '';
+      if (d.isToday) cls += ' today';
+      if (d.log && d.log.all_completed) cls += ' complete';
+      h += '<div class="namaz-month-day ' + cls + '">';
+      h += '<span class="day-num">' + (d.day || '') + '</span>';
+      h += '<div class="day-dots">';
+      PRAYERS.forEach(function(p) {
+        var done = d.log && d.log[p.key];
+        h += '<div class="day-dot ' + (done ? 'done' : '') + '"></div>';
+      });
+      h += '</div></div>';
+    });
+    h += '</div>';
+    return h;
+  };
+
+  /* ─── STATS VIEW ─── */
+  window.renderStatsView = function() {
+    var s = S().streak || {};
+    var h = '<div class="namaz-stats-grid">';
+    h += '<div class="namaz-stat-card"><div class="namaz-stat-num">' + (s.current_streak || 0) + '</div><div class="namaz-stat-label">Current Streak 🔥</div></div>';
+    h += '<div class="namaz-stat-card"><div class="namaz-stat-num" style="color:#f59e0b;">' + (s.longest_streak || 0) + '</div><div class="namaz-stat-label">Longest Streak</div></div>';
+    h += '<div class="namaz-stat-card"><div class="namaz-stat-num" style="color:#0891b2;">' + (s.total_complete_days || 0) + '</div><div class="namaz-stat-label">Complete Days</div></div>';
+    h += '<div class="namaz-stat-card"><div class="namaz-stat-num" style="color:#ec4899;">' + (s.total_prayers || 0) + '</div><div class="namaz-stat-label">Total Prayers</div></div>';
+    h += '</div>';
+    return h;
+  };
+
+  /* ─── FULL VIEW ─── */
+  window.renderNamazFullView = function() {
+    var state = S();
+    var view = state.view || 'week';
+    var html = '';
+
+    html += '<div class="namaz-view-tabs">';
+    html += '<button class="namaz-view-tab ' + (view === 'week' ? 'active' : '') + '" onclick="window.switchNamazView(\'week\')"><i class="fas fa-calendar-week"></i> Weekly</button>';
+    html += '<button class="namaz-view-tab ' + (view === 'month' ? 'active' : '') + '" onclick="window.switchNamazView(\'month\')"><i class="fas fa-calendar-alt"></i> Monthly</button>';
+    html += '<button class="namaz-view-tab ' + (view === 'stats' ? 'active' : '') + '" onclick="window.switchNamazView(\'stats\')"><i class="fas fa-chart-simple"></i> Stats</button>';
+    html += '</div>';
+
+    html += '<div id="namazViewContent">';
+    if (view === 'week') html += window.renderWeekView();
+    else if (view === 'month') html += window.renderMonthView();
+    else html += window.renderStatsView();
+    html += '</div>';
+
+    if (state.parentWaLink) {
+      html += '<div style="background:linear-gradient(135deg,#dcfce7,#a7f3d0);border:1.5px solid rgba(5,150,105,.4);border-radius:14px;padding:14px;margin-top:16px;">';
+      html += '<div style="font-weight:800;color:#059669;font-size:.86rem;margin-bottom:8px;"><i class="fas fa-phone"></i> Parent-നു അറിയിക്കുക</div>';
+      html += '<a href="' + state.parentWaLink + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:#fff;padding:12px;border-radius:12px;text-decoration:none;font-weight:800;font-size:.86rem;"><i class="fab fa-whatsapp"></i> WhatsApp അയക്കുക</a></div>';
+    }
+
+    html += '<div style="margin-top:20px;display:flex;gap:10px;">';
+    html += '<button class="btn-cancel flex-grow-1" onclick="closeModal(\'globalModal\')" style="padding:12px 20px;border-radius:14px;">Close</button>';
+    html += '</div>';
+
+    modalBodyDiv.innerHTML = html;
+  };
+
+  /* ─── SWITCH VIEW ─── */
+  window.switchNamazView = function(view) {
+    if (window.NAMZ_STATE) window.NAMZ_STATE.view = view;
+    if (typeof window.renderNamazFullView === 'function') window.renderNamazFullView();
+  };
+
+  /* ─── ENHANCED OPEN ─── */
+  var _origOpen = window.openNamazFullView;
+  window.openNamazFullView = async function() {
+    if (!currentUser) { showToast('Login first', 'error'); return; }
+    modalTitleSpan.innerText = '🕌 നമസ്കാരം — View';
+    modalBodyDiv.innerHTML = '<div class="text-center py-4"><div class="spinner-sm"></div></div>';
+    modal.style.display = 'flex';
+
+    // Load data with individual try/catch
+    try { if (typeof loadNamazWeek === 'function') await loadNamazWeek(); } catch(e) { console.warn('week:', e); }
+    try { if (typeof loadNamazMonth === 'function') await loadNamazMonth(); } catch(e) { console.warn('month:', e); }
+
+    // Always render
+    try { window.renderNamazFullView(); }
+    catch(e) {
+      console.error('Final render error:', e);
+      modalBodyDiv.innerHTML = 
+        '<div style="padding:30px;text-align:center;color:#dc2626;">' +
+          '<i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i>' +
+          '<div style="font-weight:800;">Render Error</div>' +
+          '<div style="font-size:.76rem;margin-top:6px;">' + (e.message || 'unknown') + '</div>' +
+        '</div>';
+    }
+  };
+
+  console.log('✅ Bulletproof Namaz Render v40.0 ready');
 })();
 </script>
 </body>
