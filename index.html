@@ -30518,5 +30518,572 @@ body.dragging, html.dragging {
   console.log('   💡 Run debugTeacherLogin() in console for diagnostics');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🎨 v67.0 — SKJMCC-STYLE MOBILE DASHBOARD                   -->
+<!-- Quick Access grid + Pill bottom nav                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<style id="skjmcc-style-dashboard">
+/* ═══════════════════════════════════════════════════════ */
+/* 📱 QUICK ACCESS CARD (SKJMCC Style)                      */
+/* Only applied on mobile (≤900px)                          */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Hide old section title */
+  #quickActionsTitle { display: none !important; }
+
+  /* Transform #quickActionsGrid into the SKJMCC card */
+  #quickActionsGrid {
+    display: block !important;
+    background: #ffffff !important;
+    border-radius: 22px !important;
+    padding: 22px 16px 18px !important;
+    margin: 0 0 16px 0 !important;
+    border: none !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05) !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+    position: relative;
+  }
+
+  /* Card header — "Quick Access" */
+  #quickActionsGrid::before {
+    content: '';
+    display: block;
+    height: 44px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'><rect width='44' height='44' rx='12' fill='%23E0EBFF'/><g transform='translate(11,11)' fill='none' stroke='%235B8DEF' stroke-width='2' stroke-linecap='round'><rect x='0' y='0' width='9' height='9' rx='2'/><rect x='13' y='0' width='9' height='9' rx='2'/><rect x='0' y='13' width='9' height='9' rx='2'/><rect x='13' y='13' width='9' height='9' rx='2'/></g></svg>");
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 44px 44px;
+    margin-bottom: 18px;
+  }
+  #quickActionsGrid::after {
+    content: 'Quick Access';
+    position: absolute;
+    top: 26px;
+    left: 72px;
+    transform: translateY(-50%);
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #0a1220;
+    letter-spacing: -.3px;
+    font-family: 'Anek Malayalam', system-ui, sans-serif;
+  }
+
+  /* Reset ALL old action-tile styles inside our card */
+  #quickActionsGrid .action-tile {
+    display: none !important; /* We'll re-inject via JS with new structure */
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📱 NEW SKJMCC SECTION STRUCTURE                          */
+  /* ═══════════════════════════════════════════════════════ */
+  .skjmcc-section {
+    margin-bottom: 22px;
+  }
+  .skjmcc-section:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Section title with line (GENERAL, MEMBER, UNIT) */
+  .skjmcc-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+  .skjmcc-section-title span {
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    font-family: 'Anek Malayalam', system-ui, sans-serif;
+  }
+  .skjmcc-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e8edf5;
+  }
+
+  /* Grid of tiles — 4 columns */
+  .skjmcc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px 8px;
+  }
+  @media (max-width: 400px) {
+    .skjmcc-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px 4px;
+    }
+  }
+
+  /* Individual tile */
+  .skjmcc-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform .15s ease;
+    position: relative;
+    padding: 2px 0;
+  }
+  .skjmcc-tile:active {
+    transform: scale(.92);
+  }
+
+  /* Icon box — pastel square with emoji inside */
+  .skjmcc-icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    line-height: 1;
+    position: relative;
+    transition: all .2s ease;
+    /* Soft subtle shadow like iOS icons */
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+
+  /* Optional: subtle inner gradient for depth */
+  .skjmcc-icon-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: linear-gradient(160deg, rgba(255,255,255,.5), transparent 55%);
+    pointer-events: none;
+  }
+
+  /* Small badge (like the "✓" on SKJMCC-MBF Service icon) */
+  .skjmcc-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #FF3B30;
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2.5px solid #fff;
+    box-shadow: 0 2px 6px rgba(255,59,48,.4);
+    z-index: 2;
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Tile label */
+  .skjmcc-label {
+    font-size: .68rem;
+    font-weight: 600;
+    color: #1e293b;
+    text-align: center;
+    line-height: 1.25;
+    max-width: 100%;
+    word-break: break-word;
+    letter-spacing: -.1px;
+    font-family: 'Anek Malayalam', system-ui, sans-serif;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📱 NEW BOTTOM NAV (Pill shaped - SKJMCC style)           */
+  /* ═══════════════════════════════════════════════════════ */
+  body.logged-in .mob-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 6px !important;
+    border-radius: 99px !important;
+    z-index: 99999 !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06) !important;
+    border: 1px solid rgba(15,23,42,.04) !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    height: 62px !important;
+    transition: all .35s cubic-bezier(.34,1.2,.64,1) !important;
+  }
+
+  /* Hide old liquid pill background */
+  body.logged-in .mob-bottom-nav .active-pill {
+    display: none !important;
+  }
+
+  /* Nav items container */
+  body.logged-in .mob-bottom-nav .nav-items {
+    display: flex !important;
+    gap: 4px !important;
+    flex: none !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    position: static !important;
+  }
+
+  /* Individual nav button */
+  body.logged-in .mob-bottom-nav .mob-nav-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 10px 18px !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    border-radius: 99px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    font-family: 'Anek Malayalam', system-ui, sans-serif !important;
+    font-size: .88rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all .3s cubic-bezier(.34,1.4,.64,1) !important;
+    flex: 0 0 auto !important;
+    position: relative !important;
+    letter-spacing: -.1px !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  /* Icon inside nav button */
+  body.logged-in .mob-bottom-nav .mob-nav-item i {
+    font-size: 1.15rem !important;
+    margin: 0 !important;
+    color: inherit !important;
+    transition: transform .3s ease !important;
+  }
+
+  /* Home — Active state (blue pill) */
+  body.logged-in .mob-bottom-nav .mob-nav-item.active {
+    background: #1877F2 !important;
+    color: #ffffff !important;
+    padding: 10px 22px !important;
+    flex: 0 0 auto !important;
+    box-shadow: 0 6px 20px rgba(24,119,242,.35) !important;
+  }
+  body.logged-in .mob-bottom-nav .mob-nav-item.active span {
+    display: inline-block !important;
+    font-weight: 800 !important;
+  }
+  body.logged-in .mob-bottom-nav .mob-nav-item.active i {
+    color: #ffffff !important;
+    transform: scale(1.05) !important;
+  }
+
+  /* Other items — icon only, hide text */
+  body.logged-in .mob-bottom-nav .mob-nav-item:not(.active) span {
+    display: none !important;
+  }
+  body.logged-in .mob-bottom-nav .mob-nav-item:not(.active) {
+    padding: 10px 16px !important;
+    min-width: 50px !important;
+  }
+  body.logged-in .mob-bottom-nav .mob-nav-item:not(.active):active {
+    background: rgba(148,163,184,.12) !important;
+    transform: scale(.92) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🖥️ DESKTOP — Do NOT override — keep original look        */
+/* ═══════════════════════════════════════════════════════ */
+@media (min-width: 901px) {
+  #quickActionsGrid .skjmcc-section,
+  #quickActionsGrid .skjmcc-section-title,
+  #quickActionsGrid .skjmcc-grid,
+  #quickActionsGrid .skjmcc-tile {
+    display: none !important;
+  }
+}
+</style>
+
+<script id="skjmcc-dashboard-js">
+(function(){
+  'use strict';
+  console.log('🎨 SKJMCC-Style Dashboard v67.0 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 SECTION MAPPING — Which tiles go where
+  // ═══════════════════════════════════════════════════════
+  // Format: { section: 'GENERAL', tiles: [ {action, label, emoji, bg}, ... ] }
+  var SECTIONS = [
+    {
+      name: 'GENERAL',
+      tiles: [
+        { action: 'results',      label: 'Results',     emoji: '📊', bg: '#E0EBFF' },
+        { action: 'attendance',   label: 'Attendance',  emoji: '📅', bg: '#FFE0E6' },
+        { action: 'marks',        label: 'Marks',       emoji: '📝', bg: '#FFF4E0' },
+        { action: 'timetable',    label: 'Timetable',   emoji: '⏰', bg: '#F0E0FF' },
+        { action: 'homework',     label: 'Homework',    emoji: '📚', bg: '#E0F7FF' },
+        { action: 'library',      label: 'Library',     emoji: '📖', bg: '#E0FFE8' },
+        { action: 'notes',        label: 'Notes',       emoji: '🗒️', bg: '#E0FFF5' },
+        { action: 'downloads',    label: 'Downloads',   emoji: '⬇️', bg: '#E0FFE8' }
+      ]
+    },
+    {
+      name: 'MEMBER',
+      tiles: [
+        { action: 'profile',      label: 'My Profile',  emoji: '👤', bg: '#DDF5E9' },
+        { action: 'badges',       label: 'Badges',      emoji: '🏅', bg: '#FFEBE0' },
+        { action: 'palathulli',   label: 'Palathulli',  emoji: '💰', bg: '#E0EBFF' },
+        { action: 'fees',         label: 'Fees',        emoji: '💵', bg: '#FFE0E6' }
+      ]
+    },
+    {
+      name: 'UNIT',
+      tiles: [
+        { action: 'creations',    label: 'Creations',   emoji: '🎨', bg: '#FFE0F0' },
+        { action: 'competitions', label: 'Competitions', emoji: '🏆', bg: '#FFF4E0' },
+        { action: 'extracurricular', label: 'Activity', emoji: '🎭', bg: '#F0E0FF' },
+        { action: 'notice',       label: 'Notice',      emoji: '📌', bg: '#E0F7FF' },
+        { action: 'calendar',     label: 'Calendar',    emoji: '📆', bg: '#FFE8E0' },
+        { action: 'moral',        label: 'Moral',       emoji: '💖', bg: '#FFE0E6' },
+        { action: 'idcard',       label: 'ID Card',     emoji: '🪪', bg: '#E0EBFF' },
+        { action: 'report',       label: 'Report',      emoji: '📄', bg: '#E0FFE8' },
+        { action: 'studentzone',  label: 'Student Zone', emoji: '🎓', bg: '#E0F7FF' },
+        { action: 'quiz',         label: 'Quiz',        emoji: '🎯', bg: '#F0E0FF' },
+        { action: 'rewards',      label: 'Rewards',     emoji: '🎁', bg: '#FFF4E0' },
+        { action: 'class_chat',   label: 'Chat',        emoji: '💬', bg: '#E0FFE8' },
+        { action: 'avatar_custom', label: 'Avatar',     emoji: '🎨', bg: '#FFE0F0' },
+        { action: 'namaz',        label: 'Namaz',       emoji: '🕌', bg: '#E0FFE8' },
+        { action: 'topper',       label: 'Topper',      emoji: '👑', bg: '#FFF4E0' }
+      ]
+    }
+  ];
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 GET ORIGINAL TILE's onclick + visibility
+  // ═══════════════════════════════════════════════════════
+  function getOriginalTiles() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return {};
+
+    var map = {};
+    grid.querySelectorAll(':scope > .action-tile').forEach(function(tile) {
+      var action = tile.dataset.action;
+      if (!action) return;
+      map[action] = {
+        onclick: tile.getAttribute('onclick') || '',
+        element: tile,
+        hidden: tile.style.display === 'none'
+      };
+    });
+    return map;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER SKJMCC-STYLE GRID
+  // ═══════════════════════════════════════════════════════
+  function renderSKJMCCGrid() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return;
+
+    // Only build on mobile
+    if (window.innerWidth > 900) return;
+
+    // Get original tiles data
+    var origMap = getOriginalTiles();
+
+    // Check if we already built
+    var existing = grid.querySelector('.skjmcc-section');
+    if (existing) {
+      // Already built — just refresh visibility
+      refreshVisibility(origMap);
+      return;
+    }
+
+    // Build section HTML
+    var html = '';
+    SECTIONS.forEach(function(section) {
+      // Filter tiles to only those that exist
+      var sectionTiles = section.tiles.filter(function(t) {
+        return origMap[t.action];
+      });
+
+      // Also check if any tile in this section is visible
+      var visibleTiles = sectionTiles.filter(function(t) {
+        var orig = origMap[t.action];
+        return !orig.hidden;
+      });
+
+      if (visibleTiles.length === 0) return;
+
+      html += '<div class="skjmcc-section" data-section="' + section.name + '">';
+      html += '<div class="skjmcc-section-title"><span>' + section.name + '</span></div>';
+      html += '<div class="skjmcc-grid">';
+
+      visibleTiles.forEach(function(t) {
+        var orig = origMap[t.action];
+        html += '<div class="skjmcc-tile" data-action="' + t.action + '" onclick="' + (orig.onclick || '').replace(/"/g, '&quot;') + '">' +
+          '<div class="skjmcc-icon-box" style="background:' + t.bg + ';">' + t.emoji + '</div>' +
+          '<div class="skjmcc-label">' + escapeHtml(t.label) + '</div>' +
+        '</div>';
+      });
+
+      html += '</div></div>';
+    });
+
+    // Append new structure (old tiles stay hidden via CSS)
+    grid.insertAdjacentHTML('beforeend', html);
+
+    console.log('✅ SKJMCC grid rendered');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 REFRESH — Respect visibility settings changes
+  // ═══════════════════════════════════════════════════════
+  function refreshVisibility(origMap) {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return;
+
+    grid.querySelectorAll('.skjmcc-tile').forEach(function(tile) {
+      var action = tile.dataset.action;
+      var orig = origMap[action];
+      if (!orig) {
+        tile.style.display = 'none';
+        return;
+      }
+      tile.style.display = orig.hidden ? 'none' : '';
+    });
+
+    // Hide empty sections
+    grid.querySelectorAll('.skjmcc-section').forEach(function(section) {
+      var visibleCount = 0;
+      section.querySelectorAll('.skjmcc-tile').forEach(function(t) {
+        if (t.style.display !== 'none') visibleCount++;
+      });
+      section.style.display = visibleCount > 0 ? '' : 'none';
+    });
+
+    // Update title count
+    updateTitle();
+  }
+
+  function updateTitle() {
+    // No change needed — static "Quick Access"
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 INIT — Wait for dashboard ready
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    if (!currentUser) return;
+    if (window.innerWidth > 900) return;
+    renderSKJMCCGrid();
+  }
+
+  // Wait for dashboard to show
+  var dash = document.getElementById('dashboardSection');
+  if (dash) {
+    new MutationObserver(function() {
+      if (dash.style.display === 'block' && currentUser) {
+        setTimeout(init, 800);
+        setTimeout(init, 1800);
+        setTimeout(init, 3500);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Initial run
+  setTimeout(init, 1500);
+  setTimeout(init, 3000);
+
+  // Rebuild on resize crossing breakpoint
+  var _lastMobile = window.innerWidth <= 900;
+  window.addEventListener('resize', function() {
+    var nowMobile = window.innerWidth <= 900;
+    if (nowMobile !== _lastMobile) {
+      _lastMobile = nowMobile;
+      if (nowMobile) setTimeout(init, 300);
+    }
+  });
+
+  // Hook applyStudentPortalVisibility to keep our tiles synced
+  var _origApplyVis = window.applyStudentPortalVisibility;
+  if (typeof _origApplyVis === 'function') {
+    window.applyStudentPortalVisibility = function() {
+      var r = _origApplyVis.apply(this, arguments);
+      setTimeout(function() {
+        var origMap = getOriginalTiles();
+        refreshVisibility(origMap);
+      }, 100);
+      return r;
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📱 BOTTOM NAV — Ensure "Home" is default active
+  // ═══════════════════════════════════════════════════════
+  function ensureHomeActive() {
+    if (window.innerWidth > 900) return;
+    var nav = document.getElementById('mobBottomNav');
+    if (!nav) return;
+    if (!document.body.classList.contains('logged-in')) return;
+
+    var items = nav.querySelectorAll('.mob-nav-item');
+    if (items.length === 0) return;
+
+    var hasActive = false;
+    items.forEach(function(item) {
+      if (item.classList.contains('active')) hasActive = true;
+    });
+    if (!hasActive && items[0]) {
+      items[0].classList.add('active');
+    }
+  }
+
+  setTimeout(ensureHomeActive, 1500);
+  setTimeout(ensureHomeActive, 3000);
+  setTimeout(ensureHomeActive, 5000);
+
+  // Re-run on login
+  var _origCompleteLogin = window.completeLogin;
+  if (typeof _origCompleteLogin === 'function') {
+    window.completeLogin = async function(student) {
+      var r = await _origCompleteLogin.apply(this, arguments);
+      setTimeout(function() {
+        init();
+        ensureHomeActive();
+      }, 1200);
+      return r;
+    };
+  }
+
+  window.rebuildSKJMCC = function() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (grid) {
+      grid.querySelectorAll('.skjmcc-section').forEach(function(s) { s.remove(); });
+    }
+    init();
+  };
+
+  console.log('✅ SKJMCC Dashboard ready');
+  console.log('   💡 Run rebuildSKJMCC() to refresh');
+})();
+</script>
 </body>
 </html>
