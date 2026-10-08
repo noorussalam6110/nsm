@@ -26276,5 +26276,269 @@ window.printFeeReportPDF = function() {
   console.log('   💡 All / Pending / Paid filters + PDF export');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔧 v37.1 — FEE FILTER BUG FIX                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script id="fee-filter-bugfix">
+(function(){
+  'use strict';
+  console.log('🔧 Fee Filter Fix v37.1 loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 WAIT FOR DATA + RE-INJECT                             */
+  /* ═══════════════════════════════════════════════════════ */
+  
+  function waitForFeeData(callback, maxAttempts) {
+    maxAttempts = maxAttempts || 40;
+    var attempts = 0;
+    var iv = setInterval(function() {
+      attempts++;
+      var data = window.feeParentsData || [];
+      var isReady = data.length > 0 || attempts >= maxAttempts;
+      if (isReady) {
+        clearInterval(iv);
+        callback(data);
+      }
+    }, 250);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 RE-INJECT FILTER WITH CORRECT COUNTS                  */
+  /* ═══════════════════════════════════════════════════════ */
+  window.reinjectFeeFilter = function() {
+    var tab = document.getElementById('adminFeeParentsTab');
+    if (!tab) return;
+
+    // Remove old filter bar
+    var old = tab.querySelector('.fee-filter-clean');
+    if (old) old.remove();
+
+    var data = window.feeParentsData || [];
+
+    // Count actual statuses
+    var pendingCount = 0, paidCount = 0;
+    data.forEach(function(p) {
+      var st = window.getFeeParentStatus ? window.getFeeParentStatus(p) : 'pending';
+      if (st === 'pending') pendingCount++;
+      else paidCount++;
+    });
+
+    console.log('📊 Filter counts — All:', data.length, 'Pending:', pendingCount, 'Paid:', paidCount);
+
+    // Build filter UI with CORRECT counts
+    var currentFilter = window._feeFilterState || 'all';
+    var html = 
+      '<div class="fee-filter-clean">' +
+        '<span class="ff-label"><i class="fas fa-filter"></i> Filter:</span>' +
+        '<button class="ff-btn ' + (currentFilter === 'all' ? 'active' : '') + '" data-fee-filter="all" onclick="window.applyFeeFilter(\'all\')">' +
+          '<i class="fas fa-list"></i> All <span class="ff-count">' + data.length + '</span>' +
+        '</button>' +
+        '<button class="ff-btn pending ' + (currentFilter === 'pending' ? 'active' : '') + '" data-fee-filter="pending" onclick="window.applyFeeFilter(\'pending\')">' +
+          '<i class="fas fa-hourglass-half"></i> Pending <span class="ff-count">' + pendingCount + '</span>' +
+        '</button>' +
+        '<button class="ff-btn paid ' + (currentFilter === 'paid' ? 'active' : '') + '" data-fee-filter="paid" onclick="window.applyFeeFilter(\'paid\')">' +
+          '<i class="fas fa-check-circle"></i> Paid <span class="ff-count">' + paidCount + '</span>' +
+        '</button>' +
+        '<div class="ff-actions">' +
+          '<button class="ff-btn" onclick="window.downloadFeeFilteredPDF()" style="background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;border-color:transparent;">' +
+            '<i class="fas fa-file-pdf"></i> PDF (' + (currentFilter === 'all' ? 'All' : currentFilter === 'pending' ? 'Pending' : 'Paid') + ')' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+
+    // Insert before table
+    var wrap = document.getElementById('feeParentsWrap');
+    if (wrap && wrap.parentNode) {
+      wrap.parentNode.insertBefore(document.createRange().createContextualFragment(html), wrap);
+    }
+
+    // Force render the table with current filter
+    if (typeof window.filterFeeTable === 'function') {
+      setTimeout(function() {
+        window.filterFeeTable();
+      }, 100);
+    } else if (typeof window.renderFeeFilteredTable === 'function') {
+      setTimeout(function() {
+        window.renderFeeFilteredTable(data);
+      }, 100);
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 HOOK — After loadFeeParentsAdmin completes            */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origLoad = window.loadFeeParentsAdmin;
+  if (typeof _origLoad === 'function') {
+    window.loadFeeParentsAdmin = async function() {
+      var result = await _origLoad.apply(this, arguments);
+      
+      // Wait for data then re-inject
+      waitForFeeData(function(data) {
+        console.log('✅ Fee data loaded:', data.length, 'parents');
+        window.reinjectFeeFilter();
+      });
+      
+      return result;
+    };
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 HOOK — After switchAdminTab to feeparents             */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origSwitch = window.switchAdminTab;
+  if (typeof _origSwitch === 'function') {
+    window.switchAdminTab = function(tab) {
+      var r = _origSwitch.apply(this, arguments);
+      if (tab === 'feeparents') {
+        waitForFeeData(function(data) {
+          window.reinjectFeeFilter();
+        });
+      }
+      return r;
+    };
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 WATCH — Auto-fix when filter shows 0 but data exists  */
+  /* ═══════════════════════════════════════════════════════ */
+  setInterval(function() {
+    var tab = document.getElementById('adminFeeParentsTab');
+    if (!tab || tab.style.display !== 'block') return;
+
+    var filter = tab.querySelector('.fee-filter-clean');
+    if (!filter) return;
+
+    var data = window.feeParentsData || [];
+    if (data.length === 0) return;
+
+    // Check if counts are wrong (all showing 0 but data exists)
+    var allCountEl = filter.querySelector('[data-fee-filter="all"] .ff-count');
+    if (allCountEl) {
+      var shown = parseInt(allCountEl.textContent) || 0;
+      if (shown === 0 && data.length > 0) {
+        console.log('🔧 Detected wrong counts — re-injecting');
+        window.reinjectFeeFilter();
+      }
+    }
+
+    // Check if table is empty but data exists
+    var wrap = document.getElementById('feeParentsWrap');
+    if (wrap) {
+      var noRecords = wrap.querySelector('div[style*="No records"], .empty-state');
+      var hasNoTable = !wrap.querySelector('table');
+      if (hasNoTable && data.length > 0) {
+        console.log('🔧 Detected empty table with data — re-rendering');
+        if (typeof window.filterFeeTable === 'function') {
+          window.filterFeeTable();
+        } else if (typeof window.renderFeeFilteredTable === 'function') {
+          window.renderFeeFilteredTable(data);
+        }
+      }
+    }
+  }, 2000);
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔧 OVERRIDE applyFeeFilter — with fallback render         */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origApply = window.applyFeeFilter;
+  window.applyFeeFilter = function(filter) {
+    window._feeFilterState = filter || 'all';
+    
+    // Update button visual
+    document.querySelectorAll('.fee-filter-clean .ff-btn').forEach(function(btn) {
+      btn.classList.remove('active');
+      if (btn.dataset.feeFilter === filter) {
+        btn.classList.add('active');
+        if (filter === 'pending') btn.classList.add('pending');
+        if (filter === 'paid') btn.classList.add('paid');
+      }
+    });
+
+    // Update PDF label
+    var pdfBtn = document.querySelector('.fee-filter-clean .ff-actions .ff-btn');
+    if (pdfBtn) {
+      var lbl = filter === 'all' ? 'All' : filter === 'pending' ? 'Pending' : 'Paid';
+      pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF (' + lbl + ')';
+    }
+
+    // Filter the table
+    if (typeof _origApply === 'function') {
+      try { _origApply(filter); } catch(e) {}
+    }
+    
+    // Force render with our fallback
+    setTimeout(function() {
+      var data = window.feeParentsData || [];
+      var filtered = data.filter(function(p) {
+        if (filter === 'all') return true;
+        var st = window.getFeeParentStatus ? window.getFeeParentStatus(p) : 'pending';
+        return st === filter;
+      });
+
+      var wrap = document.getElementById('feeParentsWrap');
+      if (wrap && (!wrap.querySelector('table') || filtered.length === 0)) {
+        // Re-render with our own renderer
+        if (typeof window.renderFeeFilteredTable === 'function') {
+          window.renderFeeFilteredTable(filtered);
+        }
+      }
+    }, 200);
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🚀 INIT — Check on page load                             */
+  /* ═══════════════════════════════════════════════════════ */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        var tab = document.getElementById('adminFeeParentsTab');
+        if (tab && tab.style.display === 'block') {
+          waitForFeeData(function() { window.reinjectFeeFilter(); });
+        }
+      }, 2000);
+    });
+  } else {
+    setTimeout(function() {
+      var tab = document.getElementById('adminFeeParentsTab');
+      if (tab && tab.style.display === 'block') {
+        waitForFeeData(function() { window.reinjectFeeFilter(); });
+      }
+    }, 2000);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🧪 DEBUG FUNCTION                                        */
+  /* ═══════════════════════════════════════════════════════ */
+  window.debugFeeFilter = function() {
+    console.log('═══ 💰 Fee Filter Debug ═══');
+    var data = window.feeParentsData || [];
+    console.log('1. feeParentsData length:', data.length);
+    
+    var pending = 0, paid = 0;
+    data.forEach(function(p) {
+      var st = window.getFeeParentStatus ? window.getFeeParentStatus(p) : '?';
+      if (st === 'pending') pending++;
+      else if (st === 'paid') paid++;
+    });
+    console.log('2. Actual counts — Pending:', pending, 'Paid:', paid, 'All:', data.length);
+    console.log('3. Current filter:', window._feeFilterState);
+    console.log('4. Filtered list:', (window.filteredFeeParents || []).length);
+    
+    var wrap = document.getElementById('feeParentsWrap');
+    console.log('5. Table exists:', !!wrap?.querySelector('table'));
+    console.log('6. Rows in table:', wrap?.querySelectorAll('tbody tr').length || 0);
+    console.log('7. Filter UI present:', !!document.querySelector('.fee-filter-clean'));
+    
+    var counts = document.querySelectorAll('.fee-filter-clean .ff-count');
+    counts.forEach(function(c, i) {
+      console.log('8.' + (i+1) + ' Filter count [' + i + ']:', c.textContent);
+    });
+    console.log('═══════════════════════════');
+  };
+
+  console.log('✅ Fee Filter Fix v37.1 ready');
+  console.log('   💡 Type debugFeeFilter() in console');
+})();
+</script>
 </body>
 </html>
