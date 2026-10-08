@@ -12312,9 +12312,11 @@ if('serviceWorker' in navigator){
       if(cfg.filterOrAll){
         var cls = String(currentUser.class);
         cfg.filterOrAll.forEach(function(col){
-          if(col === 'class') q = q.or('class.eq.all,class.eq.' + cls);
-          else if(col === 'target_class'){
-            q = q.or('target_class.eq.all,target_class.eq.' + cls + ',target_class.like.' + cls + ',%,target_class.like.%,' + cls + ',target_class.like.%,' + cls + ',%');
+          if(col === 'class') {
+            q = q.or('class.eq.all,class.eq.' + cls);
+          } else if(col === 'target_class'){
+            // Simple: match 'all' OR exact class OR comma-list contains class
+            q = q.or('target_class.eq.all,target_class.eq.' + cls + ',target_class.like.*,' + cls + ',*,target_class.like.' + cls + ',*,target_class.like.*,' + cls);
           }
         });
       }
@@ -14723,11 +14725,15 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
 
       for (const key of earned) {
         try {
-          await supabaseClient.from('student_stickers').insert({
+          // Upsert with ignoreDuplicates — no 409 error
+          await supabaseClient.from('student_stickers').upsert({
             studentid: currentUser.studentId,
             sticker_key: key
+          }, {
+            onConflict: 'studentid,sticker_key',
+            ignoreDuplicates: true
           });
-        } catch(e) { /* already unlocked */ }
+        } catch(e) { /* silent */ }
       }
     } catch(e) { console.warn('stickers error:', e); }
   };
@@ -25487,17 +25493,121 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
     if (typeof window.renderNamazFullView === 'function') window.renderNamazFullView();
   };
 
+  /* ─── INTERNAL LOADERS (Self-contained) ─── */
+  async function _loadWeekInternal() {
+    if (!currentUser || !window.supabaseClient) return;
+    try {
+      var end = new Date();
+      var start = new Date();
+      start.setDate(start.getDate() - 6);
+      function fmt(d) {
+        return d.getFullYear() + '-' +
+          String(d.getMonth() + 1).padStart(2, '0') + '-' +
+          String(d.getDate()).padStart(2, '0');
+      }
+      var r = await window.supabaseClient.from('namaz_log')
+        .select('*')
+        .eq('studentid', currentUser.studentId)
+        .gte('prayer_date', fmt(start))
+        .lte('prayer_date', fmt(end))
+        .order('prayer_date', { ascending: true });
+
+      var map = {};
+      (r.data || []).forEach(function(log) { map[log.prayer_date] = log; });
+
+      var wd = [];
+      for (var i = 6; i >= 0; i--) {
+        var d = new Date();
+        d.setDate(d.getDate() - i);
+        var ds = fmt(d);
+        wd.push({
+          date: ds,
+          log: map[ds] || { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false, completed_count: 0, all_completed: false },
+          isToday: i === 0
+        });
+      }
+      if (window.NAMZ_STATE) window.NAMZ_STATE.weekData = wd;
+      console.log('✅ Week loaded:', wd.length, 'days');
+    } catch(e) { console.warn('week load:', e); }
+  }
+
+  async function _loadMonthInternal() {
+    if (!currentUser || !window.supabaseClient) return;
+    try {
+      var today = new Date();
+      var year = today.getFullYear();
+      var month = today.getMonth();
+      var firstDay = new Date(year, month, 1);
+      var lastDay = new Date(year, month + 1, 0);
+
+      function fmt(d) {
+        return d.getFullYear() + '-' +
+          String(d.getMonth() + 1).padStart(2, '0') + '-' +
+          String(d.getDate()).padStart(2, '0');
+      }
+
+      var r = await window.supabaseClient.from('namaz_log')
+        .select('*')
+        .eq('studentid', currentUser.studentId)
+        .gte('prayer_date', fmt(firstDay))
+        .lte('prayer_date', fmt(lastDay));
+
+      var map = {};
+      (r.data || []).forEach(function(log) { map[log.prayer_date] = log; });
+
+      var md = [];
+      var firstWeekday = firstDay.getDay();
+      for (var p = 0; p < firstWeekday; p++) md.push({ empty: true });
+
+      var daysInMonth = lastDay.getDate();
+      for (var d = 1; d <= daysInMonth; d++) {
+        var ds = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+        md.push({
+          day: d,
+          date: ds,
+          log: map[ds] || null,
+          isToday: d === today.getDate(),
+          isFuture: new Date(ds) > today
+        });
+      }
+      if (window.NAMZ_STATE) {
+        window.NAMZ_STATE.monthData = md;
+        var months = ['ജനുവരി','ഫെബ്രുവരി','മാർച്ച്','ഏപ്രിൽ','മേയ്','ജൂൺ','ജൂലൈ','ഓഗസ്റ്റ്','സെപ്റ്റംബർ','ഒക്ടോബർ','നവംബർ','ഡിസംബർ'];
+        window.NAMZ_STATE.monthName = months[month] + ' ' + year;
+      }
+      console.log('✅ Month loaded:', md.length, 'days');
+    } catch(e) { console.warn('month load:', e); }
+  }
+
+  async function _loadStreakInternal() {
+    if (!currentUser || !window.supabaseClient) return;
+    try {
+      var r = await window.supabaseClient.from('namaz_streaks')
+        .select('*')
+        .eq('studentid', currentUser.studentId)
+        .maybeSingle();
+      if (window.NAMZ_STATE) {
+        window.NAMZ_STATE.streak = r.data || {
+          current_streak: 0, longest_streak: 0,
+          total_complete_days: 0, total_prayers: 0
+        };
+      }
+    } catch(e) { console.warn('streak load:', e); }
+  }
+
   /* ─── ENHANCED OPEN ─── */
-  var _origOpen = window.openNamazFullView;
   window.openNamazFullView = async function() {
     if (!currentUser) { showToast('Login first', 'error'); return; }
     modalTitleSpan.innerText = '🕌 നമസ്കാരം — View';
     modalBodyDiv.innerHTML = '<div class="text-center py-4"><div class="spinner-sm"></div></div>';
     modal.style.display = 'flex';
 
-    // Load data with individual try/catch
-    try { if (typeof loadNamazWeek === 'function') await loadNamazWeek(); } catch(e) { console.warn('week:', e); }
-    try { if (typeof loadNamazMonth === 'function') await loadNamazMonth(); } catch(e) { console.warn('month:', e); }
+    // Run all loaders in parallel
+    await Promise.all([
+      _loadWeekInternal(),
+      _loadMonthInternal(),
+      _loadStreakInternal()
+    ]);
 
     // Always render
     try { window.renderNamazFullView(); }
