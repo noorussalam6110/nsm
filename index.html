@@ -18507,5 +18507,447 @@ body.ai-panel-open {
   console.log('   • checkSupabaseHealth()');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔧 v61.0 — LOGIN TEXT CLEANUP + UNIVERSAL DRAG SCROLL   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<style id="fix-v61-css">
+/* 🚫 Hide any orphan text nodes directly under body */
+body > #loginSection ~ text,
+body > text {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* 🚫 Hide any visible text that's not inside a proper container */
+body > :not(div):not(header):not(footer):not(nav):not(section):not(main):not(aside):not(article):not(script):not(style):not(link):not(meta):not(svg):not(canvas):not(button):not(input):not(form):not(a):not(iframe):not(img):not(br):not(hr):not(p):not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(ul):not(ol):not(li):not(table):not(select):not(textarea):not(label) {
+  display: none !important;
+}
+
+/* 🎯 Ensure login wrapper covers everything */
+#loginSection.nsm-login-wrapper {
+  position: relative;
+  z-index: 100;
+}
+
+/* 🖐️ Grab cursor for scrollable areas */
+.scroll-draggable {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.scroll-draggable.dragging {
+  cursor: grabbing;
+  scroll-behavior: auto !important;
+}
+.scroll-draggable.dragging * {
+  cursor: grabbing !important;
+  pointer-events: none;
+}
+.scroll-draggable.dragging input,
+.scroll-draggable.dragging textarea,
+.scroll-draggable.dragging select,
+.scroll-draggable.dragging button,
+.scroll-draggable.dragging a {
+  pointer-events: auto;
+}
+</style>
+
+<script id="fix-v61-js">
+(function(){
+  'use strict';
+  console.log('🔧 v61.0 — Cleanup + Drag Scroll loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 1️⃣ CLEANUP — Remove orphan text nodes under body       */
+  /* ═══════════════════════════════════════════════════════ */
+  function removeOrphanText() {
+    var known = [
+      'loginSection','dashboardSection','adminSection','splashScreen',
+      'loadingOverlay','helpModal','findStudentIdModal','adminViewBanner',
+      'passbookModal','studentWithdrawalModal','notificationsModal',
+      'globalModal','editProfileModal','topperModal','topperCropModal',
+      'posterPreviewOverlay','topperLoading','studentFeesOverlay',
+      'creationsOverlay','uploadCreationModal','creationLightbox',
+      'notesModal','noticeBoardModal','aiPanel','aiFab','toastContainer',
+      'publicFeedOverlay','pwaInstallBtn','surveyPopup','chatFab','chatPanel',
+      'addFriendModal','avatarCustomizerModal','rewardsModal','quizModal',
+      'levelupPopup','teacherLoginV60','teacherDashboardV60'
+    ];
+
+    var removed = 0;
+    Array.from(document.body.childNodes).forEach(function(node) {
+      if (node.nodeType === 3) { // Text node
+        var txt = (node.nodeValue || '').trim();
+        if (txt.length > 3) {
+          console.log('🗑️ Removing orphan text:', txt.substring(0, 60) + '...');
+          node.remove();
+          removed++;
+        }
+      }
+    });
+
+    if (removed > 0) {
+      console.log('✅ Removed ' + removed + ' orphan text nodes');
+    }
+  }
+
+  // Run immediately + periodically
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(removeOrphanText, 100);
+      setTimeout(removeOrphanText, 1000);
+      setTimeout(removeOrphanText, 3000);
+    });
+  } else {
+    setTimeout(removeOrphanText, 100);
+    setTimeout(removeOrphanText, 1000);
+  }
+
+  // Watch for new orphans
+  if (document.body) {
+    new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        if (m.addedNodes.length > 0) {
+          m.addedNodes.forEach(function(n) {
+            if (n.nodeType === 3 && (n.nodeValue || '').trim().length > 3) {
+              console.log('🗑️ Removing new orphan text:', (n.nodeValue || '').substring(0, 40));
+              n.remove();
+            }
+          });
+        }
+      });
+    }).observe(document.body, { childList: true });
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 2️⃣ UNIVERSAL DRAG-TO-SCROLL                            */
+  /* Works with mouse + touch on all scrollable containers   */
+  /* ═══════════════════════════════════════════════════════ */
+
+  var DRAG_THRESHOLD = 5; // px before considered a drag
+
+  function makeScrollableDraggable(el) {
+    if (!el || el._dragReady) return;
+    el._dragReady = true;
+
+    el.classList.add('scroll-draggable');
+
+    var isDown = false;
+    var isDragging = false;
+    var startX = 0, startY = 0;
+    var startScrollTop = 0, startScrollLeft = 0;
+    var lastMoveTime = 0;
+    var velocityY = 0, velocityX = 0;
+    var momentumId = null;
+    var touchId = null;
+
+    function isInteractive(target) {
+      return target.closest('input, textarea, select, button, a, label, [contenteditable], [role="button"], video, audio, iframe');
+    }
+
+    function cancelMomentum() {
+      if (momentumId) {
+        cancelAnimationFrame(momentumId);
+        momentumId = null;
+      }
+    }
+
+    function startMomentum() {
+      if (Math.abs(velocityY) < 0.5 && Math.abs(velocityX) < 0.5) return;
+
+      var maxScrollTop = el.scrollHeight - el.clientHeight;
+      var maxScrollLeft = el.scrollWidth - el.clientWidth;
+
+      function step() {
+        velocityY *= 0.94;
+        velocityX *= 0.94;
+
+        if (Math.abs(velocityY) < 0.5 && Math.abs(velocityX) < 0.5) {
+          momentumId = null;
+          return;
+        }
+
+        var newTop = el.scrollTop + velocityY;
+        var newLeft = el.scrollLeft + velocityX;
+
+        if (newTop < 0) { newTop = 0; velocityY = 0; }
+        if (newTop > maxScrollTop) { newTop = maxScrollTop; velocityY = 0; }
+        if (newLeft < 0) { newLeft = 0; velocityX = 0; }
+        if (newLeft > maxScrollLeft) { newLeft = maxScrollLeft; velocityX = 0; }
+
+        el.scrollTop = newTop;
+        el.scrollLeft = newLeft;
+
+        momentumId = requestAnimationFrame(step);
+      }
+
+      momentumId = requestAnimationFrame(step);
+    }
+
+    /* ─── MOUSE EVENTS ─── */
+    el.addEventListener('mousedown', function(e) {
+      if (e.button !== 0) return;
+      if (isInteractive(e.target)) return;
+
+      isDown = true;
+      isDragging = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      startScrollTop = el.scrollTop;
+      startScrollLeft = el.scrollLeft;
+      lastMoveTime = performance.now();
+      velocityY = 0;
+      velocityX = 0;
+      cancelMomentum();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDown) return;
+
+      var dx = e.clientX - startX;
+      var dy = e.clientY - startY;
+
+      if (!isDragging && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
+        isDragging = true;
+        el.classList.add('dragging');
+      }
+
+      if (isDragging) {
+        var now = performance.now();
+        var dt = now - lastMoveTime;
+        var prevTop = el.scrollTop;
+        var prevLeft = el.scrollLeft;
+
+        el.scrollTop = startScrollTop - dy;
+        el.scrollLeft = startScrollLeft - dx;
+
+        if (dt > 0) {
+          velocityY = (el.scrollTop - prevTop) / dt * 16.67;
+          velocityX = (el.scrollLeft - prevLeft) / dt * 16.67;
+        }
+        lastMoveTime = now;
+
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener('mouseup', function(e) {
+      if (!isDown) return;
+      isDown = false;
+
+      if (isDragging) {
+        el.classList.remove('dragging');
+        startMomentum();
+
+        // Prevent click after drag
+        var blockClick = function(ev) {
+          ev.stopPropagation();
+          ev.preventDefault();
+          document.removeEventListener('click', blockClick, true);
+        };
+        document.addEventListener('click', blockClick, true);
+
+        // Backup cleanup
+        setTimeout(function() {
+          document.removeEventListener('click', blockClick, true);
+        }, 300);
+      }
+
+      isDragging = false;
+    });
+
+    /* ─── TOUCH EVENTS ─── */
+    el.addEventListener('touchstart', function(e) {
+      if (e.touches.length !== 1) return;
+      var target = e.touches[0].target;
+      if (isInteractive(target)) return;
+
+      touchId = e.touches[0].identifier;
+      isDown = true;
+      isDragging = false;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      startScrollTop = el.scrollTop;
+      startScrollLeft = el.scrollLeft;
+      lastMoveTime = performance.now();
+      velocityY = 0;
+      velocityX = 0;
+      cancelMomentum();
+    }, { passive: true });
+
+    el.addEventListener('touchmove', function(e) {
+      if (!isDown) return;
+      var touch = null;
+      for (var i = 0; i < e.touches.length; i++) {
+        if (e.touches[i].identifier === touchId) {
+          touch = e.touches[i];
+          break;
+        }
+      }
+      if (!touch) return;
+
+      var dx = touch.clientX - startX;
+      var dy = touch.clientY - startY;
+
+      if (!isDragging && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
+        isDragging = true;
+        el.classList.add('dragging');
+      }
+
+      if (isDragging) {
+        var now = performance.now();
+        var dt = now - lastMoveTime;
+        var prevTop = el.scrollTop;
+        var prevLeft = el.scrollLeft;
+
+        el.scrollTop = startScrollTop - dy;
+        el.scrollLeft = startScrollLeft - dx;
+
+        if (dt > 0) {
+          velocityY = (el.scrollTop - prevTop) / dt * 16.67;
+          velocityX = (el.scrollLeft - prevLeft) / dt * 16.67;
+        }
+        lastMoveTime = now;
+      }
+    }, { passive: true });
+
+    el.addEventListener('touchend', function(e) {
+      if (!isDown) return;
+      isDown = false;
+      touchId = null;
+
+      if (isDragging) {
+        el.classList.remove('dragging');
+        startMomentum();
+      }
+
+      isDragging = false;
+    }, { passive: true });
+
+    el.addEventListener('touchcancel', function() {
+      isDown = false;
+      isDragging = false;
+      touchId = null;
+      el.classList.remove('dragging');
+    }, { passive: true });
+
+    /* ─── Stop drag on scroll with wheel ─── */
+    el.addEventListener('wheel', function() {
+      cancelMomentum();
+    }, { passive: true });
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 3️⃣ APPLY TO ALL SCROLLABLE CONTAINERS                  */
+  /* ═══════════════════════════════════════════════════════ */
+
+  function isScrollable(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (el._dragReady) return false;
+    var style = window.getComputedStyle(el);
+    var overflowY = style.overflowY;
+    var overflowX = style.overflowX;
+
+    var canScrollY = (overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 5;
+    var canScrollX = (overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 5;
+
+    return canScrollY || canScrollX;
+  }
+
+  function applyToAll() {
+    // Find all scrollable elements
+    var all = document.querySelectorAll('*');
+    var applied = 0;
+
+    all.forEach(function(el) {
+      // Skip hidden or tiny elements
+      if (el.offsetParent === null && el !== document.documentElement && el !== document.body) return;
+
+      if (isScrollable(el)) {
+        // Skip if it's a text input area
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') return;
+
+        makeScrollableDraggable(el);
+        applied++;
+      }
+    });
+
+    if (applied > 0) {
+      console.log('✅ Drag-scroll applied to ' + applied + ' containers');
+    }
+  }
+
+  // Run after DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(applyToAll, 300);
+      setTimeout(applyToAll, 1500);
+      setTimeout(applyToAll, 3500);
+    });
+  } else {
+    setTimeout(applyToAll, 300);
+    setTimeout(applyToAll, 1500);
+    setTimeout(applyToAll, 3500);
+  }
+
+  // Re-apply when DOM changes (modals opening, etc.)
+  if (document.body) {
+    var reapplyTimer = null;
+    new MutationObserver(function(mutations) {
+      var needsReapply = false;
+      mutations.forEach(function(m) {
+        if (m.addedNodes.length > 0) {
+          m.addedNodes.forEach(function(n) {
+            if (n.nodeType === 1) needsReapply = true;
+          });
+        }
+      });
+      if (needsReapply) {
+        clearTimeout(reapplyTimer);
+        reapplyTimer = setTimeout(applyToAll, 500);
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  // Re-apply on resize
+  window.addEventListener('resize', function() {
+    setTimeout(applyToAll, 300);
+  });
+
+  // Re-apply on orientation change
+  window.addEventListener('orientationchange', function() {
+    setTimeout(applyToAll, 500);
+  });
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 4️⃣ SPECIAL — Login page drag                            */
+  /* ═══════════════════════════════════════════════════════ */
+  function applyLoginDrag() {
+    var loginSide = document.querySelector('.nsm-login-side');
+    if (loginSide && loginSide.scrollHeight > loginSide.clientHeight) {
+      makeScrollableDraggable(loginSide);
+    }
+    var loginWrapper = document.querySelector('.nsm-login-wrapper');
+    if (loginWrapper && loginWrapper.scrollHeight > loginWrapper.clientHeight) {
+      makeScrollableDraggable(loginWrapper);
+    }
+    var loginBody = document.querySelector('.nsm-body');
+    if (loginBody && loginBody.scrollHeight > loginBody.clientHeight) {
+      makeScrollableDraggable(loginBody);
+    }
+  }
+
+  setTimeout(applyLoginDrag, 800);
+  setTimeout(applyLoginDrag, 2000);
+
+  console.log('✅ v61.0 loaded — Orphan text cleanup + Drag scroll ready');
+  console.log('   💡 Drag any scrollable area with mouse/finger');
+  console.log('   💡 Type removeOrphanText() in console to re-run cleanup');
+  console.log('   💡 Type applyToAll() in console to re-apply drag');
+})();
+</script>
 </body>
 </html>
