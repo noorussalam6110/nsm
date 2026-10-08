@@ -18603,7 +18603,7 @@ console.log('✅ Admin Management Extended — Quiz, Rewards, Missions, Survey, 
     exam_card: true,
     quiz_tile: true,
     rewards_tile: true,
-    tasbeeh_tile: true,
+    tasbeeh_tile: false,        // ← Default OFF
     avatar_tile: true,
     chat_tile: true,
     xp_widget: true,
@@ -18735,6 +18735,7 @@ console.log('✅ Admin Management Extended — Quiz, Rewards, Missions, Survey, 
       avatar_tile: 'avatar_custom',
       chat_tile: 'class_chat'
     };
+    // Note: v28 'avatar' action is deduped by v41 cleanup script
     Object.keys(tileMap).forEach(function(k) {
       var tile = document.querySelector('.action-tile[data-action="' + tileMap[k] + '"]');
       if (tile) tile.style.display = ev[k] ? '' : 'none';
@@ -25623,6 +25624,80 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   };
 
   console.log('✅ Bulletproof Namaz Render v40.0 ready');
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════ */
+/* 🎨 v41.0 — QUICK ACTIONS CLEANUP                         */
+/* Remove duplicates + Hide Tasbeeh tile                    */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  console.log('🎨 Quick Actions Cleanup v41.0 loading...');
+
+  function cleanupQuickActions() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return;
+
+    // ─── 1. Remove duplicate Avatar tile ───
+    var avatarTiles = grid.querySelectorAll('.action-tile[data-action="avatar"]');
+    // Keep the one from v29 (has onclick openAvatarCustomizer), remove v28's
+    avatarTiles.forEach(function(tile) {
+      // v28 version — remove it
+      tile.remove();
+      console.log('🗑️ Removed duplicate Avatar tile');
+    });
+
+    // ─── 2. Hide Tasbeeh tile (v36 intent) ───
+    var tasbeehTile = grid.querySelector('.action-tile[data-action="tasbeeh"]');
+    if (tasbeehTile) {
+      tasbeehTile.style.display = 'none';
+      console.log('🚫 Hidden Tasbeeh tile');
+    }
+
+    // ─── 3. Verify no duplicates remain ───
+    var actions = {};
+    grid.querySelectorAll('.action-tile').forEach(function(tile) {
+      var action = tile.dataset.action;
+      if (!action) return;
+      if (actions[action]) {
+        tile.remove();
+        console.log('🗑️ Removed duplicate action:', action);
+      } else {
+        actions[action] = true;
+      }
+    });
+
+    console.log('✅ Quick Actions cleaned —', grid.querySelectorAll('.action-tile:not([style*="display: none"])').length, 'visible tiles');
+  }
+
+  // Run after tiles load
+  setTimeout(cleanupQuickActions, 500);
+  setTimeout(cleanupQuickActions, 1500);
+  setTimeout(cleanupQuickActions, 3000);
+  setTimeout(cleanupQuickActions, 5000);
+
+  // Watch for re-additions
+  var dash = document.getElementById('dashboardSection');
+  if (dash) {
+    new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        if (m.addedNodes.length > 0) {
+          m.addedNodes.forEach(function(n) {
+            if (n.nodeType === 1 && n.classList && n.classList.contains('action-tile')) {
+              setTimeout(cleanupQuickActions, 200);
+            }
+          });
+        }
+      });
+    }).observe(dash, { childList: true, subtree: true });
+  }
+
+  // Expose manual trigger
+  window.cleanupQuickActions = cleanupQuickActions;
+
+  console.log('✅ Quick Actions Cleanup v41.0 ready');
+  console.log('   💡 Run cleanupQuickActions() to re-run manually');
 })();
 </script>
 </body>
