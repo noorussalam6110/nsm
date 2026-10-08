@@ -25963,6 +25963,52 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 })();
 </script>
 <!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📱 v50.0 — TEACHER MODAL TOUCH/KEYBOARD CSS              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="teacher-modal-touch-fix">
+/* 📱 Teacher Password Modal — Touch/Keyboard Fix */
+#teacherPwdModal {
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+}
+#teacherPwdModal > div {
+  touch-action: auto !important;
+}
+#teacherPwdModal input,
+#teacherPwdModal button {
+  touch-action: manipulation !important;
+  min-height: 44px;
+}
+/* Input font-size 16px — prevent iOS auto-zoom */
+#teacherPwdInput {
+  font-size: 16px !important;
+}
+
+/* 📱 Teacher Dashboard scroll fix */
+#teacherDashboard {
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+}
+
+/* 📱 Teacher tabs — horizontal scroll on mobile */
+@media (max-width: 600px) {
+  #teacherClassTabs {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  #teacherClassTabs::-webkit-scrollbar { display: none; }
+
+  #teacherMainContent .teacher-tab {
+    flex-shrink: 0;
+  }
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════ -->
 <!-- 👨‍🏫 v50.0 — TEACHER LOGIN SYSTEM                         -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <script id="teacher-system-v50">
@@ -26120,11 +26166,9 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   function promptTeacherPassword(teacher) {
     var modal = document.createElement('div');
     modal.id = 'teacherPwdModal';
-    modal.style.cssText = 'position:fixed;inset:0;background:linear-gradient(135deg,rgba(5,14,43,.95),rgba(3,8,28,.98));backdrop-filter:blur(20px);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:20px;';
-
+    modal.style.cssText = 'position:fixed;inset:0;background:linear-gradient(135deg,rgba(5,14,43,.95),rgba(3,8,28,.98));backdrop-filter:blur(20px);z-index:9999999;display:flex;align-items:flex-start;justify-content:center;padding:20px;padding-top:max(20px,env(safe-area-inset-top,20px));padding-bottom:max(20px,env(safe-area-inset-bottom,20px));overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;';
     modal.innerHTML = 
-      '<div style="max-width:440px;width:100%;background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.3);border-radius:26px;padding:30px 26px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 60px -20px rgba(34,211,238,.5);position:relative;overflow:hidden;">' +
-        '<div style="position:absolute;top:-1.5px;left:12%;right:12%;height:2.5px;border-radius:3px;background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#fff,#3b8bff,#22d3ee,transparent);background-size:250% 100%;animation:cardGoldenFlow 4s linear infinite;filter:drop-shadow(0 0 10px rgba(34,211,238,.9));"></div>' +
+      '<div style="max-width:440px;width:100%;margin:auto 0;flex-shrink:0;background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.3);border-radius:26px;padding:30px 26px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 60px -20px rgba(34,211,238,.5);position:relative;overflow:hidden;">' +        '<div style="position:absolute;top:-1.5px;left:12%;right:12%;height:2.5px;border-radius:3px;background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#fff,#3b8bff,#22d3ee,transparent);background-size:250% 100%;animation:cardGoldenFlow 4s linear infinite;filter:drop-shadow(0 0 10px rgba(34,211,238,.9));"></div>' +
         '<div style="text-align:center;margin-bottom:22px;">' +
           '<div style="width:80px;height:80px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:#fff;box-shadow:0 12px 30px -10px rgba(34,211,238,.8),0 0 0 8px rgba(34,211,238,.15);">' +
             '<i class="fas fa-chalkboard-teacher"></i>' +
@@ -26159,10 +26203,65 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
       '</div>';
 
     document.body.appendChild(modal);
+
+    // 📱 Keyboard-aware scroll — input focus ചെയ്യുമ്പോൾ auto-scroll
+    function scrollInputIntoView() {
+      var inp = document.getElementById('teacherPwdInput');
+      if (!inp) return;
+      setTimeout(function() {
+        try {
+          inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch(e) {
+          inp.scrollIntoView();
+        }
+      }, 150);
+    }
+
     setTimeout(function() {
       var inp = document.getElementById('teacherPwdInput');
-      if (inp) inp.focus();
-    }, 200);
+      if (inp) {
+        inp.focus();
+        scrollInputIntoView();
+      }
+    }, 300);
+
+    // Visual viewport resize — keyboard open/close detect
+    if (window.visualViewport) {
+      var vv = window.visualViewport;
+      var onVVResize = function() {
+        var m = document.getElementById('teacherPwdModal');
+        if (!m) return;
+        var kb = window.innerHeight - vv.height;
+        if (kb > 150) {
+          // Keyboard open — allow scroll
+          m.style.alignItems = 'flex-end';
+          m.style.paddingBottom = (kb + 20) + 'px';
+          scrollInputIntoView();
+        } else {
+          // Keyboard closed — reset
+          m.style.alignItems = 'flex-start';
+          m.style.paddingBottom = 'max(20px, env(safe-area-inset-bottom, 20px))';
+        }
+      };
+      vv.addEventListener('resize', onVVResize);
+      vv.addEventListener('scroll', onVVResize);
+      // Cleanup on close
+      modal._cleanupVV = function() {
+        try {
+          vv.removeEventListener('resize', onVVResize);
+          vv.removeEventListener('scroll', onVVResize);
+        } catch(e) {}
+      };
+    }
+
+    // Mouse drag-to-scroll (desktop) + touch scroll (mobile) — already native via overflow
+    var card = modal.querySelector('div');
+    if (card) {
+      // Prevent card drag from interfering with inner inputs
+      card.addEventListener('touchstart', function(e) {
+        // Just allow native scroll
+      }, { passive: true });
+    }
 
     document.getElementById('teacherPwdEye').onclick = function() {
       var inp = document.getElementById('teacherPwdInput');
@@ -26171,9 +26270,10 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
     };
 
     document.getElementById('teacherCancelBtn').onclick = function() {
+      if (modal._cleanupVV) try { modal._cleanupVV(); } catch(e) {}
       modal.remove();
       var s = document.getElementById('studentId');
-      if (s) { s.value = ''; s.focus(); }
+      if (s) { s.value = ''; setTimeout(function() { s.focus(); }, 100); }
     };
 
     document.getElementById('teacherPwdForm').onsubmit = async function(e) {
@@ -26193,6 +26293,7 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
       btn.disabled = true;
       btn.innerHTML = '<span class="sec-spinner"></span> Loading...';
 
+      if (modal._cleanupVV) try { modal._cleanupVV(); } catch(e) {}
       modal.remove();
       await enterTeacherDashboard(teacher);
     };
