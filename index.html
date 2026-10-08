@@ -28012,5 +28012,1012 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   console.log('✅ Teacher v55.0 loaded — All features ready');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎓 v56.0 — TEACHER SYSTEM: COMPLETE + SCROLL FIXED     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<style id="teacher-v56-css">
+/* Modal — force scroll, block syncHeight */
+#teacherPwdModal {
+  display: block !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  position: fixed !important;
+  top: 0 !important; left: 0 !important;
+  right: 0 !important; bottom: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+  padding: 20px !important;
+  padding-top: max(20px, env(safe-area-inset-top, 20px)) !important;
+  padding-bottom: max(100px, env(safe-area-inset-bottom, 20px)) !important;
+  box-sizing: border-box !important;
+  z-index: 9999999 !important;
+  touch-action: pan-y !important;
+}
+#teacherPwdModal > div {
+  margin: 20px auto 80px !important;
+  max-width: 440px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+@media (max-width: 600px) {
+  #teacherPwdModal { padding: 16px !important; padding-bottom: max(120px, env(safe-area-inset-bottom, 16px)) !important; }
+  #teacherPwdModal > div { max-width: 100% !important; }
+}
+</style>
+
+<script id="teacher-v56-js">
+(function(){
+  'use strict';
+  console.log('🎓 Teacher System v56.0 — Complete + Scroll Fixed');
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 1. Freeze modal — block syncHeight inline writes
+  // ═══════════════════════════════════════════════════════
+  function freezeModal(m) {
+    if (!m || m._v56frozen) return;
+    m._v56frozen = true;
+    var style = m.style;
+    ['height','maxHeight','minHeight','top','bottom'].forEach(function(prop) {
+      try {
+        var d = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, prop);
+        if (!d || !d.set) return;
+        Object.defineProperty(style, prop, {
+          configurable: true,
+          set: function(){},
+          get: function(){ return d.get.call(this); }
+        });
+      } catch(e) {}
+    });
+    var FIXED = {
+      'display':'block', 'height':'auto', 'max-height':'none',
+      'min-height':'100dvh', 'position':'fixed',
+      'top':'0', 'left':'0', 'right':'0', 'bottom':'0',
+      'overflow-y':'auto', 'overflow-x':'hidden',
+      '-webkit-overflow-scrolling':'touch',
+      'overscroll-behavior':'contain',
+      'padding':'20px', 'box-sizing':'border-box'
+    };
+    Object.keys(FIXED).forEach(function(k){ try { style.setProperty(k, FIXED[k], 'important'); } catch(e){} });
+    var card = m.firstElementChild;
+    if (card) {
+      try {
+        card.style.setProperty('margin','20px auto 80px','important');
+        card.style.setProperty('max-width','440px','important');
+        card.style.setProperty('width','100%','important');
+      } catch(e){}
+    }
+    document.body.style.overflow = 'hidden';
+    console.log('✅ Modal frozen');
+    enhanceModal(m);
+  }
+
+  function scan() {
+    var m = document.getElementById('teacherPwdModal');
+    if (m) freezeModal(m);
+  }
+  if (document.body) new MutationObserver(scan).observe(document.body, { childList:true, subtree:true });
+  setInterval(scan, 200);
+
+  // ═══════════════════════════════════════════════════════
+  // 🎁 2. Add Extras — Remember Me, Forgot Password
+  // ═══════════════════════════════════════════════════════
+  function enhanceModal(m) {
+    if (m._v56enhanced) return;
+    m._v56enhanced = true;
+    setTimeout(function(){
+      var form = m.querySelector('#teacherPwdForm');
+      if (!form || form.querySelector('#v56extras')) return;
+      var submitBtn = form.querySelector('#teacherLoginBtn');
+      if (!submitBtn) return;
+
+      var teacher = window._v56Teacher || {};
+      var extras = document.createElement('div');
+      extras.id = 'v56extras';
+      extras.style.cssText = 'margin-top:12px;';
+      extras.innerHTML = 
+        '<label style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;cursor:pointer;user-select:none;margin-bottom:8px;">' +
+          '<input type="checkbox" id="v56Remember" style="width:20px;height:20px;accent-color:#22d3ee;flex-shrink:0;" checked>' +
+          '<span style="color:#fff;font-size:.8rem;font-weight:700;"><i class="fas fa-bookmark" style="color:#ffd966;margin-right:5px;"></i>Remember my Teacher ID</span>' +
+        '</label>' +
+        '<button type="button" id="v56Forgot" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;color:#a9cdff;font-family:inherit;font-size:.78rem;font-weight:700;padding:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">' +
+          '<i class="fas fa-question-circle" style="color:#ffd966;"></i> Password മറന്നോ? Admin-നെ ബന്ധപ്പെടുക' +
+        '</button>';
+
+      submitBtn.insertAdjacentElement('afterend', extras);
+
+      var forgotBtn = extras.querySelector('#v56Forgot');
+      if (forgotBtn) {
+        forgotBtn.onclick = function() {
+          alert('🔐 Teacher Password Reset\n\n' +
+                'Teacher ID: ' + (teacher.teacher_id || '—') + '\n' +
+                'Name: ' + (teacher.name || '—') + '\n\n' +
+                'Super Admin-നെ ബന്ധപ്പെടുക:\n' +
+                '📞 Office: 7034678818\n\n' +
+                'അല്ലെങ്കിൽ Super Admin Panel → Teachers → 🔑 Reset');
+        };
+      }
+    }, 150);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 3. REPLACE LOGIN HANDLER — Robust teacher detection
+  // ═══════════════════════════════════════════════════════
+  function installLogin() {
+    var form = document.getElementById('loginForm');
+    if (!form || form._v56) return;
+
+    var newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+    newForm._v56 = true;
+
+    var sidInput = document.getElementById('studentId');
+    if (sidInput) {
+      sidInput.addEventListener('input', function() {
+        var p = this.selectionStart;
+        var c = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (this.value !== c) { this.value = c; this.setSelectionRange(p, p); }
+        try { localStorage.setItem('noor_last_id', c); } catch(e){}
+      });
+    }
+
+    newForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!supabaseClient) { showToast('System loading...', 'error'); return; }
+      var raw = (sidInput.value || '').trim().toUpperCase();
+      if (!raw) { showToast('ID നൽകുക', 'error'); return; }
+      showLoading(true);
+
+      try {
+        // ═══ ADMIN ═══
+        var ap = localStorage.getItem('admin_password') || DEFAULT_ADMIN_PASSWORD;
+        if (raw === ap || raw === DEFAULT_ADMIN_PASSWORD) {
+          showLoading(false);
+          if (typeof window.enterSuperAdmin === 'function') return window.enterSuperAdmin();
+        }
+
+        // ═══ TEACHER (TR prefix) ═══
+        if (/^TR\d+/i.test(raw)) {
+          var tr = await supabaseClient.from('teachers')
+            .select('*').eq('teacher_id', raw).maybeSingle();
+
+          if (tr.error) {
+            // Table might not exist
+            if (String(tr.error.message || '').toLowerCase().includes('does not exist') ||
+                String(tr.error.code) === '42P01') {
+              showLoading(false);
+              showToast('⚠️ Teachers table missing in Supabase', 'error');
+              console.error('❌ Run SQL: CREATE TABLE teachers ...');
+              return;
+            }
+          }
+
+          if (tr.data && tr.data.is_active === false) {
+            showLoading(false);
+            showToast('🚫 Teacher account is inactive', 'error');
+            return;
+          }
+          if (tr.data) {
+            showLoading(false);
+            window._v56Teacher = tr.data;
+            return openTeacherPasswordModal(tr.data);
+          } else {
+            showLoading(false);
+            showToast('❌ Teacher ID കണ്ടെത്തിയില്ല: ' + raw, 'error');
+            return;
+          }
+        }
+
+        // ═══ STUDENT ═══
+        var r = await supabaseClient.from('students')
+          .select('*').eq('studentid', raw).single();
+        if (r.error || !r.data) {
+          showLoading(false);
+          showToast('❌ ID കണ്ടെത്തിയില്ല: ' + raw, 'error');
+          return;
+        }
+        if (r.data.is_blocked === true) {
+          showLoading(false);
+          showBlockedScreen(r.data);
+          return;
+        }
+        showLoading(false);
+        if (typeof window.completeLogin === 'function') await window.completeLogin(r.data);
+
+      } catch(err) {
+        console.error('Login error:', err);
+        showToast('❌ ' + err.message, 'error');
+        showLoading(false);
+      }
+    });
+    console.log('✅ v56 login handler installed');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔐 4. Teacher Password Modal
+  // ═══════════════════════════════════════════════════════
+  function openTeacherPasswordModal(teacher) {
+    var old = document.getElementById('teacherPwdModal');
+    if (old) { if (old._v56cleanup) try { old._v56cleanup(); } catch(e){} old.remove(); }
+
+    var m = document.createElement('div');
+    m.id = 'teacherPwdModal';
+    m.innerHTML =
+      '<div style="background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.3);border-radius:26px;padding:30px 26px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 60px -20px rgba(34,211,238,.4);position:relative;">' +
+        '<div style="position:absolute;top:-1.5px;left:12%;right:12%;height:2.5px;border-radius:3px;background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#fff,#3b8bff,#22d3ee,transparent);background-size:250% 100%;animation:cardGoldenFlow 4s linear infinite;"></div>' +
+        '<div style="text-align:center;margin-bottom:22px;">' +
+          '<div style="width:80px;height:80px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:#fff;box-shadow:0 12px 30px -10px rgba(34,211,238,.8);">' +
+            '<i class="fas fa-chalkboard-teacher"></i>' +
+          '</div>' +
+          '<h2 style="color:#fff;font-size:1.25rem;font-weight:800;margin:0 0 6px;">അസ്സലാമു അലൈക്കും, ' + escapeHtml((teacher.name || '').split(' ')[0] || 'Ustad') + ' 👋</h2>' +
+          '<p style="color:#a9cdff;font-size:.82rem;margin:0;">ഉസ്താദ് ലോഗിൻ</p>' +
+        '</div>' +
+        '<div style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;gap:10px;align-items:center;">' +
+          '<i class="fas fa-user-shield" style="color:#22d3ee;font-size:1.1rem;"></i>' +
+          '<div style="font-size:.74rem;color:#fff;line-height:1.5;">' +
+            '<b>' + escapeHtml(teacher.teacher_id) + '</b> • ' + escapeHtml(teacher.name) + '<br>' +
+            '<span style="color:#a9cdff;">Class' + (teacher.classes && teacher.classes.length ? ' ' + teacher.classes.join(', ') : '') + ' • ' + escapeHtml(teacher.subject || 'General') + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<form id="teacherPwdForm">' +
+          '<div style="margin-bottom:14px;">' +
+            '<label style="color:#fff;font-size:.78rem;font-weight:800;display:block;margin-bottom:6px;">🔐 Password</label>' +
+            '<div style="display:flex;align-items:center;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.28);border-radius:14px;padding:0 14px;">' +
+              '<i class="fas fa-lock" style="color:#ffd966;margin-right:10px;"></i>' +
+              '<input type="password" id="teacherPwdInput" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" style="flex:1;border:none;outline:none;background:transparent;padding:14px 0;color:#fff;font-family:inherit;font-size:16px;font-weight:700;min-width:0;">' +
+              '<i class="fas fa-eye" id="teacherPwdEye" style="cursor:pointer;color:#ffd966;padding:8px;font-size:.95rem;"></i>' +
+            '</div>' +
+          '</div>' +
+          '<button type="submit" id="teacherLoginBtn" style="width:100%;border:none;padding:15px;border-radius:14px;background:linear-gradient(100deg,#0891b2,#22d3ee,#3b8bff);color:#fff;font-family:inherit;font-weight:800;font-size:.94rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">' +
+            '<i class="fas fa-sign-in-alt" style="color:#ffd966;"></i><span>പ്രവേശിക്കുക</span>' +
+          '</button>' +
+          '<button type="button" id="teacherCancelBtn" style="width:100%;margin-top:10px;padding:13px;border-radius:14px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">' +
+            '<i class="fas fa-arrow-left"></i> തിരികെ' +
+          '</button>' +
+        '</form>' +
+      '</div>';
+
+    document.body.appendChild(m);
+
+    var prevBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    m._v56cleanup = function() { document.body.style.overflow = prevBodyOverflow || ''; };
+
+    // Freeze immediately + retry
+    freezeModal(m);
+    setTimeout(function(){ freezeModal(m); }, 100);
+    setTimeout(function(){ freezeModal(m); }, 500);
+
+    setTimeout(function(){
+      var inp = document.getElementById('teacherPwdInput');
+      if (inp) try { inp.focus({preventScroll:true}); } catch(e) { inp.focus(); }
+    }, 300);
+
+    // Eye toggle
+    var eye = document.getElementById('teacherPwdEye');
+    if (eye) eye.onclick = function(){
+      var inp = document.getElementById('teacherPwdInput');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      this.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    };
+
+    // Cancel
+    var cancelBtn = document.getElementById('teacherCancelBtn');
+    if (cancelBtn) cancelBtn.onclick = function(){
+      m._v56cleanup();
+      m.remove();
+      var s = document.getElementById('studentId');
+      if (s) { s.value = ''; setTimeout(function(){ s.focus(); }, 100); }
+    };
+
+    // ESC close
+    var escHandler = function(e){
+      if (e.key === 'Escape') {
+        m._v56cleanup(); m.remove();
+        document.removeEventListener('keydown', escHandler);
+        var s = document.getElementById('studentId');
+        if (s) { s.value = ''; setTimeout(function(){ s.focus(); }, 100); }
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+
+    // Submit
+    document.getElementById('teacherPwdForm').onsubmit = async function(e){
+      e.preventDefault();
+      var pwd = document.getElementById('teacherPwdInput').value;
+      if (!pwd) { showToast('Password നൽകുക', 'error'); return; }
+      if (pwd !== teacher.password) {
+        showToast('❌ തെറ്റായ Password', 'error');
+        var inp = document.getElementById('teacherPwdInput');
+        inp.value = '';
+        inp.focus();
+        var card = m.firstElementChild;
+        if (card) { card.style.animation = 'shake .4s'; setTimeout(function(){ card.style.animation = ''; }, 400); }
+        return;
+      }
+      var btn = document.getElementById('teacherLoginBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+      m._v56cleanup();
+      m.remove();
+      if (typeof window.enterTeacherDashboard === 'function') {
+        await window.enterTeacherDashboard(teacher);
+      } else {
+        showToast('❌ Teacher dashboard missing', 'error');
+      }
+    };
+  }
+  window.openTeacherPasswordModal = openTeacherPasswordModal;
+
+  // ═══════════════════════════════════════════════════════
+  // 🎓 5. ENTER TEACHER DASHBOARD
+  // ═══════════════════════════════════════════════════════
+  window.enterTeacherDashboard = async function(teacher) {
+    try {
+      window.currentTeacher = teacher;
+      window.isTeacherMode = true;
+      window.currentUser = null;
+      window.isAdminMode = false;
+
+      // Log
+      try {
+        await supabaseClient.from('teacher_login_logs').insert({
+          teacher_id: teacher.teacher_id, name: teacher.name,
+          device: /Android/i.test(navigator.userAgent) ? 'Android' :
+                  /iPhone|iPad/i.test(navigator.userAgent) ? 'iOS' : 'Web',
+          user_agent: navigator.userAgent.substring(0, 200)
+        });
+        await supabaseClient.from('teachers').update({ last_login: new Date().toISOString() })
+          .eq('teacher_id', teacher.teacher_id);
+      } catch(e) { console.warn('Log error:', e); }
+
+      // Session
+      try {
+        localStorage.setItem('noor_teacher_session', JSON.stringify({
+          teacher_id: teacher.teacher_id,
+          name: teacher.name,
+          classes: teacher.classes,
+          subject: teacher.subject,
+          login_at: new Date().toISOString()
+        }));
+      } catch(e) {}
+      try { localStorage.setItem('noor_last_teacher', teacher.teacher_id); } catch(e){}
+
+      // Hide all
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('dashboardSection').style.display = 'none';
+      document.getElementById('adminSection').style.display = 'none';
+      document.getElementById('aiFab').classList.remove('show');
+
+      renderTeacherDashboard(teacher);
+
+      showToast('✅ സ്വാഗതം, ' + (teacher.name || '').split(' ')[0] + '!', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 80, origin: {y:.6}, colors: ['#0891b2','#22d3ee','#3b8bff'] });
+
+      // First-time password change
+      if (teacher.must_change_password) {
+        setTimeout(function(){ showChangePwdPrompt(teacher); }, 2000);
+      }
+    } catch(e) {
+      console.error('enterTeacherDashboard:', e);
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🖥️ 6. TEACHER DASHBOARD UI
+  // ═══════════════════════════════════════════════════════
+  function renderTeacherDashboard(teacher) {
+    var old = document.getElementById('teacherDashboard');
+    if (old) old.remove();
+
+    var dash = document.createElement('div');
+    dash.id = 'teacherDashboard';
+    dash.style.cssText = 'min-height:100vh;background:linear-gradient(160deg,#f0f9ff,#dbeafe,#e0f2fe);padding:16px;padding-bottom:80px;';
+
+    var classesList = (teacher.classes || []).map(function(c){ return 'Class ' + c; }).join(' • ');
+
+    dash.innerHTML = 
+      '<div style="max-width:1200px;margin:0 auto;">' +
+        '<div style="background:linear-gradient(135deg,#0891b2,#22d3ee,#3b8bff);border-radius:22px;padding:18px 22px;margin-bottom:18px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;box-shadow:0 12px 30px -12px rgba(8,145,178,.6);">' +
+          '<div style="display:flex;align-items:center;gap:14px;">' +
+            '<div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#fff;flex-shrink:0;border:3px solid rgba(255,255,255,.4);">' +
+              '<i class="fas fa-chalkboard-teacher"></i>' +
+            '</div>' +
+            '<div>' +
+              '<h2 style="color:#fff;font-size:1.15rem;font-weight:800;margin:0;">' + escapeHtml(teacher.name) + '</h2>' +
+              '<div style="color:rgba(255,255,255,.92);font-size:.8rem;margin-top:4px;display:flex;gap:12px;flex-wrap:wrap;">' +
+                '<span><i class="fas fa-id-badge" style="color:#fcd34d;"></i> ' + escapeHtml(teacher.teacher_id) + '</span>' +
+                '<span><i class="fas fa-graduation-cap" style="color:#fcd34d;"></i> ' + escapeHtml(classesList || 'No class') + '</span>' +
+                '<span><i class="fas fa-book" style="color:#fcd34d;"></i> ' + escapeHtml(teacher.subject || 'General') + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<button onclick="window.teacherLogout()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;font-weight:800;padding:11px 18px;border-radius:14px;font-size:.82rem;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;">' +
+            '<i class="fas fa-right-from-bracket"></i> Exit' +
+          '</button>' +
+        '</div>' +
+        '<div id="teacherStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;"></div>' +
+        '<div id="teacherClassTabs" style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;"></div>' +
+        '<div id="teacherMainContent"></div>' +
+      '</div>';
+
+    document.body.appendChild(dash);
+    renderTeacherStats(teacher);
+    renderClassTabs(teacher);
+  }
+
+  window.teacherLogout = function(){
+    if (!confirm('Logout ചെയ്യണോ?')) return;
+    window.currentTeacher = null;
+    window.isTeacherMode = false;
+    try { localStorage.removeItem('noor_teacher_session'); } catch(e){}
+    var d = document.getElementById('teacherDashboard');
+    if (d) d.remove();
+    document.getElementById('loginSection').style.display = 'flex';
+    document.body.classList.remove('logged-in');
+    var s = document.getElementById('studentId');
+    if (s) s.value = '';
+    showToast('Logged out', 'info');
+  };
+
+  async function renderTeacherStats(teacher) {
+    var wrap = document.getElementById('teacherStats');
+    if (!wrap) return;
+    var classes = teacher.classes || [];
+    var totalStudents = 0;
+    try {
+      if (classes.length > 0) {
+        var r = await supabaseClient.from('students').select('studentid', { count:'exact', head:true }).in('class', classes);
+        totalStudents = r.count || 0;
+      }
+    } catch(e){}
+    wrap.innerHTML = 
+      '<div style="background:#fff;border-radius:18px;padding:18px;border:1px solid rgba(8,145,178,.2);box-shadow:0 6px 20px -12px rgba(0,0,0,.15);">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+          '<div><div style="font-size:1.9rem;font-weight:900;background:linear-gradient(120deg,#0891b2,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">' + classes.length + '</div>' +
+          '<div style="color:#64748b;font-size:.76rem;margin-top:6px;font-weight:700;">Classes</div></div>' +
+          '<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(140deg,#e0f2fe,#bae6fd);display:flex;align-items:center;justify-content:center;font-size:1.15rem;color:#0891b2;"><i class="fas fa-chalkboard"></i></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="background:#fff;border-radius:18px;padding:18px;border:1px solid rgba(5,150,105,.2);box-shadow:0 6px 20px -12px rgba(0,0,0,.15);">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+          '<div><div style="font-size:1.9rem;font-weight:900;background:linear-gradient(120deg,#059669,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">' + totalStudents + '</div>' +
+          '<div style="color:#64748b;font-size:.76rem;margin-top:6px;font-weight:700;">Total Students</div></div>' +
+          '<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(140deg,#d1fae5,#a7f3d0);display:flex;align-items:center;justify-content:center;font-size:1.15rem;color:#059669;"><i class="fas fa-users"></i></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="background:#fff;border-radius:18px;padding:18px;border:1px solid rgba(180,83,9,.2);box-shadow:0 6px 20px -12px rgba(0,0,0,.15);">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+          '<div><div style="font-size:1.5rem;font-weight:900;background:linear-gradient(120deg,#b45309,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">' + escapeHtml(teacher.subject || '—') + '</div>' +
+          '<div style="color:#64748b;font-size:.76rem;margin-top:6px;font-weight:700;">Subject</div></div>' +
+          '<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(140deg,#fef3c7,#fde68a);display:flex;align-items:center;justify-content:center;font-size:1.15rem;color:#b45309;"><i class="fas fa-book"></i></div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderClassTabs(teacher) {
+    var wrap = document.getElementById('teacherClassTabs');
+    if (!wrap) return;
+    var classes = teacher.classes || [];
+    if (classes.length === 0) {
+      wrap.innerHTML = '<div style="padding:14px;background:#fef3c7;border-radius:14px;color:#b45309;font-size:.84rem;font-weight:700;width:100%;"><i class="fas fa-info-circle"></i> Class assign ചെയ്തിട്ടില്ല</div>';
+      return;
+    }
+    var html = '<div style="font-size:.74rem;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:1px;width:100%;margin-bottom:6px;"><i class="fas fa-list"></i> Select Class</div>';
+    classes.forEach(function(c, i){
+      html += '<button class="teacher-class-tab" data-class="' + c + '" onclick="window.openTeacherClass(\'' + c + '\', this)" style="padding:11px 20px;border-radius:30px;border:1.5px solid rgba(8,145,178,.3);background:#fff;color:#0891b2;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;transition:all .2s;' + (i===0 ? 'background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;border-color:transparent;' : '') + '">' +
+        '<i class="fas fa-users"></i> Class ' + c +
+      '</button>';
+    });
+    wrap.innerHTML = html;
+    if (classes.length > 0) setTimeout(function(){
+      var first = wrap.querySelector('.teacher-class-tab');
+      if (first) window.openTeacherClass(classes[0], first);
+    }, 200);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 7. TEACHER CLASS PANEL — with tabs
+  // ═══════════════════════════════════════════════════════
+  window.openTeacherClass = async function(cls, btn) {
+    document.querySelectorAll('.teacher-class-tab').forEach(function(t){
+      t.style.background = '#fff';
+      t.style.color = '#0891b2';
+      t.style.borderColor = 'rgba(8,145,178,.3)';
+    });
+    if (btn) {
+      btn.style.background = 'linear-gradient(100deg,#0891b2,#22d3ee)';
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'transparent';
+    }
+
+    var content = document.getElementById('teacherMainContent');
+    if (!content) return;
+    content.innerHTML = '<div style="background:#fff;border-radius:20px;padding:30px;text-align:center;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+
+    window.currentAdminClass = cls;
+    window.isAdminMode = false;
+
+    var html = 
+      '<div style="background:#fff;border-radius:20px;overflow:hidden;border:1px solid rgba(180,200,230,.5);">' +
+        '<div style="background:linear-gradient(100deg,#0891b2,#22d3ee);padding:14px 20px;color:#fff;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">' +
+            '<div style="font-weight:900;font-size:1.02rem;"><i class="fas fa-users"></i> Class ' + cls + '</div>' +
+            '<div style="font-size:.74rem;font-weight:700;background:rgba(255,255,255,.2);padding:5px 12px;border-radius:20px;">🎓 Teacher Mode</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="padding:14px;background:#f8fafc;border-bottom:1px solid rgba(100,116,139,.1);overflow-x:auto;">' +
+          '<div style="display:flex;gap:6px;flex-wrap:nowrap;min-width:max-content;">' +
+            '<button class="teacher-tab active" data-tab="students" onclick="window.openTeacherPanel(\'students\',this)"><i class="fas fa-user-graduate"></i> Students</button>' +
+            '<button class="teacher-tab" data-tab="attendance" onclick="window.openTeacherPanel(\'attendance\',this)"><i class="fas fa-calendar-check"></i> Attendance</button>' +
+            '<button class="teacher-tab" data-tab="marks" onclick="window.openTeacherPanel(\'marks\',this)"><i class="fas fa-file-alt"></i> Marks</button>' +
+            '<button class="teacher-tab" data-tab="homework" onclick="window.openTeacherPanel(\'homework\',this)"><i class="fas fa-book"></i> Homework</button>' +
+            '<button class="teacher-tab" data-tab="notice" onclick="window.openTeacherPanel(\'notice\',this)"><i class="fas fa-bullhorn"></i> Notice</button>' +
+            '<button class="teacher-tab" data-tab="namaz" onclick="window.openTeacherPanel(\'namaz\',this)"><i class="fas fa-mosque"></i> Namaz</button>' +
+            '<button class="teacher-tab" data-tab="chat" onclick="window.openTeacherPanel(\'chat\',this)"><i class="fas fa-comments"></i> Chat</button>' +
+          '</div>' +
+        '</div>' +
+        '<div id="teacherPanelContent" style="padding:18px;min-height:400px;"></div>' +
+      '</div>';
+    content.innerHTML = html;
+
+    // Style tabs
+    if (!document.getElementById('teacherTabStyle')) {
+      var style = document.createElement('style');
+      style.id = 'teacherTabStyle';
+      style.textContent = 
+        '.teacher-tab{padding:9px 15px;border-radius:30px;border:1.5px solid rgba(100,116,139,.2);background:#fff;color:#475569;font-family:inherit;font-weight:700;font-size:.74rem;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}' +
+        '.teacher-tab:hover{border-color:rgba(8,145,178,.4);color:#0891b2;}' +
+        '.teacher-tab.active{background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;border-color:transparent;box-shadow:0 4px 12px -4px rgba(8,145,178,.5);}';
+      document.head.appendChild(style);
+    }
+    setTimeout(function(){ window.openTeacherPanel('students'); }, 100);
+  };
+
+  window.openTeacherPanel = async function(tab, btn) {
+    document.querySelectorAll('.teacher-tab').forEach(function(t){ t.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    else {
+      var t = document.querySelector('.teacher-tab[data-tab="' + tab + '"]');
+      if (t) t.classList.add('active');
+    }
+    var content = document.getElementById('teacherPanelContent');
+    if (!content) return;
+    content.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    var cls = window.currentAdminClass;
+    try {
+      if (tab === 'students') await renderStudents(content, cls);
+      else if (tab === 'attendance') await renderAttendance(content, cls);
+      else if (tab === 'marks') await renderMarks(content, cls);
+      else if (tab === 'homework') await renderHomework(content, cls);
+      else if (tab === 'notice') await renderNotice(content, cls);
+      else if (tab === 'namaz') await renderNamaz(content, cls);
+      else if (tab === 'chat') await renderChat(content, cls);
+    } catch(e) {
+      console.error('Teacher panel error:', e);
+      content.innerHTML = '<div style="padding:20px;color:#dc2626;">Error: ' + e.message + '</div>';
+    }
+  };
+
+  // ═══ PANEL: Students ═══
+  async function renderStudents(wrap, cls) {
+    var r = await supabaseClient.from('students').select('studentid, name, roll, photo, phone, fathername').eq('class', cls).order('roll').order('name');
+    var list = r.data || [];
+    if (!list.length) { wrap.innerHTML = '<div style="text-align:center;padding:30px;color:#64748b;">No students in this class</div>'; return; }
+    var h = '<div style="font-size:.72rem;font-weight:800;color:#475569;text-transform:uppercase;margin-bottom:10px;"><i class="fas fa-user-graduate"></i> ' + list.length + ' Students</div>';
+    h += '<div style="overflow-x:auto;border:1px solid rgba(180,200,230,.5);border-radius:14px;"><table style="width:100%;border-collapse:collapse;font-size:.84rem;min-width:500px;">';
+    h += '<thead><tr style="background:#f0f9ff;"><th style="padding:11px;text-align:left;color:#0891b2;font-size:.65rem;text-transform:uppercase;">Roll</th><th style="padding:11px;text-align:left;color:#0891b2;font-size:.65rem;text-transform:uppercase;">Name</th><th style="padding:11px;text-align:left;color:#0891b2;font-size:.65rem;text-transform:uppercase;">ID</th><th style="padding:11px;text-align:left;color:#0891b2;font-size:.65rem;text-transform:uppercase;">Father</th><th style="padding:11px;text-align:left;color:#0891b2;font-size:.65rem;text-transform:uppercase;">Phone</th></tr></thead><tbody>';
+    list.forEach(function(s){
+      var ph = s.photo && s.photo.startsWith('http')
+        ? '<img src="' + s.photo + '" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;">'
+        : '<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);color:#fff;font-weight:900;font-size:.8rem;vertical-align:middle;margin-right:8px;">' + (s.name||'?').charAt(0).toUpperCase() + '</span>';
+      h += '<tr style="border-top:1px solid rgba(100,116,139,.08);">' +
+        '<td style="padding:10px;color:#0891b2;font-weight:800;">' + (s.roll||'—') + '</td>' +
+        '<td style="padding:10px;">' + ph + '<strong>' + escapeHtml(s.name) + '</strong></td>' +
+        '<td style="padding:10px;color:#64748b;font-size:.76rem;">' + escapeHtml(s.studentid) + '</td>' +
+        '<td style="padding:10px;color:#64748b;">' + escapeHtml(s.fathername||'—') + '</td>' +
+        '<td style="padding:10px;color:#64748b;">' + escapeHtml(s.phone||'—') + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+    wrap.innerHTML = h;
+  }
+
+  // ═══ PANEL: Attendance (simplified) ═══
+  async function renderAttendance(wrap, cls) {
+    var now = new Date();
+    var month = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+    wrap.innerHTML = 
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">' +
+        '<label style="font-weight:800;color:#475569;font-size:.8rem;">Month:</label>' +
+        '<input type="month" id="tAttMonth" value="' + month + '" style="padding:8px 12px;border:1.5px solid rgba(100,116,139,.25);border-radius:10px;font-family:inherit;font-size:.84rem;outline:none;">' +
+        '<label style="font-weight:800;color:#475569;font-size:.8rem;">Total Days:</label>' +
+        '<input type="number" id="tAttTotal" value="22" min="1" max="31" style="width:80px;padding:8px 12px;border:1.5px solid rgba(100,116,139,.25);border-radius:10px;font-family:inherit;font-size:.84rem;outline:none;text-align:center;">' +
+        '<button onclick="window.teacherLoadAtt()" style="padding:10px 18px;border-radius:10px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;"><i class="fas fa-sync-alt"></i> Load</button>' +
+        '<button onclick="window.teacherSaveAtt()" style="padding:10px 18px;border-radius:10px;border:none;background:linear-gradient(100deg,#059669,#34d399);color:#fff;font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;"><i class="fas fa-save"></i> Save</button>' +
+      '</div><div id="tAttTable"></div>';
+    setTimeout(window.teacherLoadAtt, 100);
+  }
+
+  window.teacherLoadAtt = async function(){
+    var w = document.getElementById('tAttTable');
+    if (!w) return;
+    w.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    var cls = window.currentAdminClass;
+    var month = document.getElementById('tAttMonth').value;
+    var sr = await supabaseClient.from('students').select('studentid, name, roll').eq('class', cls).order('roll');
+    var students = sr.data || [];
+    var ar = await supabaseClient.from('attendance_records').select('*').eq('month_year', month).in('studentid', students.map(function(s){return s.studentid;}));
+    var map = {};
+    (ar.data||[]).forEach(function(a){ map[a.studentid] = a; });
+    var total = parseInt(document.getElementById('tAttTotal').value) || 22;
+    var h = '<div style="overflow-x:auto;border:1px solid rgba(180,200,230,.5);border-radius:14px;"><table style="width:100%;border-collapse:collapse;font-size:.84rem;min-width:400px;"><thead><tr style="background:#f0f9ff;"><th style="padding:10px;text-align:left;color:#0891b2;font-size:.65rem;">#</th><th style="padding:10px;text-align:left;color:#0891b2;font-size:.65rem;">Roll</th><th style="padding:10px;text-align:left;color:#0891b2;font-size:.65rem;">Name</th><th style="padding:10px;text-align:center;color:#0891b2;font-size:.65rem;">Present</th></tr></thead><tbody>';
+    students.forEach(function(s, i){
+      var rec = map[s.studentid];
+      var p = rec ? rec.present_days : 0;
+      h += '<tr style="border-top:1px solid rgba(100,116,139,.08);"><td style="padding:10px;">' + (i+1) + '</td><td style="padding:10px;font-weight:800;color:#0891b2;">' + (s.roll||'—') + '</td><td style="padding:10px;"><strong>' + escapeHtml(s.name) + '</strong></td><td style="padding:10px;text-align:center;"><input type="number" class="t-att-inp" data-sid="' + escapeHtml(s.studentid) + '" value="' + p + '" min="0" max="' + total + '" style="width:70px;padding:6px;border:1.5px solid rgba(100,116,139,.25);border-radius:8px;text-align:center;font-weight:700;font-family:inherit;font-size:16px;outline:none;"></td></tr>';
+    });
+    h += '</tbody></table></div>';
+    w.innerHTML = h;
+  };
+
+  window.teacherSaveAtt = async function(){
+    var cls = window.currentAdminClass;
+    var month = document.getElementById('tAttMonth').value;
+    var total = parseInt(document.getElementById('tAttTotal').value) || 22;
+    var rows = [];
+    document.querySelectorAll('.t-att-inp').forEach(function(inp){
+      var p = parseInt(inp.value) || 0;
+      rows.push({ studentid: inp.dataset.sid, month_year: month, present_days: p, total_days: total, percentage: total>0 ? Math.round(p/total*100) : 0 });
+    });
+    if (!rows.length) { showToast('No data','error'); return; }
+    try {
+      var ids = rows.map(function(r){ return r.studentid; });
+      await supabaseClient.from('attendance_records').delete().eq('month_year', month).in('studentid', ids);
+      await supabaseClient.from('attendance_records').insert(rows);
+      showToast('✅ Saved', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
+    } catch(e) { showToast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══ PANEL: Marks (simplified) ═══
+  async function renderMarks(wrap, cls) {
+    var exams = ((typeof SETTINGS_CACHE !== 'undefined' && SETTINGS_CACHE.examsList) || 'First Term,Second Term,Annual').split(',');
+    var h = '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">';
+    h += '<label style="font-weight:800;color:#475569;font-size:.8rem;">Exam:</label>';
+    h += '<select id="tMarksExam" style="padding:8px 12px;border:1.5px solid rgba(100,116,139,.25);border-radius:10px;font-family:inherit;font-size:.84rem;outline:none;">';
+    exams.forEach(function(e){ h += '<option value="' + e.trim() + '">' + e.trim() + '</option>'; });
+    h += '</select>';
+    h += '<button onclick="window.teacherLoadMarks()" style="padding:10px 18px;border-radius:10px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;"><i class="fas fa-sync-alt"></i> Load</button>';
+    h += '<button onclick="window.teacherSaveMarks()" style="padding:10px 18px;border-radius:10px;border:none;background:linear-gradient(100deg,#059669,#34d399);color:#fff;font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;"><i class="fas fa-save"></i> Save</button>';
+    h += '</div><div id="tMarksTable"></div>';
+    wrap.innerHTML = h;
+    setTimeout(window.teacherLoadMarks, 100);
+  }
+
+  window.teacherLoadMarks = async function(){
+    var w = document.getElementById('tMarksTable');
+    if (!w) return;
+    w.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    var cls = window.currentAdminClass;
+    var exam = document.getElementById('tMarksExam').value;
+    var subjects = (typeof getSubjectsForClass === 'function') ? getSubjectsForClass(cls, exam) : ['Arabic','Malayalam','English','Maths','Science'];
+    var sr = await supabaseClient.from('students').select('studentid, name, roll').eq('class', cls).order('roll');
+    var students = sr.data || [];
+    var mr = await supabaseClient.from('exam_marks').select('*').eq('exam_name', exam);
+    var map = {};
+    (mr.data||[]).forEach(function(m){ if (!map[m.studentid]) map[m.studentid]={}; map[m.studentid][m.subject] = m.obtained_marks; });
+    var h = '<div style="overflow-x:auto;border:1px solid rgba(180,200,230,.5);border-radius:14px;"><table style="width:100%;border-collapse:collapse;font-size:.84rem;min-width:500px;"><thead><tr style="background:#f0f9ff;"><th style="padding:10px;text-align:left;color:#0891b2;font-size:.62rem;">Roll</th><th style="padding:10px;text-align:left;color:#0891b2;font-size:.62rem;">Name</th>';
+    subjects.forEach(function(sub){ h += '<th style="padding:10px;text-align:center;color:#0891b2;font-size:.62rem;">' + sub + '</th>'; });
+    h += '</tr></thead><tbody>';
+    students.forEach(function(s){
+      h += '<tr style="border-top:1px solid rgba(100,116,139,.08);"><td style="padding:8px;font-weight:800;color:#0891b2;">' + (s.roll||'—') + '</td><td style="padding:8px;"><strong>' + escapeHtml(s.name) + '</strong></td>';
+      subjects.forEach(function(sub){
+        var val = (map[s.studentid] && map[s.studentid][sub]) || '';
+        h += '<td style="padding:6px;text-align:center;"><input type="number" class="t-mark-inp" data-sid="' + escapeHtml(s.studentid) + '" data-sub="' + escapeHtml(sub) + '" value="' + val + '" min="0" max="50" style="width:60px;padding:6px;border:1.5px solid rgba(100,116,139,.25);border-radius:8px;text-align:center;font-weight:700;font-family:inherit;font-size:16px;outline:none;"></td>';
+      });
+      h += '</tr>';
+    });
+    h += '</tbody></table></div>';
+    w.innerHTML = h;
+  };
+
+  window.teacherSaveMarks = async function(){
+    var exam = document.getElementById('tMarksExam').value;
+    var rows = [];
+    var sids = new Set();
+    document.querySelectorAll('.t-mark-inp').forEach(function(inp){
+      var v = inp.value.trim();
+      if (v === '') return;
+      sids.add(inp.dataset.sid);
+      rows.push({ studentid: inp.dataset.sid, exam_name: exam, subject: inp.dataset.sub, max_marks: 50, obtained_marks: parseFloat(v)||0 });
+    });
+    if (!rows.length) { showToast('No marks', 'error'); return; }
+    try {
+      await supabaseClient.from('exam_marks').delete().eq('exam_name', exam).in('studentid', Array.from(sids));
+      for (var i = 0; i < rows.length; i += 200) await supabaseClient.from('exam_marks').insert(rows.slice(i, i+200));
+      showToast('✅ Marks saved', 'success');
+    } catch(e) { showToast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══ PANEL: Homework ═══
+  async function renderHomework(wrap, cls) {
+    var r = await supabaseClient.from('homework').select('*').eq('class', cls).order('due_date', { ascending: false }).limit(30);
+    var list = r.data || [];
+    var h = '<div style="margin-bottom:14px;"><button onclick="window.teacherAddHw()" style="padding:10px 18px;border-radius:10px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;"><i class="fas fa-plus"></i> പുതിയ Homework</button></div>';
+    if (!list.length) h += '<div style="text-align:center;padding:30px;color:#64748b;">No homework yet</div>';
+    else list.forEach(function(hw){
+      h += '<div style="background:#f8fafc;border-left:4px solid #0891b2;border-radius:12px;padding:12px 14px;margin-bottom:8px;">' +
+        '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">' +
+        '<strong style="color:#0f172a;">' + escapeHtml(hw.subject||'') + ' — ' + escapeHtml(hw.title) + '</strong>' +
+        '<small style="color:#64748b;"><i class="far fa-calendar"></i> ' + (hw.due_date||'—') + '</small></div>' +
+        (hw.description ? '<div style="margin-top:6px;color:#475569;font-size:.82rem;">' + escapeHtml(hw.description) + '</div>' : '') +
+      '</div>';
+    });
+    wrap.innerHTML = h;
+  }
+
+  window.teacherAddHw = function(){
+    var cls = window.currentAdminClass;
+    var subjects = (typeof getSubjectsForClass === 'function') ? getSubjectsForClass(cls) : [];
+    modalTitleSpan.innerText = '📖 Add Homework';
+    modalBodyDiv.innerHTML = 
+      '<form onsubmit="event.preventDefault();window.teacherSubmitHw()">' +
+        '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Subject</label><select id="thSub" class="modal-form-input">' + subjects.map(function(s){ return '<option value="' + s + '">' + s + '</option>'; }).join('') + '</select></div>' +
+        '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Title *</label><input type="text" id="thTitle" required class="modal-form-input"></div>' +
+        '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Description</label><textarea id="thDesc" class="modal-form-input"></textarea></div>' +
+        '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Due Date</label><input type="date" id="thDue" class="modal-form-input"></div>' +
+        '<div class="d-flex gap-2 mt-3"><button type="submit" class="btn-update flex-grow-1">Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>' +
+      '</form>';
+    modal.style.display = 'flex';
+  };
+
+  window.teacherSubmitHw = async function(){
+    var obj = {
+      class: window.currentAdminClass,
+      subject: document.getElementById('thSub').value,
+      title: document.getElementById('thTitle').value.trim(),
+      description: document.getElementById('thDesc').value.trim(),
+      due_date: document.getElementById('thDue').value || null
+    };
+    if (!obj.title) { showToast('Title required', 'error'); return; }
+    try {
+      await supabaseClient.from('homework').insert(obj);
+      showToast('✅ Added', 'success');
+      closeModal('globalModal');
+      window.openTeacherPanel('homework');
+    } catch(e) { showToast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══ PANEL: Notice ═══
+  async function renderNotice(wrap, cls) {
+    var r = await supabaseClient.from('notice_board').select('*').or('target_class.eq.all,target_class.eq.' + cls).order('created_at', { ascending: false }).limit(20);
+    var list = r.data || [];
+    var h = '<div style="margin-bottom:14px;"><button onclick="window.teacherAddNotice()" style="padding:10px 18px;border-radius:10px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;"><i class="fas fa-plus"></i> പുതിയ Notice</button></div>';
+    if (!list.length) h += '<div style="text-align:center;padding:30px;color:#64748b;">No notices</div>';
+    else list.forEach(function(n){
+      h += '<div style="background:#f8fafc;border-left:4px solid #a855f7;border-radius:12px;padding:12px 14px;margin-bottom:8px;">' +
+        '<strong style="color:#0f172a;">' + escapeHtml(n.title) + '</strong>' +
+        '<div style="color:#475569;font-size:.82rem;margin-top:6px;">' + escapeHtml(n.content||'') + '</div></div>';
+    });
+    wrap.innerHTML = h;
+  }
+
+  window.teacherAddNotice = function(){
+    var cls = window.currentAdminClass;
+    modalTitleSpan.innerText = '📌 Add Notice';
+    modalBodyDiv.innerHTML = 
+      '<form onsubmit="event.preventDefault();window.teacherSubmitNotice()">' +
+        '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Title *</label><input type="text" id="tnTitle" required class="modal-form-input"></div>' +
+        '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Content</label><textarea id="tnContent" class="modal-form-input" style="min-height:100px;"></textarea></div>' +
+        '<div class="mb-3"><label style="color:#475569;font-size:.78rem;">Target</label><select id="tnTarget" class="modal-form-input"><option value="' + cls + '">Class ' + cls + ' only</option><option value="all">All Classes</option></select></div>' +
+        '<div class="d-flex gap-2 mt-3"><button type="submit" class="btn-update flex-grow-1">Post</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div>' +
+      '</form>';
+    modal.style.display = 'flex';
+  };
+
+  window.teacherSubmitNotice = async function(){
+    var obj = {
+      title: document.getElementById('tnTitle').value.trim(),
+      content: document.getElementById('tnContent').value.trim(),
+      target_class: document.getElementById('tnTarget').value,
+      priority: 'normal'
+    };
+    if (!obj.title) { showToast('Title required', 'error'); return; }
+    try {
+      await supabaseClient.from('notice_board').insert(obj);
+      showToast('✅ Posted', 'success');
+      closeModal('globalModal');
+      window.openTeacherPanel('notice');
+    } catch(e) { showToast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══ PANEL: Namaz ═══
+  async function renderNamaz(wrap, cls) {
+    wrap.innerHTML = '<div style="text-align:center;padding:30px;color:#64748b;"><i class="fas fa-mosque" style="font-size:2.5rem;opacity:.4;display:block;margin-bottom:10px;"></i><div style="font-weight:800;color:#0f172a;">Namaz Tracking</div><div style="font-size:.8rem;margin-top:6px;">Admin → Namaz tab-ൽ detailed view ഉണ്ട്</div></div>';
+  }
+
+  // ═══ PANEL: Chat ═══
+  async function renderChat(wrap, cls) {
+    var teacher = window.currentTeacher;
+    wrap.innerHTML = 
+      '<div style="background:#fff;border:1px solid rgba(180,200,230,.5);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;height:500px;">' +
+        '<div style="padding:12px 16px;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;"><div style="display:flex;align-items:center;gap:10px;"><i class="fas fa-comments"></i><div><div style="font-weight:900;font-size:.92rem;">Class ' + cls + ' Chat</div><div style="font-size:.68rem;opacity:.9;">🎓 Teacher mode</div></div></div></div>' +
+        '<div id="tChatMessages" style="flex:1;overflow-y:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;"></div>' +
+        '<form id="tChatForm" onsubmit="event.preventDefault();window.teacherSendChat()" style="padding:10px;background:#fff;border-top:1px solid rgba(100,116,139,.15);display:flex;gap:8px;">' +
+          '<input type="text" id="tChatInput" placeholder="Message..." maxlength="500" style="flex:1;padding:11px 16px;border:1.5px solid rgba(100,116,139,.25);border-radius:24px;font-family:inherit;font-size:16px;outline:none;" autocomplete="off">' +
+          '<button type="submit" style="width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(135deg,#0891b2,#22d3ee);color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-paper-plane"></i></button>' +
+        '</form></div>';
+    await loadChatMsgs(cls);
+    try {
+      var ch = supabaseClient.channel('tchat_' + cls)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'class_messages', filter: 'class=eq.' + cls }, function(p){
+          if (p.new) appendChat(p.new);
+        }).subscribe();
+      window._v56ChatChannel = ch;
+    } catch(e) {}
+  }
+
+  async function loadChatMsgs(cls){
+    var w = document.getElementById('tChatMessages');
+    if (!w) return;
+    w.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    var r = await supabaseClient.from('class_messages').select('*').eq('class', cls).eq('is_deleted', false).order('created_at', { ascending: true }).limit(100);
+    var msgs = r.data || [];
+    w.innerHTML = '';
+    if (!msgs.length) { w.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:.84rem;">No messages yet</div>'; return; }
+    msgs.forEach(appendChat);
+    w.scrollTop = w.scrollHeight;
+  }
+
+  function appendChat(m){
+    var w = document.getElementById('tChatMessages');
+    if (!w) return;
+    var teacher = window.currentTeacher || {};
+    var isMine = m.sender_type === 'teacher' && m.studentid === teacher.teacher_id;
+    var isTeacher = m.sender_type === 'teacher';
+    var name = isTeacher ? (m.teacher_name || m.student_name || 'Teacher') : (m.student_name || 'Student');
+    var bg = isMine ? 'linear-gradient(100deg,#0891b2,#22d3ee)' : (isTeacher ? '#fff7ed' : '#fff');
+    var color = isMine ? '#fff' : '#0f172a';
+    var align = isMine ? 'flex-end' : 'flex-start';
+    var border = isTeacher && !isMine ? '2px solid #f59e0b' : '1px solid rgba(100,116,139,.12)';
+    var h = '<div style="align-self:' + align + ';max-width:80%;">' +
+      '<div style="font-size:.66rem;font-weight:800;color:#64748b;margin-bottom:3px;padding:0 6px;">' + (isTeacher ? '🎓 ' : '') + escapeHtml(name) + '</div>' +
+      '<div style="background:' + bg + ';color:' + color + ';border:' + border + ';border-radius:14px;padding:10px 14px;font-size:.86rem;line-height:1.4;word-break:break-word;">' + escapeHtml(m.message) + '</div>' +
+      '<div style="font-size:.62rem;color:#94a3b8;margin-top:3px;padding:0 6px;">' + (typeof timeAgo === 'function' ? timeAgo(m.created_at) : '') + '</div></div>';
+    if (w.querySelector('div[style*="text-align:center"]')) w.innerHTML = '';
+    w.insertAdjacentHTML('beforeend', h);
+    w.scrollTop = w.scrollHeight;
+  }
+
+  window.teacherSendChat = async function(){
+    var inp = document.getElementById('tChatInput');
+    if (!inp) return;
+    var t = inp.value.trim();
+    if (!t) return;
+    var teacher = window.currentTeacher || {};
+    inp.value = '';
+    try {
+      await supabaseClient.from('class_messages').insert({
+        class: window.currentAdminClass,
+        studentid: teacher.teacher_id,
+        student_name: teacher.name,
+        message: t,
+        message_type: 'text',
+        sender_type: 'teacher',
+        teacher_name: teacher.name
+      });
+    } catch(e) { showToast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔐 8. Change Password Prompt (First Login)
+  // ═══════════════════════════════════════════════════════
+  function showChangePwdPrompt(teacher) {
+    var m = document.createElement('div');
+    m.id = 'v56ChangePwdModal';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(3,8,28,.92);backdrop-filter:blur(16px);z-index:99999999;display:block;overflow-y:auto;padding:20px;box-sizing:border-box;';
+    m.innerHTML = 
+      '<div style="max-width:420px;margin:20px auto 60px;background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.3);border-radius:24px;padding:26px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9);">' +
+        '<div style="text-align:center;margin-bottom:18px;"><div style="width:64px;height:64px;margin:0 auto 10px;border-radius:50%;background:linear-gradient(140deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;">🔑</div>' +
+        '<h3 style="color:#fff;font-weight:800;font-size:1.05rem;margin:0 0 4px;">Password Change ചെയ്യുക</h3>' +
+        '<p style="color:#a9cdff;font-size:.76rem;margin:0;">First login — പുതിയ password set ചെയ്യൂ</p></div>' +
+        '<div style="margin-bottom:12px;"><label style="color:#fff;font-size:.76rem;font-weight:800;display:block;margin-bottom:6px;">New Password</label>' +
+        '<input type="password" id="v56NewPwd" placeholder="Min 6 characters" style="width:100%;padding:13px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:16px;font-family:inherit;outline:none;box-sizing:border-box;"></div>' +
+        '<div style="margin-bottom:18px;"><label style="color:#fff;font-size:.76rem;font-weight:800;display:block;margin-bottom:6px;">Confirm Password</label>' +
+        '<input type="password" id="v56ConfirmPwd" placeholder="Re-type" style="width:100%;padding:13px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:16px;font-family:inherit;outline:none;box-sizing:border-box;"></div>' +
+        '<button id="v56SavePwd" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-family:inherit;font-weight:800;font-size:.9rem;cursor:pointer;">Save Password</button>' +
+        '<button id="v56SkipPwd" style="width:100%;margin-top:10px;padding:11px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#a9cdff;font-family:inherit;font-weight:700;font-size:.76rem;cursor:pointer;">Skip for now</button>' +
+      '</div>';
+    document.body.appendChild(m);
+
+    document.getElementById('v56SavePwd').onclick = async function(){
+      var np = document.getElementById('v56NewPwd').value;
+      var cp = document.getElementById('v56ConfirmPwd').value;
+      if (!np || np.length < 6) { alert('Password 6+ characters'); return; }
+      if (np !== cp) { alert('Passwords don\'t match'); return; }
+      try {
+        await supabaseClient.from('teachers').update({ password: np, must_change_password: false }).eq('teacher_id', teacher.teacher_id);
+        teacher.password = np;
+        teacher.must_change_password = false;
+        m.remove();
+        if (typeof showToast === 'function') showToast('✅ Password updated', 'success');
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+    document.getElementById('v56SkipPwd').onclick = function(){ m.remove(); };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 9. Session restore
+  // ═══════════════════════════════════════════════════════
+  async function restoreSession() {
+    if (!window.supabaseClient) return;
+    if (document.body.classList.contains('logged-in')) return;
+    if (document.getElementById('teacherDashboard')) return;
+    var raw;
+    try { raw = localStorage.getItem('noor_teacher_session'); } catch(e) { return; }
+    if (!raw) return;
+    try {
+      var sess = JSON.parse(raw);
+      if (!sess || !sess.teacher_id) return;
+      var loginAt = new Date(sess.login_at || 0).getTime();
+      if (Date.now() - loginAt > 7 * 24 * 60 * 60 * 1000) {
+        localStorage.removeItem('noor_teacher_session');
+        return;
+      }
+      var tr = await window.supabaseClient.from('teachers').select('*').eq('teacher_id', sess.teacher_id).eq('is_active', true).maybeSingle();
+      if (!tr.data) { localStorage.removeItem('noor_teacher_session'); return; }
+      console.log('🔄 Restoring teacher session');
+      await window.enterTeacherDashboard(tr.data);
+    } catch(e) { console.warn('Restore failed:', e); }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎬 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    installLogin();
+    // Shake anim
+    if (!document.getElementById('v56ShakeAnim')) {
+      var st = document.createElement('style');
+      st.id = 'v56ShakeAnim';
+      st.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}';
+      document.head.appendChild(st);
+    }
+    // Autofill teacher
+    setTimeout(function(){
+      try {
+        var saved = localStorage.getItem('noor_last_teacher');
+        if (saved) {
+          var inp = document.getElementById('studentId');
+          if (inp && !inp.value) inp.value = saved;
+        }
+      } catch(e){}
+    }, 1500);
+    // Session restore
+    setTimeout(restoreSession, 3500);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2500);
+      setTimeout(function(){ installLogin(); }, 5000);
+    });
+  } else {
+    setTimeout(init, 2500);
+    setTimeout(function(){ installLogin(); }, 5000);
+  }
+
+  console.log('✅ Teacher v56.0 loaded');
+  console.log('   • Run SQL: CREATE TABLE teachers ...');
+  console.log('   • Test: TR001 / ustad123');
+})();
+</script>
 </body>
 </html>
