@@ -30100,5 +30100,381 @@ ON CONFLICT (teacher_id) DO NOTHING;
   console.log('   • Right-click on friend = quick menu');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔧 v65.0 — TEACHER LOGIN DESKTOP SCROLL + DRAG FIX         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══ PART 1: CSS FIX ═══ -->
+<style id="teacher-desktop-scroll-fix">
+/* ═══════════════════════════════════════════════════════ */
+/* 🖥️ DESKTOP — Fix flex centering that cuts off top       */
+/* ═══════════════════════════════════════════════════════ */
+@media (min-width: 901px) {
+  /* Force modal to be scrollable properly */
+  #teacherLoginV60.open {
+    display: flex !important;
+    align-items: flex-start !important;      /* ← prevents top cutoff */
+    justify-content: center !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 24px !important;
+    /* ✅ IMPORTANT: allow natural scroll */
+    height: 100vh !important;
+    max-height: 100vh !important;
+  }
+
+  /* Card centered using margin auto — best of both worlds */
+  #teacherLoginV60 .tv60-card {
+    margin: auto 0 !important;
+    flex-shrink: 0 !important;
+    /* Ensure card can grow without cropping */
+    min-height: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🖥️ MOBILE also — keep scroll working                     */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  #teacherLoginV60.open {
+    display: block !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  #teacherLoginV60 .tv60-card {
+    margin: 0 auto 32px auto !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🖱️ Visual cue: cursor changes inside teacher modal      */
+/* ═══════════════════════════════════════════════════════ */
+#teacherLoginV60 .tv60-card {
+  cursor: grab;
+}
+#teacherLoginV60.dragging .tv60-card,
+#teacherLoginV60 .tv60-card.dragging {
+  cursor: grabbing !important;
+}
+#teacherLoginV60.dragging,
+body.dragging #teacherLoginV60 {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* Inputs/buttons still have correct cursor */
+#teacherLoginV60 input,
+#teacherLoginV60 textarea,
+#teacherLoginV60 select {
+  cursor: text;
+}
+#teacherLoginV60 button,
+#teacherLoginV60 a,
+#teacherLoginV60 label {
+  cursor: pointer;
+}
+</style>
+
+<!-- ═══ PART 2: JS FIX — Smart Drag Bubbles to Scrollable Ancestor ═══ -->
+<script id="teacher-drag-scroll-fix-js">
+(function(){
+  'use strict';
+  console.log('🔧 Teacher Login Drag/Scroll Fix loading...');
+
+  var DRAG_THRESHOLD = 6;
+
+  function isInteractive(el) {
+    if (!el) return false;
+    return !!el.closest('input, textarea, select, button, a, label, [contenteditable], [role="button"], video, audio, iframe');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 SMART DRAG — bubbles up to find scrollable ancestor
+  // ═══════════════════════════════════════════════════════
+  function makeSmartDrag(el) {
+    if (!el || el._smartDragReady) return;
+    el._smartDragReady = true;
+
+    var isDown = false, isDragging = false;
+    var startX = 0, startY = 0;
+    var startTop = 0, startLeft = 0;
+    var vY = 0, vX = 0, lastT = 0, raf = null;
+    var scrollTarget = null;  // ← the element we actually scroll
+
+    function cancel() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+    // Find nearest scrollable ancestor of mousedown target
+    function findScrollableAncestor(target, root) {
+      var current = target;
+      while (current && current !== root.parentNode) {
+        if (current === root) {
+          // Reached root, check if it's scrollable
+          break;
+        }
+        if (current.nodeType === 1) {
+          var style = window.getComputedStyle(current);
+          var oy = style.overflowY;
+          var ox = style.overflowX;
+          if ((oy === 'auto' || oy === 'scroll') &&
+              current.scrollHeight > current.clientHeight + 3) {
+            return current;
+          }
+          if ((ox === 'auto' || ox === 'scroll') &&
+              current.scrollWidth > current.clientWidth + 3) {
+            return current;
+          }
+        }
+        current = current.parentNode;
+      }
+      // Fallback: check root itself
+      if (root) {
+        var rootStyle = window.getComputedStyle(root);
+        var roy = rootStyle.overflowY;
+        if ((roy === 'auto' || roy === 'scroll') &&
+            root.scrollHeight > root.clientHeight + 3) {
+          return root;
+        }
+      }
+      return null;
+    }
+
+    function momentum() {
+      if (!scrollTarget) return;
+      if (Math.abs(vY) < 0.4 && Math.abs(vX) < 0.4) return;
+      function step() {
+        vY *= 0.94; vX *= 0.94;
+        if (Math.abs(vY) < 0.4 && Math.abs(vX) < 0.4) { raf = null; return; }
+        var curY = scrollTarget.scrollTop;
+        var curX = scrollTarget.scrollLeft;
+        var newY = curY + vY;
+        var newX = curX + vX;
+        var maxY = scrollTarget.scrollHeight - scrollTarget.clientHeight;
+        var maxX = scrollTarget.scrollWidth - scrollTarget.clientWidth;
+        if (newY < 0) { newY = 0; vY = 0; }
+        if (newY > maxY) { newY = maxY; vY = 0; }
+        if (newX < 0) { newX = 0; vX = 0; }
+        if (newX > maxX) { newX = maxX; vX = 0; }
+        scrollTarget.scrollTop = newY;
+        scrollTarget.scrollLeft = newX;
+        raf = requestAnimationFrame(step);
+      }
+      raf = requestAnimationFrame(step);
+    }
+
+    el.addEventListener('mousedown', function(e) {
+      if (e.button !== 0) return;
+      if (isInteractive(e.target)) return;
+
+      // Find scrollable ancestor starting from actual mousedown target
+      var found = findScrollableAncestor(e.target, el);
+      if (!found) return; // Nothing to scroll
+
+      scrollTarget = found;
+
+      isDown = true;
+      isDragging = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      startTop = scrollTarget.scrollTop;
+      startLeft = scrollTarget.scrollLeft;
+      lastT = performance.now();
+      vY = 0; vX = 0;
+      cancel();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDown || !scrollTarget) return;
+      var dx = e.clientX - startX;
+      var dy = e.clientY - startY;
+
+      if (!isDragging && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
+        isDragging = true;
+        document.documentElement.classList.add('dragging');
+        document.body.classList.add('dragging');
+        scrollTarget.classList.add('dragging');
+        el.classList.add('dragging');
+      }
+      if (isDragging) {
+        var now = performance.now();
+        var dt = now - lastT;
+        var prevY = scrollTarget.scrollTop;
+        var prevX = scrollTarget.scrollLeft;
+        scrollTarget.scrollTop = startTop - dy;
+        scrollTarget.scrollLeft = startLeft - dx;
+        if (dt > 0) {
+          vY = (scrollTarget.scrollTop - prevY) / dt * 16.67;
+          vX = (scrollTarget.scrollLeft - prevX) / dt * 16.67;
+        }
+        lastT = now;
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener('mouseup', function() {
+      if (!isDown) return;
+      isDown = false;
+      if (isDragging && scrollTarget) {
+        document.documentElement.classList.remove('dragging');
+        document.body.classList.remove('dragging');
+        scrollTarget.classList.remove('dragging');
+        el.classList.remove('dragging');
+        momentum();
+        var blocker = function(ev) {
+          ev.stopPropagation(); ev.preventDefault();
+          document.removeEventListener('click', blocker, true);
+        };
+        document.addEventListener('click', blocker, true);
+        setTimeout(function() { document.removeEventListener('click', blocker, true); }, 250);
+      }
+      isDragging = false;
+      scrollTarget = null;
+    });
+
+    // Touch (skip on mobile for native scroll)
+    el.addEventListener('touchstart', function(e) {
+      if (window.innerWidth <= 900) return;
+      if (e.touches.length !== 1) return;
+      if (isInteractive(e.touches[0].target)) return;
+      var found = findScrollableAncestor(e.touches[0].target, el);
+      if (!found) return;
+      scrollTarget = found;
+      isDown = true; isDragging = false;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      startTop = scrollTarget.scrollTop;
+      startLeft = scrollTarget.scrollLeft;
+      lastT = performance.now(); vY = 0; vX = 0;
+      cancel();
+    }, { passive: true });
+
+    el.addEventListener('touchmove', function(e) {
+      if (!isDown || !scrollTarget) return;
+      var t = e.touches[0];
+      var dx = t.clientX - startX, dy = t.clientY - startY;
+      if (!isDragging && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
+        isDragging = true;
+        el.classList.add('dragging');
+      }
+      if (isDragging) {
+        var now = performance.now(), dt = now - lastT;
+        var prevY = scrollTarget.scrollTop;
+        scrollTarget.scrollTop = startTop - dy;
+        scrollTarget.scrollLeft = startLeft - dx;
+        if (dt > 0) vY = (scrollTarget.scrollTop - prevY) / dt * 16.67;
+        lastT = now;
+      }
+    }, { passive: true });
+
+    el.addEventListener('touchend', function() {
+      if (!isDown) return;
+      isDown = false;
+      if (isDragging) { el.classList.remove('dragging'); momentum(); }
+      isDragging = false;
+      scrollTarget = null;
+    }, { passive: true });
+
+    el.addEventListener('wheel', cancel, { passive: true });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 APPLY TO TEACHER LOGIN + DASHBOARD
+  // ═══════════════════════════════════════════════════════
+  function applyTeacherFix() {
+    var modal = document.getElementById('teacherLoginV60');
+    if (modal && !modal._smartDragReady) {
+      // Fix 1: Make sure modal is at top when it opens
+      modal.style.setProperty('overflow-y', 'auto', 'important');
+      modal.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
+
+      // Fix 2: Attach smart drag to modal
+      makeSmartDrag(modal);
+
+      // Fix 3: Attach smart drag to card too (bubbles to modal)
+      var card = modal.querySelector('.tv60-card');
+      if (card) makeSmartDrag(card);
+
+      // Fix 4: Also apply to form area for good measure
+      var form = modal.querySelector('form');
+      if (form) makeSmartDrag(form);
+
+      console.log('✅ Teacher modal smart drag attached');
+    }
+
+    // Also fix teacher dashboard scroll
+    var dash = document.getElementById('teacherDashboardV60');
+    if (dash && !dash._smartDragReady) {
+      makeSmartDrag(dash);
+      console.log('✅ Teacher dashboard smart drag attached');
+    }
+
+    // Also fix admin + student dashboards (universal)
+    ['dashboardSection','adminSection'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && !el._smartDragReady) makeSmartDrag(el);
+    });
+
+    // Modals
+    ['globalModal', 'passbookModal', 'studentWithdrawalModal', 'notificationsModal',
+     'editProfileModal', 'uploadCreationModal', 'notesModal', 'noticeBoardModal',
+     'findStudentIdModal', 'helpModal', 'creationLightbox', 'avatarCustomizerModal',
+     'addFriendModal', 'rewardsModal', 'quizModal'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && !el._smartDragReady) makeSmartDrag(el);
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 AUTO-FIX — Reset modal scroll to top on open
+  // ═══════════════════════════════════════════════════════
+  function watchTeacherModal() {
+    var modal = document.getElementById('teacherLoginV60');
+    if (!modal) return;
+
+    new MutationObserver(function() {
+      if (modal.classList.contains('open')) {
+        // Reset scroll to top when opening
+        setTimeout(function() {
+          modal.scrollTop = 0;
+          applyTeacherFix();
+        }, 80);
+      }
+    }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    applyTeacherFix();
+    watchTeacherModal();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 800);
+      setTimeout(init, 2000);
+      setTimeout(init, 4000);
+    });
+  } else {
+    setTimeout(init, 800);
+    setTimeout(init, 2000);
+    setTimeout(init, 4000);
+  }
+
+  // Re-apply when teacher modal opens
+  setInterval(function() {
+    var modal = document.getElementById('teacherLoginV60');
+    if (modal && modal.classList.contains('open') && !modal._smartDragReady) {
+      applyTeacherFix();
+    }
+  }, 2000);
+
+  window.applyTeacherDragFix = applyTeacherFix;
+  console.log('✅ Teacher Drag/Scroll Fix v65.0 ready');
+  console.log('   💡 Type applyTeacherDragFix() in console to re-run');
+})();
+</script>
 </body>
 </html>
