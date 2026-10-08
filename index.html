@@ -31062,5 +31062,211 @@ html:has(body.teacher-view-open) {
   console.log('   💡 Type rebuildQuickActions_v70() to re-run');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎨 v71.0 — CATEGORY REORDER (User's Exact Order)        -->
+<!-- 4 icons per row on mobile + desktop                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="quick-access-v71-css">
+/* Force 4 columns even on small phones (user requirement) */
+.qa-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px 4px !important;
+}
+@media (max-width: 380px) {
+  .qa-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10px 2px !important;
+  }
+  .qa-grid .action-ico {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+    font-size: 1.05rem !important;
+  }
+  .qa-grid .action-tile h6 {
+    font-size: .55rem !important;
+    -webkit-line-clamp: 2;
+  }
+}
+@media (max-width: 500px) {
+  .qa-grid { grid-template-columns: repeat(4, 1fr) !important; }
+}
+</style>
+
+<script id="quick-access-v71-js">
+(function(){
+  'use strict';
+  console.log('🎨 v71 Category Reorder loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📋 NEW CATEGORY MAP — User's exact order                */
+  /* ═══════════════════════════════════════════════════════ */
+  var CATEGORY_MAP_V71 = {
+    'ACADEMIC': [
+      'results',          // റിസൾട്ട്
+      'marks',            // മാർക്സ്
+      'attendance',       // ഹാജർ
+      'timetable',        // ടൈംടേബിൾ
+      'homework',         // ഹോംവർക്ക്
+      'lessons',          // പാഠങ്ങൾ
+      'library',          // ലൈബ്രറി
+      'downloads',        // Downloads
+      'report',           // Report
+      'idcard',           // ID കാർഡ്
+      'calendar',         // കലണ്ടർ
+      'topper',           // ടോപ്പർ
+      'studentzone'       // Student Zone
+    ],
+    'FINANCE': [
+      'palathulli',       // പലതുള്ളി
+      'fees'              // ഫീസ്
+    ],
+    'ACTIVITY': [
+      'extracurricular',  // ആക്ടിവിറ്റി
+      'competitions',     // മത്സരങ്ങൾ
+      'creations',        // കലാസൃഷ്ടി
+      'badges',           // ബാഡ്ജുകൾ
+      'moral',            // മൂല്യം
+      'quiz',             // QUIZ
+      'rewards',          // Rewards
+      'namaz'             // നമസ്കാരം
+    ],
+    'SOCIAL': [
+      'avatar_custom',    // Avatar
+      'class_chat',       // Chat
+      'profile',          // പ്രൊഫൈൽ
+      'notice',           // നോട്ടീസ്
+      'notes',            // കുറിപ്പുകൾ
+      'tasbeeh'           // Thasbeeh
+    ]
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 REBUILD with v71 categories                          */
+  /* ═══════════════════════════════════════════════════════ */
+  function rebuildV71() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return false;
+
+    // Already rebuilt by v71?
+    if (grid.dataset.v71built === '1') return true;
+
+    // Collect ALL tiles
+    var tiles = {};
+    grid.querySelectorAll('.action-tile').forEach(function(tile){
+      var action = tile.dataset.action;
+      if (action) tiles[action] = tile;
+    });
+
+    if (Object.keys(tiles).length === 0) return false;
+
+    // Mark built — v70 must NOT touch it
+    grid.dataset.v70built = '1';
+    grid.dataset.v71built = '1';
+    grid.classList.add('qa-wrapper');
+
+    // Hide old section title
+    var origTitle = document.getElementById('quickActionsTitle');
+    if (origTitle) origTitle.classList.add('qa-hidden');
+
+    // Build HTML
+    var html = '';
+    html += '<div class="qa-top-title"><i class="fas fa-th-large"></i> Quick Access</div>';
+
+    Object.keys(CATEGORY_MAP_V71).forEach(function(cat){
+      var actions = CATEGORY_MAP_V71[cat].filter(function(a){ return tiles[a]; });
+      if (actions.length === 0) return;
+
+      html += '<div class="qa-category">';
+      html += '<h4 class="qa-cat-title">' + cat + '</h4>';
+      html += '<div class="qa-grid">';
+      actions.forEach(function(a){
+        html += tiles[a].outerHTML;
+      });
+      html += '</div></div>';
+    });
+
+    // Fallback: any unused tiles → MORE
+    var usedActions = Object.keys(CATEGORY_MAP_V71).reduce(function(acc, cat){
+      return acc.concat(CATEGORY_MAP_V71[cat]);
+    }, []);
+    var unused = Object.keys(tiles).filter(function(a){
+      return usedActions.indexOf(a) === -1;
+    });
+    if (unused.length > 0) {
+      html += '<div class="qa-category">';
+      html += '<h4 class="qa-cat-title">MORE</h4>';
+      html += '<div class="qa-grid">';
+      unused.forEach(function(a){ html += tiles[a].outerHTML; });
+      html += '</div></div>';
+    }
+
+    grid.innerHTML = html;
+
+    // Re-apply portal visibility
+    setTimeout(function(){
+      if (typeof window.applyStudentPortalVisibility === 'function') {
+        try { window.applyStudentPortalVisibility(); } catch(e) {}
+      }
+    }, 100);
+
+    console.log('✅ v71 categories applied — ' + Object.keys(tiles).length + ' tiles');
+    return true;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 WATCH Dashboard                                       */
+  /* ═══════════════════════════════════════════════════════ */
+  function watch() {
+    var dash = document.getElementById('dashboardSection');
+    if (!dash || dash._v71watch) return;
+    dash._v71watch = true;
+
+    new MutationObserver(function(){
+      if (dash.style.display === 'block') {
+        setTimeout(rebuildV71, 1800);
+        setTimeout(rebuildV71, 3200);
+        setTimeout(rebuildV71, 5000);
+        setTimeout(rebuildV71, 8000);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🚀 INIT                                                  */
+  /* ═══════════════════════════════════════════════════════ */
+  function init() {
+    watch();
+    var dash = document.getElementById('dashboardSection');
+    if (dash && dash.style.display === 'block') {
+      setTimeout(rebuildV71, 2200);
+      setTimeout(rebuildV71, 4000);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 1800);
+      setTimeout(init, 3500);
+    });
+  } else {
+    setTimeout(init, 1800);
+    setTimeout(init, 3500);
+  }
+
+  // Periodic safety check (v70 might re-run — override it)
+  setInterval(function(){
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return;
+    if (grid.dataset.v71built !== '1') {
+      rebuildV71();
+    }
+  }, 4000);
+
+  window.rebuildV71 = rebuildV71;
+  console.log('✅ v71 ready — type rebuildV71() to re-run');
+})();
+</script>
 </body>
 </html>
