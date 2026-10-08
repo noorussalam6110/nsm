@@ -27399,5 +27399,202 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   console.log('   • Teacher sees only their class');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔧 v51.0 — TEACHER PASSWORD MODAL SCROLL FIX           -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="teacher-pwd-scroll-fix">
+(function(){
+  'use strict';
+  console.log('🔧 Teacher Password Scroll Fix v51.0 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 REPLACE promptTeacherPassword with scroll-friendly version
+  // ═══════════════════════════════════════════════════════
+  window.promptTeacherPassword = function(teacher) {
+    // Remove any existing modal
+    var oldM = document.getElementById('teacherPwdModal');
+    if (oldM) {
+      if (oldM._cleanup) try { oldM._cleanup(); } catch(e) {}
+      oldM.remove();
+    }
+
+    var modal = document.createElement('div');
+    modal.id = 'teacherPwdModal';
+    
+    // ✅ FIXED: Simple scroll structure — NO visualViewport height sync
+    modal.style.cssText = [
+      'position:fixed',
+      'top:0','left:0','right:0','bottom:0',
+      'background:linear-gradient(135deg,rgba(5,14,43,.95),rgba(3,8,28,.98))',
+      'backdrop-filter:blur(20px)',
+      '-webkit-backdrop-filter:blur(20px)',
+      'z-index:9999999',
+      'overflow-y:auto',
+      'overflow-x:hidden',
+      '-webkit-overflow-scrolling:touch',
+      'overscroll-behavior:contain',
+      'padding:0',
+      'margin:0'
+    ].join(';') + ';';
+
+    modal.innerHTML = 
+      // ✅ FIXED: Inner flex wrapper handles vertical centering + scroll
+      '<div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">' +
+        '<div style="max-width:440px;width:100%;background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.3);border-radius:26px;padding:30px 26px 30px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 60px -20px rgba(34,211,238,.4);position:relative;flex-shrink:0;">' +
+          
+          // Top accent bar
+          '<div style="position:absolute;top:-1.5px;left:12%;right:12%;height:2.5px;border-radius:3px;background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#fff,#3b8bff,#22d3ee,transparent);background-size:250% 100%;animation:cardGoldenFlow 4s linear infinite;"></div>' +
+          
+          // Header
+          '<div style="text-align:center;margin-bottom:22px;">' +
+            '<div style="width:80px;height:80px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:#fff;box-shadow:0 12px 30px -10px rgba(34,211,238,.8);">' +
+              '<i class="fas fa-chalkboard-teacher"></i>' +
+            '</div>' +
+            '<h2 style="color:#fff;font-size:1.25rem;font-weight:800;margin:0 0 6px;">അസ്സലാമു അലൈക്കും, ' + escapeHtml(teacher.name.split(' ')[0]) + ' 👋</h2>' +
+            '<p style="color:#a9cdff;font-size:.82rem;margin:0;">ഉസ്താദ് ലോഗിൻ</p>' +
+          '</div>' +
+          
+          // Teacher info
+          '<div style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;gap:10px;align-items:center;">' +
+            '<i class="fas fa-user-shield" style="color:#22d3ee;font-size:1.1rem;"></i>' +
+            '<div style="font-size:.74rem;color:#fff;line-height:1.5;">' +
+              '<b>' + escapeHtml(teacher.teacher_id) + '</b> • ' + escapeHtml(teacher.name) + '<br>' +
+              '<span style="color:#a9cdff;">Class' + (teacher.classes && teacher.classes.length ? ' ' + teacher.classes.join(', ') : '') + ' • ' + escapeHtml(teacher.subject || 'General') + '</span>' +
+            '</div>' +
+          '</div>' +
+          
+          // Form
+          '<form id="teacherPwdForm">' +
+            '<div style="margin-bottom:14px;">' +
+              '<label style="color:#fff;font-size:.78rem;font-weight:800;display:block;margin-bottom:6px;">🔐 Password</label>' +
+              '<div style="display:flex;align-items:center;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.28);border-radius:14px;padding:0 14px;">' +
+                '<i class="fas fa-lock" style="color:#ffd966;margin-right:10px;"></i>' +
+                '<input type="password" id="teacherPwdInput" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" style="flex:1;border:none;outline:none;background:transparent;padding:14px 0;color:#fff;font-family:inherit;font-size:16px;font-weight:700;min-width:0;">' +
+                '<i class="fas fa-eye" id="teacherPwdEye" style="cursor:pointer;color:#ffd966;padding:8px;font-size:.95rem;"></i>' +
+              '</div>' +
+            '</div>' +
+            
+            '<button type="submit" id="teacherLoginBtn" style="width:100%;border:none;padding:15px;border-radius:14px;background:linear-gradient(100deg,#0891b2,#22d3ee,#3b8bff);color:#fff;font-family:inherit;font-weight:800;font-size:.94rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 12px 28px -10px rgba(34,211,238,.7);">' +
+              '<i class="fas fa-sign-in-alt" style="color:#ffd966;"></i>' +
+              '<span>പ്രവേശിക്കുക</span>' +
+            '</button>' +
+            
+            '<button type="button" id="teacherCancelBtn" style="width:100%;margin-top:10px;padding:13px;border-radius:14px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">' +
+              '<i class="fas fa-arrow-left"></i> തിരികെ' +
+            '</button>' +
+          '</form>' +
+          
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    // ✅ Lock body scroll (modal has its own scroll)
+    var prevBodyOverflow = document.body.style.overflow;
+    var prevBodyPosition = document.body.style.position;
+    document.body.style.overflow = 'hidden';
+
+    function cleanup() {
+      document.body.style.overflow = prevBodyOverflow || '';
+      document.body.style.position = prevBodyPosition || '';
+    }
+    modal._cleanup = cleanup;
+
+    // ✅ Auto-focus input — but DON'T force scroll to bottom
+    // Use 'nearest' to avoid jarring scroll
+    setTimeout(function() {
+      var inp = document.getElementById('teacherPwdInput');
+      if (inp) {
+        try { inp.focus({ preventScroll: true }); } catch(e) { inp.focus(); }
+      }
+    }, 300);
+
+    // ─── Password eye toggle ───
+    var eye = document.getElementById('teacherPwdEye');
+    if (eye) {
+      eye.onclick = function() {
+        var inp = document.getElementById('teacherPwdInput');
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        this.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+      };
+    }
+
+    // ─── Cancel button ───
+    var cancelBtn = document.getElementById('teacherCancelBtn');
+    if (cancelBtn) {
+      cancelBtn.onclick = function() {
+        cleanup();
+        modal.remove();
+        var s = document.getElementById('studentId');
+        if (s) {
+          s.value = '';
+          setTimeout(function() { s.focus(); }, 100);
+        }
+      };
+    }
+
+    // ─── Submit ───
+    var form = document.getElementById('teacherPwdForm');
+    if (form) {
+      form.onsubmit = async function(e) {
+        e.preventDefault();
+        var pwd = document.getElementById('teacherPwdInput').value;
+        if (!pwd) { showToast('Password നൽകുക', 'error'); return; }
+        if (pwd !== teacher.password) {
+          showToast('❌ തെറ്റായ Password', 'error');
+          var inp = document.getElementById('teacherPwdInput');
+          inp.value = '';
+          inp.focus();
+          // Shake effect
+          var card = modal.querySelector('div');
+          if (card) {
+            card.style.animation = 'shake .4s';
+            setTimeout(function() { card.style.animation = ''; }, 400);
+          }
+          return;
+        }
+        var btn = document.getElementById('teacherLoginBtn');
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+        }
+        cleanup();
+        modal.remove();
+        if (typeof window.enterTeacherDashboard === 'function') {
+          await window.enterTeacherDashboard(teacher);
+        }
+      };
+    }
+
+    // ─── ESC to close ───
+    var escHandler = function(e) {
+      if (e.key === 'Escape') {
+        cleanup();
+        modal.remove();
+        document.removeEventListener('keydown', escHandler);
+        var s = document.getElementById('studentId');
+        if (s) { s.value = ''; setTimeout(function() { s.focus(); }, 100); }
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+
+    console.log('✅ Teacher password modal opened (scroll-enabled)');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎬 Add shake animation (if not present)
+  // ═══════════════════════════════════════════════════════
+  if (!document.getElementById('teacherShakeAnim')) {
+    var st = document.createElement('style');
+    st.id = 'teacherShakeAnim';
+    st.textContent = 
+      '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}';
+    document.head.appendChild(st);
+  }
+
+  console.log('✅ Teacher Password Scroll Fix v51.0 ready');
+  console.log('   💡 Teacher modal-ൽ scroll ഇപ്പോൾ പ്രവർത്തിക്കും');
+})();
+</script>
 </body>
 </html>
