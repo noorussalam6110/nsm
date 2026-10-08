@@ -1005,79 +1005,272 @@ body.modal-open .chat-fab {
 }
 
 /* ═══ TEACHER SYSTEM v60 — CSS ═══ */
+/* ═══ 👨‍🏫 TEACHER LOGIN v60 — COMPACT MOBILE-FIRST ═══ */
 #teacherLoginV60{
-  position:fixed;top:0;left:0;right:0;bottom:0;
+  position:fixed;inset:0;
   z-index:9999999;
-  background:linear-gradient(155deg,#050e2b 0%,#03081c 50%,#071433 100%);
-  overflow-y:auto;overflow-x:hidden;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(34,211,238,.12), transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(139,92,246,.15), transparent 55%),
+    linear-gradient(155deg,#050e2b 0%,#03081c 50%,#071433 100%);
+  height:100vh;height:100dvh;max-height:100dvh;
+  overflow-y:auto !important;overflow-x:hidden !important;
   -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  padding:20px;
-  padding-top:max(20px,env(safe-area-inset-top,20px));
-  padding-bottom:max(120px,env(safe-area-inset-bottom,20px));
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
   box-sizing:border-box;
   display:none;
-  touch-action:pan-y;
+  padding:16px;
+  padding-top:max(16px,env(safe-area-inset-top,16px));
+  padding-bottom:max(24px,env(safe-area-inset-bottom,24px));
 }
-#teacherLoginV60.open{display:block}
+#teacherLoginV60.open{display:block !important}
+
 #teacherLoginV60 .tv60-card{
-  max-width:440px;width:100%;
-  margin:0 auto;
-  background:linear-gradient(155deg,rgba(255,255,255,.14),rgba(255,255,255,.04));
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border:1.5px solid rgba(255,255,255,.28);
-  border-radius:26px;
-  padding:28px 24px 32px;
-  box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 60px -20px rgba(34,211,238,.35);
+  max-width:420px;width:100%;
+  margin:0 auto 32px auto;
+  padding:0 0 24px 0;
+  background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.04));
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  border:1.5px solid rgba(255,255,255,.22);
+  border-radius:24px;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.95),0 0 70px -20px rgba(34,211,238,.35),inset 0 1px 0 rgba(255,255,255,.4);
   position:relative;
+  overflow:hidden;
   box-sizing:border-box;
 }
+
 #teacherLoginV60 .tv60-top-bar{
-  position:absolute;top:-1.5px;left:12%;right:12%;height:2.5px;border-radius:3px;
+  position:absolute;top:0;left:12%;right:12%;height:2.5px;
+  border-radius:0 0 3px 3px;
   background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#fff,#3b8bff,#22d3ee,transparent);
   background-size:250% 100%;animation:tv60Flow 4s linear infinite;
+  filter:drop-shadow(0 0 10px rgba(34,211,238,.9));z-index:5;
 }
 @keyframes tv60Flow{0%{background-position:250% 0}100%{background-position:-250% 0}}
+
+#teacherLoginV60 .tv60-header{
+  display:flex;align-items:center;gap:14px;
+  padding:24px 22px 14px;
+}
 #teacherLoginV60 .tv60-icon{
-  width:78px;height:78px;margin:0 auto 14px;border-radius:50%;
+  width:56px;height:56px;border-radius:16px;
   background:linear-gradient(140deg,#0891b2,#22d3ee);
   display:flex;align-items:center;justify-content:center;
-  font-size:2.1rem;color:#fff;
-  box-shadow:0 12px 30px -10px rgba(34,211,238,.85);
-  animation:tv60Pulse 2.5s ease-in-out infinite;
+  font-size:1.5rem;color:#fff;
+  box-shadow:0 10px 25px -8px rgba(34,211,238,.9),inset 0 1px 0 rgba(255,255,255,.4);
+  flex-shrink:0;
+  animation:tv60IconPulse 2.5s ease-in-out infinite;
 }
-@keyframes tv60Pulse{0%,100%{box-shadow:0 12px 30px -10px rgba(34,211,238,.85)}50%{box-shadow:0 16px 40px -10px rgba(34,211,238,1)}}
-#teacherLoginV60 .tv60-title{color:#fff;font-size:1.22rem;font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:.3px}
-#teacherLoginV60 .tv60-sub{color:#a9cdff;font-size:.82rem;text-align:center;margin:0 0 22px}
-#teacherLoginV60 .tv60-info-box{background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;gap:10px;align-items:center}
-#teacherLoginV60 .tv60-info-box i{color:#22d3ee;font-size:1.1rem;flex-shrink:0}
-#teacherLoginV60 .tv60-info-text{font-size:.74rem;color:#fff;line-height:1.5;min-width:0}
-#teacherLoginV60 .tv60-info-text b{color:#fff}
-#teacherLoginV60 .tv60-info-text span{color:#a9cdff}
-#teacherLoginV60 label.tv60-label{color:#fff;font-size:.78rem;font-weight:800;display:block;margin-bottom:6px}
-#teacherLoginV60 .tv60-input-wrap{display:flex;align-items:center;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.28);border-radius:14px;padding:0 14px;margin-bottom:14px;transition:all .2s}
-#teacherLoginV60 .tv60-input-wrap:focus-within{background:rgba(255,255,255,.22);border-color:#22d3ee;box-shadow:0 0 0 4px rgba(34,211,238,.15)}
-#teacherLoginV60 .tv60-input-wrap i.tv60-icon-in{color:#ffd966;font-size:1rem;margin-right:10px;flex-shrink:0}
-#teacherLoginV60 input.tv60-input{flex:1;min-width:0;border:none;outline:none;background:transparent;padding:14px 0;color:#fff;font-family:inherit;font-size:16px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5)}
-#teacherLoginV60 input.tv60-input::placeholder{color:rgba(255,255,255,.55);font-weight:500;font-size:15px}
-#teacherLoginV60 input.tv60-input#tv60Pwd{letter-spacing:1.5px}
-#teacherLoginV60 .tv60-eye{cursor:pointer;color:#ffd966;padding:8px;font-size:.95rem;flex-shrink:0}
-#teacherLoginV60 .tv60-btn-primary{width:100%;border:none;padding:15px;border-radius:14px;background:linear-gradient(100deg,#0891b2,#22d3ee,#3b8bff);background-size:200% 100%;animation:tv60BtnFlow 6s ease infinite;color:#fff;font-family:inherit;font-weight:800;font-size:.94rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 12px 30px -10px rgba(34,211,238,.85);transition:transform .2s;min-height:52px}
+@keyframes tv60IconPulse{
+  0%,100%{box-shadow:0 10px 25px -8px rgba(34,211,238,.9),inset 0 1px 0 rgba(255,255,255,.4)}
+  50%{box-shadow:0 14px 32px -8px rgba(34,211,238,1),inset 0 1px 0 rgba(255,255,255,.4)}
+}
+#teacherLoginV60 .tv60-header-text{flex:1;min-width:0}
+#teacherLoginV60 .tv60-title{
+  color:#fff;font-size:1.05rem;font-weight:800;margin:0 0 2px;
+  line-height:1.25;letter-spacing:.2px;text-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+#teacherLoginV60 .tv60-sub{
+  color:#a9cdff;font-size:.74rem;margin:0;
+  letter-spacing:1.5px;text-transform:uppercase;font-weight:700;
+}
+
+#teacherLoginV60 .tv60-info-box{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(34,211,238,.10);
+  border:1.5px solid rgba(34,211,238,.32);
+  border-radius:16px;padding:12px 16px;margin:0 22px 16px;
+}
+#teacherLoginV60 .tv60-info-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(140deg,#0891b2,#22d3ee);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0;
+  box-shadow:0 4px 12px -4px rgba(34,211,238,.7);
+}
+#teacherLoginV60 .tv60-info-text{flex:1;min-width:0}
+#teacherLoginV60 .tv60-info-name{
+  color:#fff;font-weight:800;font-size:.92rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;
+}
+#teacherLoginV60 .tv60-info-meta{
+  color:#a9cdff;font-size:.72rem;display:flex;align-items:center;gap:6px;
+  flex-wrap:wrap;line-height:1.3;
+}
+#teacherLoginV60 .tv60-info-meta #tv60Tid{
+  color:#67e8f9;font-weight:800;letter-spacing:.5px;
+}
+#teacherLoginV60 .tv60-dot{opacity:.5}
+
+#teacherLoginV60 .tv60-error{
+  background:rgba(239,68,68,.15);
+  border:1.5px solid rgba(239,68,68,.45);
+  border-radius:12px;padding:10px 14px;color:#fca5a5;
+  font-size:.78rem;font-weight:700;margin:0 22px 12px;display:none;
+}
+#teacherLoginV60 .tv60-error.show{display:block;animation:tv60Shake .4s}
+@keyframes tv60Shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+#teacherLoginV60 form{padding:0 22px}
+#teacherLoginV60 .tv60-label{
+  display:flex;align-items:center;gap:7px;color:#fff;
+  font-size:.76rem;font-weight:800;margin-bottom:8px;letter-spacing:.3px;
+}
+#teacherLoginV60 .tv60-label i{color:#ffd966;font-size:.85rem}
+#teacherLoginV60 .tv60-input-wrap{
+  display:flex;align-items:center;
+  background:rgba(255,255,255,.10);
+  border:1.5px solid rgba(255,255,255,.24);
+  border-radius:14px;padding:0 14px;margin-bottom:14px;transition:all .25s ease;
+}
+#teacherLoginV60 .tv60-input-wrap:focus-within{
+  background:rgba(255,255,255,.18);
+  border-color:#22d3ee;
+  box-shadow:0 0 0 4px rgba(34,211,238,.18);
+}
+#teacherLoginV60 .tv60-input-wrap i.tv60-icon-in{
+  color:#ffd966;font-size:.95rem;margin-right:10px;flex-shrink:0;
+}
+#teacherLoginV60 input.tv60-input{
+  flex:1;min-width:0;border:none;outline:none;background:transparent;
+  padding:14px 0;color:#fff;font-family:inherit;
+  font-size:16px;font-weight:700;letter-spacing:1.5px;
+  text-shadow:0 1px 3px rgba(0,0,0,.5);
+}
+#teacherLoginV60 input.tv60-input::placeholder{
+  color:rgba(255,255,255,.5);font-weight:500;font-size:15px;letter-spacing:0;
+}
+#teacherLoginV60 .tv60-eye{
+  cursor:pointer;color:#ffd966;padding:10px;font-size:.95rem;flex-shrink:0;transition:color .2s;
+}
+#teacherLoginV60 .tv60-eye:active{color:#fff}
+
+#teacherLoginV60 .tv60-remember{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);border-radius:12px;
+  cursor:pointer;margin-bottom:16px;user-select:none;
+  -webkit-tap-highlight-color:transparent;transition:background .2s;
+}
+#teacherLoginV60 .tv60-remember:active{background:rgba(255,255,255,.12)}
+#teacherLoginV60 .tv60-remember input[type="checkbox"]{
+  position:absolute;opacity:0;pointer-events:none;
+}
+#teacherLoginV60 .tv60-checkbox-ui{
+  width:20px;height:20px;border-radius:6px;
+  border:2px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .2s;position:relative;
+}
+#teacherLoginV60 .tv60-checkbox-ui::after{
+  content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;
+  color:#fff;font-size:.7rem;opacity:0;transform:scale(.4);transition:all .2s;
+}
+#teacherLoginV60 input[type="checkbox"]:checked ~ .tv60-checkbox-ui{
+  background:linear-gradient(140deg,#0891b2,#22d3ee);
+  border-color:#22d3ee;box-shadow:0 0 12px rgba(34,211,238,.6);
+}
+#teacherLoginV60 input[type="checkbox"]:checked ~ .tv60-checkbox-ui::after{
+  opacity:1;transform:scale(1);
+}
+#teacherLoginV60 .tv60-remember-text{
+  color:#fff;font-size:.78rem;font-weight:700;
+  display:flex;align-items:center;gap:6px;
+}
+#teacherLoginV60 .tv60-remember-text i{color:#ffd966;font-size:.8rem}
+
+#teacherLoginV60 .tv60-btn-primary{
+  width:100%;border:none;padding:15px;border-radius:14px;
+  background:linear-gradient(100deg,#0891b2,#22d3ee,#3b8bff);
+  background-size:200% 100%;animation:tv60BtnFlow 6s ease infinite;
+  color:#fff;font-family:inherit;font-weight:800;font-size:.92rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:10px;box-shadow:0 12px 30px -10px rgba(34,211,238,.85),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .2s;min-height:52px;letter-spacing:.5px;
+}
 @keyframes tv60BtnFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 #teacherLoginV60 .tv60-btn-primary:hover{transform:translateY(-2px)}
 #teacherLoginV60 .tv60-btn-primary:active{transform:translateY(0) scale(.98)}
 #teacherLoginV60 .tv60-btn-primary i{color:#ffd966}
-#teacherLoginV60 .tv60-btn-primary:disabled{opacity:.6;cursor:not-allowed}
-#teacherLoginV60 .tv60-btn-secondary{width:100%;margin-top:10px;padding:13px;border-radius:14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);color:#fff;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px}
-#teacherLoginV60 .tv60-btn-secondary:hover{background:rgba(255,255,255,.15)}
-#teacherLoginV60 .tv60-remember{display:flex;align-items:center;gap:10px;padding:11px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;cursor:pointer;user-select:none;margin-bottom:8px}
-#teacherLoginV60 .tv60-remember input{width:20px;height:20px;accent-color:#22d3ee;flex-shrink:0}
-#teacherLoginV60 .tv60-remember span{color:#fff;font-size:.8rem;font-weight:700}
-#teacherLoginV60 .tv60-remember i{color:#ffd966;margin-right:5px}
-#teacherLoginV60 .tv60-error{background:rgba(239,68,68,.15);border:1.5px solid rgba(239,68,68,.4);border-radius:12px;padding:10px 14px;color:#fca5a5;font-size:.8rem;font-weight:700;margin-bottom:12px;display:none;animation:tv60Shake .4s}
-@keyframes tv60Shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-#teacherLoginV60 .tv60-error.show{display:block}
-#teacherLoginV60 .tv60-footer{text-align:center;margin-top:18px;font-size:.68rem;color:#6d88ad;font-weight:600;letter-spacing:.5px}
+#teacherLoginV60 .tv60-btn-primary:disabled{opacity:.7;cursor:not-allowed;animation:none}
+
+#teacherLoginV60 .tv60-secondary-row{display:flex;gap:8px;margin-top:10px}
+#teacherLoginV60 .tv60-btn-secondary{
+  flex:1;padding:12px 8px;border-radius:12px;
+  background:rgba(255,255,255,.08);
+  border:1.5px solid rgba(255,255,255,.20);
+  color:#fff;font-family:inherit;font-weight:700;font-size:.78rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:6px;min-height:46px;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+#teacherLoginV60 .tv60-btn-secondary:hover{
+  background:rgba(255,255,255,.16);border-color:rgba(34,211,238,.5);
+}
+#teacherLoginV60 .tv60-btn-secondary:active{transform:scale(.96)}
+#teacherLoginV60 .tv60-btn-secondary i{color:#ffd966;font-size:.82rem}
+
+#teacherLoginV60 .tv60-footer{
+  text-align:center;margin-top:18px;padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.08);
+  font-size:.66rem;color:#6d88ad;font-weight:600;letter-spacing:.8px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+#teacherLoginV60 .tv60-footer i{color:#22d3ee;opacity:.7}
+
+/* 📱 Small phones */
+@media (max-width: 500px){
+  #teacherLoginV60{
+    padding:12px;
+    padding-top:max(12px,env(safe-area-inset-top,12px));
+    padding-bottom:max(20px,env(safe-area-inset-bottom,20px));
+  }
+  #teacherLoginV60 .tv60-card{border-radius:20px;margin-bottom:24px}
+  #teacherLoginV60 .tv60-header{padding:20px 18px 12px;gap:12px}
+  #teacherLoginV60 .tv60-icon{width:48px;height:48px;font-size:1.3rem;border-radius:14px}
+  #teacherLoginV60 .tv60-title{font-size:.95rem}
+  #teacherLoginV60 .tv60-sub{font-size:.68rem;letter-spacing:1.2px}
+  #teacherLoginV60 .tv60-info-box{margin:0 18px 14px;padding:10px 14px}
+  #teacherLoginV60 .tv60-info-avatar{width:36px;height:36px;font-size:1.05rem}
+  #teacherLoginV60 .tv60-info-name{font-size:.86rem}
+  #teacherLoginV60 .tv60-info-meta{font-size:.68rem}
+  #teacherLoginV60 .tv60-error{margin:0 18px 10px;padding:9px 12px;font-size:.74rem}
+  #teacherLoginV60 form{padding:0 18px}
+  #teacherLoginV60 .tv60-label{font-size:.72rem}
+  #teacherLoginV60 input.tv60-input{font-size:16px !important;padding:13px 0}
+  #teacherLoginV60 .tv60-remember{padding:10px 12px;gap:8px;margin-bottom:14px}
+  #teacherLoginV60 .tv60-remember-text{font-size:.72rem}
+  #teacherLoginV60 .tv60-checkbox-ui{width:18px;height:18px;border-radius:5px}
+  #teacherLoginV60 .tv60-btn-primary{padding:14px;font-size:.86rem;min-height:48px}
+  #teacherLoginV60 .tv60-btn-secondary{padding:11px 6px;font-size:.72rem;min-height:44px}
+  #teacherLoginV60 .tv60-footer{font-size:.6rem;margin-top:14px;padding-top:12px}
+}
+
+/* 📱 Very small phones */
+@media (max-width: 360px){
+  #teacherLoginV60 .tv60-card{border-radius:18px}
+  #teacherLoginV60 .tv60-header{padding:18px 14px 10px}
+  #teacherLoginV60 .tv60-icon{width:44px;height:44px;font-size:1.15rem}
+  #teacherLoginV60 .tv60-title{font-size:.88rem}
+  #teacherLoginV60 .tv60-info-box{margin:0 14px 12px}
+  #teacherLoginV60 form{padding:0 14px}
+  #teacherLoginV60 .tv60-error{margin:0 14px 10px}
+  #teacherLoginV60 .tv60-btn-primary{font-size:.82rem}
+  #teacherLoginV60 .tv60-btn-secondary{font-size:.68rem}
+}
+
+/* 🖥️ Desktop */
+@media (min-width: 901px){
+  #teacherLoginV60{
+    padding:24px;display:none;
+    align-items:center;justify-content:center;
+  }
+  #teacherLoginV60.open{display:flex !important}
+  #teacherLoginV60 .tv60-card{max-width:440px;margin:0}
+}
 
 #teacherDashboardV60{min-height:100vh;background:linear-gradient(160deg,#f0f9ff 0%,#dbeafe 50%,#e0f2fe 100%);padding:16px;padding-bottom:100px;display:none}
 #teacherDashboardV60.open{display:block}
@@ -1144,10 +1337,6 @@ body.modal-open .chat-fab {
 .td60-spinner{width:32px;height:32px;border:3px solid rgba(8,145,178,.2);border-top-color:#0891b2;border-radius:50%;animation:td60Spin .8s linear infinite;margin:0 auto}
 @keyframes td60Spin{to{transform:rotate(360deg)}}
 @media (max-width: 600px) {
-  #teacherLoginV60{padding:14px;padding-bottom:100px}
-  #teacherLoginV60 .tv60-card{padding:24px 18px 30px;border-radius:22px}
-  #teacherLoginV60 .tv60-icon{width:68px;height:68px;font-size:1.85rem}
-  #teacherLoginV60 .tv60-title{font-size:1.08rem}
   .td60-header{padding:14px 16px;border-radius:18px}
   .td60-avatar{width:50px;height:50px;font-size:1.3rem}
   .td60-name{font-size:1rem}
@@ -3249,48 +3438,96 @@ body.modal-open .chat-fab{display:none!important}
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 👨‍🏫 TEACHER LOGIN v60 MODAL                              -->
 <!-- ═══════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 👨‍🏫 TEACHER LOGIN v60 MODAL — COMPACT REDESIGN           -->
+<!-- ═══════════════════════════════════════════════════════ -->
 <div id="teacherLoginV60">
   <div class="tv60-card">
+
+    <!-- ✨ Top animated border -->
     <div class="tv60-top-bar"></div>
-    <div class="tv60-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-    <h2 class="tv60-title" id="tv60Greeting">അസ്സലാമു അലൈക്കും 👋</h2>
-    <p class="tv60-sub">ഉസ്താദ് ലോഗിൻ</p>
-    <div class="tv60-info-box">
-      <i class="fas fa-user-shield"></i>
-      <div class="tv60-info-text">
-        <b id="tv60Tid">TR___</b> • <span id="tv60Tname">Teacher</span><br>
-        <span id="tv60Tmeta">Class — • Subject —</span>
+
+    <!-- 👤 Header: Compact Icon + Title -->
+    <div class="tv60-header">
+      <div class="tv60-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+      <div class="tv60-header-text">
+        <h2 class="tv60-title" id="tv60Greeting">അസ്സലാമു അലൈക്കും 👋</h2>
+        <p class="tv60-sub">ഉസ്താദ് ലോഗിൻ</p>
       </div>
     </div>
-    <div class="tv60-error" id="tv60Error"></div>
-    <form id="tv60Form" autocomplete="on">
-      <label class="tv60-label">🔐 Password</label>
-      <div class="tv60-input-wrap">
-        <i class="fas fa-lock tv60-icon-in"></i>
-        <input type="password" id="tv60Pwd" class="tv60-input" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" inputmode="text">
-        <i class="fas fa-eye tv60-eye" id="tv60Eye"></i>
+
+    <!-- 🪪 Teacher Info Card (compact) -->
+    <div class="tv60-info-box">
+      <div class="tv60-info-avatar" id="tv60AvatarIcon">👨‍🏫</div>
+      <div class="tv60-info-text">
+        <div class="tv60-info-name" id="tv60Tname">Teacher</div>
+        <div class="tv60-info-meta">
+          <span id="tv60Tid">TR___</span>
+          <span class="tv60-dot">•</span>
+          <span id="tv60Tmeta">Class — • Subject —</span>
+        </div>
       </div>
-      <label class="tv60-remember">
-        <input type="checkbox" id="tv60Remember" checked>
-        <span><i class="fas fa-bookmark"></i>Remember my Teacher ID</span>
+    </div>
+
+    <!-- ⚠️ Error Banner -->
+    <div class="tv60-error" id="tv60Error"></div>
+
+    <!-- 🔐 Password Form -->
+    <form id="tv60Form" autocomplete="on">
+      <label class="tv60-label">
+        <i class="fas fa-lock"></i> Password
       </label>
+      <div class="tv60-input-wrap">
+        <i class="fas fa-key tv60-icon-in"></i>
+        <input
+          type="password"
+          id="tv60Pwd"
+          class="tv60-input"
+          placeholder="നിങ്ങളുടെ password"
+          autocomplete="current-password"
+          inputmode="text"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false">
+        <i class="fas fa-eye tv60-eye" id="tv60Eye" title="Show/Hide"></i>
+      </div>
+
+      <!-- ✅ Remember toggle — inline compact -->
+      <label class="tv60-remember" for="tv60Remember">
+        <input type="checkbox" id="tv60Remember" checked>
+        <span class="tv60-checkbox-ui"></span>
+        <span class="tv60-remember-text">
+          <i class="fas fa-bookmark"></i> Remember my Teacher ID
+        </span>
+      </label>
+
+      <!-- 🚀 Primary Action -->
       <button type="submit" class="tv60-btn-primary" id="tv60Submit">
         <i class="fas fa-sign-in-alt"></i>
         <span>പ്രവേശിക്കുക</span>
       </button>
-      <button type="button" class="tv60-btn-secondary" id="tv60Cancel">
-        <i class="fas fa-arrow-left"></i>
-        <span>തിരികെ</span>
-      </button>
-      <button type="button" class="tv60-btn-secondary" id="tv60Forgot">
-        <i class="fas fa-question-circle" style="color:#ffd966;"></i>
-        <span>Password മറന്നോ?</span>
-      </button>
+
+      <!-- 🔗 Secondary actions — side-by-side compact -->
+      <div class="tv60-secondary-row">
+        <button type="button" class="tv60-btn-secondary" id="tv60Cancel">
+          <i class="fas fa-arrow-left"></i>
+          <span>തിരികെ</span>
+        </button>
+        <button type="button" class="tv60-btn-secondary" id="tv60Forgot">
+          <i class="fas fa-question-circle"></i>
+          <span>മറന്നോ?</span>
+        </button>
+      </div>
     </form>
-    <div class="tv60-footer">Noorussalam Madrasa • Teacher Portal</div>
+
+    <!-- 🦶 Footer -->
+    <div class="tv60-footer">
+      <i class="fas fa-shield-alt"></i>
+      Noorussalam Madrasa • Teacher Portal
+    </div>
+
   </div>
 </div>
-
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 🎓 TEACHER DASHBOARD v60                                 -->
 <!-- ═══════════════════════════════════════════════════════ -->
@@ -3473,14 +3710,34 @@ document.getElementById('helpModal').addEventListener('click',function(e){if(e.t
 
 function showLoading(s){loadingOverlay.style.display=s?'flex':'none';}
 
-function showToast(msg,type){
-  type=type||'info';
-  var c=document.getElementById('toastContainer');if(!c)return;
-  var t=document.createElement('div');t.className='toast-item '+type;
-  var i=type==='success'?'✅':type==='error'?'❌':'ℹ️';
-  t.innerHTML='<span>'+i+'</span><span>'+msg+'</span>';
+function showToast(msg, type){
+  type = type || 'info';
+  var c = document.getElementById('toastContainer');
+  if (!c) return;
+
+  /* Auto-detect from message if no type */
+  if (!type || type === 'info') {
+    if (/❌|error|fail|പിശക്/i.test(msg)) type = 'error';
+    else if (/✅|success|saved|updated/i.test(msg)) type = 'success';
+    else if (/⚠️|warning|ശ്രദ്ധ/i.test(msg)) type = 'warning';
+  }
+
+  var icons = {
+    success: '✅',
+    error: '❌',
+    warning: '⚠️',
+    info: 'ℹ️'
+  };
+  var icon = icons[type] || 'ℹ️';
+
+  var t = document.createElement('div');
+  t.className = 'toast-item ' + type;
+  t.innerHTML = '<span>' + icon + '</span><span>' + msg + '</span>';
   c.appendChild(t);
-  setTimeout(function(){if(t.parentNode)t.remove();},3500);
+
+  /* Auto dismiss (longer for errors) */
+  var duration = type === 'error' ? 5000 : type === 'warning' ? 4500 : 3500;
+  setTimeout(function() { if (t.parentNode) t.remove(); }, duration);
 }
 
 function formatDate(d){
@@ -4220,24 +4477,56 @@ if(studentIdInput)studentIdInput.addEventListener('input',function(){
 /* ═══ MAIN LOGIN HANDLER — Student ID only (v32 mode) ═══ */
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  if (!supabaseClient) { showToast('System loading. Refresh.', 'error'); return; }
+  e.stopPropagation();
+
+  /* 1️⃣ Offline check */
+  if (!window.isOnline || !navigator.onLine) {
+    window.showDetailedError(
+      '📴 ഇന്റർനെറ്റ് ഇല്ല',
+      'Wi-Fi അല്ലെങ്കിൽ Mobile data ഓൺ ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.'
+    );
+    return;
+  }
+
+  if (!supabaseClient) {
+    showToast('System loading. Refresh.', 'error');
+    return;
+  }
 
   var raw = studentIdInput.value.trim().toUpperCase();
   if (!raw) { showToast('Enter Student ID', 'error'); return; }
 
+  /* 2️⃣ Set button loading state */
+  var loginBtn = document.getElementById('nsmLoginBtn');
+  if (loginBtn) {
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>പരിശോധിക്കുന്നു...</span>';
+  }
   showLoading(true);
+
   try {
-    /* 1. Super Admin check */
+    /* 3️⃣ Super Admin check (no DB call) */
     var ap = localStorage.getItem('admin_password') || DEFAULT_ADMIN_PASSWORD;
     if (raw === ap || raw === DEFAULT_ADMIN_PASSWORD) {
-      isAdminMode = true; currentAdminClass = '';
+      isAdminMode = true;
+      currentAdminClass = '';
       loginSection.style.display = 'none';
       adminSection.style.display = 'block';
       dashboardSection.style.display = 'none';
       document.getElementById('aiFab').classList.remove('show');
-      if (notifChannel) { supabaseClient.removeChannel(notifChannel); notifChannel = null; }
-      stopLeaderboardAutoScroll();
-      await loadAllSettings();
+      if (notifChannel) {
+        try { supabaseClient.removeChannel(notifChannel); } catch(err){}
+        notifChannel = null;
+      }
+      if (typeof stopLeaderboardAutoScroll === 'function') stopLeaderboardAutoScroll();
+
+      /* ✅ Timeout-wrapped settings load */
+      try {
+        await window.withTimeout(loadAllSettings(), 8000, 'Settings load timeout');
+      } catch(err) {
+        console.warn('Settings load failed (non-blocking):', err);
+      }
+
       document.getElementById('adminClassSelector').value = '';
       document.getElementById('adminMainContent').style.display = 'none';
       document.getElementById('noClassMsg').style.display = 'block';
@@ -4246,49 +4535,102 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       localStorage.setItem('noor_last_id', raw);
       showToast('🔐 Admin Panel', 'success');
       enableBodyScroll();
-      showLoading(false);
+      window.resetLoginUI('student');
       return;
     }
 
-    /* 2. Teacher ID (TR-prefix) — will be caught by v60 hook script */
+    /* 4️⃣ Teacher ID check — TR prefix */
     if (/^TR[A-Z0-9]*$/i.test(raw)) {
-      var tr = await supabaseClient.from('teachers').select('*').eq('teacher_id', raw).maybeSingle();
+      var tr = await window.safeSupabaseQuery(
+        function() {
+          return supabaseClient.from('teachers').select('*').eq('teacher_id', raw).maybeSingle();
+        },
+        { timeout: 10000, retries: 1, label: 'Teacher lookup' }
+      );
+
       if (tr.data && tr.data.is_active !== false) {
-        showLoading(false);
-        /* v60 hook script intercepts this via showTeacherLoginV60 */
+        window.resetLoginUI('student');
         if (typeof window.showTeacherLoginV60 === 'function') {
           return window.showTeacherLoginV60(tr.data);
         }
+      } else if (!tr.data) {
+        showToast('❌ Teacher ID കണ്ടെത്തിയില്ല', 'error');
+        window.resetLoginUI('student');
+        return;
       }
     }
 
-    /* 3. Student */
-    var r = await supabaseClient.from('students').select('*').eq('studentid', raw).single();
+    /* 5️⃣ Student lookup — with timeout + retry */
+    var r = await window.safeSupabaseQuery(
+      function() {
+        return supabaseClient.from('students').select('*').eq('studentid', raw).single();
+      },
+      { timeout: 10000, retries: 1, label: 'Student lookup' }
+    );
 
     if (r.error || !r.data) {
-      showToast('❌ Student ID കണ്ടെത്തിയില്ല', 'error');
-      showLoading(false);
+      var isNotFound = r.error && /PGRST116|no rows/i.test(r.error.message || '');
+      window.showDetailedError(
+        isNotFound ? '❌ ID കണ്ടെത്തിയില്ല' : '⚠️ ലോഗിൻ പരാജയപ്പെട്ടു',
+        isNotFound
+          ? 'Student ID "' + raw + '" സിസ്റ്റത്തിൽ ഇല്ല. ഡയറിയിലെ UID പരിശോധിക്കുക.'
+          : window.friendlyError(r.error),
+        null
+      );
+      window.resetLoginUI('student');
       return;
     }
 
     var student = r.data;
 
+    /* 6️⃣ Blocked check */
     if (student.is_blocked === true) {
-      showLoading(false);
+      window.resetLoginUI('student');
       showBlockedScreen(student);
       return;
     }
 
-    /* Direct login — no password check */
-    showLoading(false);
+    /* 7️⃣ Complete login — with timeout */
+    window.resetLoginUI('student');
     if (typeof window.completeLogin === 'function') {
-      await window.completeLogin(student);
+      try {
+        await window.withTimeout(
+          window.completeLogin(student),
+          15000,
+          'Login completion timeout'
+        );
+      } catch(err) {
+        console.error('completeLogin error:', err);
+        window.showDetailedError(
+          '⏱️ ലോഗിൻ സമയം കഴിഞ്ഞു',
+          'സെർവർ പ്രതികരിച്ചില്ല. ഇന്റർനെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.',
+          function() {
+            /* Retry */
+            document.getElementById('loginForm').dispatchEvent(
+              new Event('submit', { cancelable: true })
+            );
+          }
+        );
+        window.resetLoginUI('student');
+      }
     }
 
   } catch(err) {
     console.error('Login error:', err);
-    showToast('❌ ' + (err.message || 'Error'), 'error');
+    window.showDetailedError(
+      '⚠️ ലോഗിൻ പിശക്',
+      window.friendlyError(err),
+      function() {
+        document.getElementById('loginForm').dispatchEvent(
+          new Event('submit', { cancelable: true })
+        );
+      }
+    );
+    window.resetLoginUI('student');
+  } finally {
     showLoading(false);
+    /* Safety: reset button after 15s max */
+    setTimeout(function() { window.resetLoginUI('student'); }, 15000);
   }
 });
 
@@ -14323,32 +14665,79 @@ console.log('✅ Part 5.C loaded — Survey + Instagram Feed + Namaz + Cleanup')
     alert('🔐 Teacher Password Reset\n\nTeacher ID: ' + (t.teacher_id || '—') + '\nName: ' + (t.name || '—') + '\n\nSuper Admin-നെ ബന്ധപ്പെടുക:\n📞 Office: 7034678818');
   });
 
-  $id('tv60Form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    var pwd = $id('tv60Pwd').value;
-    if (!pwd) { toast('Password നൽകുക', 'error'); return; }
-    var teacher = TV60.teacher;
-    if (!teacher) { toast('Error: no teacher context', 'error'); return; }
-    if (pwd !== teacher.password) {
-      var errEl = $id('tv60Error');
-      errEl.textContent = '❌ തെറ്റായ Password. വീണ്ടും ശ്രമിക്കുക.';
-      errEl.classList.remove('show');
-      void errEl.offsetWidth;
-      errEl.classList.add('show');
-      $id('tv60Pwd').value = '';
-      try { $id('tv60Pwd').focus({preventScroll:true}); } catch(ex) { $id('tv60Pwd').focus(); }
-      return;
-    }
-    if ($id('tv60Remember').checked) {
-      try { localStorage.setItem('noor_last_teacher', teacher.teacher_id); } catch(ex) {}
-    } else {
-      try { localStorage.removeItem('noor_last_teacher'); } catch(ex) {}
-    }
-    var btn = $id('tv60Submit');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-    await enterTeacherDashboard(teacher);
-  });
+$id('tv60Form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  /* 1️⃣ Offline check */
+  if (!navigator.onLine) {
+    window.showDetailedError(
+      '📴 ഇന്റർനെറ്റ് ഇല്ല',
+      'Wi-Fi / Mobile data ഓൺ ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.'
+    );
+    return;
+  }
+
+  var pwd = $id('tv60Pwd').value;
+  if (!pwd) { toast('Password നൽകുക', 'error'); return; }
+
+  var teacher = TV60.teacher;
+  if (!teacher) {
+    window.showDetailedError(
+      '⚠️ സെഷൻ പ്രശ്നം',
+      'Teacher context ലഭ്യമല്ല. പേജ് refresh ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.'
+    );
+    return;
+  }
+
+  /* 2️⃣ Password check */
+  if (pwd !== teacher.password) {
+    var errEl = $id('tv60Error');
+    errEl.textContent = '❌ തെറ്റായ Password. വീണ്ടും ശ്രമിക്കുക.';
+    errEl.classList.remove('show');
+    void errEl.offsetWidth;
+    errEl.classList.add('show');
+    $id('tv60Pwd').value = '';
+    try { $id('tv60Pwd').focus({ preventScroll: true }); }
+    catch(ex) { $id('tv60Pwd').focus(); }
+    return;
+  }
+
+  /* 3️⃣ Remember ID */
+  if ($id('tv60Remember').checked) {
+    try { localStorage.setItem('noor_last_teacher', teacher.teacher_id); } catch(ex) {}
+  } else {
+    try { localStorage.removeItem('noor_last_teacher'); } catch(ex) {}
+  }
+
+  /* 4️⃣ Set loading state */
+  var btn = $id('tv60Submit');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+  try {
+    /* 5️⃣ Enter dashboard — with timeout */
+    await window.withTimeout(
+      enterTeacherDashboard(teacher),
+      15000,
+      'Teacher dashboard timeout'
+    );
+  } catch(err) {
+    console.error('Teacher login error:', err);
+    window.showDetailedError(
+      '⚠️ ലോഗിൻ പിശക്',
+      window.friendlyError(err),
+      function() {
+        /* Retry */
+        var f = document.getElementById('tv60Form');
+        if (f) f.dispatchEvent(new Event('submit', { cancelable: true }));
+      }
+    );
+    window.resetLoginUI('teacher');
+  } finally {
+    /* Safety reset */
+    setTimeout(function() { window.resetLoginUI('teacher'); }, 3000);
+  }
+});
 
   async function enterTeacherDashboard(teacher) {
     try {
@@ -17530,6 +17919,593 @@ console.log('');
 console.log('%c╔══════════════════════════════════════════════════════╗','color:#0891b2;font-weight:bold;');
 console.log('%c║  🎉 ALL 9 PARTS COMPLETE — NOTHING MISSING            ║','color:#059669;font-weight:bold;');
 console.log('%c╚══════════════════════════════════════════════════════╝','color:#0891b2;font-weight:bold;');
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔧 MOBILE LOGIN SCROLL FIX — Final Patch                 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="mobile-login-scroll-fix">
+/* ═══ 🎯 TEACHER LOGIN v60 — Robust Mobile Scroll ═══ */
+#teacherLoginV60 {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999999;
+  background: linear-gradient(155deg,#050e2b 0%,#03081c 50%,#071433 100%);
+  /* ✅ FIX 1: use dvh + fallback */
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  /* ✅ FIX 2: proper scroll setup */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  /* ✅ FIX 3: minimal padding, respect safe area */
+  padding: max(16px, env(safe-area-inset-top, 16px)) 16px max(80px, env(safe-area-inset-bottom, 24px));
+  box-sizing: border-box;
+  display: none;
+  touch-action: pan-y;
+}
+
+#teacherLoginV60.open { display: block !important; }
+
+#teacherLoginV60 .tv60-card {
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto 40px auto;      /* ✅ bottom breathing space for scroll */
+  padding: 26px 22px 30px;
+  background: linear-gradient(155deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1.5px solid rgba(255,255,255,.28);
+  border-radius: 24px;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), 0 0 60px -20px rgba(34,211,238,.35);
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* 🔑 SCROLL BUFFER — ensures bottom buttons reachable */
+#teacherLoginV60::after {
+  content: '';
+  display: block;
+  height: 20px;
+}
+
+/* ═══ 📱 SMALL PHONES (<500px) ═══ */
+@media (max-width: 500px) {
+  #teacherLoginV60 {
+    padding: 12px 12px max(60px, env(safe-area-inset-bottom, 20px));
+  }
+  #teacherLoginV60 .tv60-card {
+    padding: 20px 16px 24px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+  }
+  #teacherLoginV60 .tv60-icon {
+    width: 62px; height: 62px; font-size: 1.6rem; margin-bottom: 10px;
+  }
+  #teacherLoginV60 .tv60-title { font-size: 1rem; }
+  #teacherLoginV60 .tv60-sub { font-size: .74rem; margin-bottom: 14px; }
+  #teacherLoginV60 .tv60-info-box { padding: 9px 12px; margin-bottom: 12px; }
+  #teacherLoginV60 .tv60-info-text { font-size: .7rem; line-height: 1.45; }
+  #teacherLoginV60 input.tv60-input {
+    padding: 12px 0;
+    font-size: 16px !important;   /* prevent iOS auto-zoom */
+  }
+  #teacherLoginV60 .tv60-btn-primary {
+    padding: 13px; min-height: 48px; font-size: .86rem; margin-top: 4px;
+  }
+  #teacherLoginV60 .tv60-btn-secondary {
+    padding: 11px; min-height: 44px; font-size: .78rem; margin-top: 8px;
+  }
+  #teacherLoginV60 .tv60-remember { padding: 9px 12px; margin-bottom: 6px; }
+  #teacherLoginV60 .tv60-remember span { font-size: .76rem; }
+  #teacherLoginV60 .tv60-footer { margin-top: 14px; font-size: .64rem; }
+}
+
+/* ═══ 📱 VERY SMALL PHONES (<360px) ═══ */
+@media (max-width: 360px) {
+  #teacherLoginV60 .tv60-card { padding: 18px 14px 22px; }
+  #teacherLoginV60 .tv60-btn-primary,
+  #teacherLoginV60 .tv60-btn-secondary { font-size: .76rem; }
+}
+
+/* ═══ 🎓 STUDENT LOGIN — Mobile Scroll Fix ═══ */
+@media (max-width: 900px) {
+  .nsm-login-wrapper {
+    height: auto !important;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: none !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  .nsm-body {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 0;
+  }
+  .nsm-hero {
+    min-height: 220px !important;
+    padding: 30px 24px !important;
+    flex-shrink: 0;
+  }
+  .nsm-login-side {
+    min-height: 0 !important;
+    padding: 20px 16px max(80px, env(safe-area-inset-bottom, 20px)) !important;
+    overflow-y: visible !important;
+  }
+  .nsm-card {
+    max-width: 100% !important;
+    max-height: none !important;
+    padding: 22px 18px !important;
+  }
+  /* Disable login-active trap on mobile */
+  body.login-active {
+    position: relative !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* ═══ 🛡️ ADMIN LOGIN Mobile — same protection ═══ */
+@media (max-width: 900px) {
+  #adminSection > .container,
+  #dashboardSection > .container {
+    padding-bottom: 120px !important;  /* above bottom nav */
+  }
+}
+
+/* ═══ 🎯 GLOBAL: prevent scroll lock issues ═══ */
+html, body {
+  overscroll-behavior-y: none;   /* stop pull-to-refresh on modals */
+}
+body.modal-open,
+body.ai-panel-open {
+  overflow: hidden;
+}
+</style>
+
+<script id="mobile-login-scroll-fix-js">
+(function(){
+  'use strict';
+  console.log('🔧 Mobile Login Scroll Fix loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎓 TEACHER LOGIN — Visual Viewport Awareness             */
+  /* ═══════════════════════════════════════════════════════ */
+  function adjustTeacherModal() {
+    var modal = document.getElementById('teacherLoginV60');
+    if (!modal || !modal.classList.contains('open')) return;
+    if (!window.visualViewport) return;
+
+    var vv = window.visualViewport;
+    /* Use visual viewport height so keyboard doesn't hide content */
+    modal.style.height = vv.height + 'px';
+    modal.style.maxHeight = vv.height + 'px';
+    modal.style.top = vv.offsetTop + 'px';
+    modal.style.bottom = 'auto';
+    modal.style.overflowY = 'auto';
+  }
+
+  function resetTeacherModal() {
+    var modal = document.getElementById('teacherLoginV60');
+    if (!modal) return;
+    modal.style.height = '';
+    modal.style.maxHeight = '';
+    modal.style.top = '';
+    modal.style.bottom = '';
+  }
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', function() {
+      var modal = document.getElementById('teacherLoginV60');
+      if (modal && modal.classList.contains('open')) adjustTeacherModal();
+    });
+    window.visualViewport.addEventListener('scroll', function() {
+      var modal = document.getElementById('teacherLoginV60');
+      if (modal && modal.classList.contains('open')) adjustTeacherModal();
+    });
+  }
+
+  /* ═══ HOOK: showTeacherLoginV60 ═══ */
+  var _origShowTeacher = window.showTeacherLoginV60;
+  if (typeof _origShowTeacher === 'function') {
+    window.showTeacherLoginV60 = function(teacher) {
+      var r = _origShowTeacher.apply(this, arguments);
+      /* ✅ CRITICAL FIX: Don't hide body overflow — modal scrolls itself */
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.height = '';
+      /* Allow body scroll but lock background via our modal */
+      document.documentElement.style.overflow = 'hidden';
+      /* Adjust for keyboard */
+      setTimeout(adjustTeacherModal, 300);
+      setTimeout(adjustTeacherModal, 800);
+      /* Scroll modal to top */
+      setTimeout(function() {
+        var m = document.getElementById('teacherLoginV60');
+        if (m) m.scrollTop = 0;
+      }, 350);
+      return r;
+    };
+  }
+
+  /* ═══ HOOK: closeTeacherLogin ═══ */
+  var _origCloseTeacher = window.closeTeacherLogin;
+  if (typeof _origCloseTeacher === 'function') {
+    window.closeTeacherLogin = function() {
+      resetTeacherModal();
+      document.documentElement.style.overflow = '';
+      return _origCloseTeacher.apply(this, arguments);
+    };
+  }
+
+  /* ═══ Handle focus inside teacher modal ═══ */
+  document.addEventListener('focusin', function(e) {
+    var modal = document.getElementById('teacherLoginV60');
+    if (modal && modal.classList.contains('open')) {
+      setTimeout(adjustTeacherModal, 250);
+      /* Ensure focused input is visible */
+      setTimeout(function() {
+        if (e.target && e.target.scrollIntoView) {
+          try {
+            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } catch(err) {
+            e.target.scrollIntoView();
+          }
+        }
+      }, 400);
+    }
+  });
+
+  /* ═══ iOS Safari: force scroll fix on modal open ═══ */
+  var teacherModal = document.getElementById('teacherLoginV60');
+  if (teacherModal) {
+    var mo = new MutationObserver(function() {
+      if (teacherModal.classList.contains('open')) {
+        setTimeout(function() {
+          /* Force reflow */
+          teacherModal.style.webkitOverflowScrolling = 'auto';
+          void teacherModal.offsetHeight;
+          teacherModal.style.webkitOverflowScrolling = 'touch';
+        }, 50);
+        setTimeout(adjustTeacherModal, 200);
+      } else {
+        resetTeacherModal();
+      }
+    });
+    mo.observe(teacherModal, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎓 STUDENT LOGIN — Mobile-friendly body scroll           */
+  /* ═══════════════════════════════════════════════════════ */
+  function ensureStudentScroll() {
+    if (window.innerWidth > 900) return;
+    var loginSection = document.getElementById('loginSection');
+    if (!loginSection || loginSection.style.display === 'none') return;
+    /* Remove blocking classes */
+    document.body.classList.remove('login-active');
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.height = '';
+    document.body.style.maxHeight = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+  }
+
+  /* Run when student login visible */
+  setInterval(function() {
+    if (window.innerWidth <= 900) {
+      var ls = document.getElementById('loginSection');
+      if (ls && ls.style.display !== 'none' && document.body.classList.contains('login-active')) {
+        ensureStudentScroll();
+      }
+    }
+  }, 1500);
+
+  /* ═══ HOOK: loginForm submission — fix student keyboard ═══ */
+  document.addEventListener('focusin', function(e) {
+    if (window.innerWidth > 900) return;
+    var idInput = e.target;
+    if (!idInput || (idInput.id !== 'studentId' && idInput.id !== 'studentPassword')) return;
+    setTimeout(function() {
+      if (idInput.scrollIntoView) {
+        try { idInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        catch(err) { idInput.scrollIntoView(); }
+      }
+    }, 400);
+  });
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🛡️ ADMIN LOGIN — Ensure class selector scrolls          */
+  /* ═══════════════════════════════════════════════════════ */
+  function ensureAdminScroll() {
+    var admin = document.getElementById('adminSection');
+    if (!admin || admin.style.display === 'none') return;
+    if (window.innerWidth <= 900) {
+      /* Make sure admin container scrolls normally */
+      document.body.style.overflowY = 'auto';
+      document.body.style.position = '';
+      document.body.style.height = '';
+    }
+  }
+  setInterval(ensureAdminScroll, 2000);
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 GLOBAL: Prevent scroll trap on login screen           */
+  /* ═══════════════════════════════════════════════════════ */
+  /* Override disableBodyScroll on mobile to NOT lock */
+  var _origDisable = window.disableBodyScroll;
+  if (typeof _origDisable === 'function') {
+    window.disableBodyScroll = function() {
+      if (window.innerWidth <= 900) {
+        /* On mobile, allow natural scroll */
+        document.body.classList.remove('login-active');
+        return;
+      }
+      return _origDisable.apply(this, arguments);
+    };
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 ENSURE teacher modal scroll works even with old CSS  */
+  /* ═══════════════════════════════════════════════════════ */
+  function forceTeacherScroll() {
+    var modal = document.getElementById('teacherLoginV60');
+    if (!modal) return;
+    /* Override any stuck styles */
+    modal.style.setProperty('overflow-y', 'auto', 'important');
+    modal.style.setProperty('overflow-x', 'hidden', 'important');
+    modal.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
+    modal.style.setProperty('overscroll-behavior', 'contain', 'important');
+    modal.style.setProperty('touch-action', 'pan-y', 'important');
+  }
+  /* Run periodically to guard against any override */
+  setInterval(function() {
+    var modal = document.getElementById('teacherLoginV60');
+    if (modal && modal.classList.contains('open')) forceTeacherScroll();
+  }, 3000);
+
+  console.log('✅ Mobile Login Scroll Fix READY');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🛡️ ROBUST ERROR HANDLING — Timeout + Retry + Offline     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="robust-error-handling">
+(function(){
+  'use strict';
+  console.log('🛡️ Robust Error Handling loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 1️⃣ withTimeout — Promise-ന് max time limit               */
+  /* ═══════════════════════════════════════════════════════ */
+  window.withTimeout = function(promise, ms, errorMsg) {
+    ms = ms || 10000;
+    errorMsg = errorMsg || 'Request timeout — please try again';
+    return Promise.race([
+      promise,
+      new Promise(function(_, reject) {
+        setTimeout(function() {
+          reject(new Error(errorMsg));
+        }, ms);
+      })
+    ]);
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 2️⃣ safeSupabaseQuery — Wrap DB call with timeout + retry */
+  /* ═══════════════════════════════════════════════════════ */
+  window.safeSupabaseQuery = async function(queryFn, options) {
+    options = options || {};
+    var timeout = options.timeout || 10000;
+    var retries = options.retries || 1;
+    var label = options.label || 'Query';
+
+    for (var attempt = 0; attempt <= retries; attempt++) {
+      try {
+        var result = await window.withTimeout(
+          queryFn(),
+          timeout,
+          label + ' timeout (' + (timeout/1000) + 's)'
+        );
+        /* Check Supabase error object */
+        if (result && result.error) {
+          /* Don't retry on auth/permission errors */
+          var code = result.error.code || '';
+          if (code === 'PGRST116' || code === '42501' || code === '42P01') {
+            return result; /* Return as-is, caller decides */
+          }
+          /* Retry on network/transient errors */
+          if (attempt < retries && /network|fetch|timeout|ECONN/i.test(result.error.message || '')) {
+            console.warn('[' + label + '] Retry ' + (attempt+1) + ':', result.error.message);
+            await new Promise(function(r){ setTimeout(r, 800 * (attempt + 1)); });
+            continue;
+          }
+          return result;
+        }
+        return result;
+      } catch (err) {
+        if (attempt < retries) {
+          console.warn('[' + label + '] Retry ' + (attempt+1) + ':', err.message);
+          await new Promise(function(r){ setTimeout(r, 800 * (attempt + 1)); });
+          continue;
+        }
+        throw err;
+      }
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 3️⃣ Offline / Online Detection                           */
+  /* ═══════════════════════════════════════════════════════ */
+  window.isOnline = function() { return navigator.onLine !== false; };
+
+  window.addEventListener('offline', function() {
+    console.warn('📴 Offline');
+    if (typeof showToast === 'function') {
+      showToast('📴 ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല', 'error');
+    }
+  });
+
+  window.addEventListener('online', function() {
+    console.log('🌐 Back online');
+    if (typeof showToast === 'function') {
+      showToast('✅ ഓൺലൈൻ ആയി!', 'success');
+    }
+  });
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 4️⃣ Reset All Login UI — On error, clear loading state    */
+  /* ═══════════════════════════════════════════════════════ */
+  window.resetLoginUI = function(scope) {
+    /* Student login */
+    if (!scope || scope === 'student') {
+      var sBtn = document.getElementById('nsmLoginBtn');
+      if (sBtn) {
+        sBtn.disabled = false;
+        sBtn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i><span>പോർട്ടലിലേക്ക് പ്രവേശിക്കുക</span>';
+      }
+    }
+    /* Teacher login */
+    if (!scope || scope === 'teacher') {
+      var tBtn = document.getElementById('tv60Submit');
+      if (tBtn) {
+        tBtn.disabled = false;
+        tBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
+      }
+    }
+    /* Admin */
+    if (!scope || scope === 'admin') {
+      /* No specific button in admin */
+    }
+    /* Hide global loading */
+    if (typeof showLoading === 'function') showLoading(false);
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 5️⃣ Show Detailed Error — With retry button              */
+  /* ═══════════════════════════════════════════════════════ */
+  window.showDetailedError = function(title, message, retryCallback) {
+    /* Remove existing */
+    var old = document.getElementById('detailedErrorOverlay');
+    if (old) old.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'detailedErrorOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(3,8,28,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:99999999;display:flex;align-items:center;justify-content:center;padding:20px;animation:errFadeIn .3s ease;';
+    
+    var btnsHtml = '<button id="errCloseBtn" style="flex:1;padding:13px 20px;border-radius:12px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-family:inherit;font-weight:800;font-size:.86rem;cursor:pointer;min-height:46px;">Close</button>';
+    if (typeof retryCallback === 'function') {
+      btnsHtml = '<button id="errRetryBtn" style="flex:1;padding:13px 20px;border-radius:12px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-family:inherit;font-weight:800;font-size:.86rem;cursor:pointer;min-height:46px;box-shadow:0 8px 20px -8px rgba(34,211,238,.7);"><i class="fas fa-redo"></i> Try Again</button>' + btnsHtml;
+    }
+
+    overlay.innerHTML =
+      '<div style="max-width:440px;width:100%;background:linear-gradient(155deg,rgba(255,255,255,.12),rgba(255,255,255,.04));backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1.5px solid rgba(255,255,255,.22);border-radius:24px;padding:28px 24px 22px;box-shadow:0 40px 90px -30px rgba(0,0,0,.95);animation:errSlideIn .4s cubic-bezier(.34,1.56,.64,1);">' +
+        '<div style="width:72px;height:72px;margin:0 auto 16px;border-radius:50%;background:linear-gradient(140deg,#ef4444,#f87171);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px -10px rgba(239,68,68,.9);">' +
+          '<i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#fff;"></i>' +
+        '</div>' +
+        '<h3 style="color:#fff;font-size:1.1rem;font-weight:800;text-align:center;margin:0 0 8px;">' + (title || 'Error') + '</h3>' +
+        '<p style="color:#a9cdff;font-size:.84rem;text-align:center;line-height:1.6;margin:0 0 20px;">' + (message || 'Something went wrong. Please try again.') + '</p>' +
+        '<div style="display:flex;gap:10px;">' + btnsHtml + '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+    if (!document.getElementById('errAnimStyle')) {
+      var style = document.createElement('style');
+      style.id = 'errAnimStyle';
+      style.textContent = 
+        '@keyframes errFadeIn{from{opacity:0}to{opacity:1}}' +
+        '@keyframes errSlideIn{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}';
+      document.head.appendChild(style);
+    }
+
+    document.getElementById('errCloseBtn').onclick = function() { overlay.remove(); };
+    var retryBtn = document.getElementById('errRetryBtn');
+    if (retryBtn) {
+      retryBtn.onclick = function() {
+        overlay.remove();
+        try { retryCallback(); } catch(e) { console.warn('Retry error:', e); }
+      };
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 6️⃣ Friendly Error Message Mapper                        */
+  /* ═══════════════════════════════════════════════════════ */
+  window.friendlyError = function(err) {
+    if (!err) return 'അജ്ഞാതമായ പിശക് സംഭവിച്ചു';
+    var msg = String(err.message || err).toLowerCase();
+
+    if (/timeout/i.test(msg)) return '⏱️ സെർവർ സമയത്തിനുള്ളിൽ പ്രതികരിച്ചില്ല. ഇന്റർനെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.';
+    if (/network|fetch|failed to fetch/i.test(msg)) return '🌐 ഇന്റർനെറ്റ് കണക്ഷൻ പ്രശ്നം. Wi-Fi / Mobile data പരിശോധിക്കുക.';
+    if (/offline/i.test(msg)) return '📴 നിങ്ങൾ ഓഫ്ലൈൻ ആണ്. ഇന്റർനെറ്റ് ഓൺ ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.';
+    if (/jwt|token|expired/i.test(msg)) return '🔐 സെഷൻ കാലഹരണപ്പെട്ടു. വീണ്ടും ലോഗിൻ ചെയ്യുക.';
+    if (/rate limit|too many/i.test(msg)) return '🚦 വളരെയധികം അഭ്യർത്ഥനകൾ. കുറച്ചു കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക.';
+    if (/not found|no rows/i.test(msg)) return '❌ വിവരങ്ങൾ കണ്ടെത്തിയില്ല. ID പരിശോധിക്കുക.';
+    if (/permission|denied|forbidden/i.test(msg)) return '🚫 അനുവാദമില്ല. അഡ്മിനെ ബന്ധപ്പെടുക.';
+    if (/blocked/i.test(msg)) return '🚫 അക്കൗണ്ട് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.';
+    if (/does not exist|42P01/i.test(msg)) return '⚙️ സിസ്റ്റം സെറ്റപ്പ് അപൂർണ്ണം. അഡ്മിനെ ബന്ധപ്പെടുക.';
+    return '❌ ' + (err.message || 'അജ്ഞാതമായ പിശക്');
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 7️⃣ Global Unhandled Rejection Handler                   */
+  /* ═══════════════════════════════════════════════════════ */
+  window.addEventListener('unhandledrejection', function(event) {
+    console.warn('⚠️ Unhandled rejection:', event.reason);
+    /* Auto-reset login UI on unhandled errors */
+    var reason = String((event.reason && event.reason.message) || event.reason || '');
+    if (/timeout|network|fetch/i.test(reason)) {
+      window.resetLoginUI();
+    }
+  });
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 8️⃣ Diagnostic Tool — For debugging                      */
+  /* ═══════════════════════════════════════════════════════ */
+  window.checkSupabaseHealth = async function() {
+    if (!supabaseClient) return { ok: false, reason: 'No client' };
+    var start = Date.now();
+    try {
+      var r = await window.withTimeout(
+        supabaseClient.from('settings').select('key').limit(1),
+        5000,
+        'Health check timeout'
+      );
+      return {
+        ok: !r.error,
+        ms: Date.now() - start,
+        error: r.error ? r.error.message : null
+      };
+    } catch (e) {
+      return { ok: false, ms: Date.now() - start, error: e.message };
+    }
+  };
+
+  /* Log health check on startup */
+  setTimeout(async function() {
+    var h = await window.checkSupabaseHealth();
+    if (h.ok) {
+      console.log('✅ Supabase health: OK (' + h.ms + 'ms)');
+    } else {
+      console.warn('⚠️ Supabase health: FAIL —', h.error);
+    }
+  }, 3000);
+
+  console.log('✅ Robust Error Handling READY');
+  console.log('   • withTimeout(promise, ms, msg)');
+  console.log('   • safeSupabaseQuery(fn, {timeout, retries, label})');
+  console.log('   • showDetailedError(title, message, retryFn)');
+  console.log('   • friendlyError(err) — Malayalam messages');
+  console.log('   • resetLoginUI(scope) — student | teacher | admin');
+  console.log('   • checkSupabaseHealth()');
+})();
 </script>
 </body>
 </html>
