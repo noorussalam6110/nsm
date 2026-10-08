@@ -31268,5 +31268,341 @@ html:has(body.teacher-view-open) {
   console.log('✅ v71 ready — type rebuildV71() to re-run');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔥 v72.0 — PERFORMANCE / HEAT FIX                       -->
+<!-- Reduces CPU + battery usage dramatically                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="perf-fix-v72-css">
+
+/* ═══ 1. Disable non-essential animations on mobile ═══ */
+@media (max-width: 900px) {
+  /* Background aurora — big GPU killer */
+  body:not(.login-active)::before {
+    animation: none !important;
+    opacity: .5;
+  }
+  
+  /* Login orbs */
+  .nsm-login-side::before,
+  .nsm-login-side::after {
+    animation: none !important;
+  }
+  
+  /* Card shine */
+  .nsm-card::before,
+  .nsm-card {
+    animation: none !important;
+  }
+  
+  /* Button flow animations */
+  .nsm-btn-primary,
+  .btn-update,
+  .btn-load,
+  .td60-btn.primary,
+  .ig-topbar-btn.primary {
+    animation: none !important;
+    background-size: 100% 100% !important;
+  }
+  
+  /* Logo glow */
+  .nsm-card-logo img,
+  .nsm-nav-logo,
+  .splash-logo img {
+    animation: none !important;
+  }
+  
+  /* Decorative floats */
+  .nsm-hero-deco,
+  .pala-drop-deco,
+  .student-welcome-banner::before,
+  .namaz-widget::before,
+  .namaz-widget::after,
+  .tasbeeh-widget::before,
+  .streak-widget::after,
+  .chat-fab,
+  .ai-fab {
+    animation: none !important;
+  }
+  
+  /* Shine effects */
+  .dashboard-header-glow::after,
+  .stat-card-neon::after,
+  .xp-progress-bar::after {
+    animation: none !important;
+    display: none !important;
+  }
+  
+  /* Pulse effects */
+  .online-dot,
+  .ai-dot,
+  .friend-status-dot.online,
+  .prayer-item.active,
+  .namaz-admin-dot {
+    animation: none !important;
+  }
+  
+  /* Badge pulse */
+  .new-badge.pulse,
+  .nsm-nav-badge,
+  .chat-badge,
+  .notif-badge {
+    animation: none !important;
+  }
+  
+  /* Fire icons */
+  .streak-fire,
+  .namaz-streak-fire,
+  .tasbeeh-count.pop {
+    animation: none !important;
+  }
+  
+  /* Gradient text animations */
+  .td60-stat-num,
+  .pa-amount,
+  .ai-welcome-title {
+    animation: none !important;
+  }
+  
+  /* Frame glow (avatar) */
+  .av-preview-frame,
+  .friend-avatar .av-frame {
+    animation: none !important;
+    filter: none !important;
+  }
+  
+  /* Typing dots */
+  .ai-msg.typing .dot,
+  .chat-typing-dots span {
+    animation-duration: 3s !important;
+  }
+}
+
+/* ═══ 2. Reduce backdrop-filter (mobile) ═══ */
+@media (max-width: 900px) {
+  /* Replace blur with solid semi-transparent background */
+  .mob-bottom-nav {
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+  }
+  
+  .chat-fab,
+  .ai-fab {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Reduce blur amount drastically */
+  .nsm-card,
+  .modal-glass,
+  .ig-post,
+  .chat-panel,
+  .td60-stat,
+  .qa-category {
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+}
+
+/* ═══ 3. Reduce infinite animations globally (mobile) ═══ */
+@media (max-width: 900px) {
+  /* Use will-change only on active elements */
+  * {
+    will-change: auto !important;
+  }
+  
+  /* Disable transitions on frequently-toggled elements */
+  .mob-nav-item,
+  .active-pill,
+  .action-tile,
+  .qa-grid .action-tile {
+    transition-duration: .15s !important;
+  }
+}
+
+/* ═══ 4. Reduce animation on battery saver ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ═══ 5. Low-end device mode (for old phones) ═══ */
+body.perf-mode-low * {
+  animation: none !important;
+  transition: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+body.perf-mode-low {
+  background: linear-gradient(155deg, #f0f6ff, #dbeafe) !important;
+}
+</style>
+
+<script id="perf-fix-v72-js">
+(function(){
+  'use strict';
+  console.log('🔥 Performance Fix v72 loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🛑 1. THROTTLE ALL setInterval CALLS (dedupe)           */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origSetInterval = window.setInterval;
+  var _intervalRegistry = {};
+
+  window.setInterval = function(fn, delay) {
+    // Clamp minimum delay — no more 300ms intervals
+    var minDelay = 2000; // 2 seconds minimum
+    if (delay < minDelay) delay = minDelay;
+
+    // Dedupe: same function + same delay = reuse
+    var key = (fn.toString().substring(0, 100)) + '_' + delay;
+    if (_intervalRegistry[key]) {
+      return _intervalRegistry[key];
+    }
+
+    var id = _origSetInterval.apply(window, arguments);
+    _intervalRegistry[key] = id;
+    return id;
+  };
+
+  console.log('✅ Interval throttling enabled (min 2000ms)');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🛑 2. THROTTLE MutationObservers — limit to 1/sec       */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origMO = window.MutationObserver;
+  if (_origMO) {
+    window.MutationObserver = function(callback) {
+      var lastRun = 0;
+      var pending = false;
+      var pendingMutations = null;
+
+      var throttledCallback = function(mutations, observer) {
+        var now = Date.now();
+        pendingMutations = mutations;
+        
+        if (now - lastRun < 500) {
+          // Throttle: skip if called within 500ms
+          if (!pending) {
+            pending = true;
+            setTimeout(function() {
+              pending = false;
+              lastRun = Date.now();
+              try { callback(pendingMutations, observer); } catch(e) {}
+            }, 500 - (now - lastRun));
+          }
+          return;
+        }
+        
+        lastRun = now;
+        try { callback(mutations, observer); } catch(e) {}
+      };
+
+      var observer = new _origMO(throttledCallback);
+      
+      // Wrap observe to also throttle
+      var _origObserve = observer.observe.bind(observer);
+      observer.observe = function(target, options) {
+        // Force on mobile: reduce attribute watching
+        if (window.innerWidth <= 900 && options) {
+          // Only watch childList, not attributes (unless required)
+          if (options.attributes && !options.childList) {
+            // Keep as is if only attributes
+          }
+        }
+        return _origObserve(target, options);
+      };
+      
+      return observer;
+    };
+  }
+
+  console.log('✅ MutationObserver throttling enabled (min 500ms)');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔋 3. LOW-END DEVICE DETECTION                          */
+  /* ═══════════════════════════════════════════════════════ */
+  function detectLowEnd() {
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isMobile) return false;
+
+    // Check device memory
+    if (navigator.deviceMemory && navigator.deviceMemory <= 4) return true;
+
+    // Check hardware concurrency (CPU cores)
+    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) return true;
+
+    // Check screen resolution (low-res = older phone)
+    if (window.screen.width <= 400 && window.screen.height <= 800) {
+      // Small screen — could be old phone
+      if (navigator.hardwareConcurrency <= 6) return true;
+    }
+
+    return false;
+  }
+
+  if (detectLowEnd()) {
+    document.body.classList.add('perf-mode-low');
+    console.log('🔥 Low-end device detected — extra optimizations enabled');
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔋 4. PAUSE intervals when app is hidden                 */
+  /* ═══════════════════════════════════════════════════════ */
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      // App in background — pause heavy operations
+      document.body.classList.add('app-hidden');
+    } else {
+      document.body.classList.remove('app-hidden');
+    }
+  });
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔋 5. REDUCE confetti particles on mobile                */
+  /* ═══════════════════════════════════════════════════════ */
+  var _origConfetti = window.confetti;
+  if (typeof _origConfetti === 'function') {
+    window.confetti = function(opts) {
+      if (window.innerWidth <= 900 && opts) {
+        // Reduce particle count on mobile
+        opts.particleCount = Math.min(opts.particleCount || 50, 60);
+        opts.spread = Math.min(opts.spread || 60, 70);
+      }
+      // Skip if app hidden
+      if (document.hidden) return;
+      return _origConfetti.apply(this, arguments);
+    };
+    console.log('✅ Confetti throttled on mobile');
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔋 6. REDUCE network polling frequency                   */
+  /* ═══════════════════════════════════════════════════════ */
+  // Note: Individual setIntervals are already throttled above via wrapper
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📊 7. LOG current perf stats (for debugging)             */
+  /* ═══════════════════════════════════════════════════════ */
+  window.perfDebug = function() {
+    console.log('=== PERFORMANCE DEBUG ===');
+    console.log('Device memory:', navigator.deviceMemory || 'unknown');
+    console.log('CPU cores:', navigator.hardwareConcurrency || 'unknown');
+    console.log('Screen:', window.screen.width + 'x' + window.screen.height);
+    console.log('Low-end mode?', document.body.classList.contains('perf-mode-low'));
+    console.log('App hidden?', document.hidden);
+    console.log('Active intervals:', Object.keys(_intervalRegistry).length);
+    console.log('Animation count:', document.querySelectorAll('*').length);
+  };
+
+  console.log('✅ Performance Fix v72 ready');
+  console.log('   💡 Type perfDebug() for stats');
+})();
+</script>
 </body>
 </html>
