@@ -30689,5 +30689,378 @@ html:has(body.teacher-view-open) {
   console.log('✅ v69 ready — type debugTeacherDash() to check');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎨 v70.0 — QUICK ACCESS CATEGORIES + NAMAZ VIEW FIX    -->
+<!-- ADD-ONLY — ഒന്നും delete ചെയ്യരുത്                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<style id="quick-access-v70-css">
+
+/* ─── 🎯 Main Wrapper (replace old grid look) ─── */
+#quickActionsGrid.qa-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+  margin-bottom: 22px !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  grid-template-columns: none !important;
+}
+
+/* ─── Section Title (top) ─── */
+.qa-top-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 14px 4px;
+  letter-spacing: -.2px;
+}
+.qa-top-title i {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .95rem;
+}
+
+/* ─── Category Card ─── */
+.qa-category {
+  background: #fff;
+  border-radius: 22px;
+  padding: 18px 14px 14px;
+  border: 1px solid rgba(200,215,240,.6);
+  box-shadow: 0 6px 20px -14px rgba(15,23,42,.15);
+}
+
+/* ─── Category Title (GENERAL / ACADEMIC / etc.) ─── */
+.qa-cat-title {
+  font-size: .68rem;
+  font-weight: 900;
+  color: #94a3b8;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+  padding-left: 2px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.qa-cat-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(148,163,184,.35), transparent);
+}
+
+/* ─── Grid inside each category ─── */
+.qa-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px 4px;
+}
+
+/* ─── Each tile ─── */
+.qa-grid .action-tile {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  border-radius: 16px;
+  min-height: 92px;
+  position: relative;
+}
+.qa-grid .action-tile:hover {
+  transform: translateY(-4px) scale(1.03);
+}
+.qa-grid .action-tile:active {
+  transform: scale(.92);
+  background: #eff6ff !important;
+  border-radius: 16px;
+}
+
+.qa-grid .action-ico {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 18px !important;
+  font-size: 1.35rem !important;
+  margin: 0 0 8px 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+  box-shadow: 0 6px 16px -8px rgba(0,0,0,.15);
+}
+.qa-grid .action-tile:hover .action-ico {
+  transform: scale(1.06) rotate(-3deg);
+  box-shadow: 0 10px 22px -8px rgba(0,0,0,.25);
+}
+
+.qa-grid .action-tile h6 {
+  font-size: .66rem !important;
+  font-weight: 800 !important;
+  color: #334155 !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  padding: 0 2px;
+  word-break: break-word;
+}
+
+/* ─── New badge (kept from original) ─── */
+.qa-grid .action-tile .new-badge {
+  position: absolute !important;
+  top: -4px !important;
+  right: -4px !important;
+}
+
+/* ─── 📱 Mobile tweaks ─── */
+@media (max-width: 500px) {
+  .qa-grid { gap: 12px 4px; }
+  .qa-grid .action-ico {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 16px !important;
+    font-size: 1.2rem !important;
+  }
+  .qa-grid .action-tile h6 { font-size: .6rem !important; }
+  .qa-category { padding: 16px 10px 12px; border-radius: 18px; }
+  .qa-cat-title { font-size: .62rem; letter-spacing: 1.5px; margin-bottom: 12px; }
+  .qa-top-title { font-size: 1rem; }
+  .qa-top-title i { width: 34px; height: 34px; font-size: .85rem; }
+}
+
+@media (max-width: 380px) {
+  .qa-grid { grid-template-columns: repeat(3, 1fr); gap: 12px 6px; }
+  .qa-grid .action-ico { width: 52px !important; height: 52px !important; }
+}
+
+/* ─── 🚫 Hide original section title (only the icon-bolt text) ─── */
+#quickActionsTitle.qa-hidden {
+  display: none !important;
+}
+</style>
+
+<script id="quick-access-v70-js">
+(function(){
+  'use strict';
+  console.log('🎨 v70 Quick Access Categories loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📋 CATEGORY MAP — ഇത് action names organize ചെയ്യുന്നു     */
+  /* ═══════════════════════════════════════════════════════ */
+  var CATEGORY_MAP = {
+    'ACADEMIC': ['results','marks','attendance','timetable','homework','lessons','library','downloads'],
+    'FINANCE':  ['palathulli','fees','report','idcard'],
+    'ACTIVITY': ['extracurricular','competitions','creations','quiz','rewards','badges','namaz','moral'],
+    'SOCIAL':   ['avatar_custom','class_chat','profile','notice','notes','calendar','studentzone','topper']
+  };
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 REBUILD Quick Actions Grid                           */
+  /* ═══════════════════════════════════════════════════════ */
+  function rebuildQuickActions() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return false;
+
+    // Already built?
+    if (grid.dataset.v70built === '1') return true;
+
+    // Collect all tiles (data-action)
+    var tiles = {};
+    grid.querySelectorAll('.action-tile').forEach(function(tile){
+      var action = tile.dataset.action;
+      if (action) tiles[action] = tile;
+    });
+
+    if (Object.keys(tiles).length === 0) return false;
+
+    // Mark built
+    grid.dataset.v70built = '1';
+
+    // Hide original section title
+    var origTitle = document.getElementById('quickActionsTitle');
+    if (origTitle) origTitle.classList.add('qa-hidden');
+
+    // Add wrapper class
+    grid.classList.add('qa-wrapper');
+
+    // Build new HTML with categories
+    var html = '';
+
+    // Top title
+    html += '<div class="qa-top-title"><i class="fas fa-th-large"></i> Quick Access</div>';
+
+    // Each category
+    Object.keys(CATEGORY_MAP).forEach(function(cat){
+      var actions = CATEGORY_MAP[cat].filter(function(a){ return tiles[a]; });
+      if (actions.length === 0) return;
+
+      html += '<div class="qa-category">';
+      html += '<h4 class="qa-cat-title">' + cat + '</h4>';
+      html += '<div class="qa-grid">';
+      actions.forEach(function(a){
+        // Preserve the tile exactly (keeps onclick, inner HTML)
+        html += tiles[a].outerHTML;
+      });
+      html += '</div></div>';
+    });
+
+    // Fallback: any tile not listed → MORE category
+    var usedActions = Object.keys(CATEGORY_MAP).reduce(function(acc, cat){
+      return acc.concat(CATEGORY_MAP[cat]);
+    }, []);
+    var unused = Object.keys(tiles).filter(function(a){
+      return usedActions.indexOf(a) === -1;
+    });
+    if (unused.length > 0) {
+      html += '<div class="qa-category">';
+      html += '<h4 class="qa-cat-title">MORE</h4>';
+      html += '<div class="qa-grid">';
+      unused.forEach(function(a){ html += tiles[a].outerHTML; });
+      html += '</div></div>';
+    }
+
+    grid.innerHTML = html;
+
+    // Re-apply portal visibility (since innerHTML destroyed bindings)
+    setTimeout(function(){
+      if (typeof window.applyStudentPortalVisibility === 'function') {
+        try { window.applyStudentPortalVisibility(); } catch(e) {}
+      }
+    }, 150);
+
+    // Re-run cleanup (for duplicate removal)
+    setTimeout(function(){
+      if (typeof window.cleanupQuickActions === 'function') {
+        try { window.cleanupQuickActions(); } catch(e) {}
+      }
+    }, 300);
+
+    console.log('✅ Quick Access rebuilt — categories applied');
+    return true;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 WATCH Dashboard — rebuild when visible                */
+  /* ═══════════════════════════════════════════════════════ */
+  function watchDashboard() {
+    var dash = document.getElementById('dashboardSection');
+    if (!dash || dash._v70watch) return;
+    dash._v70watch = true;
+
+    new MutationObserver(function(){
+      if (dash.style.display === 'block') {
+        // Multiple attempts (runtime tiles appear late)
+        setTimeout(rebuildQuickActions, 1500);
+        setTimeout(rebuildQuickActions, 2800);
+        setTimeout(rebuildQuickActions, 4500);
+        setTimeout(rebuildQuickActions, 7000);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🏆 NAMAZ VIEW — Ensure weekly/monthly tabs work         */
+  /* ═══════════════════════════════════════════════════════ */
+  function ensureNamazView() {
+    // Wrap openNamazFullView to ensure render always happens
+    if (typeof window.openNamazFullView === 'function' && !window.openNamazFullView._v70) {
+      var _origNamaz = window.openNamazFullView;
+      window.openNamazFullView = async function(){
+        try {
+          var r = await _origNamaz.apply(this, arguments);
+          // Force render after 1.5s if modal is empty
+          setTimeout(function(){
+            var body = document.getElementById('modalContentBody');
+            if (body && body.querySelector('.spinner-sm')) {
+              console.log('🔄 Namaz modal stuck — forcing render...');
+              try {
+                if (typeof window.renderNamazFullView === 'function') {
+                  window.renderNamazFullView();
+                }
+              } catch(e) { console.warn('Namaz rerender:', e); }
+            }
+          }, 1800);
+          return r;
+        } catch(e) {
+          console.error('Namaz view error:', e);
+          // Fallback: try to render manually
+          try {
+            if (typeof window.renderNamazFullView === 'function') {
+              window.renderNamazFullView();
+            }
+          } catch(e2) {}
+        }
+      };
+      window.openNamazFullView._v70 = true;
+      console.log('✅ Namaz view wrapped for reliability');
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🚀 INIT                                                  */
+  /* ═══════════════════════════════════════════════════════ */
+  function init() {
+    watchDashboard();
+    ensureNamazView();
+
+    // Immediate check (if dashboard already visible)
+    var dash = document.getElementById('dashboardSection');
+    if (dash && dash.style.display === 'block') {
+      setTimeout(rebuildQuickActions, 2000);
+      setTimeout(rebuildQuickActions, 3500);
+      setTimeout(rebuildQuickActions, 5500);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 1500);
+      setTimeout(init, 3000);
+      setTimeout(init, 5000);
+    });
+  } else {
+    setTimeout(init, 1500);
+    setTimeout(init, 3000);
+    setTimeout(init, 5000);
+  }
+
+  // Safety net — periodic check
+  setInterval(function(){
+    var dash = document.getElementById('dashboardSection');
+    if (dash && dash.style.display === 'block') {
+      rebuildQuickActions();
+      ensureNamazView();
+    }
+  }, 5000);
+
+  // Export for manual trigger
+  window.rebuildQuickActions_v70 = rebuildQuickActions;
+
+  console.log('✅ v70 Quick Access + Namaz ready');
+  console.log('   💡 Type rebuildQuickActions_v70() to re-run');
+})();
+</script>
 </body>
 </html>
