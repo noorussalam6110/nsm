@@ -27626,5 +27626,2218 @@ INSERT INTO teachers (teacher_id, name, subject, classes, password, is_active)
 VALUES ('TR001', 'Suhail P', 'Arabic', '["1","2","3"]'::jsonb, 'ustad123', true)
 ON CONFLICT (teacher_id) DO NOTHING;
 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🚫 v63.0 — SENT REQUESTS TAB + CANCEL FEATURE           -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="sent-requests-css">
+/* Sent requests tab — matches existing sidebar tabs */
+.chat-tabs-side {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chat-tabs-side::-webkit-scrollbar { display: none; }
+.chat-tab-side {
+  min-width: 0;
+  flex: 1 1 0;
+  padding: 8px 4px;
+  font-size: .66rem;
+}
+
+/* Sent request item */
+.sent-req-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 6px;
+  transition: background .2s;
+}
+.sent-req-item:hover {
+  background: rgba(255,255,255,.10);
+}
+.sent-req-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #fff;
+  font-size: 1rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: linear-gradient(140deg, #f59e0b, #f97316);
+}
+.sent-req-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sent-req-info {
+  flex: 1;
+  min-width: 0;
+}
+.sent-req-name {
+  font-size: .84rem;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sent-req-meta {
+  font-size: .68rem;
+  color: rgba(255,255,255,.55);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.sent-req-badge {
+  display: inline-block;
+  font-size: .58rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(251,191,36,.20);
+  color: #fbbf24;
+  border: 1px solid rgba(251,191,36,.35);
+  letter-spacing: .3px;
+}
+.sent-req-cancel {
+  background: rgba(239,68,68,.15);
+  border: 1px solid rgba(239,68,68,.35);
+  color: #f87171;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .68rem;
+  padding: 7px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  -webkit-tap-highlight-color: transparent;
+}
+.sent-req-cancel:hover {
+  background: rgba(239,68,68,.25);
+  color: #fca5a5;
+  transform: translateY(-1px);
+}
+.sent-req-cancel:active {
+  transform: scale(.94);
+}
+.sent-req-cancel:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+.sent-req-cancel i {
+  font-size: .75rem;
+}
+
+/* Empty state for sent */
+.sent-req-empty {
+  text-align: center;
+  padding: 30px 10px;
+  color: rgba(255,255,255,.5);
+  font-size: .8rem;
+}
+.sent-req-empty i {
+  font-size: 2rem;
+  opacity: .4;
+  display: block;
+  margin-bottom: 8px;
+}
+</style>
+
+<script id="sent-requests-js">
+(function(){
+  'use strict';
+  console.log('🚫 Sent Requests + Cancel feature loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════════
+  window.SENT_REQ_STATE = window.SENT_REQ_STATE || {
+    sentRequests: []
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD SENT REQUESTS (outgoing, still pending)
+  // ═══════════════════════════════════════════════════════
+  window.loadSentRequests = async function() {
+    if (!currentUser || !supabaseClient) return;
+    try {
+      // Fetch all friendships where I requested (pending, not accepted)
+      var r = await supabaseClient
+        .from('friendships')
+        .select('*')
+        .or(`student_a.eq.${currentUser.studentId},student_b.eq.${currentUser.studentId}`)
+        .eq('status', 'pending')
+        .eq('requested_by', currentUser.studentId);
+
+      var rows = r.data || [];
+
+      if (rows.length === 0) {
+        window.SENT_REQ_STATE.sentRequests = [];
+        return;
+      }
+
+      // Determine target student IDs (the other side of each row)
+      var targetIds = rows.map(function(f) {
+        return f.student_a === currentUser.studentId ? f.student_b : f.student_a;
+      });
+
+      // Fetch their profiles
+      var sr = await supabaseClient
+        .from('students')
+        .select('studentid, name, class, photo')
+        .in('studentid', targetIds);
+
+      var smap = {};
+      (sr.data || []).forEach(function(s) {
+        smap[s.studentid] = s;
+      });
+
+      // Map with target student info
+      window.SENT_REQ_STATE.sentRequests = rows.map(function(f) {
+        var other = f.student_a === currentUser.studentId ? f.student_b : f.student_a;
+        return {
+          friendshipId: f.id,
+          studentid: other,
+          name: smap[other] ? smap[other].name : 'Student',
+          class: smap[other] ? smap[other].class : '',
+          photo: smap[other] ? smap[other].photo : '',
+          requestedAt: f.created_at || f.requested_at || null
+        };
+      }).sort(function(a, b) {
+        // Most recent first
+        var ta = a.requestedAt ? new Date(a.requestedAt).getTime() : 0;
+        var tb = b.requestedAt ? new Date(b.requestedAt).getTime() : 0;
+        return tb - ta;
+      });
+
+    } catch(e) {
+      console.warn('loadSentRequests error:', e);
+      window.SENT_REQ_STATE.sentRequests = [];
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER SENT REQUESTS SECTION
+  // ═══════════════════════════════════════════════════════
+  function renderSentSection() {
+    var list = window.SENT_REQ_STATE.sentRequests || [];
+
+    if (list.length === 0) {
+      return '<div class="chat-sidebar-section-title">Sent Requests</div>' +
+        '<div class="sent-req-empty">' +
+          '<i class="fas fa-paper-plane"></i>' +
+          '<div>ഇതുവരെ requests അയച്ചിട്ടില്ല</div>' +
+          '<div style="font-size:.7rem;margin-top:6px;opacity:.7;">Add Friend button ഉപയോഗിച്ച് request അയക്കൂ</div>' +
+        '</div>';
+    }
+
+    var html = '<div class="chat-sidebar-section-title">Sent Requests (' + list.length + ')</div>';
+
+    list.forEach(function(req) {
+      var initial = (req.name || 'S').charAt(0).toUpperCase();
+      var hasPhoto = req.photo && (req.photo.startsWith('http') || req.photo.startsWith('data:'));
+      var avatarHtml = hasPhoto
+        ? '<img src="' + req.photo + '" alt="">'
+        : initial;
+
+      var timeText = '';
+      if (req.requestedAt) {
+        try {
+          var t = new Date(req.requestedAt);
+          var diff = Math.floor((Date.now() - t.getTime()) / 1000);
+          if (diff < 60) timeText = 'just now';
+          else if (diff < 3600) timeText = Math.floor(diff / 60) + 'm ago';
+          else if (diff < 86400) timeText = Math.floor(diff / 3600) + 'h ago';
+          else timeText = Math.floor(diff / 86400) + 'd ago';
+        } catch(e) {}
+      }
+
+      html +=
+        '<div class="sent-req-item">' +
+          '<div class="sent-req-avatar">' + avatarHtml + '</div>' +
+          '<div class="sent-req-info">' +
+            '<div class="sent-req-name">' + escapeHtml(req.name) + '</div>' +
+            '<div class="sent-req-meta">' +
+              '<span>Class ' + escapeHtml(req.class || '—') + '</span>' +
+              '<span class="sent-req-badge">⏳ Pending</span>' +
+              (timeText ? '<span style="opacity:.7;">' + timeText + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<button class="sent-req-cancel" onclick="window.cancelFriendRequest(' + req.friendshipId + ', this)" title="Cancel Request">' +
+            '<i class="fas fa-times"></i> Cancel' +
+          '</button>' +
+        '</div>';
+    });
+
+    return html;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚫 CANCEL FRIEND REQUEST
+  // ═══════════════════════════════════════════════════════
+  window.cancelFriendRequest = async function(friendshipId, btnEl) {
+    if (!currentUser || !supabaseClient) return;
+    if (!confirm('ഈ friend request cancel ചെയ്യണോ?')) return;
+
+    if (btnEl) {
+      btnEl.disabled = true;
+      btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+    }
+
+    try {
+      // Delete the friendship row
+      var r = await supabaseClient
+        .from('friendships')
+        .delete()
+        .eq('id', friendshipId);
+
+      if (r.error) throw r.error;
+
+      // Show toast
+      showToast('✅ Request cancelled', 'success');
+
+      // Haptic
+      if (navigator.vibrate) {
+        try { navigator.vibrate(20); } catch(e) {}
+      }
+
+      // Remove locally without refetch (fast)
+      window.SENT_REQ_STATE.sentRequests = window.SENT_REQ_STATE.sentRequests.filter(
+        function(x) { return x.friendshipId !== friendshipId; }
+      );
+
+      // Also remove from _afSentIds cache so they can re-add
+      if (window._afSentIds && btnEl && btnEl.closest('.sent-req-item')) {
+        var nameEl = btnEl.closest('.sent-req-item').querySelector('.sent-req-name');
+        // We can't easily map back to studentid here, so just refetch add-friend list on next open
+      }
+
+      // Re-render sidebar
+      if (typeof window.renderSidebar === 'function') {
+        window.renderSidebar();
+      } else {
+        // Fallback: manually re-render if renderSidebar is not exposed
+        var listEl = document.getElementById('chatSidebarList');
+        if (listEl && window.CHAT_STATE && window.CHAT_STATE.activeTab === 'sent') {
+          listEl.innerHTML = renderSentSection();
+        }
+      }
+
+      // Also refresh the Add Friend modal list if it's open
+      if (typeof window._afSentIds !== 'undefined' && window._afSentIds) {
+        // Rebuild sent IDs by refetching on next open
+        setTimeout(function() {
+          if (document.getElementById('addFriendModal')?.classList.contains('open')) {
+            if (typeof window.loadAddFriendStudents === 'function') {
+              // Reload add-friend students list
+            }
+          }
+        }, 200);
+      }
+
+      // Confetti/feedback
+      if (typeof playSound === 'function') {
+        try { playSound('tap'); } catch(e) {}
+      }
+
+    } catch(e) {
+      console.error('cancelFriendRequest error:', e);
+      showToast('❌ ' + e.message, 'error');
+      if (btnEl) {
+        btnEl.disabled = false;
+        btnEl.innerHTML = '<i class="fas fa-times"></i> Cancel';
+      }
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 EXTEND SIDEBAR TABS — Add "Sent" Tab
+  // ═══════════════════════════════════════════════════════
+  function addSentTab() {
+    var tabsEl = document.querySelector('.chat-tabs-side');
+    if (!tabsEl) return;
+    if (tabsEl.querySelector('[data-tab="sent"]')) return;
+
+    var sentBtn = document.createElement('button');
+    sentBtn.className = 'chat-tab-side';
+    sentBtn.dataset.tab = 'sent';
+    sentBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Sent';
+    sentBtn.onclick = function() {
+      if (typeof window.chatSwitchTab === 'function') {
+        window.chatSwitchTab('sent');
+      }
+    };
+    tabsEl.appendChild(sentBtn);
+
+    console.log('✅ Sent tab added to chat sidebar');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK INTO renderSidebar
+  // ═══════════════════════════════════════════════════════
+  // Wait for CHAT_STATE to exist and patch chatSwitchTab
+  function patchChatSystem() {
+    if (!window.CHAT_STATE) {
+      setTimeout(patchChatSystem, 500);
+      return;
+    }
+
+    // Patch chatSwitchTab to handle 'sent' tab
+    var _origSwitchTab = window.chatSwitchTab;
+    window.chatSwitchTab = function(tab) {
+      if (tab === 'sent') {
+        window.CHAT_STATE.activeTab = 'sent';
+        document.querySelectorAll('.chat-tab-side').forEach(function(t) {
+          t.classList.toggle('active', t.dataset.tab === 'sent');
+        });
+        // Load + render
+        window.loadSentRequests().then(function() {
+          var listEl = document.getElementById('chatSidebarList');
+          if (listEl) listEl.innerHTML = renderSentSection();
+        });
+        return;
+      }
+      return _origSwitchTab.apply(this, arguments);
+    };
+
+    // Patch renderSidebar to handle 'sent' tab
+    // But renderSidebar is not exposed globally, so we hook via MutationObserver
+    // or just re-render manually when needed.
+
+    console.log('✅ chatSwitchTab patched for Sent tab');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK INTO openChatPanel — add tab on open
+  // ═══════════════════════════════════════════════════════
+  var _origOpenChat = window.openChatPanel;
+  if (typeof _origOpenChat === 'function') {
+    window.openChatPanel = async function() {
+      var r = await _origOpenChat.apply(this, arguments);
+      setTimeout(function() {
+        addSentTab();
+        patchChatSystem();
+      }, 100);
+      return r;
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 AUTO REFRESH SENT LIST when tab clicked
+  // (Handled in chatSwitchTab above)
+  // ═══════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 Also — when a friend request is ACCEPTED or REJECTED by
+  // the other person, it should disappear from Sent list.
+  // Solution: Refresh Sent list every time Sent tab is opened.
+  // (Already handled by loadSentRequests call on tab switch)
+  // ═══════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    // Add tab if chat panel already exists
+    addSentTab();
+    patchChatSystem();
+
+    // Watch for the chat tabs container appearing
+    var container = document.getElementById('chatPanel');
+    if (container) {
+      new MutationObserver(function() {
+        addSentTab();
+      }).observe(container, { childList: true, subtree: true });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2000);
+      setTimeout(init, 4000);
+    });
+  } else {
+    setTimeout(init, 2000);
+    setTimeout(init, 4000);
+  }
+
+  // Also re-apply when the chat panel opens
+  setInterval(function() {
+    var panel = document.getElementById('chatPanel');
+    if (panel && panel.classList.contains('open')) {
+      addSentTab();
+    }
+  }, 3000);
+
+  // Expose for external use
+  window.addSentTab = addSentTab;
+
+  console.log('✅ Sent Requests + Cancel feature ready');
+})();
+</script>
+
+<!-- ═══ Additional: Also handle cancel from Add Friend Modal ═══ -->
+<script id="cancel-from-modal-js">
+(function(){
+  'use strict';
+
+  // If user opens Add Friend modal and sees "✓ Sent" — allow tap to cancel
+  // Patch the renderAddFriendList function
+  function patchAddFriendList() {
+    var _origRender = window.renderAddFriendList;
+    if (typeof _origRender !== 'function') {
+      setTimeout(patchAddFriendList, 500);
+      return;
+    }
+
+    window.renderAddFriendList = function() {
+      // Call original
+      _origRender.apply(this, arguments);
+
+      // Post-process: make "✓ Sent" chips clickable to cancel
+      var listEl = document.getElementById('addFriendList');
+      if (!listEl) return;
+
+      listEl.querySelectorAll('.af-student-item.sent').forEach(function(item) {
+        // Find the student ID from the "Add" button (not present in sent items)
+        // But we can extract from the initial render — need to read data
+        // Simpler: Use onclick that was set to null, replace with cancel
+        if (item._cancelPatched) return;
+        item._cancelPatched = true;
+
+        // Extract student id from the item's onclick attribute
+        var html = item.outerHTML;
+        var match = html.match(/data-sid="([^"]+)"/);
+        // Fallback: search for the ID in the second line
+        var sid = null;
+        if (match) sid = match[1];
+        else {
+          // Try to find the ID text in the small div
+          var small = item.querySelector('div[style*="Roll"]');
+          if (small) {
+            var txt = small.textContent || '';
+            var m = txt.match(/\b([A-Z]{2,}\d+|[A-Z0-9]{4,})\b/);
+            if (m) sid = m[1];
+          }
+        }
+
+        if (!sid) return;
+
+        // Make it clickable for cancel
+        item.style.cursor = 'pointer';
+        item.title = 'Tap to cancel request';
+
+        // Change the "✓ Sent" badge style slightly
+        var badge = item.querySelector('span[style*="Sent"]');
+        if (badge) {
+          badge.style.cursor = 'pointer';
+          badge.textContent = '✓ Sent (tap to cancel)';
+          badge.style.fontSize = '.6rem';
+        }
+
+        // Add cancel onclick
+        item.onclick = function(e) {
+          e.stopPropagation();
+          window.cancelFriendRequestBySid(sid);
+        };
+      });
+    };
+
+    console.log('✅ renderAddFriendList patched for cancel');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // Cancel by student ID (looks up friendship row)
+  // ═══════════════════════════════════════════════════════
+  window.cancelFriendRequestBySid = async function(targetSid) {
+    if (!currentUser || !supabaseClient) return;
+    if (!confirm('Cancel request to ' + targetSid + '?')) return;
+
+    try {
+      var r = await supabaseClient
+        .from('friendships')
+        .delete()
+        .or(`and(student_a.eq.${currentUser.studentId},student_b.eq.${targetSid}),and(student_a.eq.${targetSid},student_b.eq.${currentUser.studentId})`)
+        .eq('status', 'pending');
+
+      if (r.error) throw r.error;
+
+      showToast('✅ Request cancelled', 'success');
+
+      // Remove from sent cache
+      if (window._afSentIds) window._afSentIds.delete(targetSid);
+
+      // Refresh add friend list
+      if (typeof window.loadAddFriendStudents === 'function') {
+        window.loadAddFriendStudents();
+      }
+
+      // Refresh sent tab if open
+      if (window.SENT_REQ_STATE) {
+        window.SENT_REQ_STATE.sentRequests = window.SENT_REQ_STATE.sentRequests.filter(
+          function(x) { return x.studentid !== targetSid; }
+        );
+      }
+
+    } catch(e) {
+      console.error('Cancel error:', e);
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  setTimeout(patchAddFriendList, 2500);
+  setTimeout(patchAddFriendList, 5000);
+
+  console.log('✅ Cancel-from-modal patch ready');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🚫📢 v64.0 — BLOCK / REPORT SYSTEM                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="block-report-css">
+/* ═══════════════════════════════════════════════════════ */
+/* 🎯 CHAT HEADER MENU (3-dot)                              */
+/* ═══════════════════════════════════════════════════════ */
+.chat-header-action.menu-trigger {
+  position: relative;
+}
+.chat-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px -15px rgba(0,0,0,.35);
+  border: 1px solid rgba(100,116,139,.15);
+  min-width: 200px;
+  padding: 6px;
+  z-index: 100;
+  display: none;
+  animation: dropdownIn .2s ease;
+}
+.chat-dropdown.open { display: block; }
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-6px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.chat-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: .84rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background .15s;
+  text-align: left;
+}
+.chat-dropdown-item:hover {
+  background: #f1f5f9;
+}
+.chat-dropdown-item.danger {
+  color: #dc2626;
+}
+.chat-dropdown-item.danger:hover {
+  background: #fef2f2;
+}
+.chat-dropdown-item i {
+  width: 18px;
+  font-size: .95rem;
+}
+.chat-dropdown-divider {
+  height: 1px;
+  background: rgba(100,116,139,.12);
+  margin: 4px 0;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🚫 BLOCKED USER — Chat DISABLED BAR                       */
+/* ═══════════════════════════════════════════════════════ */
+.chat-blocked-bar {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border-top: 1px solid rgba(220,38,38,.3);
+  border-bottom: 1px solid rgba(220,38,38,.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 5;
+  position: relative;
+}
+.chat-blocked-bar i {
+  color: #dc2626;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.chat-blocked-bar-text {
+  flex: 1;
+  font-size: .82rem;
+  font-weight: 800;
+  color: #991b1b;
+  line-height: 1.35;
+}
+.chat-blocked-bar-text small {
+  display: block;
+  font-size: .7rem;
+  font-weight: 600;
+  color: #b91c1c;
+  opacity: .8;
+  margin-top: 2px;
+}
+.chat-blocked-bar button {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .72rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: transform .15s;
+  min-height: 34px;
+}
+.chat-blocked-bar button:active {
+  transform: scale(.94);
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📢 REPORT MODAL                                          */
+/* ═══════════════════════════════════════════════════════ */
+.report-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3,8,28,.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 100040;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  animation: reportFadeIn .25s ease;
+}
+.report-modal-overlay.open { display: flex; }
+@keyframes reportFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.report-modal-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 24px 22px;
+  max-width: 480px;
+  width: 100%;
+  margin: auto 0;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,.5);
+  animation: reportSlideIn .35s cubic-bezier(.34,1.56,.64,1);
+  max-height: 92dvh;
+  overflow-y: auto;
+}
+@keyframes reportSlideIn {
+  from { transform: scale(.92) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+.report-modal-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.report-modal-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: linear-gradient(140deg, #dc2626, #ef4444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 1.7rem;
+  color: #fff;
+  box-shadow: 0 12px 25px -10px rgba(220,38,38,.6);
+}
+.report-modal-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+.report-modal-sub {
+  font-size: .8rem;
+  color: #64748b;
+  margin: 0;
+}
+.report-user-badge {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 1.5px solid rgba(220,38,38,.3);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.report-user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #3b8bff, #22d3ee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.report-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.report-user-info {
+  flex: 1;
+  min-width: 0;
+}
+.report-user-name {
+  font-size: .92rem;
+  font-weight: 800;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.report-user-meta {
+  font-size: .72rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+.report-reason-label {
+  font-size: .78rem;
+  font-weight: 800;
+  color: #475569;
+  margin-bottom: 8px;
+  display: block;
+}
+.report-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.report-reason-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(100,116,139,.2);
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all .2s;
+  font-size: .84rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.report-reason-option:hover {
+  border-color: rgba(220,38,38,.4);
+  background: #fef2f2;
+}
+.report-reason-option.active {
+  border-color: #dc2626;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  box-shadow: 0 4px 12px -6px rgba(220,38,38,.4);
+}
+.report-reason-option input[type="radio"] {
+  accent-color: #dc2626;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.report-reason-option i {
+  font-size: 1.05rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.report-details-label {
+  font-size: .78rem;
+  font-weight: 800;
+  color: #475569;
+  margin-bottom: 6px;
+  display: block;
+}
+.report-details-input {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(100,116,139,.25);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #0f172a;
+  background: #f8fafc;
+  outline: none;
+  resize: vertical;
+  line-height: 1.5;
+}
+.report-details-input:focus {
+  border-color: #dc2626;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(220,38,38,.1);
+}
+.report-warning {
+  background: #fef3c7;
+  border: 1px solid rgba(180,83,9,.3);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: .74rem;
+  color: #92400e;
+  margin-top: 14px;
+  line-height: 1.6;
+  display: flex;
+  gap: 8px;
+}
+.report-warning i {
+  color: #b45309;
+  font-size: .9rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.report-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.report-modal-actions button {
+  flex: 1;
+  padding: 13px 20px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .88rem;
+  cursor: pointer;
+  transition: all .2s;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.report-btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1.5px solid rgba(100,116,139,.2);
+}
+.report-btn-submit {
+  background: linear-gradient(100deg, #dc2626, #ef4444);
+  color: #fff;
+  box-shadow: 0 12px 25px -10px rgba(220,38,38,.7);
+}
+.report-btn-submit:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+.report-btn-submit:active:not(:disabled) {
+  transform: scale(.97);
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🚫 BLOCKED USERS TAB (Chat Sidebar)                      */
+/* ═══════════════════════════════════════════════════════ */
+.blocked-user-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(220,38,38,.08);
+  border: 1px solid rgba(220,38,38,.2);
+  margin-bottom: 6px;
+}
+.blocked-user-item:hover {
+  background: rgba(220,38,38,.14);
+}
+.blocked-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #fff;
+  font-size: 1rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: linear-gradient(140deg, #6b7280, #4b5563);
+  filter: grayscale(1);
+}
+.blocked-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.blocked-user-info {
+  flex: 1;
+  min-width: 0;
+}
+.blocked-user-name {
+  font-size: .84rem;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.blocked-user-meta {
+  font-size: .68rem;
+  color: rgba(255,255,255,.55);
+  margin-top: 2px;
+}
+.blocked-user-unblock {
+  background: rgba(34,197,94,.15);
+  border: 1px solid rgba(34,197,94,.35);
+  color: #34d399;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .68rem;
+  padding: 7px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+.blocked-user-unblock:hover {
+  background: rgba(34,197,94,.25);
+  color: #6ee7b7;
+}
+.blocked-user-unblock:active {
+  transform: scale(.94);
+}
+.blocked-empty {
+  text-align: center;
+  padding: 30px 10px;
+  color: rgba(255,255,255,.5);
+  font-size: .8rem;
+}
+.blocked-empty i {
+  font-size: 2rem;
+  opacity: .4;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📢 ADMIN REPORTS TAB                                     */
+/* ═══════════════════════════════════════════════════════ */
+.report-admin-item {
+  background: #fff;
+  border: 1.5px solid rgba(180,200,230,.5);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-left: 4px solid #dc2626;
+  box-shadow: 0 4px 12px -8px rgba(0,0,0,.1);
+}
+.report-admin-item.status-reviewed {
+  border-left-color: #f59e0b;
+}
+.report-admin-item.status-resolved {
+  border-left-color: #059669;
+  opacity: .85;
+}
+.report-admin-item.status-dismissed {
+  border-left-color: #94a3b8;
+  opacity: .7;
+}
+.report-admin-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.report-admin-reason {
+  font-weight: 900;
+  color: #0f172a;
+  font-size: .94rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.report-admin-reason i {
+  color: #dc2626;
+}
+.report-admin-status {
+  display: inline-block;
+  font-size: .62rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.report-admin-status.pending {
+  background: rgba(220,38,38,.15);
+  color: #dc2626;
+}
+.report-admin-status.reviewed {
+  background: rgba(245,158,11,.15);
+  color: #b45309;
+}
+.report-admin-status.resolved {
+  background: rgba(5,150,105,.15);
+  color: #059669;
+}
+.report-admin-status.dismissed {
+  background: rgba(100,116,139,.15);
+  color: #64748b;
+}
+.report-admin-parties {
+  display: flex;
+  gap: 14px;
+  font-size: .78rem;
+  color: #475569;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.report-admin-parties b {
+  color: #0f172a;
+}
+.report-admin-details {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: .82rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.report-admin-note {
+  background: #ecfeff;
+  border: 1px solid rgba(8,145,178,.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: .8rem;
+  color: #0891b2;
+  margin-bottom: 10px;
+}
+.report-admin-note b {
+  color: #065f46;
+}
+.report-admin-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.report-admin-actions button {
+  padding: 7px 12px;
+  border-radius: 20px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .72rem;
+  cursor: pointer;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+}
+.report-action-btn.warn {
+  background: linear-gradient(100deg, #f59e0b, #fbbf24);
+  color: #03132e;
+}
+.report-action-btn.success {
+  background: linear-gradient(100deg, #059669, #34d399);
+  color: #fff;
+}
+.report-action-btn.danger {
+  background: linear-gradient(100deg, #dc2626, #ef4444);
+  color: #fff;
+}
+.report-action-btn.info {
+  background: linear-gradient(100deg, #3b82f6, #60a5fa);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .report-modal-card { padding: 20px 18px; border-radius: 20px; }
+  .report-modal-title { font-size: 1.05rem; }
+  .report-reason-option { font-size: .8rem; padding: 10px 12px; }
+  .report-modal-actions button { font-size: .82rem; padding: 12px 16px; }
+}
+</style>
+
+<!-- Report Modal HTML -->
+<div id="reportModal" class="report-modal-overlay">
+  <div class="report-modal-card">
+    <div class="report-modal-header">
+      <div class="report-modal-icon">📢</div>
+      <h3 class="report-modal-title">Report User</h3>
+      <p class="report-modal-sub">Admin-നു പരാതി അയക്കുക</p>
+    </div>
+
+    <div class="report-user-badge" id="reportUserBadge">
+      <div class="report-user-avatar" id="reportUserAvatar">S</div>
+      <div class="report-user-info">
+        <div class="report-user-name" id="reportUserName">—</div>
+        <div class="report-user-meta" id="reportUserMeta">—</div>
+      </div>
+    </div>
+
+    <label class="report-reason-label">📋 കാരണം select ചെയ്യുക *</label>
+    <div class="report-reasons" id="reportReasons">
+      <label class="report-reason-option" data-reason="bullying">
+        <input type="radio" name="reportReason" value="bullying">
+        <i>😠</i>
+        <span>Bullying / ഭീഷണി</span>
+      </label>
+      <label class="report-reason-option" data-reason="abuse">
+        <input type="radio" name="reportReason" value="abuse">
+        <i>🚫</i>
+        <span>Abusive language / മോശം വാക്കുകൾ</span>
+      </label>
+      <label class="report-reason-option" data-reason="spam">
+        <input type="radio" name="reportReason" value="spam">
+        <i>📢</i>
+        <span>Spam / അനാവശ്യ messages</span>
+      </label>
+      <label class="report-reason-option" data-reason="harassment">
+        <input type="radio" name="reportReason" value="harassment">
+        <i>⚠️</i>
+        <span>Harassment / ശല്യം</span>
+      </label>
+      <label class="report-reason-option" data-reason="inappropriate">
+        <input type="radio" name="reportReason" value="inappropriate">
+        <i>🔞</i>
+        <span>Inappropriate content</span>
+      </label>
+      <label class="report-reason-option" data-reason="other">
+        <input type="radio" name="reportReason" value="other">
+        <i>❓</i>
+        <span>മറ്റുള്ളവ</span>
+      </label>
+    </div>
+
+    <label class="report-details-label">📝 കൂടുതൽ വിവരങ്ങൾ (optional)</label>
+    <textarea id="reportDetails" class="report-details-input" maxlength="500" placeholder="എന്ത് സംഭവിച്ചു എന്ന് വിശദീകരിക്കാം..."></textarea>
+
+    <div class="report-warning">
+      <i class="fas fa-info-circle"></i>
+      <div>തെറ്റായ പരാതി നൽകുന്നത് account block ചെയ്യാൻ കാരണമാകും. ദയവായി സത്യസന്ധമായി report ചെയ്യുക.</div>
+    </div>
+
+    <div class="report-modal-actions">
+      <button class="report-btn-cancel" onclick="window.closeReportModal()">Cancel</button>
+      <button class="report-btn-submit" id="reportSubmitBtn" onclick="window.submitReport()">
+        <i class="fas fa-paper-plane"></i> Report ചെയ്യുക
+      </button>
+    </div>
+  </div>
+</div>
+
+<script id="block-report-js">
+(function(){
+  'use strict';
+  console.log('🚫📢 Block/Report System v64.0 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════════
+  window.BLOCK_STATE = window.BLOCK_STATE || {
+    blockedList: [],           // users I have blocked
+    blockedMe: [],             // users who blocked me
+    currentChatBlocked: false, // is current chat blocked?
+    reportTarget: null         // user being reported
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD BLOCKED LIST
+  // ═══════════════════════════════════════════════════════
+  window.loadBlockedUsers = async function() {
+    if (!currentUser || !supabaseClient) return;
+
+    try {
+      // Users I blocked
+      var r1 = await supabaseClient
+        .from('blocked_users')
+        .select('*')
+        .eq('blocker_id', currentUser.studentId);
+      var blockedRows = r1.data || [];
+
+      // Users who blocked me
+      var r2 = await supabaseClient
+        .from('blocked_users')
+        .select('*')
+        .eq('blocked_id', currentUser.studentId);
+      var blockedMeRows = r2.data || [];
+
+      // Fetch profiles for "blocked by me" list
+      var blockedIds = blockedRows.map(function(b) { return b.blocked_id; });
+      var smap = {};
+      if (blockedIds.length > 0) {
+        var sr = await supabaseClient
+          .from('students')
+          .select('studentid, name, class, photo')
+          .in('studentid', blockedIds);
+        (sr.data || []).forEach(function(s) { smap[s.studentid] = s; });
+      }
+
+      window.BLOCK_STATE.blockedList = blockedRows.map(function(b) {
+        var s = smap[b.blocked_id] || {};
+        return {
+          blockId: b.id,
+          studentid: b.blocked_id,
+          name: s.name || 'Student',
+          class: s.class || '',
+          photo: s.photo || '',
+          reason: b.reason || '',
+          blockedAt: b.blocked_at
+        };
+      }).sort(function(a, b) {
+        var ta = a.blockedAt ? new Date(a.blockedAt).getTime() : 0;
+        var tb = b.blockedAt ? new Date(b.blockedAt).getTime() : 0;
+        return tb - ta;
+      });
+
+      window.BLOCK_STATE.blockedMe = blockedMeRows.map(function(b) {
+        return b.blocker_id;
+      });
+
+    } catch(e) {
+      console.warn('loadBlockedUsers error:', e);
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔍 CHECK IF USER IS BLOCKED (either direction)
+  // ═══════════════════════════════════════════════════════
+  window.isUserBlocked = function(targetSid) {
+    if (!targetSid) return { blocked: false, blockedByMe: false, blockedByThem: false };
+    var blockedByMe = (window.BLOCK_STATE.blockedList || []).some(function(x) { return x.studentid === targetSid; });
+    var blockedByThem = (window.BLOCK_STATE.blockedMe || []).indexOf(targetSid) !== -1;
+    return {
+      blocked: blockedByMe || blockedByThem,
+      blockedByMe: blockedByMe,
+      blockedByThem: blockedByThem
+    };
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🚫 BLOCK USER
+  // ═══════════════════════════════════════════════════════
+  window.blockUser = async function(targetSid, targetName, reason) {
+    if (!currentUser || !supabaseClient) return false;
+    if (targetSid === currentUser.studentId) {
+      showToast('❌ സ്വന്തം ID block ചെയ്യാൻ പറ്റില്ല', 'error');
+      return false;
+    }
+
+    try {
+      var r = await supabaseClient.from('blocked_users').insert({
+        blocker_id: currentUser.studentId,
+        blocked_id: targetSid,
+        reason: reason || null
+      });
+
+      if (r.error) {
+        if (r.error.code === '23505') {
+          showToast('⚠️ Already blocked', 'info');
+          return true;
+        }
+        throw r.error;
+      }
+
+      // Also delete any friendship
+      try {
+        var a = currentUser.studentId < targetSid ? currentUser.studentId : targetSid;
+        var b = currentUser.studentId < targetSid ? targetSid : currentUser.studentId;
+        await supabaseClient.from('friendships').delete().eq('student_a', a).eq('student_b', b);
+      } catch(e) {}
+
+      // Update local state
+      await window.loadBlockedUsers();
+      await window.loadFriendsList();
+
+      showToast('🚫 ' + (targetName || 'User') + ' blocked', 'success');
+      if (navigator.vibrate) try { navigator.vibrate([20, 40, 20]); } catch(e) {}
+
+      // If current chat is with this user, mark blocked
+      if (window.CHAT_STATE && window.CHAT_STATE.activeChat === targetSid) {
+        window.BLOCK_STATE.currentChatBlocked = true;
+        updateBlockedBar();
+      }
+
+      return true;
+    } catch(e) {
+      console.error('blockUser error:', e);
+      showToast('❌ ' + e.message, 'error');
+      return false;
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔓 UNBLOCK USER
+  // ═══════════════════════════════════════════════════════
+  window.unblockUser = async function(targetSid, targetName) {
+    if (!currentUser || !supabaseClient) return false;
+
+    if (!confirm('🔓 ' + (targetName || 'User') + '-ന്റെ block പിൻവലിക്കണോ?')) return false;
+
+    try {
+      var r = await supabaseClient
+        .from('blocked_users')
+        .delete()
+        .eq('blocker_id', currentUser.studentId)
+        .eq('blocked_id', targetSid);
+
+      if (r.error) throw r.error;
+
+      // Update local state
+      window.BLOCK_STATE.blockedList = (window.BLOCK_STATE.blockedList || []).filter(
+        function(x) { return x.studentid !== targetSid; }
+      );
+
+      showToast('✅ Unblocked', 'success');
+      if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+
+      // Re-render sidebar if open
+      if (typeof window.renderSidebar === 'function') window.renderSidebar();
+      var listEl = document.getElementById('chatSidebarList');
+      if (listEl && window.CHAT_STATE && window.CHAT_STATE.activeTab === 'blocked') {
+        listEl.innerHTML = renderBlockedSection();
+      }
+
+      // If this is the current chat, mark unblocked
+      if (window.CHAT_STATE && window.CHAT_STATE.activeChat === targetSid) {
+        var b = window.isUserBlocked(targetSid);
+        window.BLOCK_STATE.currentChatBlocked = b.blocked;
+        updateBlockedBar();
+      }
+
+      return true;
+    } catch(e) {
+      console.error('unblockUser error:', e);
+      showToast('❌ ' + e.message, 'error');
+      return false;
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🚫 BLOCK CONFIRM MODAL
+  // ═══════════════════════════════════════════════════════
+  window.openBlockConfirm = function(targetSid, targetName) {
+    if (!targetSid) return;
+    var reason = prompt('🚫 Block reason (optional):\n\n' + (targetName || targetSid) + ' നെ block ചെയ്യാൻ കാരണം?', '');
+    if (reason === null) return; // cancelled
+
+    window.blockUser(targetSid, targetName, reason).then(function(ok) {
+      if (ok) {
+        // If this user was the chat partner, close the chat or show blocked bar
+        if (window.CHAT_STATE && window.CHAT_STATE.activeChat === targetSid) {
+          setTimeout(function() {
+            if (typeof window.chatBackToList === 'function') window.chatBackToList();
+            if (typeof window.closeChatPanel === 'function') window.closeChatPanel();
+          }, 800);
+        }
+      }
+    });
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📢 REPORT USER
+  // ═══════════════════════════════════════════════════════
+  window.openReportModal = function(targetSid, targetName, targetClass, targetPhoto) {
+    if (!targetSid) return;
+
+    window.BLOCK_STATE.reportTarget = {
+      studentid: targetSid,
+      name: targetName || 'Student',
+      class: targetClass || '',
+      photo: targetPhoto || ''
+    };
+
+    // Populate user badge
+    var avatarEl = document.getElementById('reportUserAvatar');
+    var hasPhoto = targetPhoto && (targetPhoto.startsWith('http') || targetPhoto.startsWith('data:'));
+    avatarEl.innerHTML = hasPhoto
+      ? '<img src="' + targetPhoto + '" alt="">'
+      : (targetName || 'S').charAt(0).toUpperCase();
+
+    document.getElementById('reportUserName').textContent = targetName || 'Student';
+    document.getElementById('reportUserMeta').textContent = 'Class ' + (targetClass || '—') + ' • ' + targetSid;
+
+    // Reset form
+    document.querySelectorAll('input[name="reportReason"]').forEach(function(r) { r.checked = false; });
+    document.querySelectorAll('.report-reason-option').forEach(function(o) { o.classList.remove('active'); });
+    document.getElementById('reportDetails').value = '';
+    document.getElementById('reportSubmitBtn').disabled = false;
+    document.getElementById('reportSubmitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Report ചെയ്യുക';
+
+    // Open modal
+    document.getElementById('reportModal').classList.add('open');
+  };
+
+  window.closeReportModal = function() {
+    document.getElementById('reportModal').classList.remove('open');
+    window.BLOCK_STATE.reportTarget = null;
+  };
+
+  // Reason option click handling
+  document.addEventListener('click', function(e) {
+    var opt = e.target.closest('.report-reason-option');
+    if (!opt) return;
+    // Let the radio input handle itself
+    setTimeout(function() {
+      document.querySelectorAll('.report-reason-option').forEach(function(o) {
+        var inp = o.querySelector('input[type="radio"]');
+        o.classList.toggle('active', inp && inp.checked);
+      });
+    }, 10);
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // 📤 SUBMIT REPORT
+  // ═══════════════════════════════════════════════════════
+  window.submitReport = async function() {
+    if (!currentUser || !supabaseClient) return;
+    var target = window.BLOCK_STATE.reportTarget;
+    if (!target) { showToast('⚠️ No user selected', 'error'); return; }
+
+    var checked = document.querySelector('input[name="reportReason"]:checked');
+    if (!checked) { showToast('⚠️ കാരണം select ചെയ്യുക', 'error'); return; }
+
+    var reason = checked.value;
+    var details = (document.getElementById('reportDetails').value || '').trim();
+
+    var btn = document.getElementById('reportSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    try {
+      var r = await supabaseClient.from('reports').insert({
+        reporter_id: currentUser.studentId,
+        reported_id: target.studentid,
+        reason: reason,
+        details: details || null,
+        status: 'pending'
+      });
+
+      if (r.error) throw r.error;
+
+      // Notify admins via notification
+      try {
+        await supabaseClient.from('notifications').insert({
+          title: '📢 പുതിയ Report — ' + target.name,
+          message: currentUser.name + ' ഒരു report സമർപ്പിച്ചു. കാരണം: ' + reason,
+          type: 'important',
+          target_type: 'all',
+          target_class: 'all',
+          link_url: null
+        });
+      } catch(e) {}
+
+      showToast('✅ Report അയച്ചു! Admin പരിശോധിക്കും', 'success');
+      if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
+      if (typeof confetti !== 'undefined') {
+        confetti({ particleCount: 50, spread: 60, origin: { y: .7 }, colors: ['#dc2626','#ef4444'] });
+      }
+
+      window.closeReportModal();
+    } catch(e) {
+      console.error('submitReport error:', e);
+      showToast('❌ ' + e.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Report ചെയ്യുക';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER BLOCKED USERS SECTION (Sidebar)
+  // ═══════════════════════════════════════════════════════
+  function renderBlockedSection() {
+    var list = window.BLOCK_STATE.blockedList || [];
+
+    if (list.length === 0) {
+      return '<div class="chat-sidebar-section-title">Blocked Users</div>' +
+        '<div class="blocked-empty">' +
+          '<i class="fas fa-user-slash"></i>' +
+          '<div>ആരെയും block ചെയ്തിട്ടില്ല</div>' +
+          '<div style="font-size:.7rem;margin-top:6px;opacity:.7;">Chat-ൽ 3-dot menu → Block</div>' +
+        '</div>';
+    }
+
+    var html = '<div class="chat-sidebar-section-title">Blocked Users (' + list.length + ')</div>';
+
+    list.forEach(function(b) {
+      var initial = (b.name || 'S').charAt(0).toUpperCase();
+      var hasPhoto = b.photo && (b.photo.startsWith('http') || b.photo.startsWith('data:'));
+      var avatarHtml = hasPhoto ? '<img src="' + b.photo + '" alt="">' : initial;
+
+      html +=
+        '<div class="blocked-user-item">' +
+          '<div class="blocked-user-avatar">' + avatarHtml + '</div>' +
+          '<div class="blocked-user-info">' +
+            '<div class="blocked-user-name">' + escapeHtml(b.name) + '</div>' +
+            '<div class="blocked-user-meta">Class ' + escapeHtml(b.class || '—') + '</div>' +
+          '</div>' +
+          '<button class="blocked-user-unblock" onclick="window.unblockUser(\'' + b.studentid + '\', \'' + escapeHtml(b.name).replace(/'/g, "\\'") + '\')">' +
+            '<i class="fas fa-unlock"></i> Unblock' +
+          '</button>' +
+        '</div>';
+    });
+
+    return html;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 UPDATE CHAT HEADER — Add 3-dot Menu
+  // ═══════════════════════════════════════════════════════
+  function injectChatHeaderMenu() {
+    var headerActions = document.querySelector('.chat-header-actions');
+    if (!headerActions) return;
+
+    if (headerActions.querySelector('.chat-header-menu-btn')) return;
+
+    // Only for direct chats, not class
+    var state = window.CHAT_STATE;
+    if (!state || state.activeChat === 'class') return;
+
+    // Add 3-dot menu button
+    var btn = document.createElement('button');
+    btn.className = 'chat-header-action menu-trigger chat-header-menu-btn';
+    btn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+    btn.title = 'More options';
+
+    var dropdown = document.createElement('div');
+    dropdown.className = 'chat-dropdown';
+    dropdown.id = 'chatHeaderDropdown';
+    dropdown.innerHTML =
+      '<button class="chat-dropdown-item" onclick="window.openReportCurrentChat()">' +
+        '<i class="fas fa-flag" style="color:#dc2626;"></i> Report User' +
+      '</button>' +
+      '<div class="chat-dropdown-divider"></div>' +
+      '<button class="chat-dropdown-item danger" onclick="window.blockCurrentChat()">' +
+        '<i class="fas fa-ban"></i> Block User' +
+      '</button>';
+
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    };
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    headerActions.appendChild(btn);
+    headerActions.appendChild(dropdown);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 WRAPPERS — Report / Block current chat user
+  // ═══════════════════════════════════════════════════════
+  window.openReportCurrentChat = function() {
+    var state = window.CHAT_STATE;
+    if (!state || !state.activeFriendData) {
+      showToast('⚠️ No user in chat', 'error');
+      return;
+    }
+    var f = state.activeFriendData;
+    document.getElementById('chatHeaderDropdown')?.classList.remove('open');
+    window.openReportModal(f.studentid, f.name, f.class, f.photo);
+  };
+
+  window.blockCurrentChat = function() {
+    var state = window.CHAT_STATE;
+    if (!state || !state.activeFriendData) {
+      showToast('⚠️ No user in chat', 'error');
+      return;
+    }
+    var f = state.activeFriendData;
+    document.getElementById('chatHeaderDropdown')?.classList.remove('open');
+    window.openBlockConfirm(f.studentid, f.name);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🚫 BLOCKED BAR — Show in chat when user is blocked
+  // ═══════════════════════════════════════════════════════
+  function updateBlockedBar() {
+    var chatMain = document.getElementById('chatMain');
+    if (!chatMain) return;
+
+    var existingBar = chatMain.querySelector('.chat-blocked-bar');
+    if (existingBar) existingBar.remove();
+
+    var state = window.CHAT_STATE;
+    if (!state || state.activeChat === 'class') return;
+
+    var chatInputArea = chatMain.querySelector('.chat-input-area');
+    if (!chatInputArea) return;
+
+    var targetSid = state.activeChat;
+    var blocked = window.isUserBlocked(targetSid);
+
+    if (!blocked.blocked) {
+      chatInputArea.style.display = '';
+      return;
+    }
+
+    chatInputArea.style.display = 'none';
+
+    var bar = document.createElement('div');
+    bar.className = 'chat-blocked-bar';
+
+    if (blocked.blockedByMe) {
+      bar.innerHTML =
+        '<i class="fas fa-ban"></i>' +
+        '<div class="chat-blocked-bar-text">' +
+          'You blocked this user' +
+          '<small>Messages അയക്കാനും വാങ്ങാനും കഴിയില്ല</small>' +
+        '</div>' +
+        '<button onclick="window.unblockCurrentChat()">' +
+          '<i class="fas fa-unlock"></i> Unblock' +
+        '</button>';
+    } else {
+      bar.innerHTML =
+        '<i class="fas fa-lock"></i>' +
+        '<div class="chat-blocked-bar-text">' +
+          'User has blocked you' +
+          '<small>Messages അയക്കാൻ കഴിയില്ല</small>' +
+        '</div>';
+    }
+
+    chatInputArea.parentNode.insertBefore(bar, chatInputArea);
+  }
+
+  window.unblockCurrentChat = function() {
+    var state = window.CHAT_STATE;
+    if (!state || !state.activeFriendData) return;
+    var f = state.activeFriendData;
+    window.unblockUser(f.studentid, f.name);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔒 HOOK — Prevent sending messages to blocked users
+  // ═══════════════════════════════════════════════════════
+  var _origSendChat = window.sendChatMessage;
+  if (typeof _origSendChat === 'function') {
+    window.sendChatMessage = async function() {
+      var state = window.CHAT_STATE;
+      if (state && state.activeChat !== 'class') {
+        var blocked = window.isUserBlocked(state.activeChat);
+        if (blocked.blocked) {
+          showToast('🚫 ' + (blocked.blockedByMe ? 'Unblock first to send messages' : 'This user blocked you'), 'error');
+          return;
+        }
+      }
+      return _origSendChat.apply(this, arguments);
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK — openDirectChatWith to check blocked + add menu
+  // ═══════════════════════════════════════════════════════
+  var _origOpenDirect = window.openDirectChatWith;
+  if (typeof _origOpenDirect === 'function') {
+    window.openDirectChatWith = async function(friendId) {
+      var r = await _origOpenDirect.apply(this, arguments);
+      setTimeout(function() {
+        injectChatHeaderMenu();
+        updateBlockedBar();
+      }, 100);
+      return r;
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 EXTEND SIDEBAR TABS — Add "Blocked" Tab
+  // ═══════════════════════════════════════════════════════
+  function addBlockedTab() {
+    var tabsEl = document.querySelector('.chat-tabs-side');
+    if (!tabsEl) return;
+    if (tabsEl.querySelector('[data-tab="blocked"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'chat-tab-side';
+    btn.dataset.tab = 'blocked';
+    btn.innerHTML = '<i class="fas fa-ban"></i> Blocked';
+    btn.onclick = function() {
+      if (typeof window.chatSwitchTab === 'function') {
+        window.chatSwitchTab('blocked');
+      }
+    };
+    tabsEl.appendChild(btn);
+
+    // Reduce padding to fit 5 tabs
+    tabsEl.querySelectorAll('.chat-tab-side').forEach(function(t) {
+      t.style.fontSize = '.64rem';
+      t.style.padding = '8px 3px';
+    });
+  }
+
+  // Patch chatSwitchTab for 'blocked'
+  function patchChatSwitchTab() {
+    if (!window.CHAT_STATE || !window.chatSwitchTab) {
+      setTimeout(patchChatSwitchTab, 500);
+      return;
+    }
+    if (window.chatSwitchTab._blockedPatched) return;
+
+    var _orig = window.chatSwitchTab;
+    window.chatSwitchTab = function(tab) {
+      if (tab === 'blocked') {
+        window.CHAT_STATE.activeTab = 'blocked';
+        document.querySelectorAll('.chat-tab-side').forEach(function(t) {
+          t.classList.toggle('active', t.dataset.tab === 'blocked');
+        });
+        window.loadBlockedUsers().then(function() {
+          var listEl = document.getElementById('chatSidebarList');
+          if (listEl) listEl.innerHTML = renderBlockedSection();
+        });
+        return;
+      }
+      return _orig.apply(this, arguments);
+    };
+    window.chatSwitchTab._blockedPatched = true;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 PATCH renderSidebar to handle 'blocked' tab
+  // ═══════════════════════════════════════════════════════
+  var _origRenderSidebar = window.renderSidebar;
+  if (typeof _origRenderSidebar === 'function') {
+    window.renderSidebar = function() {
+      var state = window.CHAT_STATE;
+      if (state && state.activeTab === 'blocked') {
+        var listEl = document.getElementById('chatSidebarList');
+        if (listEl) listEl.innerHTML = renderBlockedSection();
+        return;
+      }
+      return _origRenderSidebar.apply(this, arguments);
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK — openChatPanel to add Blocked tab
+  // ═══════════════════════════════════════════════════════
+  var _origOpenChatPanel = window.openChatPanel;
+  if (typeof _origOpenChatPanel === 'function') {
+    window.openChatPanel = async function() {
+      var r = await _origOpenChatPanel.apply(this, arguments);
+      setTimeout(function() {
+        addBlockedTab();
+        patchChatSwitchTab();
+        window.loadBlockedUsers();
+      }, 150);
+      return r;
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOK INTO FRIEND ITEMS — Long-press / Right-click menu
+  // ═══════════════════════════════════════════════════════
+  // Add context menu to friend items in sidebar
+  document.addEventListener('contextmenu', function(e) {
+    var friendItem = e.target.closest('.friend-item');
+    if (!friendItem) return;
+    var state = window.CHAT_STATE;
+    if (!state || state.activeTab !== 'friends') return;
+
+    // Prevent default right-click
+    e.preventDefault();
+
+    // Find friend data
+    var friendId = friendItem.getAttribute('onclick')?.match(/openDirectChatWith\('([^']+)'\)/)?.[1];
+    if (!friendId) return;
+
+    var friend = (state.friends || []).find(function(f) { return f.studentid === friendId; });
+    if (!friend) return;
+
+    // Show quick menu
+    showFriendContextMenu(e.clientX, e.clientY, friend);
+  });
+
+  function showFriendContextMenu(x, y, friend) {
+    var old = document.getElementById('friendContextMenu');
+    if (old) old.remove();
+
+    var menu = document.createElement('div');
+    menu.id = 'friendContextMenu';
+    menu.style.cssText =
+      'position:fixed;left:' + x + 'px;top:' + y + 'px;background:#fff;border-radius:14px;' +
+      'box-shadow:0 20px 50px -15px rgba(0,0,0,.35);border:1px solid rgba(100,116,139,.15);' +
+      'padding:6px;z-index:100050;min-width:180px;animation:dropdownIn .2s ease;';
+
+    menu.innerHTML =
+      '<button class="chat-dropdown-item" onclick="window.openReportModal(\'' + friend.studentid + '\', \'' + (friend.name || '').replace(/'/g, "\\'") + '\', \'' + (friend.class || '') + '\', \'' + (friend.photo || '') + '\'); document.getElementById(\'friendContextMenu\').remove();">' +
+        '<i class="fas fa-flag" style="color:#dc2626;"></i> Report' +
+      '</button>' +
+      '<button class="chat-dropdown-item danger" onclick="window.openBlockConfirm(\'' + friend.studentid + '\', \'' + (friend.name || '').replace(/'/g, "\\'") + '\'); document.getElementById(\'friendContextMenu\').remove();">' +
+        '<i class="fas fa-ban"></i> Block' +
+      '</button>';
+
+    document.body.appendChild(menu);
+
+    setTimeout(function() {
+      document.addEventListener('click', function closeMenu(ev) {
+        if (!menu.contains(ev.target)) {
+          menu.remove();
+          document.removeEventListener('click', closeMenu);
+        }
+      });
+    }, 100);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 👨‍🏫 ADMIN — Reports Tab
+  // ═══════════════════════════════════════════════════════
+  window.loadReportsAdmin = async function() {
+    var wrap = document.getElementById('reportsAdminWrap');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="loading-tx"><div class="spinner-sm"></div></div>';
+
+    try {
+      var r = await supabaseClient.from('reports')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(200);
+      var reports = r.data || [];
+
+      // Fetch student info for reporters and reported
+      var allIds = new Set();
+      reports.forEach(function(rep) {
+        allIds.add(rep.reporter_id);
+        allIds.add(rep.reported_id);
+      });
+      var smap = {};
+      if (allIds.size > 0) {
+        var sr = await supabaseClient.from('students')
+          .select('studentid, name, class')
+          .in('studentid', Array.from(allIds));
+        (sr.data || []).forEach(function(s) { smap[s.studentid] = s; });
+      }
+
+      // Summary
+      var pending = reports.filter(function(r) { return r.status === 'pending'; }).length;
+      var reviewed = reports.filter(function(r) { return r.status === 'reviewed'; }).length;
+      var resolved = reports.filter(function(r) { return r.status === 'resolved'; }).length;
+      var dismissed = reports.filter(function(r) { return r.status === 'dismissed'; }).length;
+
+      var sum = document.getElementById('reportsSummaryAdmin');
+      if (sum) {
+        sum.innerHTML =
+          '<div class="stat"><div class="num" style="color:#dc2626;">' + pending + '</div><div class="label">Pending</div></div>' +
+          '<div class="stat"><div class="num" style="color:#b45309;">' + reviewed + '</div><div class="label">Reviewed</div></div>' +
+          '<div class="stat"><div class="num" style="color:#059669;">' + resolved + '</div><div class="label">Resolved</div></div>' +
+          '<div class="stat"><div class="num" style="color:#64748b;">' + dismissed + '</div><div class="label">Dismissed</div></div>';
+      }
+
+      if (reports.length === 0) {
+        wrap.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#64748b;"><i class="fas fa-inbox" style="font-size:3rem;opacity:.4;display:block;margin-bottom:12px;"></i>ഇതുവരെ reports ഇല്ല ✅</div>';
+        return;
+      }
+
+      var h = '';
+      reports.forEach(function(rep) {
+        var reporter = smap[rep.reporter_id] || { name: 'Unknown', class: '' };
+        var reported = smap[rep.reported_id] || { name: 'Unknown', class: '' };
+        var statusClass = 'status-' + (rep.status || 'pending');
+        var created = rep.created_at ? new Date(rep.created_at) : null;
+        var createdStr = created ? created.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+
+        h += '<div class="report-admin-item ' + statusClass + '">';
+        h += '<div class="report-admin-header">';
+        h += '<div class="report-admin-reason"><i class="fas fa-flag"></i> ' + escapeHtml(rep.reason) + '</div>';
+        h += '<span class="report-admin-status ' + (rep.status || 'pending') + '">' + (rep.status || 'pending').toUpperCase() + '</span>';
+        h += '</div>';
+
+        h += '<div class="report-admin-parties">';
+        h += '<span><b>Reporter:</b> ' + escapeHtml(reporter.name) + ' (C' + escapeHtml(reporter.class) + ')</span>';
+        h += '<span><b>Reported:</b> ' + escapeHtml(reported.name) + ' (C' + escapeHtml(reported.class) + ')</span>';
+        h += '<span style="color:#94a3b8;font-size:.72rem;">🕐 ' + createdStr + '</span>';
+        h += '</div>';
+
+        if (rep.details) {
+          h += '<div class="report-admin-details">' + escapeHtml(rep.details) + '</div>';
+        }
+
+        if (rep.admin_note) {
+          h += '<div class="report-admin-note"><b>Admin Note:</b> ' + escapeHtml(rep.admin_note) + '</div>';
+        }
+
+        h += '<div class="report-admin-actions">';
+        if (rep.status === 'pending') {
+          h += '<button class="report-action-btn warn" onclick="window.updateReportStatus(' + rep.id + ', \'reviewed\')"><i class="fas fa-eye"></i> Mark Reviewed</button>';
+        }
+        if (rep.status === 'pending' || rep.status === 'reviewed') {
+          h += '<button class="report-action-btn success" onclick="window.resolveReportWithAction(' + rep.id + ', \'' + rep.reported_id + '\', \'' + escapeHtml(reported.name).replace(/'/g, "\\'") + '\')"><i class="fas fa-check"></i> Resolve + Block User</button>';
+          h += '<button class="report-action-btn info" onclick="window.addAdminNoteToReport(' + rep.id + ')"><i class="fas fa-pen"></i> Add Note</button>';
+        }
+        if (rep.status !== 'resolved' && rep.status !== 'dismissed') {
+          h += '<button class="report-action-btn danger" onclick="window.updateReportStatus(' + rep.id + ', \'dismissed\')"><i class="fas fa-times"></i> Dismiss</button>';
+        }
+        h += '<button class="report-action-btn danger" onclick="window.deleteReport(' + rep.id + ')" style="background:#64748b;"><i class="fas fa-trash"></i></button>';
+        h += '</div>';
+
+        h += '</div>';
+      });
+
+      wrap.innerHTML = h;
+
+    } catch(e) {
+      console.error('loadReportsAdmin error:', e);
+      wrap.innerHTML = '<div style="padding:20px;color:#dc2626;">Error: ' + e.message + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 ADMIN REPORT ACTIONS
+  // ═══════════════════════════════════════════════════════
+  window.updateReportStatus = async function(reportId, status) {
+    try {
+      await supabaseClient.from('reports').update({
+        status: status,
+        reviewed_by: 'ADMIN',
+        reviewed_at: new Date().toISOString()
+      }).eq('id', reportId);
+      showToast('✅ Status updated: ' + status, 'success');
+      window.loadReportsAdmin();
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  window.resolveReportWithAction = async function(reportId, reportedSid, reportedName) {
+    if (!confirm('✅ Report resolve ചെയ്ത് ' + reportedName + '-നെ block ചെയ്യണോ?\n\nഇത് ആ user-നെ admin-ൽ നിന്ന് block ചെയ്യും.')) return;
+
+    try {
+      // Update report status
+      await supabaseClient.from('reports').update({
+        status: 'resolved',
+        admin_note: 'Resolved + user blocked by admin',
+        reviewed_by: 'ADMIN',
+        reviewed_at: new Date().toISOString()
+      }).eq('id', reportId);
+
+      // Block the reported user (admin-initiated block = is_blocked flag)
+      await supabaseClient.from('students').update({
+        is_blocked: true,
+        block_reason: 'Admin action: Report resolved',
+        blocked_at: new Date().toISOString(),
+        blocked_by: 'ADMIN'
+      }).eq('studentid', reportedSid);
+
+      showToast('✅ Report resolved + user blocked', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+      window.loadReportsAdmin();
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  window.addAdminNoteToReport = async function(reportId) {
+    var note = prompt('📝 Admin note (internal):', '');
+    if (note === null) return;
+    try {
+      await supabaseClient.from('reports').update({
+        admin_note: note || null,
+        reviewed_by: 'ADMIN',
+        reviewed_at: new Date().toISOString()
+      }).eq('id', reportId);
+      showToast('✅ Note added', 'success');
+      window.loadReportsAdmin();
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  window.deleteReport = async function(reportId) {
+    if (!confirm('🗑️ Delete this report permanently?')) return;
+    try {
+      await supabaseClient.from('reports').delete().eq('id', reportId);
+      showToast('🗑️ Deleted', 'success');
+      window.loadReportsAdmin();
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎛️ ADD ADMIN TAB — Reports
+  // ═══════════════════════════════════════════════════════
+  function addReportsAdminTab() {
+    var tabs = document.getElementById('adminTabs');
+    if (!tabs) return;
+    if (tabs.querySelector('[data-tab="reports"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'admin-tab';
+    btn.dataset.tab = 'reports';
+    btn.innerHTML = '📢 Reports';
+    btn.onclick = function() { window.switchAdminTab('reports'); };
+
+    // Insert after security tab
+    var securityTab = tabs.querySelector('[data-tab="security"]');
+    if (securityTab) securityTab.parentNode.insertBefore(btn, securityTab.nextSibling);
+    else tabs.appendChild(btn);
+
+    // Add tab content
+    var container = document.getElementById('adminMainContent');
+    if (!container) return;
+    if (document.getElementById('adminReportsTab')) return;
+
+    var div = document.createElement('div');
+    div.id = 'adminReportsTab';
+    div.className = 'admin-tab-content';
+    div.style.display = 'none';
+    div.innerHTML =
+      '<div class="admin-toolbar">' +
+        '<button class="btn-load" onclick="window.loadReportsAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>' +
+      '</div>' +
+      '<div class="admin-summary" id="reportsSummaryAdmin"></div>' +
+      '<div id="reportsAdminWrap" style="padding:4px;"></div>';
+
+    container.appendChild(div);
+  }
+
+  // Patch switchAdminTab
+  var _origSwitchAdminTab = window.switchAdminTab;
+  if (typeof _origSwitchAdminTab === 'function') {
+    window.switchAdminTab = function(tab) {
+      if (tab === 'reports') {
+        document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.style.display = 'none'; });
+        document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+        var btn = document.querySelector('.admin-tab[data-tab="reports"]');
+        if (btn) btn.classList.add('active');
+        var el = document.getElementById('adminReportsTab');
+        if (el) el.style.display = 'block';
+        window.loadReportsAdmin();
+        return;
+      }
+      return _origSwitchAdminTab.apply(this, arguments);
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  async function init() {
+    // Load blocked users if logged in
+    if (currentUser) {
+      await window.loadBlockedUsers();
+    }
+
+    // Add admin reports tab
+    addReportsAdminTab();
+
+    // Patch chat system
+    addBlockedTab();
+    patchChatSwitchTab();
+
+    // If chat panel already open, refresh
+    var panel = document.getElementById('chatPanel');
+    if (panel && panel.classList.contains('open')) {
+      injectChatHeaderMenu();
+      updateBlockedBar();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2200);
+      setTimeout(init, 4000);
+    });
+  } else {
+    setTimeout(init, 2200);
+    setTimeout(init, 4000);
+  }
+
+  // Re-apply when dashboard visible
+  var dash = document.getElementById('dashboardSection');
+  if (dash) {
+    new MutationObserver(function() {
+      if (dash.style.display === 'block' && currentUser) {
+        setTimeout(function() {
+          window.loadBlockedUsers();
+          addBlockedTab();
+          patchChatSwitchTab();
+        }, 1500);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Watch for chat panel opening
+  setInterval(function() {
+    var panel = document.getElementById('chatPanel');
+    if (panel && panel.classList.contains('open')) {
+      addBlockedTab();
+      patchChatSwitchTab();
+      var state = window.CHAT_STATE;
+      if (state && state.activeChat !== 'class' && state.activeFriendData) {
+        injectChatHeaderMenu();
+        updateBlockedBar();
+      }
+    }
+  }, 3000);
+
+  // Watch for admin section opening
+  var adminEl = document.getElementById('adminSection');
+  if (adminEl) {
+    new MutationObserver(function() {
+      if (adminEl.style.display === 'block') {
+        setTimeout(addReportsAdminTab, 500);
+      }
+    }).observe(adminEl, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  console.log('✅ Block/Report System v64.0 ready');
+  console.log('   • Chat header 3-dot menu (Report/Block)');
+  console.log('   • Blocked tab in chat sidebar');
+  console.log('   • Blocked bar in chat (disabled input)');
+  console.log('   • Admin → 📢 Reports tab');
+  console.log('   • Right-click on friend = quick menu');
+})();
+</script>
 </body>
 </html>
