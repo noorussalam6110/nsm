@@ -31010,5 +31010,248 @@ body.perf-mode-low {
   console.log('   💡 debugV76() to check');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 👁️ v77.0 — INPUT VISIBILITY FIX                         -->
+<!-- Login + Teacher password: white text on dark bg         -->
+<!-- Fixes: autofill, focus-within, placeholder visibility   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="input-visibility-v77">
+
+/* ─── 1. KILL BROWSER AUTOFILL WHITE/YELLOW BG ─── */
+.nsm-input:-webkit-autofill,
+.nsm-input:-webkit-autofill:hover,
+.nsm-input:-webkit-autofill:focus,
+.nsm-input:-webkit-autofill:active,
+#studentPassword:-webkit-autofill,
+#studentPassword:-webkit-autofill:hover,
+#studentPassword:-webkit-autofill:focus,
+#studentId:-webkit-autofill,
+#studentId:-webkit-autofill:hover,
+#studentId:-webkit-autofill:focus,
+#tv60Pwd:-webkit-autofill,
+#tv60Pwd:-webkit-autofill:hover,
+#tv60Pwd:-webkit-autofill:focus,
+#tv60Pwd:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(10, 26, 63, 0.92) inset !important;
+  box-shadow: 0 0 0 1000px rgba(10, 26, 63, 0.92) inset !important;
+  background-color: transparent !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #ffd966 !important;
+}
+
+/* Firefox autofill */
+.nsm-input:autofill,
+#studentPassword:autofill,
+#studentId:autofill,
+#tv60Pwd:autofill {
+  filter: none;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0 1000px rgba(10, 26, 63, 0.92) inset !important;
+}
+
+/* ─── 2. LOGIN INPUT — FORCE WHITE TEXT ─── */
+.nsm-input,
+.nsm-input#studentId,
+.nsm-input#studentPassword,
+input.nsm-input {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+  caret-color: #ffd966 !important;
+  background: transparent !important;
+}
+
+/* Placeholder (dim, readable) */
+.nsm-input::placeholder {
+  color: rgba(255,255,255,0.55) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.55) !important;
+  opacity: 1 !important;
+}
+
+/* ─── 3. LOGIN INPUT WRAP — DARK BG ON FOCUS ─── */
+.nsm-input-wrap {
+  background: rgba(10, 26, 63, 0.55) !important;
+  border-color: rgba(140,190,255,0.4) !important;
+}
+
+.nsm-input-wrap:hover {
+  background: rgba(10, 26, 63, 0.68) !important;
+  border-color: rgba(212,175,55,0.7) !important;
+}
+
+.nsm-input-wrap:focus-within {
+  background: rgba(5, 14, 43, 0.85) !important;
+  border-color: #ffd966 !important;
+  box-shadow: 0 0 0 4px rgba(255,215,102,0.22),
+              0 10px 30px -10px rgba(251,191,36,0.7) !important;
+}
+
+/* Icon — always visible */
+.nsm-input-wrap .nsm-input-icon,
+.nsm-input-wrap i {
+  color: #ffd966 !important;
+  -webkit-text-fill-color: #ffd966 !important;
+  text-shadow: 0 0 12px rgba(251,191,36,0.7);
+}
+
+/* ─── 4. TEACHER INPUT — FORCE WHITE TEXT ─── */
+#teacherLoginV60 input.tv60-input,
+#tv60Pwd {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #22d3ee !important;
+  background: transparent !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+
+#teacherLoginV60 input.tv60-input::placeholder {
+  color: rgba(255,255,255,0.55) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.55) !important;
+  opacity: 1 !important;
+}
+
+/* Teacher input wrapper — dark bg */
+#teacherLoginV60 .tv60-input-wrap {
+  background: rgba(10, 26, 63, 0.65) !important;
+  border-color: rgba(34, 211, 238, 0.35) !important;
+}
+
+#teacherLoginV60 .tv60-input-wrap:hover {
+  background: rgba(10, 26, 63, 0.75) !important;
+}
+
+#teacherLoginV60 .tv60-input-wrap:focus-within {
+  background: rgba(5, 14, 43, 0.92) !important;
+  border-color: #22d3ee !important;
+  box-shadow: 0 0 0 4px rgba(34,211,238,0.25),
+              0 10px 30px -10px rgba(34,211,238,0.6) !important;
+}
+
+/* Teacher eye icon */
+#teacherLoginV60 .tv60-eye,
+#teacherLoginV60 .tv60-icon-in {
+  color: #ffd966 !important;
+  -webkit-text-fill-color: #ffd966 !important;
+}
+
+/* ─── 5. iOS — prevent auto-zoom + force text color ─── */
+@supports (-webkit-touch-callout: none) {
+  .nsm-input,
+  .nsm-input#studentId,
+  .nsm-input#studentPassword,
+  #tv60Pwd,
+  #teacherLoginV60 input.tv60-input {
+    font-size: 16px !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+}
+
+/* ─── 6. Chrome Mobile: force clear autofill ─── */
+input:-webkit-autofill::first-line {
+  font-size: 16px !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+</style>
+
+<script id="input-visibility-v77-js">
+(function(){
+  'use strict';
+  console.log('👁️ v77 Input Visibility Fix loading...');
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔧 Fix Chrome autofill inline styles                     */
+  /* Chrome injects inline styles that can't be overridden   */
+  /* by CSS alone. This script removes them on input focus.  */
+  /* ═══════════════════════════════════════════════════════ */
+  var INPUT_IDS = ['studentId', 'studentPassword', 'tv60Pwd'];
+
+  function clearAutofillStyles(inp) {
+    if (!inp) return;
+    // Remove inline styles that Chrome injects
+    inp.style.setProperty('background-color', 'transparent', 'important');
+    inp.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
+    inp.style.setProperty('color', '#ffffff', 'important');
+    inp.style.setProperty('-webkit-box-shadow', 'none', 'important');
+  }
+
+  function attachInputFix(inp) {
+    if (!inp || inp._v77fixed) return;
+    inp._v77fixed = true;
+
+    // Clear on focus
+    inp.addEventListener('focus', function(){ clearAutofillStyles(this); });
+    // Clear on input (typing)
+    inp.addEventListener('input', function(){ clearAutofillStyles(this); });
+    // Clear on animation (autofill trigger)
+    inp.addEventListener('animationstart', function(e){
+      if (e.animationName && e.animationName.indexOf('autofill') > -1) {
+        clearAutofillStyles(this);
+      }
+    });
+    // Clear periodically while focused
+    inp.addEventListener('focus', function(){
+      var el = this;
+      var interval = setInterval(function(){
+        if (document.activeElement !== el) {
+          clearInterval(interval);
+          return;
+        }
+        clearAutofillStyles(el);
+      }, 500);
+    });
+
+    clearAutofillStyles(inp);
+  }
+
+  function scanInputs() {
+    INPUT_IDS.forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) attachInputFix(el);
+    });
+
+    // Also scan any .nsm-input
+    document.querySelectorAll('.nsm-input, #tv60Pwd, #teacherLoginV60 input.tv60-input').forEach(function(el){
+      attachInputFix(el);
+    });
+  }
+
+  /* ─── Init ─── */
+  function init() {
+    scanInputs();
+    // Re-scan when teacher modal opens
+    var tm = document.getElementById('teacherLoginV60');
+    if (tm && !tm._v77watch) {
+      tm._v77watch = true;
+      new MutationObserver(function(){
+        if (tm.classList.contains('open')) {
+          setTimeout(scanInputs, 200);
+          setTimeout(scanInputs, 800);
+        }
+      }).observe(tm, { attributes: true, attributeFilter: ['class'] });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 800);
+      setTimeout(init, 2000);
+    });
+  } else {
+    setTimeout(init, 800);
+    setTimeout(init, 2000);
+  }
+  setTimeout(init, 4000);
+
+  // Re-scan on tab focus (autofill often happens on return)
+  window.addEventListener('focus', function(){
+    setTimeout(scanInputs, 100);
+    setTimeout(scanInputs, 500);
+  });
+
+  console.log('✅ v77 ready — inputs visible');
+})();
+</script>
 </body>
 </html>
