@@ -3095,6 +3095,9 @@ setTimeout(loadMalayalamFontForPDF, 2000);
       <div class="admin-toolbar">
         <button class="btn-load" onclick="loadTimetableAdmin()"><i class="fas fa-sync-alt"></i> Refresh</button>
         <button class="btn-update" onclick="openTimetableForm()"><i class="fas fa-plus"></i> Add Period</button>
+        <button class="btn-update" onclick="window.openBulkTimetableForm()" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;">
+         <i class="fas fa-layer-group"></i> Bulk Edit
+        </button>   
       </div>
       <div class="admin-table-wrap" id="timetableWrap"></div>
     </div>
@@ -8080,7 +8083,317 @@ async function loadTimetableAdmin(){
     wrap.innerHTML=h;
   }catch(e){wrap.innerHTML='<div class="empty-state">Error</div>';}
 }
+// ═══════════════════════════════════════════════════════
+// ⚡ BULK TIMETABLE EDITOR v1.0
+// Full week fill in one table
+// ═══════════════════════════════════════════════════════
 
+window.openBulkTimetableForm = async function() {
+  if (!currentAdminClass || currentAdminClass === 'all') {
+    showToast('⚠️ Specific class select ചെയ്യുക', 'error');
+    return;
+  }
+
+  var cls = currentAdminClass;
+  modalTitleSpan.innerText = '⚡ Bulk Timetable — Class ' + cls;
+  modalBodyDiv.innerHTML = 
+    '<div class="text-center py-4">' +
+      '<div class="spinner-border" style="color:#8b5cf6"></div>' +
+      '<p style="margin-top:12px;color:#64748b;font-weight:700;">Loading existing timetable...</p>' +
+    '</div>';
+  modal.style.display = 'flex';
+
+  try {
+    // ─── Fetch existing ───
+    var r = await supabaseClient
+      .from('timetable')
+      .select('*')
+      .eq('class', cls);
+
+    var map = {};
+    var maxPeriod = 3;
+    (r.data || []).forEach(function(t) {
+      map[t.day + '|' + t.period] = t.subject || '';
+      if (t.period > maxPeriod) maxPeriod = t.period;
+    });
+
+    var days = ['ശനി', 'ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം'];
+    var periods = [];
+    for (var i = 1; i <= maxPeriod; i++) periods.push(i);
+
+    // ─── Build grid ───
+    var html = '';
+
+    // Info banner
+    html += '<div style="' +
+      'background:linear-gradient(135deg,#ede9fe,#fce7f3);' +
+      'border:1.5px solid rgba(139,92,246,.3);' +
+      'border-radius:14px;padding:12px 16px;margin-bottom:16px;' +
+      'font-size:.78rem;color:#7c3aed;font-weight:700;line-height:1.55;' +
+    '">' +
+      '<i class="fas fa-lightbulb"></i> ' +
+      '<b>എങ്ങനെ ഉപയോഗിക്കാം:</b> ഓരോ cell-ലും subject type ചെയ്യുക. ' +
+      '<b>Tab</b> key അമർത്തിയാൽ next cell-ലേക്ക് പോകും. ' +
+      'Empty cells auto-skip ആകും.' +
+    '</div>';
+
+    // Table
+    html += '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1.5px solid rgba(139,92,246,.2);">';
+    html += '<table style="width:100%;border-collapse:collapse;background:#fff;min-width:400px;">';
+
+    // Header
+    html += '<thead><tr style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);">';
+    html += '<th style="padding:12px 10px;color:#fff;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.5px;text-align:center;border:1px solid rgba(255,255,255,.15);">DAYS</th>';
+    periods.forEach(function(p) {
+      html += '<th style="padding:12px 10px;color:#fff;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.5px;text-align:center;border:1px solid rgba(255,255,255,.15);">Period ' + p + '</th>';
+    });
+    html += '</tr></thead>';
+
+    // Body
+    html += '<tbody>';
+    days.forEach(function(day, di) {
+      var bg = di % 2 === 0 ? '#ffffff' : '#faf5ff';
+      html += '<tr style="background:' + bg + ';">';
+      // Day cell
+      html += '<td style="' +
+        'padding:10px;text-align:center;font-weight:900;color:#0f172a;' +
+        'background:#ede9fe;font-size:.82rem;' +
+        'border:1px solid #e2e8f0;font-family:\'Anek Malayalam\',sans-serif;' +
+      '">' + day + '</td>';
+      // Period cells
+      periods.forEach(function(p) {
+        var val = map[day + '|' + p] || '';
+        html += '<td style="padding:6px;border:1px solid #e2e8f0;">' +
+          '<input type="text" ' +
+            'class="bulk-tt-inp" ' +
+            'data-day="' + day + '" ' +
+            'data-period="' + p + '" ' +
+            'value="' + escapeHtml(val) + '" ' +
+            'placeholder="-" ' +
+            'style="' +
+              'width:100%;min-width:80px;' +
+              'padding:9px 10px;' +
+              'border:1.5px solid transparent;' +
+              'border-radius:8px;' +
+              'background:#f8fafc;' +
+              'color:#0f172a;' +
+              'font-family:\'Anek Malayalam\',inherit;' +
+              'font-size:14px;font-weight:700;' +
+              'outline:none;transition:.2s;' +
+              'text-align:center;' +
+            '" ' +
+            'onfocus="this.style.borderColor=\'#8b5cf6\';this.style.background=\'#fff\';this.style.boxShadow=\'0 0 0 3px rgba(139,92,246,.15)\'" ' +
+            'onblur="this.style.borderColor=\'transparent\';this.style.background=\'#f8fafc\';this.style.boxShadow=\'none\'" ' +
+          '>' +
+        '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    // Quick actions
+    html += '<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">' +
+      '<button type="button" onclick="window.bulkTTClearAll()" style="' +
+        'flex:1;padding:11px;border-radius:12px;' +
+        'background:#fef3c7;color:#92400e;' +
+        'border:1.5px solid rgba(180,83,9,.3);' +
+        'font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;' +
+        'display:inline-flex;align-items:center;justify-content:center;gap:6px;' +
+        'min-height:44px;' +
+      '"><i class="fas fa-eraser"></i> Clear All</button>' +
+      '<button type="button" onclick="window.bulkTTCopyFrom()" style="' +
+        'flex:1;padding:11px;border-radius:12px;' +
+        'background:#ecfeff;color:#0891b2;' +
+        'border:1.5px solid rgba(8,145,178,.3);' +
+        'font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;' +
+        'display:inline-flex;align-items:center;justify-content:center;gap:6px;' +
+        'min-height:44px;' +
+      '"><i class="fas fa-copy"></i> Copy Class</button>' +
+    '</div>';
+
+    // Save + Cancel
+    html += '<div style="display:flex;gap:10px;margin-top:14px;">' +
+      '<button type="button" onclick="closeModal(\'globalModal\')" style="' +
+        'flex:1;padding:14px;border-radius:14px;border:1.5px solid rgba(100,116,139,.2);' +
+        'background:#f1f5f9;color:#475569;font-family:inherit;font-weight:800;font-size:.86rem;' +
+        'cursor:pointer;min-height:48px;' +
+      '">Cancel</button>' +
+      '<button type="button" onclick="window.saveBulkTimetable()" id="bulkTTSaveBtn" style="' +
+        'flex:2;padding:14px;border-radius:14px;border:none;' +
+        'background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;' +
+        'font-family:inherit;font-weight:900;font-size:.86rem;' +
+        'cursor:pointer;min-height:48px;' +
+        'box-shadow:0 10px 25px -10px rgba(139,92,246,.7);' +
+        'display:inline-flex;align-items:center;justify-content:center;gap:8px;' +
+      '"><i class="fas fa-save"></i> Save All</button>' +
+    '</div>';
+
+    modalBodyDiv.innerHTML = html;
+
+    // Focus first input
+    setTimeout(function() {
+      var first = document.querySelector('.bulk-tt-inp');
+      if (first) first.focus();
+    }, 300);
+
+    // Tab navigation between cells
+    bindTabNavigation();
+
+  } catch(e) {
+    console.error('Bulk timetable load error:', e);
+    modalBodyDiv.innerHTML = 
+      '<div class="text-center py-4" style="color:#dc2626;">' +
+        '<i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i>' +
+        '<div style="font-weight:800;">Error: ' + escapeHtml(e.message) + '</div>' +
+      '</div>';
+  }
+};
+
+// ─── Tab key navigation ───
+function bindTabNavigation() {
+  var inputs = Array.from(document.querySelectorAll('.bulk-tt-inp'));
+  inputs.forEach(function(inp, idx) {
+    inp.onkeydown = function(e) {
+      if (e.key === 'Tab') {
+        // Let default tab work but wrap around
+        if (!e.shiftKey && idx === inputs.length - 1) {
+          e.preventDefault();
+          inputs[0].focus();
+        } else if (e.shiftKey && idx === 0) {
+          e.preventDefault();
+          inputs[inputs.length - 1].focus();
+        }
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        // Move to next input
+        if (idx < inputs.length - 1) {
+          inputs[idx + 1].focus();
+        }
+      } else if (e.key === 'ArrowDown') {
+        // Move down one row (same column)
+        e.preventDefault();
+        var curInput = inputs[idx];
+        var curPeriod = curInput.dataset.period;
+        // Find input below (approximately +3 because 3 periods per row)
+        var nextIdx = idx + 3;
+        if (nextIdx < inputs.length) inputs[nextIdx].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        var curInput2 = inputs[idx];
+        var prevIdx = idx - 3;
+        if (prevIdx >= 0) inputs[prevIdx].focus();
+      }
+    };
+  });
+}
+
+// ─── Clear all inputs ───
+window.bulkTTClearAll = function() {
+  if (!confirm('🗑️ എല്ലാ cells-ഉം clear ചെയ്യണോ?')) return;
+  document.querySelectorAll('.bulk-tt-inp').forEach(function(inp) {
+    inp.value = '';
+  });
+  showToast('✅ Cleared', 'info');
+};
+
+// ─── Copy from another class ───
+window.bulkTTCopyFrom = async function() {
+  var fromClass = prompt('📋 ഏത് class-ൽ നിന്ന് copy ചെയ്യണം?\n(Class number type ചെയ്യുക 1-10)', '');
+  if (!fromClass) return;
+  fromClass = String(fromClass).trim();
+  if (!/^\d+$/.test(fromClass) || parseInt(fromClass) < 1 || parseInt(fromClass) > 10) {
+    showToast('❌ Invalid class number', 'error');
+    return;
+  }
+  if (fromClass === String(currentAdminClass)) {
+    showToast('⚠️ Same class-ആണ്', 'error');
+    return;
+  }
+
+  try {
+    var r = await supabaseClient.from('timetable').select('*').eq('class', fromClass);
+    if (!r.data || r.data.length === 0) {
+      showToast('❌ Class ' + fromClass + '-ൽ timetable ഇല്ല', 'error');
+      return;
+    }
+
+    var map = {};
+    r.data.forEach(function(t) {
+      map[t.day + '|' + t.period] = t.subject || '';
+    });
+
+    // Fill current inputs
+    document.querySelectorAll('.bulk-tt-inp').forEach(function(inp) {
+      var key = inp.dataset.day + '|' + inp.dataset.period;
+      if (map[key]) inp.value = map[key];
+    });
+
+    showToast('✅ Copied from Class ' + fromClass, 'success');
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
+  }
+};
+
+// ─── Save all ───
+window.saveBulkTimetable = async function() {
+  if (!currentAdminClass || currentAdminClass === 'all') {
+    showToast('⚠️ Class select ചെയ്യുക', 'error');
+    return;
+  }
+
+  var btn = document.getElementById('bulkTTSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+  try {
+    // ─── Collect rows ───
+    var rows = [];
+    var seen = {};
+    document.querySelectorAll('.bulk-tt-inp').forEach(function(inp) {
+      var v = (inp.value || '').trim();
+      if (!v || v === '-') return;
+      var key = inp.dataset.day + '|' + inp.dataset.period;
+      if (seen[key]) return;
+      seen[key] = true;
+      rows.push({
+        class: String(currentAdminClass),
+        day: inp.dataset.day,
+        period: parseInt(inp.dataset.period),
+        subject: v
+      });
+    });
+
+    // ─── Delete existing + insert new ───
+    await supabaseClient.from('timetable').delete().eq('class', String(currentAdminClass));
+
+    if (rows.length > 0) {
+      // Insert in batches
+      for (var i = 0; i < rows.length; i += 100) {
+        var batch = rows.slice(i, i + 100);
+        var ins = await supabaseClient.from('timetable').insert(batch);
+        if (ins.error) throw ins.error;
+      }
+    }
+
+    showToast('✅ ' + rows.length + ' periods saved', 'success');
+
+    if (typeof confetti !== 'undefined') {
+      confetti({ particleCount: 100, spread: 80, origin: { y: .7 },
+                 colors: ['#8b5cf6','#a78bfa','#34d399'] });
+    }
+
+    setTimeout(function() {
+      closeModal('globalModal');
+      if (typeof loadTimetableAdmin === 'function') loadTimetableAdmin();
+    }, 800);
+
+  } catch(e) {
+    console.error('Bulk save error:', e);
+    showToast('❌ ' + e.message, 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-save"></i> Save All';
+  }
+};
 function openTimetableForm(){
   modalTitleSpan.innerText='➕ Add Period';
   modalBodyDiv.innerHTML='<form onsubmit="saveTimetable(event)"><div class="row g-3"><div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Day</label><select id="tt_day" class="modal-form-input" required><option value="">--</option>'+['ശനി','ഞായർ','തിങ്കൾ','ചൊവ്വ','ബുധൻ','വ്യാഴം'].map(function(d){return'<option value="'+d+'">'+d+'</option>';}).join('')+'</select></div><div class="col-md-6"><label style="color:#475569;font-size:.78rem;">Period 1-3</label><input type="number" id="tt_period" value="1" min="1" max="3" required class="modal-form-input"></div><div class="col-12"><label style="color:#475569;font-size:.78rem;">Subject</label><input type="text" id="tt_subject" required class="modal-form-input"></div></div><div class="d-flex gap-2 mt-4"><button type="submit" class="btn-update flex-grow-1">Save</button><button type="button" class="btn-cancel" onclick="closeModal(\'globalModal\')">Cancel</button></div></form>';
@@ -27032,14 +27345,16 @@ window.askTeacherId = function() {
   }
 
   var TABS = [
-    { key: 'students', label: 'Students', icon: 'fa-user-graduate' },
-    { key: 'attendance', label: 'Attendance', icon: 'fa-calendar-check' },
-    { key: 'marks', label: 'Marks', icon: 'fa-file-alt' },
-    { key: 'homework', label: 'Homework', icon: 'fa-book' },
-    { key: 'notice', label: 'Notice', icon: 'fa-bullhorn' },
-    { key: 'namaz', label: 'Namaz', icon: 'fa-mosque' },
-    { key: 'chat', label: 'Class Chat', icon: 'fa-comments' }
-  ];
+var TABS = [
+  { key: 'students',   label: 'Students',    icon: 'fa-user-graduate' },
+  { key: 'attendance', label: 'Attendance',  icon: 'fa-calendar-check' },
+  { key: 'marks',      label: 'Marks',       icon: 'fa-file-alt' },
+  { key: 'timetable',  label: 'Timetable',   icon: 'fa-clock' },
+  { key: 'homework',   label: 'Homework',    icon: 'fa-book' },
+  { key: 'notice',     label: 'Notice',      icon: 'fa-bullhorn' },
+  { key: 'namaz',      label: 'Namaz',       icon: 'fa-mosque' },
+  { key: 'chat',       label: 'Class Chat',  icon: 'fa-comments' }
+];
 
   async function openClass(cls) {
     TV60.activeClass = cls;
@@ -27067,13 +27382,14 @@ window.askTeacherId = function() {
     if (!panel) return;
     panel.innerHTML = '<div style="text-align:center;padding:30px;"><div class="td60-spinner"></div></div>';
     try {
-      if (tab === 'students') await panelStudents(panel, cls);
-      else if (tab === 'attendance') await panelAttendance(panel, cls);
-      else if (tab === 'marks') await panelMarks(panel, cls);
-      else if (tab === 'homework') await panelHomework(panel, cls);
-      else if (tab === 'notice') await panelNotice(panel, cls);
-      else if (tab === 'namaz') await panelNamaz(panel, cls);
-      else if (tab === 'chat') await panelChat(panel, cls);
+if (tab === 'students') await panelStudents(panel, cls);
+else if (tab === 'attendance') await panelAttendance(panel, cls);
+else if (tab === 'marks') await panelMarks(panel, cls);
+else if (tab === 'timetable') await panelTimetable(panel, cls);
+else if (tab === 'homework') await panelHomework(panel, cls);
+else if (tab === 'notice') await panelNotice(panel, cls);
+else if (tab === 'namaz') await panelNamaz(panel, cls);
+else if (tab === 'chat') await panelChat(panel, cls);
     } catch(e) {
       console.error('Panel error:', e);
       panel.innerHTML = '<div class="td60-empty"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i>Error: ' + esc(e.message) + '</div>';
@@ -27244,7 +27560,359 @@ window.askTeacherId = function() {
       if (typeof confetti !== 'undefined') confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
     } catch(e) { toast('❌ ' + e.message, 'error'); }
   }
+  // ═══════════════════════════════════════════════════════
+// 🕐 TEACHER PANEL — TIMETABLE (View + Bulk Edit)
+// v1.0 — Teachers can edit their class timetable
+// ═══════════════════════════════════════════════════════
 
+async function panelTimetable(panel, cls) {
+  panel.innerHTML =
+    '<div style="text-align:center;padding:30px;">' +
+      '<div class="td60-spinner"></div>' +
+      '<p style="margin-top:12px;color:#64748b;font-weight:700;">Loading timetable...</p>' +
+    '</div>';
+
+  try {
+    // Fetch existing timetable
+    var r = await supabaseClient
+      .from('timetable')
+      .select('*')
+      .eq('class', String(cls));
+
+    var map = {};
+    var maxPeriod = 3;
+    (r.data || []).forEach(function(t) {
+      map[t.day + '|' + t.period] = t.subject || '';
+      if (t.period > maxPeriod) maxPeriod = t.period;
+    });
+
+    var days = ['ശനി', 'ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം'];
+    var periods = [];
+    for (var i = 1; i <= maxPeriod; i++) periods.push(i);
+
+    // ─── Build UI ───
+    var html = '';
+
+    // Header
+    html += '<div style="' +
+      'display:flex;align-items:center;justify-content:space-between;' +
+      'flex-wrap:wrap;gap:10px;margin-bottom:16px;' +
+    '">' +
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+        '<div style="' +
+          'width:44px;height:44px;border-radius:14px;' +
+          'background:linear-gradient(140deg,#8b5cf6,#a78bfa);' +
+          'display:flex;align-items:center;justify-content:center;' +
+          'color:#fff;font-size:1.2rem;flex-shrink:0;' +
+          'box-shadow:0 8px 18px -8px rgba(139,92,246,.7);' +
+        '">🕐</div>' +
+        '<div>' +
+          '<div style="font-weight:900;color:#0f172a;font-size:.96rem;">Class ' + cls + ' Timetable</div>' +
+          '<div style="font-size:.72rem;color:#64748b;margin-top:2px;font-weight:700;">' +
+            'View + Edit mode' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        '<button type="button" id="ttCopyFromBtn" onclick="window.teacherTTCopyFrom(\'' + cls + '\')" style="' +
+          'padding:9px 14px;border-radius:10px;' +
+          'background:#ecfeff;color:#0891b2;border:1.5px solid rgba(8,145,178,.3);' +
+          'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+          'display:inline-flex;align-items:center;gap:6px;min-height:40px;' +
+        '"><i class="fas fa-copy"></i> Copy Class</button>' +
+        '<button type="button" id="ttClearBtn" onclick="window.teacherTTClear()" style="' +
+          'padding:9px 14px;border-radius:10px;' +
+          'background:#fef3c7;color:#92400e;border:1.5px solid rgba(180,83,9,.3);' +
+          'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+          'display:inline-flex;align-items:center;gap:6px;min-height:40px;' +
+        '"><i class="fas fa-eraser"></i> Clear</button>' +
+      '</div>' +
+    '</div>';
+
+    // Info banner
+    html += '<div style="' +
+      'background:linear-gradient(135deg,#ede9fe,#fce7f3);' +
+      'border:1.5px solid rgba(139,92,246,.3);' +
+      'border-radius:12px;padding:10px 14px;margin-bottom:14px;' +
+      'font-size:.76rem;color:#7c3aed;font-weight:700;line-height:1.55;' +
+    '">' +
+      '<i class="fas fa-lightbulb"></i> ' +
+      'ഓരോ cell-ലും subject type ചെയ്യുക. <b>Tab</b> key = next cell. ' +
+      'Empty cells auto-skip ആകും.' +
+    '</div>';
+
+    // Table
+    html += '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1.5px solid rgba(139,92,246,.2);">';
+    html += '<table style="width:100%;border-collapse:collapse;background:#fff;min-width:400px;">';
+
+    // Header
+    html += '<thead><tr style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);">';
+    html += '<th style="padding:12px 10px;color:#fff;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.5px;text-align:center;border:1px solid rgba(255,255,255,.15);">DAYS</th>';
+    periods.forEach(function(p) {
+      html += '<th style="padding:12px 10px;color:#fff;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.5px;text-align:center;border:1px solid rgba(255,255,255,.15);">P' + p + '</th>';
+    });
+    html += '</tr></thead>';
+
+    // Body
+    html += '<tbody>';
+    days.forEach(function(day, di) {
+      var bg = di % 2 === 0 ? '#ffffff' : '#faf5ff';
+      html += '<tr style="background:' + bg + ';">';
+      html += '<td style="' +
+        'padding:10px 8px;text-align:center;font-weight:900;color:#0f172a;' +
+        'background:#ede9fe;font-size:.82rem;' +
+        'border:1px solid #e2e8f0;font-family:\'Anek Malayalam\',sans-serif;' +
+      '">' + day + '</td>';
+
+      periods.forEach(function(p) {
+        var val = map[day + '|' + p] || '';
+        html += '<td style="padding:6px;border:1px solid #e2e8f0;">' +
+          '<input type="text" ' +
+            'class="td60-tt-inp" ' +
+            'data-day="' + day + '" ' +
+            'data-period="' + p + '" ' +
+            'value="' + escapeHtml(val) + '" ' +
+            'placeholder="-" ' +
+            'style="' +
+              'width:100%;min-width:70px;' +
+              'padding:9px 8px;' +
+              'border:1.5px solid transparent;' +
+              'border-radius:8px;' +
+              'background:#f8fafc;' +
+              'color:#0f172a;' +
+              'font-family:\'Anek Malayalam\',inherit;' +
+              'font-size:14px;font-weight:700;' +
+              'outline:none;transition:.2s;' +
+              'text-align:center;' +
+            '" ' +
+            'onfocus="this.style.borderColor=\'#8b5cf6\';this.style.background=\'#fff\';this.style.boxShadow=\'0 0 0 3px rgba(139,92,246,.15)\'" ' +
+            'onblur="this.style.borderColor=\'transparent\';this.style.background=\'#f8fafc\';this.style.boxShadow=\'none\'" ' +
+          '>' +
+        '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    // Save button
+    html += '<div style="display:flex;gap:10px;margin-top:16px;">' +
+      '<button type="button" id="td60TTSaveBtn" onclick="window.teacherTTSave(\'' + cls + '\')" style="' +
+        'flex:1;padding:14px;border-radius:14px;border:none;' +
+        'background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;' +
+        'font-family:inherit;font-weight:900;font-size:.88rem;' +
+        'cursor:pointer;min-height:48px;' +
+        'box-shadow:0 10px 25px -10px rgba(139,92,246,.7);' +
+        'display:inline-flex;align-items:center;justify-content:center;gap:8px;' +
+      '"><i class="fas fa-save"></i> Save Timetable</button>' +
+    '</div>';
+
+    panel.innerHTML = html;
+
+    // Bind keyboard navigation
+    bindTimetableKeyboard();
+
+  } catch(e) {
+    console.error('Teacher timetable error:', e);
+    panel.innerHTML = 
+      '<div class="td60-empty">' +
+        '<i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i>' +
+        '<div>Error: ' + escapeHtml(e.message) + '</div>' +
+      '</div>';
+  }
+}
+
+// ─── Keyboard navigation ───
+function bindTimetableKeyboard() {
+  var inputs = Array.from(document.querySelectorAll('.td60-tt-inp'));
+  inputs.forEach(function(inp, idx) {
+    inp.onkeydown = function(e) {
+      if (e.key === 'Tab') {
+        if (!e.shiftKey && idx === inputs.length - 1) {
+          e.preventDefault();
+          inputs[0].focus();
+        } else if (e.shiftKey && idx === 0) {
+          e.preventDefault();
+          inputs[inputs.length - 1].focus();
+        }
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (idx < inputs.length - 1) inputs[idx + 1].focus();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        var nextIdx = idx + 3;
+        if (nextIdx < inputs.length) inputs[nextIdx].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        var prevIdx = idx - 3;
+        if (prevIdx >= 0) inputs[prevIdx].focus();
+      }
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// 💾 SAVE TEACHER TIMETABLE
+// ═══════════════════════════════════════════════════════
+window.teacherTTSave = async function(cls) {
+  if (!cls) return;
+
+  var btn = document.getElementById('td60TTSaveBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  }
+
+  try {
+    // Collect rows
+    var rows = [];
+    var seen = {};
+    document.querySelectorAll('.td60-tt-inp').forEach(function(inp) {
+      var v = (inp.value || '').trim();
+      if (!v || v === '-') return;
+      var key = inp.dataset.day + '|' + inp.dataset.period;
+      if (seen[key]) return;
+      seen[key] = true;
+      rows.push({
+        class: String(cls),
+        day: inp.dataset.day,
+        period: parseInt(inp.dataset.period),
+        subject: v
+      });
+    });
+
+    // Delete + insert
+    await supabaseClient.from('timetable').delete().eq('class', String(cls));
+
+    if (rows.length > 0) {
+      for (var i = 0; i < rows.length; i += 100) {
+        var batch = rows.slice(i, i + 100);
+        var ins = await supabaseClient.from('timetable').insert(batch);
+        if (ins.error) throw ins.error;
+      }
+    }
+
+    // ─── Notify students ───
+    try {
+      await supabaseClient.from('notifications').insert({
+        title: '🕐 ടൈം ടേബിൾ അപ്ഡേറ്റ്',
+        message: 'Class ' + cls + '-ന്റെ ടൈം ടേബിൾ അപ്ഡേറ്റ് ചെയ്തിരിക്കുന്നു. പുതിയ ടൈം ടേബിൾ കാണൂ!',
+        type: 'important',
+        target_type: 'class',
+        target_class: String(cls)
+      });
+    } catch(e) {}
+
+    // Success
+    if (typeof showToast === 'function') {
+      showToast('✅ ' + rows.length + ' periods saved', 'success');
+    }
+
+    if (typeof confetti !== 'undefined') {
+      confetti({ particleCount: 100, spread: 80, origin: { y: .7 },
+                 colors: ['#8b5cf6','#a78bfa','#34d399'] });
+    }
+
+    if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
+
+    // Reset button
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+      setTimeout(function() {
+        btn.innerHTML = '<i class="fas fa-save"></i> Save Timetable';
+      }, 2000);
+    }
+
+  } catch(e) {
+    console.error('Teacher timetable save error:', e);
+    if (typeof showToast === 'function') {
+      showToast('❌ ' + e.message, 'error');
+    }
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-save"></i> Save Timetable';
+    }
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// 🗑️ CLEAR ALL
+// ═══════════════════════════════════════════════════════
+window.teacherTTClear = function() {
+  if (!confirm('🗑️ എല്ലാ cells-ഉം clear ചെയ്യണോ?\n\n⚠️ Save ചെയ്തില്ലെങ്കിൽ മാത്രം cancel ചെയ്യും.')) return;
+  document.querySelectorAll('.td60-tt-inp').forEach(function(inp) {
+    inp.value = '';
+  });
+  if (typeof showToast === 'function') showToast('✅ Cleared (unsaved)', 'info');
+};
+
+// ═══════════════════════════════════════════════════════
+// 📋 COPY FROM ANOTHER CLASS
+// ═══════════════════════════════════════════════════════
+window.teacherTTCopyFrom = async function(targetCls) {
+  // Get teacher's allowed classes
+  var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+  var allowedClasses = (teacher && teacher.classes) ? teacher.classes.map(String) : [];
+
+  // Build class options
+  var opts = allowedClasses.filter(function(c) { return c !== String(targetCls); });
+  if (opts.length === 0) {
+    // Allow any class 1-10 (teacher might want to copy from any)
+    for (var i = 1; i <= 10; i++) {
+      if (String(i) !== String(targetCls)) opts.push(String(i));
+    }
+  }
+
+  var fromClass = prompt(
+    '📋 ഏത് class-ൽ നിന്ന് copy ചെയ്യണം?\n\n' +
+    'Available: ' + opts.join(', ') + '\n\n' +
+    'Class number type ചെയ്യുക:',
+    opts[0] || ''
+  );
+
+  if (!fromClass) return;
+  fromClass = String(fromClass).trim();
+
+  if (!/^\d+$/.test(fromClass) || parseInt(fromClass) < 1 || parseInt(fromClass) > 10) {
+    if (typeof showToast === 'function') showToast('❌ Invalid class number', 'error');
+    return;
+  }
+
+  if (fromClass === String(targetCls)) {
+    if (typeof showToast === 'function') showToast('⚠️ Same class-ആണ്', 'error');
+    return;
+  }
+
+  if (!confirm('📋 Class ' + fromClass + ' → Class ' + targetCls + ' copy ചെയ്യണോ?')) return;
+
+  try {
+    var r = await supabaseClient.from('timetable').select('*').eq('class', fromClass);
+    if (!r.data || r.data.length === 0) {
+      if (typeof showToast === 'function') showToast('❌ Class ' + fromClass + '-ൽ timetable ഇല്ല', 'error');
+      return;
+    }
+
+    var map = {};
+    r.data.forEach(function(t) {
+      map[t.day + '|' + t.period] = t.subject || '';
+    });
+
+    var filled = 0;
+    document.querySelectorAll('.td60-tt-inp').forEach(function(inp) {
+      var key = inp.dataset.day + '|' + inp.dataset.period;
+      if (map[key]) {
+        inp.value = map[key];
+        filled++;
+      }
+    });
+
+    if (typeof showToast === 'function') {
+      showToast('✅ Copied ' + filled + ' cells from Class ' + fromClass + ' (unsaved)', 'success');
+    }
+  } catch(e) {
+    if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error');
+  }
+};
   async function panelHomework(panel, cls) {
     var r = await supabaseClient.from('homework').select('*').eq('class', cls).order('due_date', { ascending: false }).limit(30);
     var list = r.data || [];
