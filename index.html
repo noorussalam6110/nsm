@@ -27753,14 +27753,491 @@ window.askTeacherId = function() {
     } catch(e) { showToast('❌ ' + e.message, 'error'); }
   };
 
-  window.resetTeacherPassword = async function(teacherId) {
-    var pwd = prompt('🔑 ' + teacherId + '-ന്റെ പുതിയ password:', 'ustad123');
-    if (!pwd || pwd.length < 4) { showToast('Password 4+ chars', 'error'); return; }
-    try {
-      await supabaseClient.from('teachers').update({ password: pwd, must_change_password: true }).eq('teacher_id', teacherId);
-      showToast('🔑 Password reset — New: ' + pwd, 'success');
-    } catch(e) { showToast('❌ ' + e.message, 'error'); }
-  };
+// ═══════════════════════════════════════════════════════
+// 🔑 TEACHER PASSWORD MANAGER v82
+// View Current + Reset Password (Modal version)
+// ═══════════════════════════════════════════════════════
+
+// ─── 1. MAIN FUNCTION — opens modal ───
+window.resetTeacherPassword = async function(teacherId) {
+  if (!teacherId) return;
+
+  // Fetch teacher details from Supabase
+  var teacherData = null;
+  try {
+    var r = await supabaseClient.from('teachers')
+      .select('*')
+      .eq('teacher_id', teacherId)
+      .maybeSingle();
+    if (r.error) throw r.error;
+    teacherData = r.data;
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
+    return;
+  }
+
+  if (!teacherData) {
+    showToast('❌ Teacher not found', 'error');
+    return;
+  }
+
+  window._openPasswordManager(teacherData);
+};
+
+// ─── 2. MODAL CREATOR ───
+window._openPasswordManager = function(teacher) {
+  // Remove old
+  var old = document.getElementById('pwdMgrModalV82');
+  if (old) old.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'pwdMgrModalV82';
+  modal.style.cssText = [
+    'position:fixed',
+    'inset:0',
+    'background:rgba(15,23,42,.88)',
+    'backdrop-filter:blur(18px)',
+    '-webkit-backdrop-filter:blur(18px)',
+    'z-index:100080',
+    'display:flex',
+    'align-items:flex-start',
+    'justify-content:center',
+    'padding:16px',
+    'padding-top:max(16px, env(safe-area-inset-top, 16px))',
+    'padding-bottom:max(16px, env(safe-area-inset-bottom, 16px))',
+    'overflow-y:auto',
+    '-webkit-overflow-scrolling:touch'
+  ].join(';');
+
+  // Check if password changed recently
+  var passwordChanged = teacher.password_changed_at
+    ? new Date(teacher.password_changed_at).toLocaleString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      })
+    : null;
+
+  modal.innerHTML =
+    '<div id="pwdMgrCard" style="' +
+      'max-width:480px;width:100%;' +
+      'background:#fff;' +
+      'border-radius:24px;' +
+      'padding:24px 22px 22px;' +
+      'margin:auto 0;' +
+      'box-shadow:0 40px 90px -30px rgba(0,0,0,.7);' +
+      'position:relative;' +
+      'overflow:hidden;' +
+      'box-sizing:border-box;' +
+    '">' +
+
+      // Top accent
+      '<div style="' +
+        'position:absolute;top:0;left:12%;right:12%;height:3px;' +
+        'background:linear-gradient(90deg,transparent,#f59e0b,#fbbf24,#f59e0b,transparent);' +
+        'border-radius:0 0 3px 3px;' +
+      '"></div>' +
+
+      // Header
+      '<div style="' +
+        'display:flex;align-items:center;justify-content:space-between;' +
+        'margin-bottom:18px;' +
+      '">' +
+        '<div style="display:flex;align-items:center;gap:12px;">' +
+          '<div style="' +
+            'width:52px;height:52px;border-radius:16px;' +
+            'background:linear-gradient(140deg,#f59e0b,#fbbf24);' +
+            'display:flex;align-items:center;justify-content:center;' +
+            'color:#fff;font-size:1.5rem;' +
+            'box-shadow:0 8px 20px -8px rgba(245,158,11,.7);' +
+            'flex-shrink:0;' +
+          '">🔑</div>' +
+          '<div>' +
+            '<h3 style="font-size:1.02rem;font-weight:900;color:#0f172a;margin:0 0 2px;">Password Manager</h3>' +
+            '<p style="font-size:.72rem;color:#64748b;margin:0;letter-spacing:1.2px;text-transform:uppercase;font-weight:800;">Teacher Account</p>' +
+          '</div>' +
+        '</div>' +
+        '<button type="button" onclick="window._closePwdMgr()" style="' +
+          'background:#f1f5f9;border:none;color:#475569;' +
+          'width:38px;height:38px;border-radius:50%;' +
+          'font-size:1rem;cursor:pointer;display:flex;' +
+          'align-items:center;justify-content:center;' +
+          'transition:.2s;flex-shrink:0;' +
+        '"><i class="fas fa-times"></i></button>' +
+      '</div>' +
+
+      // Teacher info card
+      '<div style="' +
+        'background:linear-gradient(135deg,#fef3c7,#fde68a);' +
+        'border:1.5px solid rgba(180,83,9,.3);' +
+        'border-radius:16px;padding:14px 16px;margin-bottom:18px;' +
+        'display:flex;align-items:center;gap:12px;' +
+      '">' +
+        '<div style="' +
+          'width:48px;height:48px;border-radius:50%;' +
+          'background:linear-gradient(140deg,#0891b2,#22d3ee);' +
+          'display:flex;align-items:center;justify-content:center;' +
+          'color:#fff;font-weight:900;font-size:1.2rem;' +
+          'flex-shrink:0;overflow:hidden;' +
+        '">' + (teacher.name || 'T').charAt(0).toUpperCase() + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:.94rem;font-weight:900;color:#0f172a;' +
+            'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+            (teacher.name || '—') + '</div>' +
+          '<div style="font-size:.74rem;color:#b45309;margin-top:3px;font-weight:800;">' +
+            '🆔 ' + (teacher.teacher_id || '—') +
+            (teacher.classes && teacher.classes.length ?
+              ' • 📚 Class ' + teacher.classes.join(', ') : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // Current password section
+      '<div style="' +
+        'background:#ecfdf5;border:1.5px solid rgba(5,150,105,.3);' +
+        'border-radius:14px;padding:14px;margin-bottom:18px;' +
+      '">' +
+        '<label style="' +
+          'font-size:.72rem;font-weight:900;color:#065f46;' +
+          'text-transform:uppercase;letter-spacing:1px;' +
+          'display:block;margin-bottom:8px;' +
+        '"><i class="fas fa-lock" style="color:#059669;"></i> Current Password</label>' +
+        '<div style="' +
+          'display:flex;align-items:center;gap:8px;' +
+          'background:#fff;border:1.5px solid rgba(5,150,105,.3);' +
+          'border-radius:12px;padding:10px 14px;' +
+        '">' +
+          '<code id="pwdMgrCurrent" style="' +
+            'flex:1;font-family:monospace;font-size:1.05rem;' +
+            'font-weight:900;color:#059669;' +
+            'letter-spacing:1px;word-break:break-all;' +
+          '">' + (teacher.password || '—') + '</code>' +
+          '<button type="button" onclick="window._togglePwdMgrVisibility()" ' +
+            'id="pwdMgrToggleBtn" title="Hide/Show" style="' +
+            'background:#f0fdf4;border:1.5px solid rgba(5,150,105,.3);' +
+            'color:#059669;width:36px;height:36px;border-radius:50%;' +
+            'cursor:pointer;font-size:.9rem;flex-shrink:0;' +
+            'display:flex;align-items:center;justify-content:center;' +
+          '"><i class="fas fa-eye"></i></button>' +
+          '<button type="button" onclick="window._copyPwdMgr()" ' +
+            'title="Copy" style="' +
+            'background:#f0fdf4;border:1.5px solid rgba(5,150,105,.3);' +
+            'color:#059669;width:36px;height:36px;border-radius:50%;' +
+            'cursor:pointer;font-size:.9rem;flex-shrink:0;' +
+            'display:flex;align-items:center;justify-content:center;' +
+          '"><i class="fas fa-copy"></i></button>' +
+        '</div>' +
+        (passwordChanged ?
+          '<div style="font-size:.68rem;color:#065f46;margin-top:8px;' +
+            'display:flex;align-items:center;gap:5px;font-weight:700;">' +
+            '<i class="fas fa-clock"></i> Last changed: ' + passwordChanged +
+          '</div>' :
+          '<div style="font-size:.68rem;color:#b45309;margin-top:8px;' +
+            'display:flex;align-items:center;gap:5px;font-weight:700;">' +
+            '<i class="fas fa-exclamation-triangle"></i> Default password (not changed yet)' +
+          '</div>'
+        ) +
+      '</div>' +
+
+      // Divider
+      '<div style="' +
+        'text-align:center;margin:16px 0;font-size:.7rem;font-weight:900;' +
+        'color:#94a3b8;letter-spacing:2px;text-transform:uppercase;' +
+        'position:relative;' +
+      '">' +
+        '<span style="background:#fff;padding:0 12px;position:relative;z-index:2;">' +
+          'Set New Password' +
+        '</span>' +
+        '<div style="' +
+          'position:absolute;top:50%;left:0;right:0;height:1px;' +
+          'background:linear-gradient(90deg,transparent,#cbd5e1,transparent);' +
+        '"></div>' +
+      '</div>' +
+
+      // New password input
+      '<div style="margin-bottom:14px;">' +
+        '<label style="' +
+          'font-size:.76rem;font-weight:800;color:#475569;' +
+          'display:block;margin-bottom:6px;' +
+        '"><i class="fas fa-star" style="color:#f59e0b;"></i> New Password</label>' +
+        '<div style="' +
+          'display:flex;align-items:center;' +
+          'background:#f8fafc;border:1.5px solid rgba(100,116,139,.25);' +
+          'border-radius:12px;padding:0 14px;' +
+          'transition:.2s;' +
+        '" id="pwdMgrNewWrap">' +
+          '<i class="fas fa-key" style="color:#f59e0b;font-size:.9rem;margin-right:10px;flex-shrink:0;"></i>' +
+          '<input type="text" id="pwdMgrNew" ' +
+            'placeholder="New password (min 4 chars)" ' +
+            'autocomplete="off" ' +
+            'style="' +
+              'flex:1;min-width:0;border:none;outline:none;background:transparent;' +
+              'padding:13px 0;color:#0f172a;font-family:inherit;' +
+              'font-size:16px;font-weight:700;letter-spacing:1.5px;' +
+            '">' +
+          '<button type="button" onclick="window._genRandomPwd()" ' +
+            'title="Generate random" style="' +
+            'background:transparent;border:none;color:#0891b2;' +
+            'cursor:pointer;padding:8px;font-size:.9rem;flex-shrink:0;' +
+          '"><i class="fas fa-dice"></i></button>' +
+        '</div>' +
+        '<div id="pwdMgrNewHint" style="' +
+          'font-size:.68rem;color:#94a3b8;margin-top:6px;' +
+          'display:none;font-weight:700;' +
+        '"></div>' +
+      '</div>' +
+
+      // Error box
+      '<div id="pwdMgrError" style="' +
+        'display:none;' +
+        'background:rgba(239,68,68,.12);' +
+        'border:1.5px solid rgba(239,68,68,.35);' +
+        'border-radius:12px;padding:10px 14px;' +
+        'color:#dc2626;font-size:.78rem;font-weight:800;' +
+        'margin-bottom:14px;' +
+      '"></div>' +
+
+      // Actions
+      '<div style="display:flex;gap:10px;margin-top:20px;">' +
+        '<button type="button" onclick="window._closePwdMgr()" style="' +
+          'flex:1;padding:13px 16px;border-radius:14px;' +
+          'border:1.5px solid rgba(100,116,139,.2);' +
+          'background:#f1f5f9;color:#475569;' +
+          'font-family:inherit;font-weight:800;font-size:.86rem;' +
+          'cursor:pointer;min-height:48px;' +
+        '">Close</button>' +
+        '<button type="button" id="pwdMgrResetBtn" ' +
+          'onclick="window._doResetTeacherPassword()" style="' +
+          'flex:2;padding:13px 16px;border-radius:14px;border:none;' +
+          'background:linear-gradient(100deg,#f59e0b,#fbbf24);' +
+          'color:#03132e;font-family:inherit;font-weight:900;font-size:.86rem;' +
+          'cursor:pointer;min-height:48px;' +
+          'box-shadow:0 10px 25px -10px rgba(245,158,11,.7);' +
+          'display:inline-flex;align-items:center;justify-content:center;gap:8px;' +
+        '"><i class="fas fa-sync-alt"></i> Reset Password</button>' +
+      '</div>' +
+
+      // Warning note
+      '<div style="' +
+        'background:#fef3c7;border:1px solid rgba(180,83,9,.3);' +
+        'border-radius:12px;padding:10px 14px;margin-top:14px;' +
+        'font-size:.72rem;color:#92400e;line-height:1.55;' +
+        'display:flex;gap:8px;' +
+      '">' +
+        '<i class="fas fa-exclamation-triangle" style="color:#b45309;font-size:.85rem;flex-shrink:0;margin-top:2px;"></i>' +
+        '<div>Reset ചെയ്താൽ teacher-ന്റെ <b>അടുത്ത login-ൽ</b> പുതിയ password ഉപയോഗിക്കേണ്ടതാണ്. Teacher-നെ അറിയിക്കാൻ മറക്കരുത്.</div>' +
+      '</div>' +
+
+    '</div>';
+
+  document.body.appendChild(modal);
+
+  // Store current teacher for reset
+  window._pwdMgrTeacher = teacher;
+
+  // Toggle visibility default: hidden for security
+  var pwdEl = document.getElementById('pwdMgrCurrent');
+  var toggleBtn = document.getElementById('pwdMgrToggleBtn');
+  if (pwdEl) {
+    pwdEl.style.filter = 'blur(6px)';
+    pwdEl.style.userSelect = 'none';
+  }
+  window._pwdMgrVisible = false;
+
+  // Close on outside click
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) window._closePwdMgr();
+  });
+
+  // Focus new password input
+  setTimeout(function() {
+    var inp = document.getElementById('pwdMgrNew');
+    if (inp) inp.focus();
+  }, 300);
+
+  // Add input listener for hint
+  setTimeout(function() {
+    var inp = document.getElementById('pwdMgrNew');
+    if (inp) {
+      inp.addEventListener('input', function() {
+        var hint = document.getElementById('pwdMgrNewHint');
+        if (!hint) return;
+        var v = this.value;
+        if (!v) { hint.style.display = 'none'; return; }
+        if (v.length < 4) {
+          hint.textContent = '❌ കുറഞ്ഞത് 4 characters';
+          hint.style.color = '#dc2626';
+          hint.style.display = 'block';
+        } else if (v.length < 6) {
+          hint.textContent = '⚠️ അൽപ്പം ചെറുത് — 6+ characters നല്ലത്';
+          hint.style.color = '#b45309';
+          hint.style.display = 'block';
+        } else {
+          hint.textContent = '✅ മതി — ' + v.length + ' characters';
+          hint.style.color = '#059669';
+          hint.style.display = 'block';
+        }
+      });
+    }
+  }, 100);
+
+  // Haptic
+  if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+};
+
+// ─── 3. TOGGLE VISIBILITY ───
+window._togglePwdMgrVisibility = function() {
+  var el = document.getElementById('pwdMgrCurrent');
+  var btn = document.getElementById('pwdMgrToggleBtn');
+  if (!el) return;
+
+  window._pwdMgrVisible = !window._pwdMgrVisible;
+  if (window._pwdMgrVisible) {
+    el.style.filter = 'none';
+    el.style.userSelect = 'auto';
+    if (btn) btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+  } else {
+    el.style.filter = 'blur(6px)';
+    el.style.userSelect = 'none';
+    if (btn) btn.innerHTML = '<i class="fas fa-eye"></i>';
+  }
+};
+
+// ─── 4. COPY PASSWORD ───
+window._copyPwdMgr = function() {
+  var teacher = window._pwdMgrTeacher;
+  if (!teacher) return;
+  var pwd = teacher.password || '';
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(pwd).then(function() {
+      showToast('📋 Password copied', 'success');
+      if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+    });
+  } else {
+    // Fallback
+    var inp = document.createElement('input');
+    inp.value = pwd;
+    document.body.appendChild(inp);
+    inp.select();
+    try { document.execCommand('copy'); showToast('📋 Copied', 'success'); } catch(e) {}
+    inp.remove();
+  }
+};
+
+// ─── 5. GENERATE RANDOM PASSWORD ───
+window._genRandomPwd = function() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  var pwd = '';
+  for (var i = 0; i < 8; i++) {
+    pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  var inp = document.getElementById('pwdMgrNew');
+  if (inp) {
+    inp.value = pwd;
+    inp.dispatchEvent(new Event('input'));
+  }
+
+  showToast('🎲 Random password generated', 'info');
+};
+
+// ─── 6. DO RESET ───
+window._doResetTeacherPassword = async function() {
+  var teacher = window._pwdMgrTeacher;
+  if (!teacher) return;
+
+  var newPwd = (document.getElementById('pwdMgrNew').value || '').trim();
+  var errBox = document.getElementById('pwdMgrError');
+  var btn = document.getElementById('pwdMgrResetBtn');
+
+  errBox.style.display = 'none';
+
+  // Validation
+  if (!newPwd) {
+    errBox.textContent = '❌ പുതിയ password നൽകുക';
+    errBox.style.display = 'block';
+    document.getElementById('pwdMgrNew').focus();
+    return;
+  }
+  if (newPwd.length < 4) {
+    errBox.textContent = '❌ കുറഞ്ഞത് 4 characters വേണം';
+    errBox.style.display = 'block';
+    document.getElementById('pwdMgrNew').focus();
+    return;
+  }
+  if (newPwd === teacher.password) {
+    errBox.textContent = '❌ പുതിയ password പഴയതിൽ നിന്ന് വ്യത്യസ്തമാകണം';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  // Confirm
+  if (!confirm('🔄 ' + (teacher.name || teacher.teacher_id) + '-ന്റെ password reset ചെയ്യണോ?\n\n' +
+               'New password: ' + newPwd)) {
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+  try {
+    var r = await supabaseClient.from('teachers').update({
+      password: newPwd,
+      must_change_password: true,
+      password_changed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }).eq('teacher_id', teacher.teacher_id);
+
+    if (r.error) throw r.error;
+
+    // Update local teacher data
+    teacher.password = newPwd;
+    teacher.must_change_password = true;
+    teacher.password_changed_at = new Date().toISOString();
+
+    // Update UI
+    var pwdEl = document.getElementById('pwdMgrCurrent');
+    if (pwdEl) pwdEl.textContent = newPwd;
+    document.getElementById('pwdMgrNew').value = '';
+    var hint = document.getElementById('pwdMgrNewHint');
+    if (hint) hint.style.display = 'none';
+
+    showToast('✅ Password reset successfully', 'success');
+
+    // Confetti
+    if (typeof confetti !== 'undefined') {
+      confetti({ particleCount: 80, spread: 70, origin: { y: .7 },
+                 colors: ['#f59e0b','#fbbf24','#34d399'] });
+    }
+    if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
+
+    // Refresh teacher list
+    if (typeof loadTeachersAdmin === 'function') {
+      setTimeout(loadTeachersAdmin, 500);
+    }
+
+    // Auto-close after 1.5s
+    setTimeout(function() {
+      window._closePwdMgr();
+    }, 1500);
+
+  } catch(e) {
+    console.error('Reset error:', e);
+    errBox.textContent = '❌ ' + (e.message || 'Failed');
+    errBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Reset Password';
+  }
+};
+
+// ─── 7. CLOSE MODAL ───
+window._closePwdMgr = function() {
+  var m = document.getElementById('pwdMgrModalV82');
+  if (m) m.remove();
+  window._pwdMgrTeacher = null;
+  window._pwdMgrVisible = false;
+};
 
   window.toggleTeacherActive = async function(teacherId) {
     var t = (window._teachersList || []).find(function(x) { return x.teacher_id === teacherId; });
