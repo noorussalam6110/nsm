@@ -2518,10 +2518,25 @@ setTimeout(loadMalayalamFontForPDF, 2000);
 
           <div class="nsm-divider"><span>or</span></div>
 
-          <button type="button" class="nsm-btn-secondary" onclick="window.location.href='index.html'">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-          </button>
+<!-- Home + Teacher Login — side by side -->
+<div style="display:flex; gap:10px; margin-top:4px;">
+  <button type="button" class="nsm-btn-secondary" 
+          onclick="window.location.href='index.html'" 
+          style="flex:1; margin:0;">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </button>
+  
+  <button type="button" class="nsm-btn-secondary" 
+          onclick="window.askTeacherId()" 
+          style="flex:1; margin:0; 
+                 background:rgba(34,211,238,.15) !important; 
+                 border-color:rgba(34,211,238,.5) !important; 
+                 color:#67e8f9 !important;">
+    <i class="fas fa-chalkboard-teacher"></i>
+    <span>ഉസ്താദ് ലോഗിൻ</span>
+  </button>
+</div>
 <button type="button" class="nsm-btn-secondary" 
         onclick="window.askTeacherId()"
         style="background: rgba(34,211,238,.15); 
@@ -16181,8 +16196,7 @@ body.modal-open .chat-fab { display: none !important; }
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 👥 CLASS CHAT FAB + PANEL                                -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<button id="chatFab" class="chat-fab" onclick="window.openChatPanel()" title="Class Chat">
-  <i class="fas fa-comments"></i>
+<button id="chatFab" class="chat-fab" onclick="window.openChatPanel()" title="Class Chat" style="display:none !important;">  <i class="fas fa-comments"></i>
   <span class="chat-badge" id="chatFabBadge"></span>
 </button>
 
@@ -16682,47 +16696,68 @@ body.modal-open .chat-fab { display: none !important; }
     el.style.height = Math.min(el.scrollHeight, 100) + 'px';
   };
 
-  window.openChatPanel = async function() {
-    if (!currentUser) { showToast('Login first', 'error'); return; }
-    document.getElementById('chatPanel').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    CHAT_STATE.isOpen = true;
-    renderEmojiGrid();
-    
-    // Mark online
-    await markOnline();
-    startOnlineHeartbeat();
-
-    // Load initial data
-    await loadFriendsList();
-    await loadFriendRequests();
-    
-    if (CHAT_STATE.activeChat === 'class') {
-      await openClassChat();
-    } else {
-      await openDirectChat(CHAT_STATE.activeFriendData);
-    }
-    if (navigator.vibrate) navigator.vibrate(15);
-  };
-    if (window.visualViewport && !window._chatKeyboardBound) {
-    window._chatKeyboardBound = true;
-    window.visualViewport.addEventListener('resize', function() {
-      var panel = document.getElementById('chatPanel');
-      if (!panel || !panel.classList.contains('open')) return;
-      if (window.innerWidth > 900) return;
-      var vv = window.visualViewport;
-      var keyboardOpen = (window.innerHeight - vv.height) > 120;
-      if (keyboardOpen) {
-        panel.style.height = vv.height + 'px';
-        panel.style.top = vv.offsetTop + 'px';
-      } else {
-        panel.style.height = '';
-        panel.style.top = '';
-      }
-    });
+// ═══════════════════════════════════════════════════════
+// 💬 openChatPanel — Resilient version (v2)
+// Errors ignore ചെയ്യും, panel എപ്പോഴും open ആകും
+// ═══════════════════════════════════════════════════════
+window.openChatPanel = async function() {
+  if (!currentUser) { 
+    showToast('🔐 ആദ്യം login ചെയ്യുക', 'error'); 
+    return; 
   }
 
-  if (navigator.vibrate) navigator.vibrate(15);
+  var panel = document.getElementById('chatPanel');
+  if (!panel) {
+    showToast('❌ Chat panel missing — refresh ചെയ്യുക', 'error');
+    return;
+  }
+
+  // 1. Open panel FIRST (immediately visible)
+  panel.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (window.CHAT_STATE) window.CHAT_STATE.isOpen = true;
+
+  // 2. Try renderEmojiGrid (safe)
+  try { if (typeof renderEmojiGrid === 'function') renderEmojiGrid(); } 
+  catch(e) { console.warn('renderEmojiGrid:', e); }
+
+  // 3. Online status (safe — errors ignored)
+  try { if (typeof markOnline === 'function') await markOnline(); } 
+  catch(e) { console.warn('markOnline skipped:', e.message); }
+
+  try { if (typeof startOnlineHeartbeat === 'function') startOnlineHeartbeat(); } 
+  catch(e) { console.warn('heartbeat skipped:', e.message); }
+
+  // 4. Load friends + requests (safe)
+  try { if (typeof loadFriendsList === 'function') await loadFriendsList(); } 
+  catch(e) { console.warn('loadFriendsList:', e.message); }
+
+  try { if (typeof loadFriendRequests === 'function') await loadFriendRequests(); } 
+  catch(e) { console.warn('loadFriendRequests:', e.message); }
+
+  // 5. Open initial chat (class or last DM)
+  try {
+    if (window.CHAT_STATE && window.CHAT_STATE.activeChat === 'class') {
+      await openClassChat();
+    } else if (window.CHAT_STATE && window.CHAT_STATE.activeFriendData) {
+      await openDirectChat(window.CHAT_STATE.activeFriendData);
+    } else {
+      await openClassChat(); // default: class chat
+    }
+  } catch(e) {
+    console.warn('openChat failed:', e.message);
+    var msgs = document.getElementById('chatMessages');
+    if (msgs) {
+      msgs.innerHTML = '<div class="chat-empty">' +
+        '<i class="fas fa-triangle-exclamation"></i>' +
+        '<div style="font-weight:800;color:#0f172a;font-size:.94rem;">Chat load error</div>' +
+        '<div style="font-size:.8rem;">' + (e.message || 'Unknown error') + '</div>' +
+        '</div>';
+    }
+  }
+
+  // 6. Haptic
+  if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
 };
 
   window.closeChatPanel = function() {
@@ -17728,7 +17763,36 @@ body.modal-open .chat-fab { display: none !important; }
       updateChatFabBadge();
     } catch(e){}
   }
+// ═══════════════════════════════════════════════════════
+// 💬 FORCE CHAT FAB VISIBLE — Guaranteed
+// ═══════════════════════════════════════════════════════
+window.forceShowChatFab = function() {
+  if (!currentUser) return;
+  var fab = document.getElementById('chatFab');
+  if (!fab) return;
+  fab.style.display = 'flex';
+  fab.classList.add('show');
+};
 
+// Check on login + dashboard open
+setTimeout(function() {
+  if (currentUser) window.forceShowChatFab();
+}, 2000);
+setTimeout(function() {
+  if (currentUser) window.forceShowChatFab();
+}, 4000);
+
+// Watch dashboard
+(function() {
+  var dash = document.getElementById('dashboardSection');
+  if (dash) {
+    new MutationObserver(function() {
+      if (dash.style.display === 'block' && currentUser) {
+        setTimeout(window.forceShowChatFab, 1500);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+})();
   // ═══════════════════════════════════════════════════
   // 🚀 INIT
   // ═══════════════════════════════════════════════════
@@ -26481,104 +26545,160 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
     }
   }
   window.closeTeacherLogin = closeTeacherLogin;
-// ═══════════════════════════════════════════════════════
-// 👨‍🏫 ഉസ്താദ് ലോഗിൻ — Step 1: Teacher ID ചോദിക്കുക
+
+  // ═══════════════════════════════════════════════════════
+// 👨‍🏫 ഉസ്താദ് ലോഗിൻ — Step 1: Teacher ID Prompt
+// v1.1 — Clean, mobile + desktop responsive
 // ═══════════════════════════════════════════════════════
 window.askTeacherId = function() {
-  // ─── Create a nice modal instead of prompt ───
+  // Remove old modal if any
   var old = document.getElementById('teacherIdPromptModal');
   if (old) old.remove();
-  
+
+  // ─── Build modal ───
   var modal = document.createElement('div');
   modal.id = 'teacherIdPromptModal';
-  modal.style.cssText = 
-    'position:fixed;inset:0;z-index:99999999;' +
-    'background:rgba(3,8,28,.85);backdrop-filter:blur(16px);' +
-    'display:flex;align-items:center;justify-content:center;' +
-    'padding:16px;overflow-y:auto;animation:reportFadeIn .25s ease;';
-  
-  modal.innerHTML = 
-    '<div style="max-width:400px;width:100%;' +
+  modal.style.cssText = [
+    'position:fixed',
+    'inset:0',
+    'z-index:99999999',
+    'background:rgba(3,8,28,.88)',
+    'backdrop-filter:blur(18px)',
+    '-webkit-backdrop-filter:blur(18px)',
+    'display:flex',
+    'align-items:center',
+    'justify-content:center',
+    'padding:16px',
+    'padding-top:max(16px,env(safe-area-inset-top,16px))',
+    'padding-bottom:max(16px,env(safe-area-inset-bottom,16px))',
+    'overflow-y:auto',
+    '-webkit-overflow-scrolling:touch'
+  ].join(';');
+
+  // Use a proper card with vertical stacking
+  var cardHTML =
+    '<div id="teacherIdCard" style="' +
+      'max-width:400px;' +
+      'width:100%;' +
+      'margin:auto;' +
       'background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.04));' +
-      'backdrop-filter:blur(28px);border:1.5px solid rgba(34,211,238,.3);' +
-      'border-radius:24px;padding:28px 22px;' +
-      'box-shadow:0 40px 90px -30px rgba(0,0,0,.95);' +
-      'margin:auto 0;position:relative;overflow:hidden;">' +
-      
-      // Top cyan bar
-      '<div style="position:absolute;top:0;left:12%;right:12%;height:2.5px;' +
-        'background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,transparent);' +
-        'filter:drop-shadow(0 0 10px rgba(34,211,238,.9));"></div>' +
-      
-      // Icon + Title
+      'backdrop-filter:blur(28px);' +
+      '-webkit-backdrop-filter:blur(28px);' +
+      'border:1.5px solid rgba(34,211,238,.3);' +
+      'border-radius:24px;' +
+      'padding:28px 22px 24px;' +
+      'box-shadow:0 40px 90px -30px rgba(0,0,0,.95), 0 0 70px -20px rgba(34,211,238,.35);' +
+      'position:relative;' +
+      'overflow:hidden;' +
+      'box-sizing:border-box;' +
+    '">' +
+
+      /* Top cyan bar */
+      '<div style="' +
+        'position:absolute;top:0;left:12%;right:12%;height:2.5px;' +
+        'background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#22d3ee,transparent);' +
+        'filter:drop-shadow(0 0 10px rgba(34,211,238,.9));' +
+      '"></div>' +
+
+      /* Header — icon + title */
       '<div style="text-align:center;margin-bottom:22px;">' +
-        '<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:18px;' +
+        '<div style="' +
+          'width:64px;height:64px;margin:0 auto 12px;border-radius:18px;' +
           'background:linear-gradient(140deg,#0891b2,#22d3ee);' +
           'display:flex;align-items:center;justify-content:center;' +
           'font-size:1.8rem;color:#fff;' +
-          'box-shadow:0 12px 28px -10px rgba(34,211,238,.8);">👨‍🏫</div>' +
-        '<h3 style="color:#fff;font-size:1.05rem;font-weight:800;margin:0 0 4px;' +
-          'text-shadow:0 2px 8px rgba(0,0,0,.5);">ഉസ്താദ് ലോഗിൻ</div>' +
-        '<p style="color:#a9cdff;font-size:.76rem;margin:0;' +
-          'letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Teacher Access</p>' +
+          'box-shadow:0 12px 28px -10px rgba(34,211,238,.8);' +
+        '">👨‍🏫</div>' +
+        '<h3 style="color:#fff;font-size:1.05rem;font-weight:800;margin:0 0 4px;text-shadow:0 2px 8px rgba(0,0,0,.5);">ഉസ്താദ് ലോഗിൻ</h3>' +
+        '<p style="color:#a9cdff;font-size:.72rem;margin:0;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">TEACHER ACCESS</p>' +
       '</div>' +
-      
-      // Info
-      '<div style="background:rgba(34,211,238,.10);border:1.5px solid rgba(34,211,238,.3);' +
-        'border-radius:14px;padding:12px 16px;margin-bottom:18px;' +
-        'font-size:.78rem;color:#67e8f9;line-height:1.5;">' +
-        '<i class="fas fa-info-circle"></i> ' +
-        'ഉസ്താദിന്റെ <b>Teacher ID</b> നൽകുക. <br>' +
-        '<span style="opacity:.8;font-size:.72rem;">(ഉദാ: TR001, TR002, TR003...)</span>' +
+
+      /* Info box */
+      '<div style="' +
+        'background:rgba(34,211,238,.10);' +
+        'border:1.5px solid rgba(34,211,238,.3);' +
+        'border-radius:14px;' +
+        'padding:12px 14px;' +
+        'margin-bottom:18px;' +
+        'font-size:.78rem;color:#67e8f9;line-height:1.5;' +
+      '">' +
+        '<i class="fas fa-info-circle"></i> ഉസ്താദിന്റെ <b>Teacher ID</b> നൽകുക. <br>' +
+        '<span style="opacity:.75;font-size:.7rem;">(ഉദാ: TR001, TR002, TR003...)</span>' +
       '</div>' +
-      
-      // Input
-      '<label style="display:block;color:#fff;font-size:.78rem;' +
-        'font-weight:800;margin-bottom:8px;">' +
-        '<i class="fas fa-id-badge" style="color:#ffd966;margin-right:6px;"></i> Teacher ID</label>' +
-      '<div style="display:flex;align-items:center;' +
+
+      /* Label */
+      '<label style="' +
+        'display:block;color:#fff;font-size:.78rem;' +
+        'font-weight:800;margin-bottom:8px;' +
+      '">' +
+        '<i class="fas fa-id-badge" style="color:#ffd966;margin-right:6px;"></i> Teacher ID' +
+      '</label>' +
+
+      /* Input */
+      '<div style="' +
+        'display:flex;align-items:center;' +
         'background:rgba(10,26,63,.65);' +
         'border:1.5px solid rgba(34,211,238,.35);' +
-        'border-radius:14px;padding:0 14px;margin-bottom:18px;">' +
-        '<i class="fas fa-chalkboard-teacher" style="color:#ffd966;font-size:.95rem;margin-right:10px;"></i>' +
+        'border-radius:14px;' +
+        'padding:0 14px;' +
+        'margin-bottom:14px;' +
+      '">' +
+        '<i class="fas fa-chalkboard-teacher" style="color:#ffd966;font-size:.95rem;margin-right:10px;flex-shrink:0;"></i>' +
         '<input type="text" id="teacherIdInput" placeholder="TR001" ' +
           'autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
-          'style="flex:1;border:none;outline:none;background:transparent;' +
-          'padding:14px 0;color:#fff;font-family:inherit;font-size:16px;' +
-          'font-weight:700;letter-spacing:2px;">' +
+          'style="' +
+            'flex:1;min-width:0;' +
+            'border:none;outline:none;background:transparent;' +
+            'padding:14px 0;' +
+            'color:#fff;-webkit-text-fill-color:#fff;' +
+            'font-family:inherit;font-size:16px;font-weight:700;letter-spacing:2px;' +
+            'caret-color:#22d3ee;' +
+          '">' +
       '</div>' +
-      
-      // Error box
-      '<div id="teacherIdError" style="display:none;background:rgba(239,68,68,.15);' +
-        'border:1.5px solid rgba(239,68,68,.45);border-radius:12px;' +
+
+      /* Error box */
+      '<div id="teacherIdError" style="' +
+        'display:none;' +
+        'background:rgba(239,68,68,.15);' +
+        'border:1.5px solid rgba(239,68,68,.45);' +
+        'border-radius:12px;' +
         'padding:10px 14px;color:#fca5a5;font-size:.78rem;' +
-        'font-weight:700;margin-bottom:14px;"></div>' +
-      
-      // Buttons
-      '<div style="display:flex;gap:10px;">' +
-        '<button type="button" onclick="document.getElementById(\'teacherIdPromptModal\').remove()" ' +
-          'style="flex:1;padding:13px;border-radius:14px;' +
+        'font-weight:700;margin-bottom:14px;' +
+      '"></div>' +
+
+      /* Buttons */
+      '<div style="display:flex;gap:10px;margin-top:6px;">' +
+        '<button type="button" id="teacherIdCancelBtn" style="' +
+          'flex:1;padding:13px;border-radius:14px;' +
           'border:1px solid rgba(255,255,255,.2);' +
           'background:rgba(255,255,255,.08);color:#fff;' +
           'font-family:inherit;font-weight:800;font-size:.86rem;' +
-          'cursor:pointer;min-height:48px;">Cancel</button>' +
-        '<button type="button" id="teacherIdSubmitBtn" ' +
-          'style="flex:2;padding:13px;border-radius:14px;border:none;' +
+          'cursor:pointer;min-height:48px;' +
+        '">Cancel</button>' +
+        '<button type="button" id="teacherIdSubmitBtn" style="' +
+          'flex:2;padding:13px;border-radius:14px;border:none;' +
           'background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;' +
           'font-family:inherit;font-weight:800;font-size:.86rem;' +
           'cursor:pointer;min-height:48px;' +
-          'box-shadow:0 8px 20px -8px rgba(34,211,238,.7);">' +
-          '➡️ തുടരുക</button>' +
+          'box-shadow:0 8px 20px -8px rgba(34,211,238,.7);' +
+        '">തുടരുക ➡️</button>' +
       '</div>' +
+
     '</div>';
-  
+
+  modal.innerHTML = cardHTML;
   document.body.appendChild(modal);
-  
-  // ─── Setup input handlers ───
+
+  // ─── Handlers ───
   var input = document.getElementById('teacherIdInput');
   var submitBtn = document.getElementById('teacherIdSubmitBtn');
+  var cancelBtn = document.getElementById('teacherIdCancelBtn');
   var errorBox = document.getElementById('teacherIdError');
-  
+
+  function closeModal() {
+    modal.remove();
+  }
+
   // Auto uppercase
   input.addEventListener('input', function() {
     var pos = this.selectionStart;
@@ -26587,101 +26707,102 @@ window.askTeacherId = function() {
     this.setSelectionRange(pos, pos);
     errorBox.style.display = 'none';
   });
-  
-  // Auto focus
+
+  // Focus + pre-fill
   setTimeout(function() {
-    input.focus();
-    // Pre-fill saved teacher ID
     try {
       var saved = localStorage.getItem('noor_last_teacher');
       if (saved && !input.value) input.value = saved;
     } catch(e) {}
+    input.focus();
   }, 200);
-  
+
+  // Cancel
+  cancelBtn.addEventListener('click', closeModal);
+
   // Submit
   function doSubmit() {
     var tid = input.value.trim().toUpperCase();
+
     if (!tid) {
       errorBox.textContent = '❌ Teacher ID നൽകുക';
       errorBox.style.display = 'block';
       return;
     }
-    if (!/^TR[A-Z0-9]*$/i.test(tid)) {
+    if (!/^TR[A-Z0-9]+$/.test(tid)) {
       errorBox.textContent = '❌ Teacher ID "TR" ൽ തുടങ്ങണം (ഉദാ: TR001)';
       errorBox.style.display = 'block';
       return;
     }
-    
-    // Disable button, show loading
+
     submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ പരിശോധിക്കുന്നു...';
+    submitBtn.innerHTML = '⏳ പരിശോധിക്കുന്നു...';
     errorBox.style.display = 'none';
-    
-    // Lookup teacher
+
     supabaseClient.from('teachers')
       .select('*')
       .eq('teacher_id', tid)
       .maybeSingle()
       .then(function(r) {
         if (r.error) throw r.error;
-        
+
         if (!r.data) {
           errorBox.textContent = '❌ Teacher ID കണ്ടെത്തിയില്ല: ' + tid;
           errorBox.style.display = 'block';
           submitBtn.disabled = false;
-          submitBtn.innerHTML = '➡️ തുടരുക';
+          submitBtn.innerHTML = 'തുടരുക ➡️';
           return;
         }
-        
+
         if (r.data.is_active === false) {
           errorBox.textContent = '🚫 ഈ അക്കൗണ്ട് നിഷ്ക്രിയമാണ്. അഡ്മിനെ ബന്ധപ്പെടുക.';
           errorBox.style.display = 'block';
           submitBtn.disabled = false;
-          submitBtn.innerHTML = '➡️ തുടരുക';
+          submitBtn.innerHTML = 'തുടരുക ➡️';
           return;
         }
-        
-        // ✅ Found! Save and close, then show password screen
-        try {
-          localStorage.setItem('noor_last_teacher', tid);
-        } catch(e) {}
-        
-        modal.remove();
-        
+
+        // ✅ Success
+        try { localStorage.setItem('noor_last_teacher', tid); } catch(e) {}
+        closeModal();
+
         if (typeof window.showTeacherLoginV60 === 'function') {
           window.showTeacherLoginV60(r.data);
         } else if (typeof window.showTeacherLogin === 'function') {
           window.showTeacherLogin(r.data);
+        } else {
+          showToast('❌ Teacher login handler missing', 'error');
         }
       })
       .catch(function(err) {
-        errorBox.textContent = '❌ ' + (err.message || 'Error');
+        errorBox.textContent = '❌ ' + (err.message || 'Connection error');
         errorBox.style.display = 'block';
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '➡️ തുടരുക';
+        submitBtn.innerHTML = 'തുടരുക ➡️';
       });
   }
-  
+
   submitBtn.addEventListener('click', doSubmit);
+
   input.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
       doSubmit();
     }
   });
-  
+
   // Close on outside click
   modal.addEventListener('click', function(e) {
-    if (e.target === modal) modal.remove();
+    if (e.target === modal) closeModal();
   });
-  
+
   // Close on Escape
-  var escHandler = function(e) {
+  function escHandler(e) {
     if (e.key === 'Escape') {
-      modal.remove();
+      closeModal();
       document.removeEventListener('keydown', escHandler);
     }
-  };
+  }
   document.addEventListener('keydown', escHandler);
 };
   // ─── Eye toggle ───
