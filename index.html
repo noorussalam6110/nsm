@@ -30621,15 +30621,7 @@ body.perf-mode-low {
   console.log('   💡 Type perfDebug() for stats');
 })();
 </script>
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- 🖥️ v73.0 — CATEGORIES MOBILE-ONLY, DESKTOP ORIGINAL    -->
-<!-- Fix: Quick Access categories apply only on mobile       -->
-<!-- Desktop: original grid layout (no categories)           -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- 🎨 v74.0 — QUICK ACCESS (MOBILE ONLY) — CLEAN           -->
-<!-- No flickering, event-driven, self-contained              -->
-<!-- ═══════════════════════════════════════════════════════ -->
+
 
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 🎨 v75.0 — QUICK ACCESS (Smart Rebuild)                 -->
@@ -30637,7 +30629,12 @@ body.perf-mode-low {
 <!-- Desktop: Original flat grid (no categories)             -->
 <!-- Auto-rebuilds when JS-added tiles appear                -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<style id="quick-access-v75-css">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎨 v76.0 — QUICK ACCESS (Preserves Event Handlers)      -->
+<!-- Uses appendChild to MOVE nodes (not copy)               -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="quick-access-v76-css">
 @media (max-width: 900px) {
   #quickActionsGrid.qa-wrapper {
     display: flex !important;
@@ -30717,136 +30714,115 @@ body.perf-mode-low {
 }
 </style>
 
-<script id="quick-access-v75-js">
+<script id="quick-access-v76-js">
 (function(){
   'use strict';
-  console.log('🎨 v75 Quick Access loading...');
+  console.log('🎨 v76 Quick Access loading (preserves handlers)...');
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 📋 CATEGORY MAP — Complete list                          */
-  /* ═══════════════════════════════════════════════════════ */
   var CATEGORY_MAP = {
-    'ACADEMIC': [
-      'results',          // റിസൾട്ട്
-      'marks',            // മാർക്സ്
-      'attendance',       // ഹാജർ
-      'timetable',        // ടൈംടേബിൾ
-      'homework',         // ഹോംവർക്ക്
-      'lessons',          // പാഠങ്ങൾ
-      'library',          // ലൈബ്രറി
-      'downloads',        // Downloads
-      'report',           // Report
-      'idcard',           // ID കാർഡ്
-      'calendar',         // കലണ്ടർ
-      'topper',           // ടോപ്പർ
-      'studentzone'       // Student Zone
-    ],
-    'FINANCE': [
-      'palathulli',       // പലതുള്ളി
-      'fees'              // ഫീസ്
-    ],
-    'ACTIVITY': [
-      'extracurricular',  // ആക്ടിവിറ്റി
-      'competitions',     // മത്സരങ്ങൾ
-      'creations',        // കലാസൃഷ്ടി
-      'badges',           // ബാഡ്ജുകൾ
-      'moral',            // മൂല്യം
-      'quiz',             // QUIZ
-      'rewards',          // Rewards
-      'namaz'             // നമസ്കാരം
-    ],
-    'SOCIAL': [
-      'avatar_custom',    // Avatar (v29)
-      'avatar',           // Avatar (v28 fallback)
-      'class_chat',       // Chat
-      'profile',          // പ്രൊഫൈൽ
-      'notice',           // നോട്ടീസ്
-      'notes',            // കുറിപ്പുകൾ
-      'tasbeeh'           // Thasbeeh
-    ]
+    'ACADEMIC': ['results','marks','attendance','timetable','homework','lessons','library','downloads','report','idcard','calendar','topper','studentzone'],
+    'FINANCE':  ['palathulli','fees'],
+    'ACTIVITY': ['extracurricular','competitions','creations','badges','moral','quiz','rewards','namaz'],
+    'SOCIAL':   ['avatar_custom','avatar','class_chat','profile','notice','notes','tasbeeh']
   };
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🌐 STATE                                                 */
-  /* ═══════════════════════════════════════════════════════ */
   var _originalHTML = null;
   var _originalClasses = null;
-  var _mode = null; // 'mobile' | 'desktop'
+  var _mode = null;
   var _isApplying = false;
   var _rebuildTimer = null;
 
   function isMobile() { return window.innerWidth <= 900; }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 💾 CAPTURE ORIGINAL (before any rebuild)                */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ─── Capture original (only for desktop restore) ─── */
   function captureOriginal() {
     if (_originalHTML !== null) return;
     var grid = document.getElementById('quickActionsGrid');
     if (!grid) return;
-    // Skip if already wrapped by v74/v75
     if (grid.classList.contains('qa-wrapper')) return;
     _originalHTML = grid.innerHTML;
     _originalClasses = grid.className;
-    console.log('✅ v75: Original captured (' + grid.querySelectorAll('.action-tile').length + ' tiles)');
+    console.log('✅ v76: Original captured');
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎨 APPLY CATEGORIES (Mobile)                             */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ─── 🎯 APPLY CATEGORIES (MOVE nodes, don't copy) ─── */
   function applyCategories() {
     if (!isMobile()) return;
+    if (_isApplying) return;
+
     var grid = document.getElementById('quickActionsGrid');
     if (!grid) return;
 
-    // Collect ALL tiles (deeper search to find any outside current build)
+    // 1. Collect refs to ALL tile DOM nodes
     var tiles = {};
     grid.querySelectorAll('.action-tile').forEach(function(t){
-      var action = t.dataset.action;
-      if (!action) return;
-      // Skip if already inside a category AND same action exists
-      if (!tiles[action]) tiles[action] = t;
+      var a = t.dataset.action;
+      if (!a) return;
+      if (!tiles[a]) tiles[a] = t;  // ← DOM node reference (not HTML)
     });
 
-    // Dedupe: prefer avatar_custom over avatar
+    // 2. Dedupe (keep preferred actions)
     if (tiles['avatar_custom'] && tiles['avatar']) delete tiles['avatar'];
-    // Dedupe: prefer class_chat over chat if both exist
     if (tiles['class_chat'] && tiles['chat']) delete tiles['chat'];
 
-    if (Object.keys(tiles).length === 0) {
-      console.log('⚠️ v75: No tiles found');
-      return;
-    }
+    if (Object.keys(tiles).length === 0) return;
 
     _isApplying = true;
+    console.log('🔄 v76: Building categories from ' + Object.keys(tiles).length + ' tiles');
+
+    // 3. Clear grid — tiles still in memory (refs in `tiles`)
+    grid.innerHTML = '';
     grid.classList.add('qa-wrapper');
 
     var title = document.getElementById('quickActionsTitle');
     if (title) title.classList.add('qa-hidden');
 
-    var html = '<div class="qa-top-title"><i class="fas fa-th-large"></i> Quick Access</div>';
+    // 4. Top title
+    var topTitle = document.createElement('div');
+    topTitle.className = 'qa-top-title';
+    topTitle.innerHTML = '<i class="fas fa-th-large"></i> Quick Access';
+    grid.appendChild(topTitle);
 
+    // 5. Build categories — MOVE actual DOM nodes
     Object.keys(CATEGORY_MAP).forEach(function(cat){
       var actions = CATEGORY_MAP[cat].filter(function(a){ return tiles[a]; });
       if (actions.length === 0) return;
-      html += '<div class="qa-category"><h4 class="qa-cat-title">' + cat + '</h4><div class="qa-grid">';
+
+      var catDiv = document.createElement('div');
+      catDiv.className = 'qa-category';
+
+      var titleEl = document.createElement('h4');
+      titleEl.className = 'qa-cat-title';
+      titleEl.textContent = cat;
+      catDiv.appendChild(titleEl);
+
+      var gridDiv = document.createElement('div');
+      gridDiv.className = 'qa-grid';
+
       actions.forEach(function(a){
-        // Preserve outerHTML (keeps onclick, style, class)
-        html += tiles[a].outerHTML;
+        gridDiv.appendChild(tiles[a]);   // ← MOVE node (preserves onclick property + listeners)
       });
-      html += '</div></div>';
+
+      catDiv.appendChild(gridDiv);
+      grid.appendChild(catDiv);
     });
 
-    // Fallback: any tile not in any category → MORE
+    // 6. Fallback: unused tiles → MORE
     var used = Object.keys(CATEGORY_MAP).reduce(function(acc,k){return acc.concat(CATEGORY_MAP[k]);},[]);
     var unused = Object.keys(tiles).filter(function(a){return used.indexOf(a)===-1;});
     if (unused.length > 0) {
-      html += '<div class="qa-category"><h4 class="qa-cat-title">MORE</h4><div class="qa-grid">';
-      unused.forEach(function(a){ html += tiles[a].outerHTML; });
-      html += '</div></div>';
+      var catDiv2 = document.createElement('div');
+      catDiv2.className = 'qa-category';
+      var t2 = document.createElement('h4');
+      t2.className = 'qa-cat-title';
+      t2.textContent = 'MORE';
+      catDiv2.appendChild(t2);
+      var g2 = document.createElement('div');
+      g2.className = 'qa-grid';
+      unused.forEach(function(a){ g2.appendChild(tiles[a]); });
+      catDiv2.appendChild(g2);
+      grid.appendChild(catDiv2);
     }
-
-    grid.innerHTML = html;
 
     setTimeout(function(){
       _isApplying = false;
@@ -30855,25 +30831,35 @@ body.perf-mode-low {
       }
     }, 150);
 
-    console.log('✅ v75: Categories applied — ' + Object.keys(tiles).length + ' tiles');
+    console.log('✅ v76: Categories applied — all handlers preserved');
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🖥️ RESTORE ORIGINAL (Desktop)                            */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ─── Restore original for desktop ─── */
   function restoreOriginal() {
     if (isMobile()) return;
     var grid = document.getElementById('quickActionsGrid');
     if (!grid) return;
-
-    // Only restore if currently wrapped
     if (!grid.classList.contains('qa-wrapper')) return;
     if (_originalHTML === null) return;
 
     _isApplying = true;
-    grid.innerHTML = _originalHTML;
-    grid.className = _originalClasses || 'action-grid';
+
+    // Collect tiles → HTML string (fine for restore, they'll get fresh HTML attributes)
+    var tiles = {};
+    grid.querySelectorAll('.action-tile').forEach(function(t){
+      if (t.dataset.action && !tiles[t.dataset.action]) {
+        tiles[t.dataset.action] = t;
+      }
+    });
+
     grid.classList.remove('qa-wrapper');
+    grid.className = _originalClasses || 'action-grid';
+
+    // Rebuild with nodes to preserve handlers
+    grid.innerHTML = '';
+    Object.keys(tiles).forEach(function(a){
+      grid.appendChild(tiles[a]);
+    });
 
     var title = document.getElementById('quickActionsTitle');
     if (title) title.classList.remove('qa-hidden');
@@ -30888,128 +30874,96 @@ body.perf-mode-low {
       }
     }, 150);
 
-    console.log('✅ v75: Original restored (desktop)');
+    console.log('✅ v76: Original restored');
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🔄 SMART REBUILD — when new tiles appear                 */
-  /* Debounced to prevent flicker                             */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ─── Smart rebuild when new tiles arrive ─── */
   function scheduleRebuild() {
     if (!isMobile()) return;
     if (_rebuildTimer) clearTimeout(_rebuildTimer);
     _rebuildTimer = setTimeout(function(){
       _rebuildTimer = null;
+      if (_isApplying) return;
       if (!isMobile()) return;
-      // Check: are there tiles OUTSIDE the categories?
       var grid = document.getElementById('quickActionsGrid');
       if (!grid) return;
-      var outsideTiles = grid.querySelectorAll(':scope > .action-tile');
-      if (outsideTiles.length > 0) {
-        console.log('🔄 v75: ' + outsideTiles.length + ' tiles found outside — rebuilding...');
+      var outside = grid.querySelectorAll(':scope > .action-tile');
+      if (outside.length > 0) {
+        console.log('🔄 v76: ' + outside.length + ' tiles outside — rebuilding');
         applyCategories();
       }
     }, 700);
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 👁️ WATCH GRID — detect tiles added by v28/v29/v35        */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ─── Watch grid for new tiles ─── */
   function watchGrid() {
     var grid = document.getElementById('quickActionsGrid');
-    if (!grid || grid._v75watched) return;
-    grid._v75watched = true;
+    if (!grid || grid._v76watched) return;
+    grid._v76watched = true;
 
     new MutationObserver(function(mutations){
-      if (_isApplying) return; // ignore our own innerHTML change
+      if (_isApplying) return;
       if (!isMobile()) return;
-
-      var hasNewTiles = false;
+      var hasNew = false;
       mutations.forEach(function(m){
-        if (m.addedNodes.length === 0) return;
         m.addedNodes.forEach(function(n){
           if (n.nodeType === 1 && n.classList && n.classList.contains('action-tile')) {
-            hasNewTiles = true;
+            hasNew = true;
           }
         });
       });
-
-      if (hasNewTiles) {
-        scheduleRebuild();
-      }
+      if (hasNew) scheduleRebuild();
     }).observe(grid, { childList: true, subtree: false });
 
-    console.log('✅ v75: Grid watcher active');
+    console.log('✅ v76: Grid watcher active');
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🔄 APPLY LAYOUT — mobile vs desktop                     */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ─── Apply layout ─── */
   function applyLayout() {
     var mobile = isMobile();
     var newMode = mobile ? 'mobile' : 'desktop';
     if (_mode === newMode) return;
     _mode = newMode;
-
-    if (mobile) {
-      applyCategories();
-    } else {
-      restoreOriginal();
-    }
+    if (mobile) applyCategories();
+    else restoreOriginal();
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 👁️ WATCH DASHBOARD                                       */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ─── Watch dashboard ─── */
   function watchDashboard() {
     var dash = document.getElementById('dashboardSection');
-    if (!dash || dash._v75watch) return;
-    dash._v75watch = true;
+    if (!dash || dash._v76watch) return;
+    dash._v76watch = true;
 
     new MutationObserver(function(){
       if (dash.style.display === 'block') {
-        setTimeout(function(){
-          captureOriginal();
-          applyLayout();
-          watchGrid();
-        }, 1500);
+        setTimeout(function(){ captureOriginal(); applyLayout(); watchGrid(); }, 1500);
+        setTimeout(applyLayout, 3500);
         setTimeout(function(){
           applyLayout();
-          // Final safety check after all v28/v29/v35 have run
-          setTimeout(function(){
-            var grid = document.getElementById('quickActionsGrid');
-            if (grid && isMobile()) {
-              var outsideTiles = grid.querySelectorAll(':scope > .action-tile');
-              if (outsideTiles.length > 0) applyCategories();
-            }
-          }, 500);
-        }, 3500);
-        setTimeout(function(){ applyLayout(); }, 6000);
+          var g = document.getElementById('quickActionsGrid');
+          if (g && isMobile()) {
+            var out = g.querySelectorAll(':scope > .action-tile');
+            if (out.length > 0) applyCategories();
+          }
+        }, 5500);
+        setTimeout(applyLayout, 8000);
       }
     }).observe(dash, { attributes: true, attributeFilter: ['style'] });
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 RESIZE HANDLER                                        */
-  /* ═══════════════════════════════════════════════════════ */
-  var _resizeTimer = null;
+  /* ─── Resize ─── */
+  var _rt = null;
   window.addEventListener('resize', function(){
-    clearTimeout(_resizeTimer);
-    _resizeTimer = setTimeout(applyLayout, 400);
+    clearTimeout(_rt); _rt = setTimeout(applyLayout, 400);
   });
   window.addEventListener('orientationchange', function(){
-    clearTimeout(_resizeTimer);
-    _resizeTimer = setTimeout(applyLayout, 700);
+    clearTimeout(_rt); _rt = setTimeout(applyLayout, 700);
   });
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🚀 INIT                                                  */
-  /* ═══════════════════════════════════════════════════════ */
+  /* ─── Init ─── */
   function init() {
     captureOriginal();
     watchDashboard();
-
-    // Also try immediately if dashboard already visible
     var dash = document.getElementById('dashboardSection');
     if (dash && dash.style.display === 'block') {
       setTimeout(function(){ captureOriginal(); applyLayout(); watchGrid(); }, 1800);
@@ -31020,46 +30974,40 @@ body.perf-mode-low {
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function(){
-      setTimeout(init, 1800);
-      setTimeout(init, 3500);
-      setTimeout(init, 5500);
+      setTimeout(init, 1800); setTimeout(init, 3500); setTimeout(init, 5500);
     });
   } else {
-    setTimeout(init, 1800);
-    setTimeout(init, 3500);
-    setTimeout(init, 5500);
+    setTimeout(init, 1800); setTimeout(init, 3500); setTimeout(init, 5500);
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🐛 DEBUG                                                 */
-  /* ═══════════════════════════════════════════════════════ */
-  window.debugV75 = function() {
-    var grid = document.getElementById('quickActionsGrid');
-    console.log('=== v75 DEBUG ===');
+  /* ─── Debug ─── */
+  window.debugV76 = function() {
+    var g = document.getElementById('quickActionsGrid');
+    console.log('=== v76 DEBUG ===');
     console.log('Mobile?', isMobile());
-    console.log('Original captured?', _originalHTML !== null);
-    if (!grid) return;
-    console.log('Is wrapped?', grid.classList.contains('qa-wrapper'));
-    console.log('Categories:', grid.querySelectorAll('.qa-category').length);
-    console.log('Tiles inside categories:', grid.querySelectorAll('.qa-grid .action-tile').length);
-    console.log('Tiles OUTSIDE (problem):', grid.querySelectorAll(':scope > .action-tile').length);
-    grid.querySelectorAll('.qa-category').forEach(function(c){
-      var title = c.querySelector('.qa-cat-title');
-      var count = c.querySelectorAll('.action-tile').length;
-      console.log('  ' + title.textContent + ': ' + count + ' tiles');
+    if (!g) return;
+    console.log('Wrapped?', g.classList.contains('qa-wrapper'));
+    console.log('Categories:', g.querySelectorAll('.qa-category').length);
+    console.log('Tiles inside:', g.querySelectorAll('.qa-grid .action-tile').length);
+    console.log('Tiles outside:', g.querySelectorAll(':scope > .action-tile').length);
+    g.querySelectorAll('.qa-category').forEach(function(c){
+      console.log('  ' + c.querySelector('.qa-cat-title').textContent + ': ' +
+                  c.querySelectorAll('.action-tile').length + ' tiles');
     });
-  };
-
-  window.rebuildCategoriesV75 = function() {
-    if (isMobile()) {
-      applyCategories();
-    } else {
-      console.log('ℹ️ Desktop mode — categories not applied');
+    // Test: click the first tile programmatically
+    var first = g.querySelector('.action-tile');
+    if (first) {
+      console.log('First tile onclick set?', typeof first.onclick);
     }
   };
 
-  console.log('✅ v75 Quick Access ready');
-  console.log('   💡 Type debugV75() to check status');
+  window.rebuildV76 = function() {
+    if (isMobile()) applyCategories();
+    else console.log('Desktop — not applied');
+  };
+
+  console.log('✅ v76 ready');
+  console.log('   💡 debugV76() to check');
 })();
 </script>
 </body>
