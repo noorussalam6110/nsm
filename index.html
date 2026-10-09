@@ -9515,6 +9515,212 @@ function closeStudentFees(){
   document.body.style.overflow = '';
 }
 
+// ═══════════════════════════════════════════════════════
+// 🧾 PARENT SELF-SERVICE RECEIPT
+// ═══════════════════════════════════════════════════════
+
+window.printParentReceipt = async function(receiptId, index) {
+  if (!currentUser) {
+    showToast('Login first', 'error');
+    return;
+  }
+  
+  // Get parent data
+  var parent = await getFeeParentByUID(currentUser.studentId);
+  if (!parent) {
+    showToast('❌ Fee record not found', 'error');
+    return;
+  }
+  
+  var hist = parent.payment_history || [];
+  if (typeof hist === 'string') {
+    try { hist = JSON.parse(hist); } catch(e) { hist = []; }
+  }
+  
+  // Get the specific entry (reverse order matching display)
+  var reversed = hist.slice().reverse();
+  var entry = reversed[index];
+  if (!entry) {
+    showToast('❌ Receipt not found', 'error');
+    return;
+  }
+  
+  // Generate receipt number
+  var parentMobile = String(parent.mobile || '').replace(/\D/g, '').slice(-10);
+  var receiptNo = 'NSM/' + (entry.month || '').replace('-', '') + '/' + parentMobile.slice(-4);
+  
+  showLoading(true);
+  try {
+    if (typeof window.waitForPDFLibs === 'function') {
+      await window.waitForPDFLibs(6000);
+    }
+    
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+    
+    if (typeof setupMalayalamPDF === 'function') {
+      try { await setupMalayalamPDF(doc); } catch(e) {}
+    }
+    
+    var pw = doc.internal.pageSize.getWidth();
+    var ph = doc.internal.pageSize.getHeight();
+    
+    // ─── Header ───
+    doc.setFillColor(5, 150, 105);
+    doc.rect(0, 0, pw, 38, 'F');
+    
+    doc.setFillColor(255, 255, 255);
+    doc.circle(pw / 2, 12, 7, 'F');
+    doc.setTextColor(5, 150, 105);
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    doc.text('NSM', pw / 2, 13.5, { align: 'center' });
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'bold');
+    doc.text('NOORUSSALAM MADRASA', pw / 2, 25, { align: 'center' });
+    doc.setFontSize(7.5);
+    doc.setFont(undefined, 'normal');
+    doc.text('Kambippalam, Kerala Estate, Malappuram', pw / 2, 30, { align: 'center' });
+    doc.setFontSize(6.5);
+    doc.text('FEE RECEIPT', pw / 2, 35, { align: 'center' });
+    
+    // ─── Receipt Number ───
+    var y = 46;
+    doc.setTextColor(120, 70, 0);
+    doc.setFillColor(254, 243, 199);
+    doc.roundedRect(pw - 58, y - 5, 52, 8, 2, 2, 'F');
+    doc.setFontSize(7);
+    doc.setFont(undefined, 'bold');
+    doc.text('Receipt: ' + receiptNo, pw - 32, y + 0.5, { align: 'center' });
+    
+    // ─── Info Rows ───
+    y += 12;
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(8);
+    
+    function drawRow(label, value, curY) {
+      doc.setTextColor(100, 116, 139);
+      doc.setFont(undefined, 'bold');
+      doc.setFontSize(7.5);
+      doc.text(label, 10, curY);
+      doc.setTextColor(15, 23, 42);
+      doc.setFont(undefined, 'normal');
+      doc.setFontSize(8.5);
+      var val = String(value || '—');
+      if (val.length > 45) val = val.substring(0, 42) + '...';
+      doc.text(val, pw - 10, curY, { align: 'right' });
+      doc.setDrawColor(230, 235, 245);
+      doc.setLineWidth(0.15);
+      doc.line(10, curY + 2, pw - 10, curY + 2);
+    }
+    
+    var dateStr = entry.date 
+      ? new Date(entry.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+      : '—';
+    
+    drawRow('Date', dateStr, y); y += 8;
+    drawRow('Parent Name', parent.parent_name || '—', y); y += 8;
+    if (parent.student_names) { drawRow('Student(s)', parent.student_names, y); y += 8; }
+    if (parent.student_ids && parent.student_ids.length) {
+      drawRow('Student ID', parent.student_ids.join(', '), y); y += 8;
+    }
+    drawRow('Fee Month', entry.month || '—', y); y += 12;
+    
+    // ─── Amount Box ───
+    var amount = Number(entry.amount) || 0;
+    doc.setFillColor(236, 253, 245);
+    doc.setDrawColor(5, 150, 105);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(10, y, pw - 20, 26, 3, 3, 'FD');
+    
+    doc.setTextColor(6, 95, 70);
+    doc.setFontSize(7);
+    doc.setFont(undefined, 'bold');
+    doc.text('AMOUNT PAID', pw / 2, y + 6, { align: 'center' });
+    
+    doc.setTextColor(5, 150, 105);
+    doc.setFontSize(20);
+    doc.setFont(undefined, 'bold');
+    doc.text('Rs. ' + amount.toLocaleString('en-IN'), pw / 2, y + 16, { align: 'center' });
+    
+    doc.setTextColor(6, 95, 70);
+    doc.setFontSize(6.5);
+    doc.setFont(undefined, 'normal');
+    var words = amountToWordsHelper(amount);
+    if (words.length > 60) words = words.substring(0, 57) + '...';
+    doc.text(words, pw / 2, y + 22, { align: 'center' });
+    
+    y += 34;
+    
+    // ─── Signatures ───
+    doc.setDrawColor(150, 160, 175);
+    doc.setLineWidth(0.3);
+    doc.line(15, y + 15, 60, y + 15);
+    doc.line(pw - 60, y + 15, pw - 15, y + 15);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(7.5);
+    doc.setFont(undefined, 'bold');
+    doc.text('Parent', 37, y + 20, { align: 'center' });
+    doc.text('Office', pw - 37, y + 20, { align: 'center' });
+    
+    // ─── Footer ───
+    doc.setTextColor(148, 163, 184);
+    doc.setFontSize(6.5);
+    doc.setFont(undefined, 'normal');
+    doc.text('Thank you. Jazakallahu Khair', pw / 2, ph - 12, { align: 'center' });
+    doc.text('Computer-generated receipt.', pw / 2, ph - 8, { align: 'center' });
+    
+    doc.save('Receipt_' + receiptNo.replace(/\//g, '-') + '.pdf');
+    
+    showToast('✅ Receipt downloaded', 'success');
+    if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
+    if (typeof confetti !== 'undefined') {
+      confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
+    }
+    
+  } catch(e) {
+    console.error('Receipt error:', e);
+    showToast('❌ ' + e.message, 'error');
+  }
+  showLoading(false);
+};
+
+// Amount to words helper
+function amountToWordsHelper(num) {
+  var ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven',
+              'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen',
+              'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  var tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  
+  function two(n) {
+    if (n < 20) return ones[n];
+    return tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '');
+  }
+  function three(n) {
+    if (n < 100) return two(n);
+    return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' ' + two(n % 100) : '');
+  }
+  
+  num = Math.floor(num);
+  if (num === 0) return 'Zero Rupees Only';
+  
+  var cr = Math.floor(num / 10000000);
+  var lakh = Math.floor((num % 10000000) / 100000);
+  var th = Math.floor((num % 100000) / 1000);
+  var rest = num % 1000;
+  
+  var parts = [];
+  if (cr) parts.push(three(cr) + ' Crore');
+  if (lakh) parts.push(two(lakh) + ' Lakh');
+  if (th) parts.push(two(th) + ' Thousand');
+  if (rest) parts.push(three(rest));
+  
+  return parts.join(' ') + ' Rupees Only';
+}  
+  
 async function loadStudentFeeData(){
   var wrap = document.getElementById('studentFeesContent');
   if(!wrap) return;
@@ -9571,17 +9777,44 @@ async function loadStudentFeeData(){
 
     var hist = parent.payment_history || [];
     if(typeof hist === 'string'){ try{ hist = JSON.parse(hist); }catch(e){ hist = []; } }
-    if(hist.length > 0){
-      html += '<div style="background:#fff;border-radius:22px;padding:18px;margin-top:14px;border:1px solid rgba(180,200,230,.5);">';
-      html += '<div style="font-weight:800;color:#0f172a;font-size:.9rem;margin-bottom:12px;"><i class="fas fa-history" style="color:#0891b2;"></i> അവസാന പേയ്‌മെന്റുകൾ</div>';
-      hist.slice(-5).reverse().forEach(function(h){
-        html += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(100,116,139,.08);font-size:.82rem;">'+
-                '<span style="color:#0f172a;">'+formatFeeMonthML(h.month)+'</span>'+
-                '<span style="color:#059669;font-weight:800;">₹'+(h.amount||0)+'</span>'+
-                '</div>';
-      });
-      html += '</div>';
-    }
+if(hist.length > 0){
+  html += '<div style="background:#fff;border-radius:22px;padding:18px;margin-top:14px;border:1px solid rgba(180,200,230,.5);">';
+  html += '<div style="font-weight:800;color:#0f172a;font-size:.9rem;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">';
+  html += '<span><i class="fas fa-history" style="color:#0891b2;"></i> Payment History</span>';
+  html += '<span style="font-size:.7rem;color:#64748b;font-weight:700;">' + hist.length + ' records</span>';
+  html += '</div>';
+  
+  // List all (not just 5)
+  hist.slice().reverse().forEach(function(h, idx) {
+    var rid = 'RCP-' + parentMobile + '-' + (h.month || 'x') + '-' + idx;
+    html += '<div style="' +
+      'display:flex;justify-content:space-between;align-items:center;' +
+      'padding:12px 0;border-bottom:1px solid rgba(100,116,139,.08);' +
+      'gap:10px;' +
+    '">';
+    html += '<div style="flex:1;min-width:0;">' +
+      '<div style="color:#0f172a;font-weight:800;font-size:.86rem;">' + formatFeeMonthML(h.month) + '</div>' +
+      '<div style="color:#64748b;font-size:.7rem;margin-top:2px;">' +
+        '<i class="far fa-calendar"></i> ' + (h.date || '—') +
+        (h.paidBy ? ' • by ' + h.paidBy : '') +
+      '</div>' +
+    '</div>';
+    html += '<div style="text-align:right;">' +
+      '<div style="color:#059669;font-weight:900;font-size:.92rem;">₹' + (h.amount || 0).toLocaleString('en-IN') + '</div>' +
+    '</div>';
+    html += '<button onclick="window.printParentReceipt(\'' + rid + '\',' + idx + ')" style="' +
+      'background:linear-gradient(100deg,#0891b2,#22d3ee);' +
+      'color:#fff;border:none;padding:9px 14px;border-radius:12px;' +
+      'font-family:inherit;font-weight:800;font-size:.72rem;cursor:pointer;' +
+      'display:inline-flex;align-items:center;gap:5px;flex-shrink:0;' +
+      'min-height:38px;' +
+      'box-shadow:0 4px 12px -4px rgba(8,145,178,.5);' +
+    '"><i class="fas fa-download"></i> 🧾</button>';
+    html += '</div>';
+  });
+  
+  html += '</div>';
+}
 
     wrap.innerHTML = html;
 
