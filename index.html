@@ -30100,424 +30100,8 @@ ON CONFLICT (teacher_id) DO NOTHING;
   console.log('   • Right-click on friend = quick menu');
 })();
 </script>
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!-- 🚨 v66.0 — TEACHER LOGIN EMERGENCY FIX                     -->
-<!-- Removes flexbox trap + restores natural scroll              -->
-<!-- ═══════════════════════════════════════════════════════════ -->
 
-<style id="teacher-login-emergency-fix">
-/* ═══════════════════════════════════════════════════════ */
-/* 🎯 FORCE REMOVE FLEX CENTERING TRAP (All breakpoints)   */
-/* Use display:block + margin:auto for centered card       */
-/* This makes scroll work 100% reliably                    */
-/* ═══════════════════════════════════════════════════════ */
 
-/* ─── DESKTOP ─── */
-@media (min-width: 901px) {
-  #teacherLoginV60 {
-    display: none !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding: 40px 20px 80px !important;
-    box-sizing: border-box !important;
-    z-index: 9999999 !important;
-    /* Reset any flex leftovers */
-    flex-direction: row !important;
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-  }
-
-  #teacherLoginV60.open {
-    display: block !important;    /* ← BLOCK, NOT FLEX */
-  }
-
-  #teacherLoginV60 .tv60-card {
-    display: block !important;
-    position: relative !important;
-    margin: 0 auto !important;    /* ← horizontal center via auto */
-    max-width: 440px !important;
-    width: 100% !important;
-    min-height: 0 !important;
-    height: auto !important;
-    box-sizing: border-box !important;
-    flex-shrink: 0 !important;
-    flex-grow: 0 !important;
-    flex-basis: auto !important;
-    align-self: auto !important;
-    /* Overflow: hidden conflicts with absolutely positioned children — keep */
-    overflow: hidden !important;
-  }
-}
-
-/* ─── MOBILE ─── */
-@media (max-width: 900px) {
-  #teacherLoginV60 {
-    display: none !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-y !important;
-    padding: 12px 12px 60px !important;
-    box-sizing: border-box !important;
-    z-index: 9999999 !important;
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-  }
-
-  #teacherLoginV60.open {
-    display: block !important;
-  }
-
-  #teacherLoginV60 .tv60-card {
-    display: block !important;
-    position: relative !important;
-    margin: 0 auto 24px auto !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    min-height: 0 !important;
-    height: auto !important;
-    box-sizing: border-box !important;
-    flex-shrink: 0 !important;
-    overflow: hidden !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════ */
-/* 🚨 Close button — always accessible in top-right         */
-/* ═══════════════════════════════════════════════════════ */
-#teacherLoginV60 .tv66-close-btn {
-  position: fixed !important;
-  top: max(16px, env(safe-area-inset-top, 16px)) !important;
-  right: 16px !important;
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 50% !important;
-  background: rgba(255,255,255,.18) !important;
-  border: 1.5px solid rgba(255,255,255,.35) !important;
-  color: #fff !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 1.05rem !important;
-  z-index: 100 !important;
-  transition: all .2s !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  -webkit-tap-highlight-color: transparent !important;
-}
-#teacherLoginV60 .tv66-close-btn:hover {
-  background: rgba(255,255,255,.3) !important;
-  transform: scale(1.06) !important;
-}
-#teacherLoginV60 .tv66-close-btn:active {
-  transform: scale(.94) !important;
-}
-
-/* ═══════════════════════════════════════════════════════ */
-/* 🚨 Force scroll on card content too (for safety)         */
-/* ═══════════════════════════════════════════════════════ */
-#teacherLoginV60 .tv60-card * {
-  max-width: 100% !important;
-}
-
-/* ═══════════════════════════════════════════════════════ */
-/* 🎯 Kill any problematic drag state that might linger     */
-/* ═══════════════════════════════════════════════════════ */
-body.dragging, html.dragging {
-  overflow: auto !important;
-}
-#teacherLoginV60.dragging,
-#teacherLoginV60 .tv60-card.dragging {
-  cursor: default !important;
-}
-
-/* ═══════════════════════════════════════════════════════ */
-/* ✅ Inputs must always work even in scroll state          */
-/* ═══════════════════════════════════════════════════════ */
-#teacherLoginV60 input,
-#teacherLoginV60 textarea,
-#teacherLoginV60 select,
-#teacherLoginV60 button,
-#teacherLoginV60 label,
-#teacherLoginV60 a {
-  pointer-events: auto !important;
-  user-select: auto !important;
-  -webkit-user-select: auto !important;
-}
-#teacherLoginV60 input,
-#teacherLoginV60 textarea {
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  cursor: text !important;
-}
-</style>
-
-<script id="teacher-login-emergency-fix-js">
-(function(){
-  'use strict';
-  console.log('🚨 Teacher Login Emergency Fix v66.0 loading...');
-
-  // ═══════════════════════════════════════════════════════
-  // 🚨 FIX 1: Override documentElement.style.overflow = 'hidden'
-  // This was breaking scroll completely
-  // ═══════════════════════════════════════════════════════
-  function releaseHtmlOverflow() {
-    var modal = document.getElementById('teacherLoginV60');
-    if (!modal || !modal.classList.contains('open')) return;
-
-    if (document.documentElement.style.overflow === 'hidden') {
-      document.documentElement.style.overflow = '';
-      document.documentElement.style.overflowY = '';
-      document.documentElement.style.overflowX = '';
-      console.log('🔓 Released html overflow lock');
-    }
-    if (document.documentElement.style.position === 'fixed') {
-      document.documentElement.style.position = '';
-    }
-    if (document.body.style.overflow === 'hidden') {
-      document.body.style.overflow = '';
-      document.body.style.overflowY = '';
-      console.log('🔓 Released body overflow lock');
-    }
-    if (document.body.style.position === 'fixed') {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.width = '';
-    }
-  }
-
-  // Run release constantly while modal is open
-  setInterval(releaseHtmlOverflow, 300);
-
-  // ═══════════════════════════════════════════════════════
-  // 🚨 FIX 2: Add reliable close button
-  // ═══════════════════════════════════════════════════════
-  function injectCloseButton() {
-    var modal = document.getElementById('teacherLoginV60');
-    if (!modal) return;
-    if (modal.querySelector('.tv66-close-btn')) return;
-
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'tv66-close-btn';
-    btn.innerHTML = '<i class="fas fa-times"></i>';
-    btn.title = 'Close';
-    btn.onclick = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      // Call close function if available
-      if (typeof window.closeTeacherLogin === 'function') {
-        try { window.closeTeacherLogin(); } catch(ex) {}
-      } else {
-        // Fallback: just hide modal
-        modal.classList.remove('open');
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
-        var s = document.getElementById('studentId');
-        if (s) s.value = '';
-      }
-    };
-    modal.appendChild(btn);
-    console.log('✅ Close button injected');
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // 🚨 FIX 3: Force scroll reset on open + watch state
-  // ═══════════════════════════════════════════════════════
-  function watchTeacherModal() {
-    var modal = document.getElementById('teacherLoginV60');
-    if (!modal) return;
-    if (modal._emergencyFixWatching) return;
-    modal._emergencyFixWatching = true;
-
-    new MutationObserver(function() {
-      var isOpen = modal.classList.contains('open');
-      if (isOpen) {
-        // Reset scroll
-        modal.scrollTop = 0;
-        // Release overflow locks
-        setTimeout(releaseHtmlOverflow, 50);
-        setTimeout(releaseHtmlOverflow, 150);
-        setTimeout(releaseHtmlOverflow, 400);
-        // Ensure close button exists
-        setTimeout(injectCloseButton, 100);
-      }
-    }).observe(modal, { attributes: true, attributeFilter: ['class'] });
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // 🚨 FIX 4: Override showTeacherLogin to fix overflow
-  // ═══════════════════════════════════════════════════════
-  function overrideShowTeacherLogin() {
-    if (window._origShowTeacherLogin66) return;
-    if (typeof window.showTeacherLoginV60 !== 'function') return;
-
-    window._origShowTeacherLogin66 = window.showTeacherLoginV60;
-
-    window.showTeacherLoginV60 = function(teacher) {
-      // Call original
-      var result = window._origShowTeacherLogin66.apply(this, arguments);
-
-      // Immediately release any overflow locks set by original
-      setTimeout(releaseHtmlOverflow, 0);
-      setTimeout(releaseHtmlOverflow, 100);
-      setTimeout(releaseHtmlOverflow, 500);
-      setTimeout(releaseHtmlOverflow, 1000);
-
-      // Inject close button
-      setTimeout(injectCloseButton, 200);
-
-      return result;
-    };
-    console.log('✅ showTeacherLoginV60 wrapped for overflow fix');
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // 🚨 FIX 5: Kill any lingering drag state on modal open
-  // ═══════════════════════════════════════════════════════
-  function killDragState() {
-    document.documentElement.classList.remove('dragging');
-    document.body.classList.remove('dragging');
-    var modal = document.getElementById('teacherLoginV60');
-    if (modal) modal.classList.remove('dragging');
-  }
-  setInterval(killDragState, 500);
-
-  // ═══════════════════════════════════════════════════════
-  // 🚨 FIX 6: Force wheel/touch scroll to work
-  // ═══════════════════════════════════════════════════════
-  function handleWheelScroll(e) {
-    var modal = document.getElementById('teacherLoginV60');
-    if (!modal || !modal.classList.contains('open')) return;
-    // Let native wheel work — do nothing, just don't block it
-  }
-
-  // Attach passive wheel listener (doesn't block native scroll)
-  document.addEventListener('wheel', handleWheelScroll, { passive: true });
-
-  // ═══════════════════════════════════════════════════════
-  // 🚨 FIX 7: Prevent any default behaviors that might block
-  // ═══════════════════════════════════════════════════════
-  // Remove any stray overlays that might be covering modal
-  function cleanupOverlays() {
-    var modal = document.getElementById('teacherLoginV60');
-    if (!modal || !modal.classList.contains('open')) return;
-
-    // If a previous modal was left open, close common suspects
-    var suspects = [
-      'globalModal', 'helpModal', 'forgotModal',
-      'passwordSetupModal', 'pwdResetModal', 'findStudentIdModal'
-    ];
-    suspects.forEach(function(id) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      if (el.style.display === 'flex' || el.style.display === 'block') {
-        // Only close if it's not the same modal
-        if (el.id !== 'teacherLoginV60') {
-          el.style.display = 'none';
-          console.log('🚨 Closed stray modal:', id);
-        }
-      }
-    });
-
-    // Remove any lingering "modal-open" body class that hides things
-    if (document.body.classList.contains('modal-open')) {
-      // Check if actually any modal is open
-      var anyOpen = false;
-      suspects.forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el && (el.style.display === 'flex' || el.style.display === 'block')) {
-          anyOpen = true;
-        }
-      });
-      if (!anyOpen) {
-        document.body.classList.remove('modal-open');
-      }
-    }
-  }
-  setInterval(cleanupOverlays, 1000);
-
-  // ═══════════════════════════════════════════════════════
-  // 🚀 INIT
-  // ═══════════════════════════════════════════════════════
-  function init() {
-    watchTeacherModal();
-    injectCloseButton();
-    overrideShowTeacherLogin();
-    releaseHtmlOverflow();
-
-    // Re-run periodically
-    setTimeout(watchTeacherModal, 1000);
-    setTimeout(injectCloseButton, 1000);
-    setTimeout(overrideShowTeacherLogin, 1500);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(init, 1500);
-      setTimeout(init, 3000);
-    });
-  } else {
-    setTimeout(init, 1500);
-    setTimeout(init, 3000);
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // 🔍 DEBUG HELPER
-  // ═══════════════════════════════════════════════════════
-  window.debugTeacherLogin = function() {
-    var m = document.getElementById('teacherLoginV60');
-    if (!m) return console.log('❌ Modal not found');
-    var s = getComputedStyle(m);
-    console.log('=== TEACHER MODAL DEBUG ===');
-    console.log('Open?', m.classList.contains('open'));
-    console.log('Display:', s.display);
-    console.log('Position:', s.position);
-    console.log('Top/Right/Bottom/Left:', s.top, s.right, s.bottom, s.left);
-    console.log('Height:', s.height, '| Max-height:', s.maxHeight);
-    console.log('Overflow-Y:', s.overflowY);
-    console.log('Align-items:', s.alignItems);
-    console.log('Justify-content:', s.justifyContent);
-    console.log('Padding:', s.padding);
-    console.log('Z-Index:', s.zIndex);
-    console.log('ScrollHeight:', m.scrollHeight, '| ClientHeight:', m.clientHeight);
-    console.log('Can Scroll?', m.scrollHeight > m.clientHeight);
-    console.log('HTML overflow:', document.documentElement.style.overflow);
-    console.log('BODY overflow:', document.body.style.overflow);
-    var card = m.querySelector('.tv60-card');
-    if (card) {
-      var cs = getComputedStyle(card);
-      console.log('--- CARD ---');
-      console.log('Display:', cs.display);
-      console.log('Margin:', cs.margin);
-      console.log('Max-Width:', cs.maxWidth);
-      console.log('Card Height:', card.offsetHeight);
-    }
-  };
-
-  console.log('✅ Emergency Fix v66.0 ready');
-  console.log('   💡 Run debugTeacherLogin() in console for diagnostics');
-})();
-</script>
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- ✅ v69.0 — TEACHER DASHBOARD SCROLL FIX (ROOT CAUSE)    -->
 <!-- Removes login-active lock when teacher views open       -->
@@ -30694,580 +30278,13 @@ html:has(body.teacher-view-open) {
 <!-- ADD-ONLY — ഒന്നും delete ചെയ്യരുത്                       -->
 <!-- ═══════════════════════════════════════════════════════ -->
 
-<style id="quick-access-v70-css">
 
-/* ─── 🎯 Main Wrapper (replace old grid look) ─── */
-#quickActionsGrid.qa-wrapper {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 18px !important;
-  margin-bottom: 22px !important;
-  background: transparent !important;
-  padding: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
-  grid-template-columns: none !important;
-}
-
-/* ─── Section Title (top) ─── */
-.qa-top-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 1.15rem;
-  font-weight: 900;
-  color: #0f172a;
-  margin: 0 0 14px 4px;
-  letter-spacing: -.2px;
-}
-.qa-top-title i {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-  color: #2563eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .95rem;
-}
-
-/* ─── Category Card ─── */
-.qa-category {
-  background: #fff;
-  border-radius: 22px;
-  padding: 18px 14px 14px;
-  border: 1px solid rgba(200,215,240,.6);
-  box-shadow: 0 6px 20px -14px rgba(15,23,42,.15);
-}
-
-/* ─── Category Title (GENERAL / ACADEMIC / etc.) ─── */
-.qa-cat-title {
-  font-size: .68rem;
-  font-weight: 900;
-  color: #94a3b8;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin: 0 0 14px;
-  padding-left: 2px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.qa-cat-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(148,163,184,.35), transparent);
-}
-
-/* ─── Grid inside each category ─── */
-.qa-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px 4px;
-}
-
-/* ─── Each tile ─── */
-.qa-grid .action-tile {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  cursor: pointer;
-  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
-  border-radius: 16px;
-  min-height: 92px;
-  position: relative;
-}
-.qa-grid .action-tile:hover {
-  transform: translateY(-4px) scale(1.03);
-}
-.qa-grid .action-tile:active {
-  transform: scale(.92);
-  background: #eff6ff !important;
-  border-radius: 16px;
-}
-
-.qa-grid .action-ico {
-  width: 60px !important;
-  height: 60px !important;
-  border-radius: 18px !important;
-  font-size: 1.35rem !important;
-  margin: 0 0 8px 0 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
-  box-shadow: 0 6px 16px -8px rgba(0,0,0,.15);
-}
-.qa-grid .action-tile:hover .action-ico {
-  transform: scale(1.06) rotate(-3deg);
-  box-shadow: 0 10px 22px -8px rgba(0,0,0,.25);
-}
-
-.qa-grid .action-tile h6 {
-  font-size: .66rem !important;
-  font-weight: 800 !important;
-  color: #334155 !important;
-  line-height: 1.25 !important;
-  margin: 0 !important;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  padding: 0 2px;
-  word-break: break-word;
-}
-
-/* ─── New badge (kept from original) ─── */
-.qa-grid .action-tile .new-badge {
-  position: absolute !important;
-  top: -4px !important;
-  right: -4px !important;
-}
-
-/* ─── 📱 Mobile tweaks ─── */
-@media (max-width: 500px) {
-  .qa-grid { gap: 12px 4px; }
-  .qa-grid .action-ico {
-    width: 56px !important;
-    height: 56px !important;
-    border-radius: 16px !important;
-    font-size: 1.2rem !important;
-  }
-  .qa-grid .action-tile h6 { font-size: .6rem !important; }
-  .qa-category { padding: 16px 10px 12px; border-radius: 18px; }
-  .qa-cat-title { font-size: .62rem; letter-spacing: 1.5px; margin-bottom: 12px; }
-  .qa-top-title { font-size: 1rem; }
-  .qa-top-title i { width: 34px; height: 34px; font-size: .85rem; }
-}
-
-@media (max-width: 380px) {
-  .qa-grid { grid-template-columns: repeat(3, 1fr); gap: 12px 6px; }
-  .qa-grid .action-ico { width: 52px !important; height: 52px !important; }
-}
-
-/* ─── 🚫 Hide original section title (only the icon-bolt text) ─── */
-#quickActionsTitle.qa-hidden {
-  display: none !important;
-}
-</style>
-
-<script id="quick-access-v70-js">
-(function(){
-  'use strict';
-  console.log('🎨 v70 Quick Access Categories loading...');
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 📋 CATEGORY MAP — ഇത് action names organize ചെയ്യുന്നു     */
-  /* ═══════════════════════════════════════════════════════ */
-  var CATEGORY_MAP = {
-    'ACADEMIC': ['results','marks','attendance','timetable','homework','lessons','library','downloads'],
-    'FINANCE':  ['palathulli','fees','report','idcard'],
-    'ACTIVITY': ['extracurricular','competitions','creations','quiz','rewards','badges','namaz','moral'],
-    'SOCIAL':   ['avatar_custom','class_chat','profile','notice','notes','calendar','studentzone','topper']
-  };
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🔄 REBUILD Quick Actions Grid                           */
-  /* ═══════════════════════════════════════════════════════ */
-  function rebuildQuickActions() {
-    var grid = document.getElementById('quickActionsGrid');
-    if (!grid) return false;
-
-    // Already built?
-    if (grid.dataset.v70built === '1') return true;
-
-    // Collect all tiles (data-action)
-    var tiles = {};
-    grid.querySelectorAll('.action-tile').forEach(function(tile){
-      var action = tile.dataset.action;
-      if (action) tiles[action] = tile;
-    });
-
-    if (Object.keys(tiles).length === 0) return false;
-
-    // Mark built
-    grid.dataset.v70built = '1';
-
-    // Hide original section title
-    var origTitle = document.getElementById('quickActionsTitle');
-    if (origTitle) origTitle.classList.add('qa-hidden');
-
-    // Add wrapper class
-    grid.classList.add('qa-wrapper');
-
-    // Build new HTML with categories
-    var html = '';
-
-    // Top title
-    html += '<div class="qa-top-title"><i class="fas fa-th-large"></i> Quick Access</div>';
-
-    // Each category
-    Object.keys(CATEGORY_MAP).forEach(function(cat){
-      var actions = CATEGORY_MAP[cat].filter(function(a){ return tiles[a]; });
-      if (actions.length === 0) return;
-
-      html += '<div class="qa-category">';
-      html += '<h4 class="qa-cat-title">' + cat + '</h4>';
-      html += '<div class="qa-grid">';
-      actions.forEach(function(a){
-        // Preserve the tile exactly (keeps onclick, inner HTML)
-        html += tiles[a].outerHTML;
-      });
-      html += '</div></div>';
-    });
-
-    // Fallback: any tile not listed → MORE category
-    var usedActions = Object.keys(CATEGORY_MAP).reduce(function(acc, cat){
-      return acc.concat(CATEGORY_MAP[cat]);
-    }, []);
-    var unused = Object.keys(tiles).filter(function(a){
-      return usedActions.indexOf(a) === -1;
-    });
-    if (unused.length > 0) {
-      html += '<div class="qa-category">';
-      html += '<h4 class="qa-cat-title">MORE</h4>';
-      html += '<div class="qa-grid">';
-      unused.forEach(function(a){ html += tiles[a].outerHTML; });
-      html += '</div></div>';
-    }
-
-    grid.innerHTML = html;
-
-    // Re-apply portal visibility (since innerHTML destroyed bindings)
-    setTimeout(function(){
-      if (typeof window.applyStudentPortalVisibility === 'function') {
-        try { window.applyStudentPortalVisibility(); } catch(e) {}
-      }
-    }, 150);
-
-    // Re-run cleanup (for duplicate removal)
-    setTimeout(function(){
-      if (typeof window.cleanupQuickActions === 'function') {
-        try { window.cleanupQuickActions(); } catch(e) {}
-      }
-    }, 300);
-
-    console.log('✅ Quick Access rebuilt — categories applied');
-    return true;
-  }
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 WATCH Dashboard — rebuild when visible                */
-  /* ═══════════════════════════════════════════════════════ */
-  function watchDashboard() {
-    var dash = document.getElementById('dashboardSection');
-    if (!dash || dash._v70watch) return;
-    dash._v70watch = true;
-
-    new MutationObserver(function(){
-      if (dash.style.display === 'block') {
-        // Multiple attempts (runtime tiles appear late)
-        setTimeout(rebuildQuickActions, 1500);
-        setTimeout(rebuildQuickActions, 2800);
-        setTimeout(rebuildQuickActions, 4500);
-        setTimeout(rebuildQuickActions, 7000);
-      }
-    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
-  }
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🏆 NAMAZ VIEW — Ensure weekly/monthly tabs work         */
-  /* ═══════════════════════════════════════════════════════ */
-  function ensureNamazView() {
-    // Wrap openNamazFullView to ensure render always happens
-    if (typeof window.openNamazFullView === 'function' && !window.openNamazFullView._v70) {
-      var _origNamaz = window.openNamazFullView;
-      window.openNamazFullView = async function(){
-        try {
-          var r = await _origNamaz.apply(this, arguments);
-          // Force render after 1.5s if modal is empty
-          setTimeout(function(){
-            var body = document.getElementById('modalContentBody');
-            if (body && body.querySelector('.spinner-sm')) {
-              console.log('🔄 Namaz modal stuck — forcing render...');
-              try {
-                if (typeof window.renderNamazFullView === 'function') {
-                  window.renderNamazFullView();
-                }
-              } catch(e) { console.warn('Namaz rerender:', e); }
-            }
-          }, 1800);
-          return r;
-        } catch(e) {
-          console.error('Namaz view error:', e);
-          // Fallback: try to render manually
-          try {
-            if (typeof window.renderNamazFullView === 'function') {
-              window.renderNamazFullView();
-            }
-          } catch(e2) {}
-        }
-      };
-      window.openNamazFullView._v70 = true;
-      console.log('✅ Namaz view wrapped for reliability');
-    }
-  }
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🚀 INIT                                                  */
-  /* ═══════════════════════════════════════════════════════ */
-  function init() {
-    watchDashboard();
-    ensureNamazView();
-
-    // Immediate check (if dashboard already visible)
-    var dash = document.getElementById('dashboardSection');
-    if (dash && dash.style.display === 'block') {
-      setTimeout(rebuildQuickActions, 2000);
-      setTimeout(rebuildQuickActions, 3500);
-      setTimeout(rebuildQuickActions, 5500);
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){
-      setTimeout(init, 1500);
-      setTimeout(init, 3000);
-      setTimeout(init, 5000);
-    });
-  } else {
-    setTimeout(init, 1500);
-    setTimeout(init, 3000);
-    setTimeout(init, 5000);
-  }
-
-  // Safety net — periodic check
-  setInterval(function(){
-    var dash = document.getElementById('dashboardSection');
-    if (dash && dash.style.display === 'block') {
-      rebuildQuickActions();
-      ensureNamazView();
-    }
-  }, 5000);
-
-  // Export for manual trigger
-  window.rebuildQuickActions_v70 = rebuildQuickActions;
-
-  console.log('✅ v70 Quick Access + Namaz ready');
-  console.log('   💡 Type rebuildQuickActions_v70() to re-run');
-})();
-</script>
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 🎨 v71.0 — CATEGORY REORDER (User's Exact Order)        -->
 <!-- 4 icons per row on mobile + desktop                     -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<style id="quick-access-v71-css">
-/* Force 4 columns even on small phones (user requirement) */
-.qa-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
-  gap: 14px 4px !important;
-}
-@media (max-width: 380px) {
-  .qa-grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 10px 2px !important;
-  }
-  .qa-grid .action-ico {
-    width: 48px !important;
-    height: 48px !important;
-    border-radius: 14px !important;
-    font-size: 1.05rem !important;
-  }
-  .qa-grid .action-tile h6 {
-    font-size: .55rem !important;
-    -webkit-line-clamp: 2;
-  }
-}
-@media (max-width: 500px) {
-  .qa-grid { grid-template-columns: repeat(4, 1fr) !important; }
-}
-</style>
 
-<script id="quick-access-v71-js">
-(function(){
-  'use strict';
-  console.log('🎨 v71 Category Reorder loading...');
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 📋 NEW CATEGORY MAP — User's exact order                */
-  /* ═══════════════════════════════════════════════════════ */
-  var CATEGORY_MAP_V71 = {
-    'ACADEMIC': [
-      'results',          // റിസൾട്ട്
-      'marks',            // മാർക്സ്
-      'attendance',       // ഹാജർ
-      'timetable',        // ടൈംടേബിൾ
-      'homework',         // ഹോംവർക്ക്
-      'lessons',          // പാഠങ്ങൾ
-      'library',          // ലൈബ്രറി
-      'downloads',        // Downloads
-      'report',           // Report
-      'idcard',           // ID കാർഡ്
-      'calendar',         // കലണ്ടർ
-      'topper',           // ടോപ്പർ
-      'studentzone'       // Student Zone
-    ],
-    'FINANCE': [
-      'palathulli',       // പലതുള്ളി
-      'fees'              // ഫീസ്
-    ],
-    'ACTIVITY': [
-      'extracurricular',  // ആക്ടിവിറ്റി
-      'competitions',     // മത്സരങ്ങൾ
-      'creations',        // കലാസൃഷ്ടി
-      'badges',           // ബാഡ്ജുകൾ
-      'moral',            // മൂല്യം
-      'quiz',             // QUIZ
-      'rewards',          // Rewards
-      'namaz'             // നമസ്കാരം
-    ],
-    'SOCIAL': [
-      'avatar_custom',    // Avatar
-      'class_chat',       // Chat
-      'profile',          // പ്രൊഫൈൽ
-      'notice',           // നോട്ടീസ്
-      'notes',            // കുറിപ്പുകൾ
-      'tasbeeh'           // Thasbeeh
-    ]
-  };
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🔄 REBUILD with v71 categories                          */
-  /* ═══════════════════════════════════════════════════════ */
-  function rebuildV71() {
-    var grid = document.getElementById('quickActionsGrid');
-    if (!grid) return false;
-
-    // Already rebuilt by v71?
-    if (grid.dataset.v71built === '1') return true;
-
-    // Collect ALL tiles
-    var tiles = {};
-    grid.querySelectorAll('.action-tile').forEach(function(tile){
-      var action = tile.dataset.action;
-      if (action) tiles[action] = tile;
-    });
-
-    if (Object.keys(tiles).length === 0) return false;
-
-    // Mark built — v70 must NOT touch it
-    grid.dataset.v70built = '1';
-    grid.dataset.v71built = '1';
-    grid.classList.add('qa-wrapper');
-
-    // Hide old section title
-    var origTitle = document.getElementById('quickActionsTitle');
-    if (origTitle) origTitle.classList.add('qa-hidden');
-
-    // Build HTML
-    var html = '';
-    html += '<div class="qa-top-title"><i class="fas fa-th-large"></i> Quick Access</div>';
-
-    Object.keys(CATEGORY_MAP_V71).forEach(function(cat){
-      var actions = CATEGORY_MAP_V71[cat].filter(function(a){ return tiles[a]; });
-      if (actions.length === 0) return;
-
-      html += '<div class="qa-category">';
-      html += '<h4 class="qa-cat-title">' + cat + '</h4>';
-      html += '<div class="qa-grid">';
-      actions.forEach(function(a){
-        html += tiles[a].outerHTML;
-      });
-      html += '</div></div>';
-    });
-
-    // Fallback: any unused tiles → MORE
-    var usedActions = Object.keys(CATEGORY_MAP_V71).reduce(function(acc, cat){
-      return acc.concat(CATEGORY_MAP_V71[cat]);
-    }, []);
-    var unused = Object.keys(tiles).filter(function(a){
-      return usedActions.indexOf(a) === -1;
-    });
-    if (unused.length > 0) {
-      html += '<div class="qa-category">';
-      html += '<h4 class="qa-cat-title">MORE</h4>';
-      html += '<div class="qa-grid">';
-      unused.forEach(function(a){ html += tiles[a].outerHTML; });
-      html += '</div></div>';
-    }
-
-    grid.innerHTML = html;
-
-    // Re-apply portal visibility
-    setTimeout(function(){
-      if (typeof window.applyStudentPortalVisibility === 'function') {
-        try { window.applyStudentPortalVisibility(); } catch(e) {}
-      }
-    }, 100);
-
-    console.log('✅ v71 categories applied — ' + Object.keys(tiles).length + ' tiles');
-    return true;
-  }
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 WATCH Dashboard                                       */
-  /* ═══════════════════════════════════════════════════════ */
-  function watch() {
-    var dash = document.getElementById('dashboardSection');
-    if (!dash || dash._v71watch) return;
-    dash._v71watch = true;
-
-    new MutationObserver(function(){
-      if (dash.style.display === 'block') {
-        setTimeout(rebuildV71, 1800);
-        setTimeout(rebuildV71, 3200);
-        setTimeout(rebuildV71, 5000);
-        setTimeout(rebuildV71, 8000);
-      }
-    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
-  }
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🚀 INIT                                                  */
-  /* ═══════════════════════════════════════════════════════ */
-  function init() {
-    watch();
-    var dash = document.getElementById('dashboardSection');
-    if (dash && dash.style.display === 'block') {
-      setTimeout(rebuildV71, 2200);
-      setTimeout(rebuildV71, 4000);
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){
-      setTimeout(init, 1800);
-      setTimeout(init, 3500);
-    });
-  } else {
-    setTimeout(init, 1800);
-    setTimeout(init, 3500);
-  }
-
-  // Periodic safety check (v70 might re-run — override it)
-  setInterval(function(){
-    var grid = document.getElementById('quickActionsGrid');
-    if (!grid) return;
-    if (grid.dataset.v71built !== '1') {
-      rebuildV71();
-    }
-  }, 4000);
-
-  window.rebuildV71 = rebuildV71;
-  console.log('✅ v71 ready — type rebuildV71() to re-run');
-})();
-</script>
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 🔥 v72.0 — PERFORMANCE / HEAT FIX                       -->
 <!-- Reduces CPU + battery usage dramatically                -->
@@ -31609,82 +30626,181 @@ body.perf-mode-low {
 <!-- Fix: Quick Access categories apply only on mobile       -->
 <!-- Desktop: original grid layout (no categories)           -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<script id="quick-access-v73-js">
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎨 v74.0 — QUICK ACCESS (MOBILE ONLY) — CLEAN           -->
+<!-- No flickering, event-driven, self-contained              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="quick-access-v74-css">
+/* Mobile only: 4 icons per row */
+@media (max-width: 900px) {
+  #quickActionsGrid.qa-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 18px !important;
+    margin-bottom: 22px !important;
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    grid-template-columns: none !important;
+  }
+  .qa-top-title {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 1.15rem; font-weight: 900; color: #0f172a;
+    margin: 0 0 14px 4px; letter-spacing: -.2px;
+  }
+  .qa-top-title i {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #2563eb; display: flex; align-items: center;
+    justify-content: center; font-size: .95rem;
+  }
+  .qa-category {
+    background: #fff; border-radius: 22px; padding: 18px 14px 14px;
+    border: 1px solid rgba(200,215,240,.6);
+    box-shadow: 0 6px 20px -14px rgba(15,23,42,.15);
+  }
+  .qa-cat-title {
+    font-size: .68rem; font-weight: 900; color: #94a3b8;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin: 0 0 14px; padding-left: 2px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .qa-cat-title::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(148,163,184,.35), transparent);
+  }
+  .qa-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 14px 4px !important;
+  }
+  .qa-grid .action-tile {
+    background: transparent !important; border: none !important;
+    box-shadow: none !important; padding: 0 !important;
+    display: flex !important; flex-direction: column;
+    align-items: center; text-align: center;
+    cursor: pointer; border-radius: 16px; min-height: 92px;
+    transition: transform .2s;
+  }
+  .qa-grid .action-tile:active { transform: scale(.92); }
+  .qa-grid .action-ico {
+    width: 60px !important; height: 60px !important;
+    border-radius: 18px !important; font-size: 1.35rem !important;
+    margin: 0 0 8px 0 !important;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px -8px rgba(0,0,0,.15);
+  }
+  .qa-grid .action-tile h6 {
+    font-size: .66rem !important; font-weight: 800 !important;
+    color: #334155 !important; line-height: 1.25 !important;
+    margin: 0 !important; overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; padding: 0 2px;
+    word-break: break-word;
+  }
+}
+@media (max-width: 380px) {
+  .qa-grid { gap: 10px 2px !important; }
+  .qa-grid .action-ico {
+    width: 48px !important; height: 48px !important;
+    font-size: 1.05rem !important; border-radius: 14px !important;
+  }
+  .qa-grid .action-tile h6 { font-size: .55rem !important; }
+}
+</style>
+
+<script id="quick-access-v74-js">
 (function(){
   'use strict';
-  console.log('🖥️ v73 Mobile-only Categories loading...');
+  console.log('🎨 v74 Quick Access loading...');
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 💾 Save original grid HTML (before any rebuild)         */
-  /* ═══════════════════════════════════════════════════════ */
-  var _originalGridHTML = null;
-  var _originalGridClasses = null;
+  var CATEGORY_MAP = {
+    'ACADEMIC': ['results','marks','attendance','timetable','homework','lessons','library','downloads','report','idcard','calendar','topper','studentzone'],
+    'FINANCE':  ['palathulli','fees'],
+    'ACTIVITY': ['extracurricular','competitions','creations','badges','moral','quiz','rewards','namaz'],
+    'SOCIAL':   ['avatar_custom','class_chat','profile','notice','notes','tasbeeh']
+  };
+
+  var _originalHTML = null;
+  var _originalClasses = null;
+  var _mode = null; // 'mobile' or 'desktop'
+
+  function isMobile() { return window.innerWidth <= 900; }
 
   function captureOriginal() {
-    var grid = document.getElementById('quickActionsGrid');
-    if (!grid || _originalGridHTML !== null) return;
-
-    // Only capture if not already rebuilt with categories
-    if (grid.dataset.v71built === '1' || grid.dataset.v70built === '1') {
-      return; // Already modified, skip
-    }
-
-    _originalGridHTML = grid.innerHTML;
-    _originalGridClasses = grid.className;
-    console.log('✅ Original grid HTML captured');
-  }
-
-  // Capture immediately (before v70/v71 rebuilds)
-  captureOriginal();
-  setTimeout(captureOriginal, 500);
-  setTimeout(captureOriginal, 1000);
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 📱 MOBILE ONLY — Apply categories                        */
-  /* ═══════════════════════════════════════════════════════ */
-  function isMobile() {
-    return window.innerWidth <= 900;
-  }
-
-  function applyMobileLayout() {
-    if (!isMobile()) return;
-    if (typeof window.rebuildV71 === 'function') {
-      window.rebuildV71();
-    }
-  }
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🖥️ DESKTOP — Restore original grid                      */
-  /* ═══════════════════════════════════════════════════════ */
-  function applyDesktopLayout() {
-    if (isMobile()) return;
-
+    if (_originalHTML !== null) return;
     var grid = document.getElementById('quickActionsGrid');
     if (!grid) return;
+    // Only capture if not already categories
+    if (grid.dataset.catBuilt === '1') return;
+    _originalHTML = grid.innerHTML;
+    _originalClasses = grid.className;
+    console.log('✅ Original captured');
+  }
 
-    // Only restore if currently showing categories
-    if (grid.dataset.v71built !== '1' && grid.dataset.v70built !== '1') {
-      return; // Already original
+  function applyCategories() {
+    if (!isMobile()) return;
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return;
+    if (grid.dataset.catBuilt === '1') return;
+    if (_originalHTML === null) captureOriginal();
+
+    // Collect tiles
+    var tiles = {};
+    grid.querySelectorAll('.action-tile').forEach(function(t){
+      if (t.dataset.action) tiles[t.dataset.action] = t;
+    });
+    if (Object.keys(tiles).length === 0) return;
+
+    grid.dataset.catBuilt = '1';
+    grid.classList.add('qa-wrapper');
+
+    var title = document.getElementById('quickActionsTitle');
+    if (title) title.classList.add('qa-hidden');
+
+    var html = '<div class="qa-top-title"><i class="fas fa-th-large"></i> Quick Access</div>';
+
+    Object.keys(CATEGORY_MAP).forEach(function(cat){
+      var actions = CATEGORY_MAP[cat].filter(function(a){ return tiles[a]; });
+      if (actions.length === 0) return;
+      html += '<div class="qa-category"><h4 class="qa-cat-title">' + cat + '</h4><div class="qa-grid">';
+      actions.forEach(function(a){ html += tiles[a].outerHTML; });
+      html += '</div></div>';
+    });
+
+    var used = Object.keys(CATEGORY_MAP).reduce(function(acc,k){return acc.concat(CATEGORY_MAP[k]);},[]);
+    var unused = Object.keys(tiles).filter(function(a){return used.indexOf(a)===-1;});
+    if (unused.length) {
+      html += '<div class="qa-category"><h4 class="qa-cat-title">MORE</h4><div class="qa-grid">';
+      unused.forEach(function(a){ html += tiles[a].outerHTML; });
+      html += '</div></div>';
     }
 
-    if (_originalGridHTML === null) {
-      console.log('⚠️ Original HTML not captured — skipping restore');
-      return;
-    }
+    grid.innerHTML = html;
 
-    // Restore original HTML
-    grid.innerHTML = _originalGridHTML;
-    grid.className = _originalGridClasses || 'action-grid';
+    setTimeout(function(){
+      if (typeof window.applyStudentPortalVisibility === 'function') {
+        try { window.applyStudentPortalVisibility(); } catch(e) {}
+      }
+    }, 100);
+    console.log('✅ Categories applied (mobile)');
+  }
 
-    // Clear build flags
-    delete grid.dataset.v70built;
-    delete grid.dataset.v71built;
+  function restoreOriginal() {
+    if (isMobile()) return;
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid) return;
+    if (grid.dataset.catBuilt !== '1') return;
+    if (_originalHTML === null) return;
 
-    // Restore original title
+    grid.innerHTML = _originalHTML;
+    grid.className = _originalClasses || 'action-grid';
+    delete grid.dataset.catBuilt;
+
     var title = document.getElementById('quickActionsTitle');
     if (title) title.classList.remove('qa-hidden');
 
-    // Re-apply visibility
     setTimeout(function(){
       if (typeof window.applyStudentPortalVisibility === 'function') {
         try { window.applyStudentPortalVisibility(); } catch(e) {}
@@ -31693,152 +30809,51 @@ body.perf-mode-low {
         try { window.cleanupQuickActions(); } catch(e) {}
       }
     }, 100);
-
-    console.log('✅ Desktop original layout restored');
+    console.log('✅ Original restored (desktop)');
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🔄 AUTO-SWITCH on window resize                         */
-  /* ═══════════════════════════════════════════════════════ */
-  var _lastMode = null;
-  var _resizeTimer = null;
-
-  function checkLayout() {
+  function applyLayout() {
     var mobile = isMobile();
-    if (_lastMode === mobile) return; // No change
-    _lastMode = mobile;
-
-    if (mobile) {
-      // Mobile: apply categories
-      setTimeout(applyMobileLayout, 200);
-    } else {
-      // Desktop: restore original
-      setTimeout(applyDesktopLayout, 200);
-    }
+    if (_mode === (mobile ? 'mobile' : 'desktop')) return; // No change
+    _mode = mobile ? 'mobile' : 'desktop';
+    if (mobile) applyCategories();
+    else restoreOriginal();
   }
 
-  window.addEventListener('resize', function() {
-    clearTimeout(_resizeTimer);
-    _resizeTimer = setTimeout(checkLayout, 400);
-  });
-
-  window.addEventListener('orientationchange', function() {
-    clearTimeout(_resizeTimer);
-    _resizeTimer = setTimeout(checkLayout, 600);
-  });
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🛡️ BLOCK v70/v71 REBUILD ON DESKTOP                     */
-  /* Override their rebuild functions to no-op on desktop    */
-  /* ═══════════════════════════════════════════════════════ */
-  function blockDesktopRebuild() {
-    // Block v70
-    if (typeof window.rebuildQuickActions_v70 === 'function') {
-      var _orig70 = window.rebuildQuickActions_v70;
-      window.rebuildQuickActions_v70 = function() {
-        if (!isMobile()) return false;
-        return _orig70.apply(this, arguments);
-      };
-    }
-
-    // Block v71
-    if (typeof window.rebuildV71 === 'function') {
-      var _orig71 = window.rebuildV71;
-      window.rebuildV71 = function() {
-        if (!isMobile()) return false;
-        return _orig71.apply(this, arguments);
-      };
-    }
-  }
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🎯 WATCH Dashboard — apply correct layout on show       */
-  /* ═══════════════════════════════════════════════════════ */
-  function watchDashboard() {
-    var dash = document.getElementById('dashboardSection');
-    if (!dash || dash._v73watch) return;
-    dash._v73watch = true;
-
+  // Watch dashboard — NO setInterval, only MutationObserver
+  var dash = document.getElementById('dashboardSection');
+  if (dash && !dash._v74watch) {
+    dash._v74watch = true;
     new MutationObserver(function(){
       if (dash.style.display === 'block') {
-        setTimeout(function(){
-          blockDesktopRebuild();
-          checkLayout();
-        }, 1500);
+        setTimeout(applyLayout, 1500);
+        setTimeout(applyLayout, 3000);
       }
     }).observe(dash, { attributes: true, attributeFilter: ['style'] });
   }
 
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🚀 INIT                                                  */
-  /* ═══════════════════════════════════════════════════════ */
-  function init() {
-    blockDesktopRebuild();
-    watchDashboard();
-    _lastMode = isMobile();
+  // Resize
+  var _rt = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(_rt);
+    _rt = setTimeout(applyLayout, 400);
+  });
+  window.addEventListener('orientationchange', function(){
+    clearTimeout(_rt);
+    _rt = setTimeout(applyLayout, 600);
+  });
 
-    // Apply correct layout immediately
-    var dash = document.getElementById('dashboardSection');
-    if (dash && dash.style.display === 'block') {
-      setTimeout(function(){
-        if (isMobile()) {
-          applyMobileLayout();
-        } else {
-          applyDesktopLayout();
-        }
-      }, 2000);
-    }
+  // Capture original ASAP
+  captureOriginal();
+  setTimeout(captureOriginal, 500);
+  setTimeout(captureOriginal, 1000);
 
-    // Periodic safety check — enforce correct layout
-    setInterval(function(){
-      var grid = document.getElementById('quickActionsGrid');
-      if (!grid) return;
+  // Apply
+  setTimeout(applyLayout, 2000);
+  setTimeout(applyLayout, 4000);
 
-      var hasCategories = grid.dataset.v71built === '1' || grid.dataset.v70built === '1';
-      var shouldHaveCategories = isMobile();
-
-      if (shouldHaveCategories && !hasCategories) {
-        applyMobileLayout();
-      } else if (!shouldHaveCategories && hasCategories) {
-        applyDesktopLayout();
-      }
-    }, 5000);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){
-      setTimeout(init, 2000);
-      setTimeout(init, 4000);
-    });
-  } else {
-    setTimeout(init, 2000);
-    setTimeout(init, 4000);
-  }
-
-  /* ═══════════════════════════════════════════════════════ */
-  /* 🐛 DEBUG helper                                          */
-  /* ═══════════════════════════════════════════════════════ */
-  window.debugLayout = function() {
-    var grid = document.getElementById('quickActionsGrid');
-    console.log('=== LAYOUT DEBUG v73 ===');
-    console.log('Screen width:', window.innerWidth);
-    console.log('Is mobile?', isMobile());
-    console.log('Original HTML captured?', _originalGridHTML !== null);
-    if (grid) {
-      console.log('Grid has v70 flag?', grid.dataset.v70built === '1');
-      console.log('Grid has v71 flag?', grid.dataset.v71built === '1');
-      console.log('Grid classes:', grid.className);
-      console.log('Grid inner children:', grid.children.length);
-      console.log('Has .qa-category?', grid.querySelectorAll('.qa-category').length);
-      console.log('Has .action-tile (flat)?', grid.querySelectorAll(':scope > .action-tile').length);
-    }
-  };
-
-  window.forceDesktopLayout = applyDesktopLayout;
-  window.forceMobileLayout = applyMobileLayout;
-
-  console.log('✅ v73 Mobile-only Categories ready');
-  console.log('   💡 Type debugLayout() to check status');
+  window.applyQuickAccessLayout = applyLayout;
+  console.log('✅ v74 ready');
 })();
 </script>
 </body>
