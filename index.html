@@ -5667,23 +5667,102 @@ console.log('✅ PART 3.A loaded — Core JavaScript');
 /* ============================================================ */
 /* ⏰ TIMETABLE                                                 */
 /* ============================================================ */
-async function showTimetable(){
-  modalTitleSpan.innerText="⏰ Timetable";
-  modalBodyDiv.innerHTML='<div class="text-center py-4"><div class="spinner-border" style="color:#0891b2"></div></div>';
-  modal.style.display='flex';
-  try{
-    var r=await supabaseClient.from('timetable').select('*').eq('class',currentUser.class).order('day').order('period');
-    if(!r.data||r.data.length===0){modalBodyDiv.innerHTML='<div class="text-center py-3" style="color:#64748b;">No timetable</div>';return;}
-    var bd={};
-    r.data.forEach(function(t){if(!bd[t.day])bd[t.day]=[];bd[t.day].push(t);});
-    var days=['ശനി','ഞായർ','തിങ്കൾ','ചൊവ്വ','ബുധൻ','വ്യാഴം'];
-    modalBodyDiv.innerHTML=days.map(function(d){
-      if(!bd[d])return'';
-      return'<h6 style="color:#0f172a;margin-top:16px;margin-bottom:8px;font-weight:800;"><i class="fas fa-calendar-day" style="color:#0891b2"></i> '+d+'</h6>'+bd[d].map(function(t){
-        return'<div class="timetable-item"><div class="d-flex align-items-center gap-3"><span class="period">P'+t.period+'</span><strong style="color:#0f172a;">'+escapeHtml(t.subject||'—')+'</strong></div></div>';
-      }).join('');
-    }).join('');
-  }catch(e){modalBodyDiv.innerHTML='<div class="text-center py-3" style="color:#64748b;">Error</div>';}
+// ═══════════════════════════════════════════════════════
+// 🕐 v83.0 — SHOW TIMETABLE (Table Style)
+// Table format: DAYS × SUBJECT 1/2/3
+// ═══════════════════════════════════════════════════════
+async function showTimetable() {
+  modalTitleSpan.innerText = "⏰ Timetable";
+  modalBodyDiv.innerHTML = 
+    '<div class="text-center py-4">' +
+      '<div class="spinner-border" style="color:#0891b2"></div>' +
+    '</div>';
+  modal.style.display = 'flex';
+
+  try {
+    var r = await supabaseClient
+      .from('timetable')
+      .select('*')
+      .eq('class', currentUser.class)
+      .order('day')
+      .order('period');
+
+    if (!r.data || r.data.length === 0) {
+      modalBodyDiv.innerHTML = 
+        '<div style="text-align:center;padding:40px 20px;">' +
+          '<i class="fas fa-clock" style="font-size:3rem;color:#b45309;opacity:.4;display:block;margin-bottom:14px;"></i>' +
+          '<div style="font-weight:800;color:#0f172a;">ടൈം ടേബിൾ തയ്യാറാക്കുന്നു</div>' +
+          '<div style="color:#64748b;font-size:.82rem;margin-top:6px;">ഉടൻ ലഭ്യമാകും</div>' +
+        '</div>';
+      return;
+    }
+
+    // ─── Group by day: { 'ശനി': {1:'ഖുർആൻ', 2:'അറബിക്', ...} } ───
+    var byDay = {};
+    var maxPeriod = 0;
+    r.data.forEach(function(t) {
+      if (!byDay[t.day]) byDay[t.day] = {};
+      byDay[t.day][t.period] = t.subject || '';
+      if (t.period > maxPeriod) maxPeriod = t.period;
+    });
+
+    // ─── Day order ───
+    var dayOrder = ['ശനി', 'ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം', 'വെള്ളി'];
+    var days = dayOrder.filter(function(d) { return byDay[d]; });
+    if (days.length === 0) days = Object.keys(byDay);
+
+    // ─── Build table HTML ───
+    var html = '';
+    html += '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;">';
+    html += '<table style="width:100%;border-collapse:collapse;min-width:320px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">';
+
+    // Header row
+    html += '<thead><tr style="background:linear-gradient(100deg,#1e6be0,#3b8bff);">';
+    html += '<th style="padding:13px 10px;color:#fff;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.6px;text-align:center;border:1px solid rgba(255,255,255,.2);">DAYS</th>';
+    for (var p = 1; p <= maxPeriod; p++) {
+      html += '<th style="padding:13px 10px;color:#fff;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.6px;text-align:center;border:1px solid rgba(255,255,255,.2);">SUBJECT ' + p + '</th>';
+    }
+    html += '</tr></thead>';
+
+    // Body rows
+    html += '<tbody>';
+    days.forEach(function(day) {
+      html += '<tr>';
+      // Day cell (first column)
+      html += '<td style="padding:13px 10px;text-align:center;font-weight:900;color:#0f172a;background:#e8f0fe;font-size:.86rem;border:1px solid #e2e8f0;">' + escapeHtml(day) + '</td>';
+      // Subject cells
+      for (var p = 1; p <= maxPeriod; p++) {
+        var sub = byDay[day][p] || '';
+        var isEmpty = !sub || sub === '-';
+        html += '<td style="padding:13px 10px;text-align:center;color:' + (isEmpty ? '#adb5bd' : '#0f172a') + ';font-weight:' + (isEmpty ? '500' : '600') + ';font-style:' + (isEmpty ? 'italic' : 'normal') + ';font-size:.86rem;background:#f8faff;border:1px solid #e2e8f0;font-family:\'Anek Malayalam\',sans-serif;">' + (isEmpty ? '—' : escapeHtml(sub)) + '</td>';
+      }
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    // ─── Verified badge ───
+    html += '<div style="margin-top:16px;padding:11px 18px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1.5px solid rgba(5,150,105,.35);border-radius:40px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">';
+    html += '<span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(140deg,#059669,#34d399);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:900;">✓</span>';
+    html += '<span style="font-size:.76rem;color:#065f46;font-weight:800;">Verified by <b>Swadar Muallim</b></span>';
+    html += '<span style="color:#059669;">•</span>';
+    html += '<span style="font-size:.74rem;color:#0f172a;font-weight:700;"><i class="fas fa-shield-alt" style="color:#059669;"></i> Authorized</span>';
+    html += '</div>';
+
+    // ─── Print button ───
+    html += '<div style="text-align:center;margin-top:16px;">';
+    html += '<button onclick="window.printStudentTimetable && window.printStudentTimetable()" style="background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;border:none;padding:13px 28px;border-radius:60px;font-family:inherit;font-weight:900;font-size:.86rem;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 22px -10px rgba(8,145,178,.7);">';
+    html += '<i class="fas fa-print"></i> 🖨️ Print Timetable';
+    html += '</button></div>';
+
+    modalBodyDiv.innerHTML = html;
+
+  } catch (e) {
+    console.error('Timetable error:', e);
+    modalBodyDiv.innerHTML = 
+      '<div class="text-center py-3" style="color:#dc2626;">' +
+        'Error: ' + escapeHtml(e.message) +
+      '</div>';
+  }
 }
 
 /* ============================================================ */
