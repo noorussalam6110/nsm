@@ -39917,5 +39917,1448 @@ body.msg-menu-open .chat-msg-delete-btn { display: none !important; }
   console.log('   🖼️ Image bubbles + lightbox');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎯 v95.0 — QUIZ ON/OFF CONTROL                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="quiz-toggle-v95-css">
+/* Quiz toggle UI in admin */
+.quiz-toggle-panel {
+  background: linear-gradient(135deg, #ede9fe, #fce7f3, #dbeafe);
+  border: 2px solid rgba(139,92,246,.35);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.quiz-toggle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.quiz-toggle-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.quiz-toggle-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(140deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(102,126,234,.7);
+  flex-shrink: 0;
+  transition: all .3s;
+}
+.quiz-toggle-icon.disabled {
+  background: linear-gradient(140deg, #94a3b8, #64748b);
+  box-shadow: 0 8px 20px -8px rgba(100,116,139,.5);
+  filter: grayscale(.5);
+}
+.quiz-toggle-text h4 {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+.quiz-toggle-text p {
+  font-size: .78rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+.quiz-toggle-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .68rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-top: 6px;
+}
+.quiz-toggle-status-pill.on {
+  background: rgba(5,150,105,.15);
+  color: #059669;
+  border: 1px solid rgba(5,150,105,.35);
+}
+.quiz-toggle-status-pill.off {
+  background: rgba(220,38,38,.12);
+  color: #dc2626;
+  border: 1px solid rgba(220,38,38,.35);
+}
+.quiz-toggle-status-pill .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: qPulse 1.8s infinite;
+}
+@keyframes qPulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: .35; }
+}
+
+/* Big toggle switch */
+.quiz-switch {
+  position: relative;
+  width: 76px;
+  height: 42px;
+  border-radius: 42px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: background .3s ease;
+  flex-shrink: 0;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.quiz-switch.on {
+  background: linear-gradient(100deg, #10b981, #34d399);
+  box-shadow: 0 6px 20px -6px rgba(16,185,129,.7);
+}
+.quiz-switch:active { transform: scale(.95); }
+.quiz-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+.quiz-switch.on::after { left: 37px; }
+.quiz-switch .sw-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .62rem;
+  font-weight: 900;
+  color: #fff;
+  pointer-events: none;
+  letter-spacing: .5px;
+}
+.quiz-switch .sw-on { left: 10px; opacity: 0; transition: opacity .2s; }
+.quiz-switch.on .sw-on { opacity: 1; }
+.quiz-switch .sw-off { right: 8px; color: #64748b; opacity: 1; transition: opacity .2s; }
+.quiz-switch.on .sw-off { opacity: 0; }
+
+/* Quiz disabled notice for students */
+.quiz-disabled-banner {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border: 1.5px solid rgba(220,38,38,.35);
+  border-radius: 14px;
+  font-size: .82rem;
+  font-weight: 800;
+  color: #991b1b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+.quiz-disabled-banner i { font-size: 1.2rem; }
+
+/* If quiz disabled by admin, hide tile */
+.action-tile[data-action="quiz"].quiz-tile-hidden {
+  display: none !important;
+}
+</style>
+
+<script id="quiz-toggle-v95-js">
+(function(){
+  'use strict';
+  console.log('🎯 Quiz Toggle v95 loading...');
+
+  // ═══════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════
+  window.QUIZ_TOGGLE = {
+    enabled: true,        // current state
+    loaded: false,
+    isAdminMode: false
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 📥 LOAD QUIZ STATUS FROM DB
+  // ═══════════════════════════════════════════════════
+  async function loadQuizStatus() {
+    if (!supabaseClient) return;
+    try {
+      var r = await supabaseClient.from('settings')
+        .select('value').eq('key', 'quiz_enabled').maybeSingle();
+
+      if (r.error && /does not exist|relation/i.test(r.error.message || '')) {
+        // Settings table missing — default to enabled
+        QUIZ_TOGGLE.enabled = true;
+      } else if (r.data && r.data.value !== null && r.data.value !== undefined) {
+        QUIZ_TOGGLE.enabled = String(r.data.value).toLowerCase() === 'true';
+      } else {
+        // Row missing — create it
+        try {
+          await supabaseClient.from('settings').insert({
+            key: 'quiz_enabled', value: 'true'
+          });
+        } catch(e) {}
+        QUIZ_TOGGLE.enabled = true;
+      }
+      QUIZ_TOGGLE.loaded = true;
+      console.log('🎯 Quiz status loaded:', QUIZ_TOGGLE.enabled ? 'ENABLED' : 'DISABLED');
+      applyQuizVisibility();
+      updateAdminToggle();
+    } catch(e) {
+      console.warn('loadQuizStatus error:', e);
+      QUIZ_TOGGLE.enabled = true;
+      QUIZ_TOGGLE.loaded = true;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 💾 SAVE QUIZ STATUS
+  // ═══════════════════════════════════════════════════
+  async function saveQuizStatus(enabled) {
+    if (!supabaseClient) return false;
+    try {
+      var r = await supabaseClient.from('settings')
+        .upsert({ key: 'quiz_enabled', value: enabled ? 'true' : 'false' },
+                { onConflict: 'key' });
+      if (r.error) throw r.error;
+      QUIZ_TOGGLE.enabled = enabled;
+      return true;
+    } catch(e) {
+      console.error('saveQuizStatus error:', e);
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 👁️ APPLY VISIBILITY — Student side
+  // ═══════════════════════════════════════════════════
+function applyQuizVisibility() {
+  // ─── 1. Hide/Show Quiz tiles ───
+  var tiles = document.querySelectorAll('.action-tile[data-action="quiz"]');
+  tiles.forEach(function(tile) {
+    if (QUIZ_TOGGLE.enabled) {
+      tile.classList.remove('quiz-tile-hidden');
+    } else {
+      tile.classList.add('quiz-tile-hidden');
+    }
+  });
+
+  // ─── 2. Show/Hide Status Banner (student side only) ───
+  var isAdmin = window.isAdminMode ||
+                (typeof isAdminMode !== 'undefined' && isAdminMode);
+
+  // Admin dashboard-ൽ banner വേണ്ട
+  if (isAdmin) {
+    var existingAdmin = document.querySelector('.quiz-disabled-banner');
+    if (existingAdmin) existingAdmin.remove();
+    return;
+  }
+
+  var existing = document.querySelector('.quiz-disabled-banner');
+
+  if (!QUIZ_TOGGLE.enabled && currentUser) {
+    // Show banner
+    if (existing) return; // Already shown
+
+    var dash = document.querySelector('#dashboardSection .container');
+    if (!dash) return;
+
+    var banner = document.createElement('div');
+    banner.className = 'quiz-disabled-banner';
+    banner.innerHTML =
+      '<i class="fas fa-hourglass-half" ' +
+         'style="color:#b45309;font-size:1.1rem;"></i>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-weight:900;color:#78350f;">🎯 Quiz താൽക്കാലികമായി നിർത്തി</div>' +
+        '<div style="font-size:.74rem;color:#92400e;margin-top:3px;font-weight:600;">' +
+          'Admin ഉടൻ വീണ്ടും തുടങ്ങും. അതുവരെ മറ്റു പഠന activities ചെയ്യൂ! 📚' +
+        '</div>' +
+      '</div>';
+
+    // Insert after dashboard header
+    var header = dash.querySelector('.dashboard-header-glow');
+    if (header) {
+      header.insertAdjacentElement('afterend', banner);
+    } else {
+      dash.insertBefore(banner, dash.firstChild);
+    }
+
+    console.log('✅ Quiz disabled banner shown');
+  } else {
+    // Remove banner when enabled
+    if (existing) {
+      existing.style.transition = 'opacity .3s';
+      existing.style.opacity = '0';
+      setTimeout(function() { existing.remove(); }, 300);
+      console.log('✅ Quiz disabled banner removed');
+    }
+  }
+}
+
+  // ═══════════════════════════════════════════════════
+  // 🎛️ UPDATE ADMIN TOGGLE UI
+  // ═══════════════════════════════════════════════════
+  function updateAdminToggle() {
+    var sw = document.getElementById('quizToggleSwitch');
+    var icon = document.getElementById('quizToggleIcon');
+    var pill = document.getElementById('quizToggleStatusPill');
+
+    if (!sw) return;
+
+    if (QUIZ_TOGGLE.enabled) {
+      sw.classList.add('on');
+      if (icon) icon.classList.remove('disabled');
+      if (pill) {
+        pill.className = 'quiz-toggle-status-pill on';
+        pill.innerHTML = '<span class="dot"></span> ENABLED';
+      }
+    } else {
+      sw.classList.remove('on');
+      if (icon) icon.classList.add('disabled');
+      if (pill) {
+        pill.className = 'quiz-toggle-status-pill off';
+        pill.innerHTML = '<span class="dot"></span> DISABLED';
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🖱️ TOGGLE CLICK HANDLER
+  // ═══════════════════════════════════════════════════
+  window.QUIZ_TOGGLE_flip = async function() {
+    var newState = !QUIZ_TOGGLE.enabled;
+
+    // Optimistic UI update
+    QUIZ_TOGGLE.enabled = newState;
+    updateAdminToggle();
+    applyQuizVisibility();
+
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+
+    // Save to DB
+    var ok = await saveQuizStatus(newState);
+
+    if (ok) {
+      showToast(
+        newState ? '✅ Quiz ENABLED for students' : '🚫 Quiz DISABLED for students',
+        newState ? 'success' : 'info'
+      );
+      if (newState && typeof confetti !== 'undefined') {
+        confetti({ particleCount: 60, spread: 70, origin: { y: .7 },
+                   colors: ['#667eea','#8b5cf6','#34d399'] });
+      }
+    } else {
+      // Rollback on error
+      QUIZ_TOGGLE.enabled = !newState;
+      updateAdminToggle();
+      applyQuizVisibility();
+      showToast('❌ Failed to save', 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🎨 BUILD ADMIN TOGGLE PANEL
+  // ═══════════════════════════════════════════════════
+  function buildAdminPanel() {
+    var quizTab = document.getElementById('adminQuizTab');
+    if (!quizTab) return;
+
+    // Remove old panel
+    var old = quizTab.querySelector('.quiz-toggle-panel');
+    if (old) old.remove();
+
+    var panel = document.createElement('div');
+    panel.className = 'quiz-toggle-panel';
+    panel.innerHTML =
+      '<div class="quiz-toggle-header">' +
+        '<div class="quiz-toggle-info">' +
+          '<div class="quiz-toggle-icon" id="quizToggleIcon">🎯</div>' +
+          '<div class="quiz-toggle-text">' +
+            '<h4>Quiz System</h4>' +
+            '<p>Students-നു quiz tile കാണിക്കണോ? Toggle off ചെയ്താൽ അവർക്ക് quiz access ഇല്ല.</p>' +
+            '<div class="quiz-toggle-status-pill on" id="quizToggleStatusPill">' +
+              '<span class="dot"></span> ENABLED' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<button class="quiz-switch on" id="quizToggleSwitch" ' +
+                'onclick="QUIZ_TOGGLE_flip()" ' +
+                'aria-label="Toggle Quiz" type="button">' +
+          '<span class="sw-label sw-on">ON</span>' +
+          '<span class="sw-label sw-off">OFF</span>' +
+        '</button>' +
+      '</div>';
+
+    // Insert at top of quiz tab
+    var toolbar = quizTab.querySelector('.admin-toolbar');
+    if (toolbar) {
+      toolbar.parentNode.insertBefore(panel, toolbar);
+    } else {
+      quizTab.insertBefore(panel, quizTab.firstChild);
+    }
+
+    updateAdminToggle();
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🚫 BLOCK QUIZ OPEN IF DISABLED (student side)
+  // ═══════════════════════════════════════════════════
+  function patchQuizOpen() {
+    if (typeof window.openQuizModal !== 'function') return;
+    if (window.openQuizModal._v95hooked) return;
+
+    var orig = window.openQuizModal;
+    window.openQuizModal = async function() {
+      // Admin bypasses
+      var isAdmin = window.isAdminMode ||
+                    (typeof isAdminMode !== 'undefined' && isAdminMode);
+
+      if (!isAdmin && !QUIZ_TOGGLE.enabled) {
+        showToast('🚫 Quiz is temporarily disabled by admin', 'info');
+        return;
+      }
+      return orig.apply(this, arguments);
+    };
+    window.openQuizModal._v95hooked = true;
+    console.log('✅ openQuizModal hooked');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 HOOK INTO ADMIN TAB SWITCH
+  // ═══════════════════════════════════════════════════
+  function hookAdminTab() {
+    if (typeof window.switchAdminTab !== 'function') return;
+    if (window.switchAdminTab._v95hooked) return;
+
+    var orig = window.switchAdminTab;
+    window.switchAdminTab = function(tab) {
+      var r = orig.apply(this, arguments);
+      if (tab === 'quiz') {
+        setTimeout(buildAdminPanel, 250);
+        setTimeout(updateAdminToggle, 400);
+      }
+      return r;
+    };
+    window.switchAdminTab._v95hooked = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 HOOK INTO LOGIN (load status)
+  // ═══════════════════════════════════════════════════
+  function hookLogin() {
+    if (typeof window.completeLogin !== 'function') return;
+    if (window.completeLogin._v95hooked) return;
+
+    var orig = window.completeLogin;
+    window.completeLogin = async function(student) {
+      var r = await orig.apply(this, arguments);
+      setTimeout(async function() {
+        await loadQuizStatus();
+        applyQuizVisibility();
+      }, 1500);
+      return r;
+    };
+    window.completeLogin._v95hooked = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 WATCH TILE INJECTION (student side)
+  // ═══════════════════════════════════════════════════
+  function watchQuizTile() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid || grid._v95watch) return;
+    grid._v95watch = true;
+
+    var pending = null;
+    new MutationObserver(function(muts) {
+      var hit = false;
+      muts.forEach(function(m) {
+        m.addedNodes.forEach(function(n) {
+          if (n.nodeType === 1 &&
+              (n.dataset && n.dataset.action === 'quiz' ||
+               (n.querySelector && n.querySelector('[data-action="quiz"]')))) {
+            hit = true;
+          }
+        });
+      });
+      if (!hit) return;
+      if (pending) clearTimeout(pending);
+      pending = setTimeout(function() {
+        pending = null;
+        applyQuizVisibility();
+      }, 200);
+    }).observe(grid, { childList: true, subtree: true });
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  async function init() {
+    await loadQuizStatus();
+    patchQuizOpen();
+    hookAdminTab();
+    hookLogin();
+    watchQuizTile();
+    applyQuizVisibility();
+
+    // If admin panel quiz tab is open, build it
+    var quizTab = document.getElementById('adminQuizTab');
+    if (quizTab && quizTab.style.display === 'block') {
+      buildAdminPanel();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2200);
+      setTimeout(init, 4500);
+    });
+  } else {
+    setTimeout(init, 2200);
+    setTimeout(init, 4500);
+  }
+
+  // Periodic check
+  setInterval(function() {
+    if (QUIZ_TOGGLE.loaded) {
+      applyQuizVisibility();
+      var quizTab = document.getElementById('adminQuizTab');
+      if (quizTab && quizTab.style.display === 'block' &&
+          !quizTab.querySelector('.quiz-toggle-panel')) {
+        buildAdminPanel();
+      }
+    }
+  }, 4000);
+
+  // ═══════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════
+  window.QUIZ_TOGGLE_debug = function() {
+    console.log('=== QUIZ TOGGLE DEBUG ===');
+    console.log('Enabled:', QUIZ_TOGGLE.enabled);
+    console.log('Loaded:', QUIZ_TOGGLE.loaded);
+    var tiles = document.querySelectorAll('.action-tile[data-action="quiz"]');
+    console.log('Quiz tiles in DOM:', tiles.length);
+    tiles.forEach(function(t, i) {
+      console.log('  Tile', i, 'hidden:', t.classList.contains('quiz-tile-hidden'),
+                  'display:', getComputedStyle(t).display);
+    });
+    var sw = document.getElementById('quizToggleSwitch');
+    console.log('Admin switch present:', !!sw);
+  };
+
+  window.QUIZ_TOGGLE_set = async function(state) {
+    var newState = state === true || state === 'true';
+    await saveQuizStatus(newState);
+    QUIZ_TOGGLE.enabled = newState;
+    updateAdminToggle();
+    applyQuizVisibility();
+    showToast(newState ? '✅ Quiz enabled' : '🚫 Quiz disabled', 'success');
+  };
+
+  console.log('✅ Quiz Toggle v95 ready');
+  console.log('   💡 Admin → Quiz tab → Toggle ON/OFF');
+  console.log('   💡 QUIZ_TOGGLE_debug() — check state');
+  console.log('   💡 QUIZ_TOGGLE_set(true/false) — manual set');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎯 v96.0 — PER-CLASS QUIZ CONTROL                     -->
+<!-- Replaces v95's global toggle with full per-class grid -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="quiz-perclass-v96-css">
+/* ═══ Global Master Toggle ═══ */
+.quiz-master-panel {
+  background: linear-gradient(135deg, #ede9fe, #fce7f3, #dbeafe);
+  border: 2px solid rgba(139,92,246,.35);
+  border-radius: 20px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.quiz-master-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.quiz-master-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.quiz-master-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(140deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(102,126,234,.7);
+  flex-shrink: 0;
+  transition: all .3s;
+}
+.quiz-master-icon.disabled {
+  background: linear-gradient(140deg, #94a3b8, #64748b);
+  box-shadow: 0 8px 20px -8px rgba(100,116,139,.5);
+  filter: grayscale(.5);
+}
+.quiz-master-text h4 {
+  font-size: 1.02rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 3px;
+}
+.quiz-master-text p {
+  font-size: .74rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+.quiz-master-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .64rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-top: 5px;
+}
+.quiz-master-pill.on {
+  background: rgba(5,150,105,.15);
+  color: #059669;
+  border: 1px solid rgba(5,150,105,.35);
+}
+.quiz-master-pill.off {
+  background: rgba(220,38,38,.12);
+  color: #dc2626;
+  border: 1px solid rgba(220,38,38,.35);
+}
+.quiz-master-pill .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: qPulse 1.8s infinite;
+}
+@keyframes qPulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: .35; }
+}
+
+/* ═══ Master Big Switch ═══ */
+.quiz-master-switch {
+  position: relative;
+  width: 72px;
+  height: 40px;
+  border-radius: 40px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: background .3s ease;
+  flex-shrink: 0;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.quiz-master-switch.on {
+  background: linear-gradient(100deg, #10b981, #34d399);
+  box-shadow: 0 6px 20px -6px rgba(16,185,129,.7);
+}
+.quiz-master-switch:active { transform: scale(.95); }
+.quiz-master-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+.quiz-master-switch.on::after { left: 35px; }
+.quiz-master-switch .sw-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .6rem;
+  font-weight: 900;
+  color: #fff;
+  pointer-events: none;
+}
+.quiz-master-switch .sw-on { left: 10px; opacity: 0; transition: opacity .2s; }
+.quiz-master-switch.on .sw-on { opacity: 1; }
+.quiz-master-switch .sw-off { right: 8px; color: #64748b; opacity: 1; transition: opacity .2s; }
+.quiz-master-switch.on .sw-off { opacity: 0; }
+
+/* ═══ Per-Class Grid ═══ */
+.quiz-classes-panel {
+  background: #fff;
+  border: 1.5px solid rgba(139,92,246,.25);
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.quiz-classes-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(100,116,139,.12);
+}
+.quiz-classes-title h5 {
+  font-size: .94rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.quiz-classes-title h5 i { color: #8b5cf6; }
+.quiz-classes-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.quiz-bulk-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(100,116,139,.2);
+  background: #f8fafc;
+  color: #475569;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .68rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: .2s;
+  min-height: 32px;
+}
+.quiz-bulk-btn:hover {
+  border-color: rgba(139,92,246,.5);
+  color: #7c3aed;
+  background: #f3e8ff;
+}
+.quiz-bulk-btn.all-on:hover {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: rgba(5,150,105,.5);
+}
+.quiz-bulk-btn.all-off:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: rgba(220,38,38,.5);
+}
+
+.quiz-classes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.quiz-class-card {
+  background: #f8fafc;
+  border: 1.5px solid rgba(100,116,139,.15);
+  border-radius: 14px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all .25s;
+  position: relative;
+  overflow: hidden;
+}
+.quiz-class-card.on {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border-color: rgba(5,150,105,.4);
+}
+.quiz-class-card.off {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-color: rgba(220,38,38,.4);
+}
+.quiz-class-card.disabled-master {
+  opacity: .5;
+  pointer-events: none;
+  filter: grayscale(.4);
+}
+.quiz-class-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.quiz-class-name {
+  font-weight: 900;
+  font-size: .82rem;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.quiz-class-name i {
+  color: #64748b;
+  font-size: .7rem;
+}
+.quiz-class-card.on .quiz-class-name i { color: #059669; }
+.quiz-class-card.off .quiz-class-name i { color: #dc2626; }
+
+/* Compact mini toggle */
+.quiz-mini-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 24px;
+  background: #cbd5e1;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: background .25s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.quiz-mini-switch.on {
+  background: linear-gradient(100deg, #10b981, #34d399);
+}
+.quiz-mini-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .25s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.quiz-mini-switch.on::after { left: 22px; }
+.quiz-mini-switch:active { transform: scale(.92); }
+
+.quiz-class-status {
+  font-size: .62rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.quiz-class-card.on .quiz-class-status {
+  background: rgba(5,150,105,.15);
+  color: #059669;
+}
+.quiz-class-card.off .quiz-class-status {
+  background: rgba(220,38,38,.15);
+  color: #dc2626;
+}
+
+/* ═══ Student-side Banner (per-class) ═══ */
+.quiz-disabled-banner {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1.5px solid rgba(180,83,9,.35);
+  border-radius: 14px;
+  font-size: .82rem;
+  color: #78350f;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0;
+  animation: bannerIn .4s ease;
+}
+@keyframes bannerIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.quiz-disabled-banner i {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.quiz-disabled-banner .banner-content {
+  flex: 1;
+  min-width: 0;
+}
+.quiz-disabled-banner .banner-title {
+  font-weight: 900;
+  margin-bottom: 2px;
+  font-size: .86rem;
+}
+.quiz-disabled-banner .banner-sub {
+  font-size: .72rem;
+  opacity: .9;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+@media (max-width: 500px) {
+  .quiz-master-row { flex-direction: column; align-items: stretch; }
+  .quiz-master-info { gap: 10px; }
+  .quiz-master-icon { width: 44px; height: 44px; font-size: 1.2rem; }
+  .quiz-master-switch { align-self: center; }
+  .quiz-classes-grid { grid-template-columns: repeat(2, 1fr); }
+  .quiz-class-card { padding: 10px 8px; }
+  .quiz-class-name { font-size: .76rem; }
+}
+</style>
+
+<script id="quiz-perclass-v96-js">
+(function(){
+  'use strict';
+  console.log('🎯 Per-Class Quiz Control v96 loading...');
+
+  // ═══════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════
+  window.QUIZ_V96 = {
+    master: true,           // global ON/OFF
+    classes: {},            // { '1': true, '2': false, ... }
+    loaded: false,
+    ALL_CLASSES: ['1','2','3','4','5','6','7','8','9','10']
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 📥 LOAD ALL SETTINGS
+  // ═══════════════════════════════════════════════════
+  async function loadAll() {
+    if (!supabaseClient) return;
+    try {
+      // Master
+      var mr = await supabaseClient.from('settings')
+        .select('value').eq('key', 'quiz_enabled').maybeSingle();
+      if (mr.data && mr.data.value !== null) {
+        QUIZ_V96.master = String(mr.data.value).toLowerCase() === 'true';
+      } else {
+        QUIZ_V96.master = true;
+      }
+
+      // Per class — one query for all
+      var keys = QUIZ_V96.ALL_CLASSES.map(function(c) {
+        return 'quiz_enabled_class_' + c;
+      });
+      var cr = await supabaseClient.from('settings')
+        .select('key, value').in('key', keys);
+
+      var found = {};
+      (cr.data || []).forEach(function(row) {
+        found[row.key] = row.value;
+      });
+
+      QUIZ_V96.classes = {};
+      QUIZ_V96.ALL_CLASSES.forEach(function(c) {
+        var key = 'quiz_enabled_class_' + c;
+        var val = found[key];
+        QUIZ_V96.classes[c] = (val === undefined || val === null)
+          ? true
+          : String(val).toLowerCase() === 'true';
+      });
+
+      QUIZ_V96.loaded = true;
+      console.log('✅ Quiz settings loaded:', {
+        master: QUIZ_V96.master,
+        classes: QUIZ_V96.classes
+      });
+    } catch(e) {
+      console.warn('loadAll error:', e);
+      // Default everything ON
+      QUIZ_V96.master = true;
+      QUIZ_V96.classes = {};
+      QUIZ_V96.ALL_CLASSES.forEach(function(c) {
+        QUIZ_V96.classes[c] = true;
+      });
+      QUIZ_V96.loaded = true;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 💾 SAVE
+  // ═══════════════════════════════════════════════════
+  async function saveMaster(val) {
+    try {
+      await supabaseClient.from('settings').upsert(
+        { key: 'quiz_enabled', value: val ? 'true' : 'false' },
+        { onConflict: 'key' }
+      );
+      return true;
+    } catch(e) { return false; }
+  }
+
+  async function saveClass(cls, val) {
+    try {
+      await supabaseClient.from('settings').upsert(
+        { key: 'quiz_enabled_class_' + cls, value: val ? 'true' : 'false' },
+        { onConflict: 'key' }
+      );
+      return true;
+    } catch(e) { return false; }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 IS QUIZ ENABLED FOR A GIVEN CLASS?
+  // ═══════════════════════════════════════════════════
+  function isQuizEnabledForClass(cls) {
+    if (!QUIZ_V96.master) return false;
+    if (!cls) return QUIZ_V96.master;
+    var key = String(cls).trim();
+    // If class not in map (like 'N/A'), default to master
+    if (QUIZ_V96.classes[key] === undefined) return QUIZ_V96.master;
+    return QUIZ_V96.classes[key];
+  }
+  window.QUIZ_V96_isEnabledForClass = isQuizEnabledForClass;
+
+  // ═══════════════════════════════════════════════════
+  // 👁️ APPLY VISIBILITY (student side)
+  // ═══════════════════════════════════════════════════
+  function applyVisibility() {
+    if (!currentUser) return;
+    var isAdmin = window.isAdminMode ||
+                  (typeof isAdminMode !== 'undefined' && isAdminMode);
+    if (isAdmin) {
+      // Remove banner for admin
+      var oldBanner = document.querySelector('.quiz-disabled-banner');
+      if (oldBanner) oldBanner.remove();
+      return;
+    }
+
+    var studentClass = currentUser.class;
+    var enabled = isQuizEnabledForClass(studentClass);
+
+    // Hide/show tiles
+    document.querySelectorAll('.action-tile[data-action="quiz"]').forEach(function(t) {
+      t.style.display = enabled ? '' : 'none';
+    });
+
+    // Banner
+    var existing = document.querySelector('.quiz-disabled-banner');
+    if (enabled) {
+      if (existing) {
+        existing.style.transition = 'opacity .3s';
+        existing.style.opacity = '0';
+        setTimeout(function() { existing.remove(); }, 300);
+      }
+      return;
+    }
+
+    if (existing) return;
+
+    var dash = document.querySelector('#dashboardSection .container');
+    if (!dash) return;
+
+    var banner = document.createElement('div');
+    banner.className = 'quiz-disabled-banner';
+    banner.innerHTML =
+      '<i class="fas fa-hourglass-half" style="color:#b45309;"></i>' +
+      '<div class="banner-content">' +
+        '<div class="banner-title">🎯 Quiz താൽക്കാലികമായി നിർത്തി</div>' +
+        '<div class="banner-sub">' +
+          'Class ' + escapeHtml(String(studentClass || '—')) +
+          '-ന്റെ Quiz admin pause ചെയ്തിരിക്കുന്നു. ഉടൻ വീണ്ടും തുടങ്ങും 📚' +
+        '</div>' +
+      '</div>';
+
+    var header = dash.querySelector('.dashboard-header-glow');
+    if (header) {
+      header.insertAdjacentElement('afterend', banner);
+    } else {
+      dash.insertBefore(banner, dash.firstChild);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎨 BUILD ADMIN PANEL
+  // ═══════════════════════════════════════════════════
+  function buildAdminPanel() {
+    var quizTab = document.getElementById('adminQuizTab');
+    if (!quizTab) return;
+
+    // Remove old panels (v95 or previous v96)
+    quizTab.querySelectorAll('.quiz-master-panel, .quiz-classes-panel')
+      .forEach(function(el) { el.remove(); });
+
+    // ─── Build Master Panel ───
+    var masterPanel = document.createElement('div');
+    masterPanel.className = 'quiz-master-panel';
+    masterPanel.innerHTML =
+      '<div class="quiz-master-row">' +
+        '<div class="quiz-master-info">' +
+          '<div class="quiz-master-icon" id="quizMasterIcon">🎯</div>' +
+          '<div class="quiz-master-text">' +
+            '<h4>Quiz — Master Control</h4>' +
+            '<p>Master OFF ചെയ്താൽ എല്ലാ classes-ഉം quiz access പോകും.</p>' +
+            '<div class="quiz-master-pill" id="quizMasterPill">' +
+              '<span class="dot"></span> LOADING' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<button class="quiz-master-switch" id="quizMasterSwitch" ' +
+                'type="button" onclick="QUIZ_V96_flipMaster()">' +
+          '<span class="sw-label sw-on">ON</span>' +
+          '<span class="sw-label sw-off">OFF</span>' +
+        '</button>' +
+      '</div>';
+
+    // ─── Build Classes Panel ───
+    var classesPanel = document.createElement('div');
+    classesPanel.className = 'quiz-classes-panel';
+
+    var classCardsHtml = QUIZ_V96.ALL_CLASSES.map(function(c) {
+      return '<div class="quiz-class-card" data-class="' + c + '" id="qClassCard' + c + '">' +
+        '<div class="quiz-class-card-header">' +
+          '<div class="quiz-class-name">' +
+            '<i class="fas fa-users"></i> Class ' + c +
+          '</div>' +
+          '<button class="quiz-mini-switch" ' +
+                  'data-class="' + c + '" ' +
+                  'onclick="QUIZ_V96_flipClass(\'' + c + '\', event)"></button>' +
+        '</div>' +
+        '<div class="quiz-class-status" id="qClassStatus' + c + '">—</div>' +
+      '</div>';
+    }).join('');
+
+    classesPanel.innerHTML =
+      '<div class="quiz-classes-title">' +
+        '<h5><i class="fas fa-list-check"></i> Per-Class Settings</h5>' +
+        '<div class="quiz-classes-actions">' +
+          '<button class="quiz-bulk-btn all-on" ' +
+                  'onclick="QUIZ_V96_setAll(true)">' +
+            '<i class="fas fa-check-double"></i> All ON' +
+          '</button>' +
+          '<button class="quiz-bulk-btn all-off" ' +
+                  'onclick="QUIZ_V96_setAll(false)">' +
+            '<i class="fas fa-times"></i> All OFF' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="quiz-classes-grid">' + classCardsHtml + '</div>';
+
+    // Insert at top of quiz tab
+    var toolbar = quizTab.querySelector('.admin-toolbar');
+    if (toolbar) {
+      toolbar.parentNode.insertBefore(classesPanel, toolbar);
+      toolbar.parentNode.insertBefore(masterPanel, classesPanel);
+    } else {
+      quizTab.insertBefore(classesPanel, quizTab.firstChild);
+      quizTab.insertBefore(masterPanel, classesPanel);
+    }
+
+    refreshAdminUI();
+    console.log('✅ Admin panel built');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎨 REFRESH ADMIN UI
+  // ═══════════════════════════════════════════════════
+  function refreshAdminUI() {
+    // Master
+    var masterSwitch = document.getElementById('quizMasterSwitch');
+    var masterIcon = document.getElementById('quizMasterIcon');
+    var masterPill = document.getElementById('quizMasterPill');
+
+    if (masterSwitch) masterSwitch.classList.toggle('on', QUIZ_V96.master);
+    if (masterIcon) masterIcon.classList.toggle('disabled', !QUIZ_V96.master);
+    if (masterPill) {
+      masterPill.className = 'quiz-master-pill ' + (QUIZ_V96.master ? 'on' : 'off');
+      masterPill.innerHTML = '<span class="dot"></span> ' +
+        (QUIZ_V96.master ? 'MASTER ENABLED' : 'MASTER DISABLED');
+    }
+
+    // Per class
+    QUIZ_V96.ALL_CLASSES.forEach(function(c) {
+      var card = document.getElementById('qClassCard' + c);
+      var sw = card ? card.querySelector('.quiz-mini-switch') : null;
+      var status = document.getElementById('qClassStatus' + c);
+      var on = QUIZ_V96.classes[c] === true;
+
+      if (card) {
+        card.classList.toggle('on', on);
+        card.classList.toggle('off', !on);
+        card.classList.toggle('disabled-master', !QUIZ_V96.master);
+      }
+      if (sw) sw.classList.toggle('on', on);
+      if (status) status.textContent = on ? '✓ Enabled' : '✕ Disabled';
+    });
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🖱️ FLIP HANDLERS
+  // ═══════════════════════════════════════════════════
+  window.QUIZ_V96_flipMaster = async function() {
+    var newVal = !QUIZ_V96.master;
+    QUIZ_V96.master = newVal;
+    refreshAdminUI();
+    applyVisibility();
+
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+
+    var ok = await saveMaster(newVal);
+    if (ok) {
+      showToast(
+        newVal ? '✅ Master ENABLED — per-class settings apply now'
+               : '🚫 Master DISABLED — all classes blocked',
+        newVal ? 'success' : 'info'
+      );
+      if (newVal && typeof confetti !== 'undefined') {
+        confetti({ particleCount: 50, spread: 60, origin: { y: .7 },
+                   colors: ['#667eea','#8b5cf6','#34d399'] });
+      }
+    } else {
+      QUIZ_V96.master = !newVal;
+      refreshAdminUI();
+      applyVisibility();
+      showToast('❌ Save failed', 'error');
+    }
+  };
+
+  window.QUIZ_V96_flipClass = async function(cls, ev) {
+    if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+    if (!QUIZ_V96.master) {
+      showToast('⚠️ Enable master first', 'info');
+      return;
+    }
+
+    var newVal = !QUIZ_V96.classes[cls];
+    QUIZ_V96.classes[cls] = newVal;
+    refreshAdminUI();
+
+    if (navigator.vibrate) try { navigator.vibrate(12); } catch(e) {}
+
+    var ok = await saveClass(cls, newVal);
+    if (ok) {
+      showToast(
+        newVal ? '✅ Class ' + cls + ' ENABLED' : '🚫 Class ' + cls + ' DISABLED',
+        newVal ? 'success' : 'info'
+      );
+
+      // If current admin is somehow impersonating, refresh student view
+      if (currentUser && String(currentUser.class) === String(cls)) {
+        applyVisibility();
+      }
+    } else {
+      QUIZ_V96.classes[cls] = !newVal;
+      refreshAdminUI();
+      showToast('❌ Save failed', 'error');
+    }
+  };
+
+  window.QUIZ_V96_setAll = async function(val) {
+    if (!QUIZ_V96.master && val) {
+      // Auto-enable master if user wants all ON
+      QUIZ_V96.master = true;
+      await saveMaster(true);
+    }
+
+    var count = 0;
+    for (var i = 0; i < QUIZ_V96.ALL_CLASSES.length; i++) {
+      var c = QUIZ_V96.ALL_CLASSES[i];
+      if (QUIZ_V96.classes[c] === val) continue;
+      QUIZ_V96.classes[c] = val;
+      await saveClass(c, val);
+      count++;
+    }
+
+    refreshAdminUI();
+    showToast(
+      val ? '✅ All classes ENABLED (' + count + ' updated)'
+          : '🚫 All classes DISABLED (' + count + ' updated)',
+      val ? 'success' : 'info'
+    );
+
+    if (val && typeof confetti !== 'undefined') {
+      confetti({ particleCount: 80, spread: 80, origin: { y: .6 } });
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🚫 BLOCK QUIZ OPEN IF DISABLED
+  // ═══════════════════════════════════════════════════
+  function patchQuizOpen() {
+    if (typeof window.openQuizModal !== 'function') return;
+    if (window.openQuizModal._v96hooked) return;
+
+    var orig = window.openQuizModal;
+    window.openQuizModal = async function() {
+      var isAdmin = window.isAdminMode ||
+                    (typeof isAdminMode !== 'undefined' && isAdminMode);
+      if (!isAdmin) {
+        var studentClass = currentUser && currentUser.class;
+        if (!isQuizEnabledForClass(studentClass)) {
+          showToast('🚫 Quiz is paused for your class', 'info');
+          return;
+        }
+      }
+      return orig.apply(this, arguments);
+    };
+    window.openQuizModal._v96hooked = true;
+    console.log('✅ openQuizModal hooked (per-class)');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 HOOK switchAdminTab
+  // ═══════════════════════════════════════════════════
+  function hookAdminTab() {
+    if (typeof window.switchAdminTab !== 'function') return;
+    if (window.switchAdminTab._v96hooked) return;
+
+    var orig = window.switchAdminTab;
+    window.switchAdminTab = function(tab) {
+      var r = orig.apply(this, arguments);
+      if (tab === 'quiz') {
+        setTimeout(function() {
+          buildAdminPanel();
+        }, 300);
+      }
+      return r;
+    };
+    window.switchAdminTab._v96hooked = true;
+    console.log('✅ switchAdminTab hooked (v96)');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 HOOK completeLogin
+  // ═══════════════════════════════════════════════════
+  function hookLogin() {
+    if (typeof window.completeLogin !== 'function') return;
+    if (window.completeLogin._v96hooked) return;
+
+    var orig = window.completeLogin;
+    window.completeLogin = async function(student) {
+      var r = await orig.apply(this, arguments);
+      setTimeout(async function() {
+        await loadAll();
+        applyVisibility();
+      }, 1500);
+      return r;
+    };
+    window.completeLogin._v96hooked = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 WATCH DASHBOARD FOR TILE INJECTION
+  // ═══════════════════════════════════════════════════
+  function watchDashboard() {
+    var dash = document.getElementById('dashboardSection');
+    if (!dash || dash._v96watch) return;
+    dash._v96watch = true;
+
+    new MutationObserver(function() {
+      if (dash.style.display === 'block' && currentUser) {
+        setTimeout(applyVisibility, 800);
+        setTimeout(applyVisibility, 2000);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+
+    var grid = document.getElementById('quickActionsGrid');
+    if (grid && !grid._v96gridwatch) {
+      grid._v96gridwatch = true;
+      new MutationObserver(function() {
+        setTimeout(applyVisibility, 200);
+      }).observe(grid, { childList: true });
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  async function init() {
+    await loadAll();
+    patchQuizOpen();
+    hookAdminTab();
+    hookLogin();
+    watchDashboard();
+    applyVisibility();
+
+    // If admin quiz tab already open
+    var quizTab = document.getElementById('adminQuizTab');
+    if (quizTab && quizTab.style.display === 'block') {
+      buildAdminPanel();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2400);
+      setTimeout(init, 4800);
+    });
+  } else {
+    setTimeout(init, 2400);
+    setTimeout(init, 4800);
+  }
+
+  // Periodic safety
+  setInterval(function() {
+    if (!QUIZ_V96.loaded) return;
+    if (currentUser) applyVisibility();
+    var quizTab = document.getElementById('adminQuizTab');
+    if (quizTab && quizTab.style.display === 'block' &&
+        !quizTab.querySelector('.quiz-master-panel')) {
+      buildAdminPanel();
+    }
+  }, 5000);
+
+  // ═══════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════
+  window.QUIZ_V96_debug = function() {
+    console.log('=== PER-CLASS QUIZ DEBUG ===');
+    console.log('Master:', QUIZ_V96.master);
+    console.log('Per-class:', QUIZ_V96.classes);
+    if (currentUser) {
+      var cls = currentUser.class;
+      console.log('Student class:', cls);
+      console.log('Quiz enabled for student:',
+        isQuizEnabledForClass(cls));
+    }
+    var tile = document.querySelector('.action-tile[data-action="quiz"]');
+    if (tile) {
+      console.log('Tile display:', getComputedStyle(tile).display);
+    }
+    var banner = document.querySelector('.quiz-disabled-banner');
+    console.log('Banner present:', !!banner);
+  };
+
+  window.QUIZ_V96_set = async function(cls, val) {
+    if (cls === 'master') {
+      await saveMaster(val);
+      QUIZ_V96.master = val;
+    } else {
+      await saveClass(cls, val);
+      QUIZ_V96.classes[cls] = val;
+    }
+    refreshAdminUI();
+    applyVisibility();
+    showToast('✅ Updated', 'success');
+  };
+
+  console.log('✅ Per-Class Quiz Control v96 ready');
+  console.log('   💡 Admin → Quiz tab → Master + per-class toggles');
+  console.log('   💡 QUIZ_V96_debug() — check state');
+  console.log('   💡 QUIZ_V96_set("6", false) — disable Class 6');
+})();
+</script>
 </body>
 </html>
