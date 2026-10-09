@@ -27682,7 +27682,7 @@ window.askTeacherId = function() {
   window.openTeacherForm = async function(teacherId) {
     var isEdit = !!teacherId;
     var t = isEdit ? (window._teachersList || []).find(function(x) { return x.teacher_id === teacherId; }) : {};
-    var nextId = 'TR001';
+    var nextId = '*****';
     if (!isEdit) {
       try {
         var r = await supabaseClient.from('teachers').select('teacher_id').order('teacher_id', { ascending: false }).limit(1);
