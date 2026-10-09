@@ -30630,8 +30630,14 @@ body.perf-mode-low {
 <!-- 🎨 v74.0 — QUICK ACCESS (MOBILE ONLY) — CLEAN           -->
 <!-- No flickering, event-driven, self-contained              -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<style id="quick-access-v74-css">
-/* Mobile only: 4 icons per row */
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎨 v75.0 — QUICK ACCESS (Smart Rebuild)                 -->
+<!-- Mobile: Categories with 4 icons/row                     -->
+<!-- Desktop: Original flat grid (no categories)             -->
+<!-- Auto-rebuilds when JS-added tiles appear                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="quick-access-v75-css">
 @media (max-width: 900px) {
   #quickActionsGrid.qa-wrapper {
     display: flex !important;
@@ -30699,6 +30705,7 @@ body.perf-mode-low {
     -webkit-box-orient: vertical; padding: 0 2px;
     word-break: break-word;
   }
+  #quickActionsTitle.qa-hidden { display: none !important; }
 }
 @media (max-width: 380px) {
   .qa-grid { gap: 10px 2px !important; }
@@ -30710,50 +30717,108 @@ body.perf-mode-low {
 }
 </style>
 
-<script id="quick-access-v74-js">
+<script id="quick-access-v75-js">
 (function(){
   'use strict';
-  console.log('🎨 v74 Quick Access loading...');
+  console.log('🎨 v75 Quick Access loading...');
 
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📋 CATEGORY MAP — Complete list                          */
+  /* ═══════════════════════════════════════════════════════ */
   var CATEGORY_MAP = {
-    'ACADEMIC': ['results','marks','attendance','timetable','homework','lessons','library','downloads','report','idcard','calendar','topper','studentzone'],
-    'FINANCE':  ['palathulli','fees'],
-    'ACTIVITY': ['extracurricular','competitions','creations','badges','moral','quiz','rewards','namaz'],
-    'SOCIAL':   ['avatar_custom','class_chat','profile','notice','notes','tasbeeh']
+    'ACADEMIC': [
+      'results',          // റിസൾട്ട്
+      'marks',            // മാർക്സ്
+      'attendance',       // ഹാജർ
+      'timetable',        // ടൈംടേബിൾ
+      'homework',         // ഹോംവർക്ക്
+      'lessons',          // പാഠങ്ങൾ
+      'library',          // ലൈബ്രറി
+      'downloads',        // Downloads
+      'report',           // Report
+      'idcard',           // ID കാർഡ്
+      'calendar',         // കലണ്ടർ
+      'topper',           // ടോപ്പർ
+      'studentzone'       // Student Zone
+    ],
+    'FINANCE': [
+      'palathulli',       // പലതുള്ളി
+      'fees'              // ഫീസ്
+    ],
+    'ACTIVITY': [
+      'extracurricular',  // ആക്ടിവിറ്റി
+      'competitions',     // മത്സരങ്ങൾ
+      'creations',        // കലാസൃഷ്ടി
+      'badges',           // ബാഡ്ജുകൾ
+      'moral',            // മൂല്യം
+      'quiz',             // QUIZ
+      'rewards',          // Rewards
+      'namaz'             // നമസ്കാരം
+    ],
+    'SOCIAL': [
+      'avatar_custom',    // Avatar (v29)
+      'avatar',           // Avatar (v28 fallback)
+      'class_chat',       // Chat
+      'profile',          // പ്രൊഫൈൽ
+      'notice',           // നോട്ടീസ്
+      'notes',            // കുറിപ്പുകൾ
+      'tasbeeh'           // Thasbeeh
+    ]
   };
 
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🌐 STATE                                                 */
+  /* ═══════════════════════════════════════════════════════ */
   var _originalHTML = null;
   var _originalClasses = null;
-  var _mode = null; // 'mobile' or 'desktop'
+  var _mode = null; // 'mobile' | 'desktop'
+  var _isApplying = false;
+  var _rebuildTimer = null;
 
   function isMobile() { return window.innerWidth <= 900; }
 
+  /* ═══════════════════════════════════════════════════════ */
+  /* 💾 CAPTURE ORIGINAL (before any rebuild)                */
+  /* ═══════════════════════════════════════════════════════ */
   function captureOriginal() {
     if (_originalHTML !== null) return;
     var grid = document.getElementById('quickActionsGrid');
     if (!grid) return;
-    // Only capture if not already categories
-    if (grid.dataset.catBuilt === '1') return;
+    // Skip if already wrapped by v74/v75
+    if (grid.classList.contains('qa-wrapper')) return;
     _originalHTML = grid.innerHTML;
     _originalClasses = grid.className;
-    console.log('✅ Original captured');
+    console.log('✅ v75: Original captured (' + grid.querySelectorAll('.action-tile').length + ' tiles)');
   }
 
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎨 APPLY CATEGORIES (Mobile)                             */
+  /* ═══════════════════════════════════════════════════════ */
   function applyCategories() {
     if (!isMobile()) return;
     var grid = document.getElementById('quickActionsGrid');
     if (!grid) return;
-    if (grid.dataset.catBuilt === '1') return;
-    if (_originalHTML === null) captureOriginal();
 
-    // Collect tiles
+    // Collect ALL tiles (deeper search to find any outside current build)
     var tiles = {};
     grid.querySelectorAll('.action-tile').forEach(function(t){
-      if (t.dataset.action) tiles[t.dataset.action] = t;
+      var action = t.dataset.action;
+      if (!action) return;
+      // Skip if already inside a category AND same action exists
+      if (!tiles[action]) tiles[action] = t;
     });
-    if (Object.keys(tiles).length === 0) return;
 
-    grid.dataset.catBuilt = '1';
+    // Dedupe: prefer avatar_custom over avatar
+    if (tiles['avatar_custom'] && tiles['avatar']) delete tiles['avatar'];
+    // Dedupe: prefer class_chat over chat if both exist
+    if (tiles['class_chat'] && tiles['chat']) delete tiles['chat'];
+
+    if (Object.keys(tiles).length === 0) {
+      console.log('⚠️ v75: No tiles found');
+      return;
+    }
+
+    _isApplying = true;
     grid.classList.add('qa-wrapper');
 
     var title = document.getElementById('quickActionsTitle');
@@ -30765,13 +30830,17 @@ body.perf-mode-low {
       var actions = CATEGORY_MAP[cat].filter(function(a){ return tiles[a]; });
       if (actions.length === 0) return;
       html += '<div class="qa-category"><h4 class="qa-cat-title">' + cat + '</h4><div class="qa-grid">';
-      actions.forEach(function(a){ html += tiles[a].outerHTML; });
+      actions.forEach(function(a){
+        // Preserve outerHTML (keeps onclick, style, class)
+        html += tiles[a].outerHTML;
+      });
       html += '</div></div>';
     });
 
+    // Fallback: any tile not in any category → MORE
     var used = Object.keys(CATEGORY_MAP).reduce(function(acc,k){return acc.concat(CATEGORY_MAP[k]);},[]);
     var unused = Object.keys(tiles).filter(function(a){return used.indexOf(a)===-1;});
-    if (unused.length) {
+    if (unused.length > 0) {
       html += '<div class="qa-category"><h4 class="qa-cat-title">MORE</h4><div class="qa-grid">';
       unused.forEach(function(a){ html += tiles[a].outerHTML; });
       html += '</div></div>';
@@ -30780,80 +30849,217 @@ body.perf-mode-low {
     grid.innerHTML = html;
 
     setTimeout(function(){
+      _isApplying = false;
       if (typeof window.applyStudentPortalVisibility === 'function') {
         try { window.applyStudentPortalVisibility(); } catch(e) {}
       }
-    }, 100);
-    console.log('✅ Categories applied (mobile)');
+    }, 150);
+
+    console.log('✅ v75: Categories applied — ' + Object.keys(tiles).length + ' tiles');
   }
 
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🖥️ RESTORE ORIGINAL (Desktop)                            */
+  /* ═══════════════════════════════════════════════════════ */
   function restoreOriginal() {
     if (isMobile()) return;
     var grid = document.getElementById('quickActionsGrid');
     if (!grid) return;
-    if (grid.dataset.catBuilt !== '1') return;
+
+    // Only restore if currently wrapped
+    if (!grid.classList.contains('qa-wrapper')) return;
     if (_originalHTML === null) return;
 
+    _isApplying = true;
     grid.innerHTML = _originalHTML;
     grid.className = _originalClasses || 'action-grid';
-    delete grid.dataset.catBuilt;
+    grid.classList.remove('qa-wrapper');
 
     var title = document.getElementById('quickActionsTitle');
     if (title) title.classList.remove('qa-hidden');
 
     setTimeout(function(){
+      _isApplying = false;
       if (typeof window.applyStudentPortalVisibility === 'function') {
         try { window.applyStudentPortalVisibility(); } catch(e) {}
       }
       if (typeof window.cleanupQuickActions === 'function') {
         try { window.cleanupQuickActions(); } catch(e) {}
       }
-    }, 100);
-    console.log('✅ Original restored (desktop)');
+    }, 150);
+
+    console.log('✅ v75: Original restored (desktop)');
   }
 
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 SMART REBUILD — when new tiles appear                 */
+  /* Debounced to prevent flicker                             */
+  /* ═══════════════════════════════════════════════════════ */
+  function scheduleRebuild() {
+    if (!isMobile()) return;
+    if (_rebuildTimer) clearTimeout(_rebuildTimer);
+    _rebuildTimer = setTimeout(function(){
+      _rebuildTimer = null;
+      if (!isMobile()) return;
+      // Check: are there tiles OUTSIDE the categories?
+      var grid = document.getElementById('quickActionsGrid');
+      if (!grid) return;
+      var outsideTiles = grid.querySelectorAll(':scope > .action-tile');
+      if (outsideTiles.length > 0) {
+        console.log('🔄 v75: ' + outsideTiles.length + ' tiles found outside — rebuilding...');
+        applyCategories();
+      }
+    }, 700);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 👁️ WATCH GRID — detect tiles added by v28/v29/v35        */
+  /* ═══════════════════════════════════════════════════════ */
+  function watchGrid() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (!grid || grid._v75watched) return;
+    grid._v75watched = true;
+
+    new MutationObserver(function(mutations){
+      if (_isApplying) return; // ignore our own innerHTML change
+      if (!isMobile()) return;
+
+      var hasNewTiles = false;
+      mutations.forEach(function(m){
+        if (m.addedNodes.length === 0) return;
+        m.addedNodes.forEach(function(n){
+          if (n.nodeType === 1 && n.classList && n.classList.contains('action-tile')) {
+            hasNewTiles = true;
+          }
+        });
+      });
+
+      if (hasNewTiles) {
+        scheduleRebuild();
+      }
+    }).observe(grid, { childList: true, subtree: false });
+
+    console.log('✅ v75: Grid watcher active');
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🔄 APPLY LAYOUT — mobile vs desktop                     */
+  /* ═══════════════════════════════════════════════════════ */
   function applyLayout() {
     var mobile = isMobile();
-    if (_mode === (mobile ? 'mobile' : 'desktop')) return; // No change
-    _mode = mobile ? 'mobile' : 'desktop';
-    if (mobile) applyCategories();
-    else restoreOriginal();
+    var newMode = mobile ? 'mobile' : 'desktop';
+    if (_mode === newMode) return;
+    _mode = newMode;
+
+    if (mobile) {
+      applyCategories();
+    } else {
+      restoreOriginal();
+    }
   }
 
-  // Watch dashboard — NO setInterval, only MutationObserver
-  var dash = document.getElementById('dashboardSection');
-  if (dash && !dash._v74watch) {
-    dash._v74watch = true;
+  /* ═══════════════════════════════════════════════════════ */
+  /* 👁️ WATCH DASHBOARD                                       */
+  /* ═══════════════════════════════════════════════════════ */
+  function watchDashboard() {
+    var dash = document.getElementById('dashboardSection');
+    if (!dash || dash._v75watch) return;
+    dash._v75watch = true;
+
     new MutationObserver(function(){
       if (dash.style.display === 'block') {
-        setTimeout(applyLayout, 1500);
-        setTimeout(applyLayout, 3000);
+        setTimeout(function(){
+          captureOriginal();
+          applyLayout();
+          watchGrid();
+        }, 1500);
+        setTimeout(function(){
+          applyLayout();
+          // Final safety check after all v28/v29/v35 have run
+          setTimeout(function(){
+            var grid = document.getElementById('quickActionsGrid');
+            if (grid && isMobile()) {
+              var outsideTiles = grid.querySelectorAll(':scope > .action-tile');
+              if (outsideTiles.length > 0) applyCategories();
+            }
+          }, 500);
+        }, 3500);
+        setTimeout(function(){ applyLayout(); }, 6000);
       }
     }).observe(dash, { attributes: true, attributeFilter: ['style'] });
   }
 
-  // Resize
-  var _rt = null;
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 RESIZE HANDLER                                        */
+  /* ═══════════════════════════════════════════════════════ */
+  var _resizeTimer = null;
   window.addEventListener('resize', function(){
-    clearTimeout(_rt);
-    _rt = setTimeout(applyLayout, 400);
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(applyLayout, 400);
   });
   window.addEventListener('orientationchange', function(){
-    clearTimeout(_rt);
-    _rt = setTimeout(applyLayout, 600);
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(applyLayout, 700);
   });
 
-  // Capture original ASAP
-  captureOriginal();
-  setTimeout(captureOriginal, 500);
-  setTimeout(captureOriginal, 1000);
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🚀 INIT                                                  */
+  /* ═══════════════════════════════════════════════════════ */
+  function init() {
+    captureOriginal();
+    watchDashboard();
 
-  // Apply
-  setTimeout(applyLayout, 2000);
-  setTimeout(applyLayout, 4000);
+    // Also try immediately if dashboard already visible
+    var dash = document.getElementById('dashboardSection');
+    if (dash && dash.style.display === 'block') {
+      setTimeout(function(){ captureOriginal(); applyLayout(); watchGrid(); }, 1800);
+      setTimeout(applyLayout, 3800);
+      setTimeout(applyLayout, 6500);
+    }
+  }
 
-  window.applyQuickAccessLayout = applyLayout;
-  console.log('✅ v74 ready');
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 1800);
+      setTimeout(init, 3500);
+      setTimeout(init, 5500);
+    });
+  } else {
+    setTimeout(init, 1800);
+    setTimeout(init, 3500);
+    setTimeout(init, 5500);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🐛 DEBUG                                                 */
+  /* ═══════════════════════════════════════════════════════ */
+  window.debugV75 = function() {
+    var grid = document.getElementById('quickActionsGrid');
+    console.log('=== v75 DEBUG ===');
+    console.log('Mobile?', isMobile());
+    console.log('Original captured?', _originalHTML !== null);
+    if (!grid) return;
+    console.log('Is wrapped?', grid.classList.contains('qa-wrapper'));
+    console.log('Categories:', grid.querySelectorAll('.qa-category').length);
+    console.log('Tiles inside categories:', grid.querySelectorAll('.qa-grid .action-tile').length);
+    console.log('Tiles OUTSIDE (problem):', grid.querySelectorAll(':scope > .action-tile').length);
+    grid.querySelectorAll('.qa-category').forEach(function(c){
+      var title = c.querySelector('.qa-cat-title');
+      var count = c.querySelectorAll('.action-tile').length;
+      console.log('  ' + title.textContent + ': ' + count + ' tiles');
+    });
+  };
+
+  window.rebuildCategoriesV75 = function() {
+    if (isMobile()) {
+      applyCategories();
+    } else {
+      console.log('ℹ️ Desktop mode — categories not applied');
+    }
+  };
+
+  console.log('✅ v75 Quick Access ready');
+  console.log('   💡 Type debugV75() to check status');
 })();
 </script>
 </body>
