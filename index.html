@@ -36578,5 +36578,607 @@ body.admin-mode .wa-bot-fab.show { display: flex !important; }
   console.log('✅ Teacher Settings v81 ready');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 💬 v90.0 — WHATSAPP CHAT + CLEAR/DELETE SYSTEM        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="wa-chat-v90-css">
+/* Context Menu */
+.msg-context-menu {
+  position: fixed;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 15px 40px -10px rgba(0,0,0,.4), 0 0 0 1px rgba(100,116,139,.1);
+  padding: 6px;
+  z-index: 100080;
+  min-width: 190px;
+  animation: msgMenuIn .15s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes msgMenuIn {
+  from { opacity: 0; transform: scale(.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+.msg-context-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 8px;
+  background: transparent; border: none;
+  width: 100%; font-family: inherit;
+  font-weight: 700; font-size: .84rem;
+  color: #0f172a; cursor: pointer;
+  text-align: left; transition: background .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.msg-context-item:hover { background: #f1f5f9; }
+.msg-context-item.danger { color: #dc2626; }
+.msg-context-item.danger:hover { background: #fef2f2; }
+.msg-context-item i { width: 18px; font-size: .9rem; }
+
+/* Delete confirmation modal */
+.delete-confirm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100090; display: none;
+  align-items: center; justify-content: center;
+  padding: 20px; animation: msgMenuIn .2s ease;
+}
+.delete-confirm-overlay.open { display: flex; }
+.delete-confirm-card {
+  background: #fff; border-radius: 20px;
+  padding: 22px; max-width: 380px; width: 100%;
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,.6);
+}
+.delete-confirm-title {
+  font-size: 1rem; font-weight: 900;
+  color: #0f172a; margin: 0 0 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.delete-confirm-sub {
+  font-size: .82rem; color: #64748b;
+  line-height: 1.5; margin: 0 0 18px;
+}
+.delete-confirm-actions { display: flex; gap: 8px; }
+.delete-confirm-btn {
+  flex: 1; padding: 12px 16px; border-radius: 12px;
+  border: none; font-family: inherit; font-weight: 800;
+  font-size: .84rem; cursor: pointer; min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; transition: all .2s;
+}
+.delete-confirm-btn.cancel { background: #f1f5f9; color: #475569; }
+.delete-confirm-btn.delete {
+  background: linear-gradient(100deg,#dc2626,#ef4444); color: #fff;
+}
+.delete-confirm-btn:active { transform: scale(.96); }
+
+/* Cleared notice */
+.chat-cleared-notice {
+  text-align: center; padding: 20px;
+  color: #64748b; font-size: .8rem;
+  font-weight: 700; line-height: 1.5;
+}
+.chat-cleared-notice i {
+  display: block; font-size: 1.8rem;
+  margin-bottom: 8px; color: #94a3b8;
+  opacity: .5;
+}
+
+/* WhatsApp-style bg pattern */
+#chatMessages {
+  background:
+    linear-gradient(rgba(248,250,252,.96), rgba(241,245,249,.96)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 60 60'%3E%3Cg fill='%23cbd5e1' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Hide scroll hint on context menu open */
+body.msg-menu-open .chat-msg-delete-btn { display: none !important; }
+</style>
+
+<script id="wa-chat-v90-js">
+(function(){
+  'use strict';
+  console.log('💬 WhatsApp Chat v90 loading...');
+
+  var WACHAT = {
+    clears: {},        // 'class:X' or 'direct:Y' → timestamp
+    hiddenMsgs: {},    // 'table:id' → true
+    loaded: false,
+    ctx: { id: null, table: null, mine: false }
+  };
+
+  window.WACHAT = WACHAT;
+
+  // ═══════════════════════════════════════════════════
+  // 📥 Load user's clear timestamps + hidden messages
+  // ═══════════════════════════════════════════════════
+  async function loadUserData() {
+    if (!currentUser || !supabaseClient) return;
+    try {
+      var cr = await supabaseClient.from('chat_clears')
+        .select('*').eq('studentid', currentUser.studentId);
+      WACHAT.clears = {};
+      (cr.data || []).forEach(function(c) {
+        WACHAT.clears[c.chat_type + ':' + c.chat_id] =
+          new Date(c.cleared_at).getTime();
+      });
+
+      var hr = await supabaseClient.from('hidden_messages')
+        .select('*').eq('studentid', currentUser.studentId);
+      WACHAT.hiddenMsgs = {};
+      (hr.data || []).forEach(function(h) {
+        WACHAT.hiddenMsgs[h.message_table + ':' + h.message_id] = true;
+      });
+
+      WACHAT.loaded = true;
+      console.log('✅ Chat data loaded — clears:', Object.keys(WACHAT.clears).length,
+                  '| hidden:', Object.keys(WACHAT.hiddenMsgs).length);
+    } catch(e) {
+      console.warn('loadUserData:', e);
+    }
+  }
+
+  function getCurrentChatKey() {
+    var s = window.CHAT_STATE;
+    if (!s || !currentUser) return null;
+    if (s.activeChat === 'class') return 'class:' + (currentUser.class || '');
+    return 'direct:' + s.activeChat;
+  }
+
+  function getCurrentTable() {
+    var s = window.CHAT_STATE;
+    if (!s) return null;
+    return s.activeChat === 'class' ? 'class_messages' : 'direct_messages';
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 Apply filters to DOM (hide cleared + hidden)
+  // ═══════════════════════════════════════════════════
+  function applyMessageFilters() {
+    var container = document.getElementById('chatMessages');
+    if (!container) return;
+    var s = window.CHAT_STATE;
+    if (!s || !s.messages) return;
+
+    var key = getCurrentChatKey();
+    if (!key) return;
+
+    var clearedAt = WACHAT.clears[key] || 0;
+    var table = getCurrentTable();
+
+    var domMsgs = container.querySelectorAll('.chat-msg');
+    var msgs = s.messages || [];
+    var visible = 0;
+
+    domMsgs.forEach(function(el, i) {
+      var m = msgs[i];
+      if (!m) { el.style.display = ''; visible++; return; }
+
+      var msgTime = m.created_at ? new Date(m.created_at).getTime() : 0;
+      var hide = false;
+
+      if (clearedAt > 0 && msgTime > 0 && msgTime <= clearedAt) hide = true;
+      if (!hide && WACHAT.hiddenMsgs[table + ':' + m.id]) hide = true;
+
+      el.style.display = hide ? 'none' : '';
+      if (!hide) visible++;
+    });
+
+    // Show "chat cleared" notice if all hidden
+    var old = container.querySelector('.chat-cleared-notice');
+    if (old) old.remove();
+
+    if (visible === 0 && clearedAt > 0) {
+      var notice = document.createElement('div');
+      notice.className = 'chat-cleared-notice';
+      var d = new Date(clearedAt);
+      var label = d.toLocaleDateString('en-IN',
+        { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      notice.innerHTML = '<i class="fas fa-broom"></i>' +
+        'Chat cleared • ' + label +
+        '<div style="margin-top:6px;font-size:.7rem;">New messages കാണാം ✓</div>';
+      container.appendChild(notice);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 👁️ Watch messages container for re-renders
+  // ═══════════════════════════════════════════════════
+  function watchMessages() {
+    var c = document.getElementById('chatMessages');
+    if (!c || c._v90watch) return;
+    c._v90watch = true;
+    new MutationObserver(function(muts) {
+      var hit = false;
+      muts.forEach(function(m) {
+        if (m.type === 'childList' && m.addedNodes.length) hit = true;
+      });
+      if (hit) setTimeout(applyMessageFilters, 30);
+    }).observe(c, { childList: true });
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 👆 Long-press + right-click → context menu
+  // ═══════════════════════════════════════════════════
+  var pressTimer = null;
+
+  function attachMsgEvents() {
+    var c = document.getElementById('chatMessages');
+    if (!c || c._v90events) return;
+    c._v90events = true;
+
+    // Desktop right-click
+    c.addEventListener('contextmenu', function(e) {
+      var bubble = e.target.closest('.chat-msg');
+      if (!bubble) return;
+      e.preventDefault();
+      openCtxMenu(bubble, e.clientX, e.clientY);
+    });
+
+    // Mobile long-press
+    c.addEventListener('touchstart', function(e) {
+      var bubble = e.target.closest('.chat-msg');
+      if (!bubble) return;
+      var t = e.touches[0];
+      pressTimer = setTimeout(function() {
+        if (navigator.vibrate) try { navigator.vibrate(30); } catch(x){}
+        openCtxMenu(bubble, t.clientX, t.clientY);
+        pressTimer = null;
+      }, 500);
+    }, { passive: true });
+
+    ['touchend', 'touchmove', 'touchcancel'].forEach(function(ev) {
+      c.addEventListener(ev, function() {
+        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+      }, { passive: true });
+    });
+  }
+
+  function openCtxMenu(bubble, x, y) {
+    closeCtxMenu();
+    var c = document.getElementById('chatMessages');
+    if (!c) return;
+    var all = c.querySelectorAll('.chat-msg');
+    var idx = Array.prototype.indexOf.call(all, bubble);
+    var s = window.CHAT_STATE;
+    if (idx < 0 || !s || !s.messages || !s.messages[idx]) return;
+
+    var m = s.messages[idx];
+    var table = getCurrentTable();
+    var isMine = (m.sender_id || m.studentid) === currentUser.studentId;
+    var msgTime = m.created_at ? new Date(m.created_at).getTime() : 0;
+    var within1h = msgTime > 0 && (Date.now() - msgTime) < 3600000;
+
+    WACHAT.ctx = { id: m.id, table: table, mine: isMine };
+
+    var menu = document.createElement('div');
+    menu.id = 'msgContextMenu';
+    menu.className = 'msg-context-menu';
+
+    var h = '';
+    h += '<button class="msg-context-item" onclick="WACHAT_ctxCopy()">' +
+         '<i class="fas fa-copy"></i>Copy</button>';
+    h += '<button class="msg-context-item danger" onclick="WACHAT_ctxDeleteMe()">' +
+         '<i class="fas fa-eye-slash"></i>Delete for Me</button>';
+
+    if (isMine && within1h) {
+      h += '<div style="height:1px;background:rgba(100,116,139,.12);margin:4px 6px;"></div>';
+      h += '<button class="msg-context-item danger" onclick="WACHAT_ctxDeleteAll()">' +
+           '<i class="fas fa-trash"></i>Delete for Everyone</button>';
+    }
+
+    menu.innerHTML = h;
+
+    // Position
+    var w = 200, hgt = 150;
+    menu.style.left = Math.max(8, Math.min(x, window.innerWidth - w - 8)) + 'px';
+    menu.style.top = Math.max(8, Math.min(y, window.innerHeight - hgt - 8)) + 'px';
+    document.body.appendChild(menu);
+    document.body.classList.add('msg-menu-open');
+
+    // Close handlers
+    setTimeout(function() {
+      document.addEventListener('click', closeCtxOnOutside, true);
+      document.addEventListener('touchstart', closeCtxOnOutside, true);
+      document.addEventListener('scroll', closeCtxMenu, true);
+    }, 10);
+  }
+
+  function closeCtxOnOutside(e) {
+    var menu = document.getElementById('msgContextMenu');
+    if (!menu) return;
+    if (menu.contains(e.target)) return;
+    closeCtxMenu();
+  }
+
+  function closeCtxMenu() {
+    var m = document.getElementById('msgContextMenu');
+    if (m) m.remove();
+    document.body.classList.remove('msg-menu-open');
+    document.removeEventListener('click', closeCtxOnOutside, true);
+    document.removeEventListener('touchstart', closeCtxOnOutside, true);
+    document.removeEventListener('scroll', closeCtxMenu, true);
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 Context menu actions
+  // ═══════════════════════════════════════════════════
+  window.WACHAT_ctxCopy = function() {
+    var id = WACHAT.ctx.id;
+    closeCtxMenu();
+    if (!id) return;
+    var m = (window.CHAT_STATE.messages || []).find(function(x){ return x.id === id; });
+    if (!m) return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(m.message || '').then(function() {
+        showToast('📋 Copied', 'success');
+      });
+    }
+  };
+
+  window.WACHAT_ctxDeleteMe = function() {
+    var ctx = WACHAT.ctx;
+    closeCtxMenu();
+    if (!ctx.id || !ctx.table) return;
+    hideForMe(ctx.id, ctx.table);
+  };
+
+  window.WACHAT_ctxDeleteAll = function() {
+    var ctx = WACHAT.ctx;
+    closeCtxMenu();
+    if (!ctx.id || !ctx.table) return;
+    confirmDeleteAll(ctx.id, ctx.table);
+  };
+
+  async function hideForMe(id, table) {
+    if (!currentUser || !supabaseClient) return;
+    try {
+      await supabaseClient.from('hidden_messages').insert({
+        studentid: currentUser.studentId,
+        message_id: id,
+        message_table: table
+      });
+    } catch(e) {
+      // Ignore duplicates
+      if (e.code !== '23505' && !/duplicate/i.test(e.message)) {
+        showToast('❌ ' + e.message, 'error');
+        return;
+      }
+    }
+    WACHAT.hiddenMsgs[table + ':' + id] = true;
+    applyMessageFilters();
+    showToast('👁️ Hidden for you', 'info');
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch(x){}
+  }
+
+  function confirmDeleteAll(id, table) {
+    var ov = document.createElement('div');
+    ov.id = 'delConfirmOverlay';
+    ov.className = 'delete-confirm-overlay open';
+    ov.innerHTML =
+      '<div class="delete-confirm-card">' +
+        '<h3 class="delete-confirm-title">' +
+          '<i class="fas fa-trash" style="color:#dc2626;"></i>' +
+          'Delete for Everyone?' +
+        '</h3>' +
+        '<p class="delete-confirm-sub">' +
+          'ഈ message എല്ലാവർക്കും കാണാതാകും. ഇത് undo ചെയ്യാൻ പറ്റില്ല.' +
+        '</p>' +
+        '<div class="delete-confirm-actions">' +
+          '<button class="delete-confirm-btn cancel" ' +
+            'onclick="document.getElementById(\'delConfirmOverlay\').remove()">Cancel</button>' +
+          '<button class="delete-confirm-btn delete" ' +
+            'onclick="WACHAT_doDeleteAll(' + id + ',\'' + table + '\')">' +
+            '<i class="fas fa-trash"></i> Delete' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function(e) {
+      if (e.target === ov) ov.remove();
+    });
+  }
+
+  window.WACHAT_doDeleteAll = async function(id, table) {
+    var ov = document.getElementById('delConfirmOverlay');
+    if (ov) ov.remove();
+    try {
+      await supabaseClient.from(table).update({ is_deleted: true }).eq('id', id);
+      if (window.CHAT_STATE.messages) {
+        window.CHAT_STATE.messages =
+          window.CHAT_STATE.messages.filter(function(m){ return m.id !== id; });
+      }
+      // Re-render
+      if (window.CHAT_STATE.activeChat === 'class') {
+        var cc = document.getElementById('chatMessages');
+        if (cc) {
+          // Manually remove DOM node
+          var domMsgs = cc.querySelectorAll('.chat-msg');
+          // Find by matching content — rely on re-render instead
+        }
+        if (typeof window.openClassChat === 'function') await window.openClassChat();
+      } else {
+        if (typeof window.openDirectChatWith === 'function') {
+          await window.openDirectChatWith(window.CHAT_STATE.activeChat);
+        }
+      }
+      showToast('🗑️ Deleted for everyone', 'success');
+      if (navigator.vibrate) try { navigator.vibrate([20,30,20]); } catch(x){}
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🧹 CLEAR CHAT
+  // ═══════════════════════════════════════════════════
+  window.WACHAT_clearChat = async function() {
+    var key = getCurrentChatKey();
+    if (!key) return;
+    var parts = key.split(':');
+    var chatType = parts[0];
+    var chatId = parts.slice(1).join(':');
+
+    if (!confirm(
+      '🧹 Clear this chat?\n\n' +
+      '✅ നിങ്ങൾക്ക് മാത്രം messages hide ആകും\n' +
+      '👥 മറ്റുള്ളവർക്ക് കാണാം\n' +
+      '💾 അടുത്ത login-ലും hidden ആയിരിക്കും\n\n' +
+      'Proceed?'
+    )) return;
+
+    try {
+      await supabaseClient.from('chat_clears').upsert({
+        studentid: currentUser.studentId,
+        chat_type: chatType,
+        chat_id: chatId,
+        cleared_at: new Date().toISOString()
+      }, { onConflict: 'studentid,chat_type,chat_id' });
+
+      WACHAT.clears[key] = Date.now();
+      applyMessageFilters();
+      showToast('🧹 Chat cleared', 'success');
+      if (navigator.vibrate) try { navigator.vibrate([20,30,20]); } catch(x){}
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🎛️ Inject "Clear Chat" button into 3-dot menu
+  // ═══════════════════════════════════════════════════
+  function injectClearBtn() {
+    var dropdown = document.getElementById('chatHeaderDropdown');
+    if (dropdown && !dropdown.querySelector('[data-clear-chat]')) {
+      var btn = document.createElement('button');
+      btn.setAttribute('data-clear-chat', '1');
+      btn.className = 'chat-dropdown-item';
+      btn.innerHTML = '<i class="fas fa-broom" style="color:#b45309;"></i> Clear Chat';
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        dropdown.classList.remove('open');
+        window.WACHAT_clearChat();
+      };
+      var divider = dropdown.querySelector('.chat-dropdown-divider');
+      if (divider) dropdown.insertBefore(btn, divider);
+      else dropdown.appendChild(btn);
+    }
+
+    // Class chat: no dropdown — add broom icon in header
+    var state = window.CHAT_STATE;
+    if (state && state.activeChat === 'class') {
+      var header = document.querySelector('.chat-header-actions');
+      if (header && !header.querySelector('[data-clear-class]')) {
+        var b2 = document.createElement('button');
+        b2.className = 'chat-header-action';
+        b2.setAttribute('data-clear-class', '1');
+        b2.title = 'Clear Chat';
+        b2.innerHTML = '<i class="fas fa-broom"></i>';
+        b2.onclick = function() { window.WACHAT_clearChat(); };
+        header.insertBefore(b2, header.firstChild);
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 Hook into chat open functions
+  // ═══════════════════════════════════════════════════
+  function patchOpenClass() {
+    if (typeof window.openClassChat !== 'function' || window.openClassChat._v90) return;
+    var orig = window.openClassChat;
+    window.openClassChat = async function() {
+      var r = await orig.apply(this, arguments);
+      setTimeout(function() {
+        watchMessages();
+        attachMsgEvents();
+        applyMessageFilters();
+        injectClearBtn();
+      }, 250);
+      return r;
+    };
+    window.openClassChat._v90 = true;
+  }
+
+  function patchOpenDirect() {
+    if (typeof window.openDirectChatWith !== 'function' || window.openDirectChatWith._v90) return;
+    var orig = window.openDirectChatWith;
+    window.openDirectChatWith = async function(fid) {
+      var r = await orig.apply(this, arguments);
+      setTimeout(function() {
+        watchMessages();
+        attachMsgEvents();
+        applyMessageFilters();
+        injectClearBtn();
+      }, 250);
+      return r;
+    };
+    window.openDirectChatWith._v90 = true;
+  }
+
+  function patchOpenPanel() {
+    if (typeof window.openChatPanel !== 'function' || window.openChatPanel._v90) return;
+    var orig = window.openChatPanel;
+    window.openChatPanel = async function() {
+      var r = await orig.apply(this, arguments);
+      setTimeout(async function() {
+        if (!WACHAT.loaded) await loadUserData();
+        watchMessages();
+        attachMsgEvents();
+        applyMessageFilters();
+      }, 500);
+      return r;
+    };
+    window.openChatPanel._v90 = true;
+  }
+
+  function patchLogin() {
+    if (typeof window.completeLogin !== 'function' || window.completeLogin._v90) return;
+    var orig = window.completeLogin;
+    window.completeLogin = async function(student) {
+      var r = await orig.apply(this, arguments);
+      setTimeout(async function() { await loadUserData(); }, 3000);
+      return r;
+    };
+    window.completeLogin._v90 = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  async function init() {
+    patchOpenClass();
+    patchOpenDirect();
+    patchOpenPanel();
+    patchLogin();
+    if (currentUser) await loadUserData();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 3000);
+      setTimeout(init, 6000);
+    });
+  } else {
+    setTimeout(init, 3000);
+    setTimeout(init, 6000);
+  }
+
+  // Safety: periodically reapply filters + repatch
+  setInterval(function() {
+    patchOpenClass();
+    patchOpenDirect();
+    patchOpenPanel();
+    var panel = document.getElementById('chatPanel');
+    if (panel && panel.classList.contains('open')) {
+      applyMessageFilters();
+      injectClearBtn();
+    }
+  }, 5000);
+
+  console.log('✅ WhatsApp Chat v90 ready');
+  console.log('   • Clear Chat (persists across logins)');
+  console.log('   • Delete for Me / for Everyone');
+  console.log('   • Long-press or right-click on any message');
+})();
+</script>
 </body>
 </html>
