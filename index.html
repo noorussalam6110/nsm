@@ -2522,9 +2522,11 @@ setTimeout(loadMalayalamFontForPDF, 2000);
             <i class="fas fa-home"></i>
             <span>Home</span>
           </button>
-        <button type="button" class="nsm-btn-secondary" 
-        onclick="window.showTeacherLoginV60 && window.showTeacherLoginV60({teacher_id:'__demo__', name:'Teacher', password:''})"
-        style="background: transparent; border: 1px dashed rgba(212,175,55,.5); color: #ffd966; margin-top: 8px;">
+<button type="button" class="nsm-btn-secondary" 
+        onclick="window.askTeacherId()"
+        style="background: rgba(34,211,238,.15); 
+               border: 1px dashed rgba(34,211,238,.5); 
+               color: #22d3ee; margin-top: 8px;">
   <i class="fas fa-chalkboard-teacher"></i>
   <span>👨‍🏫 ഉസ്താദ് ലോഗിൻ</span>
 </button>
@@ -2859,27 +2861,22 @@ setTimeout(loadMalayalamFontForPDF, 2000);
     
     <button class="mob-nav-item active" data-tab="home" onclick="mobNavClick('home',event)">
       <i class="fas fa-home"></i>
-      <span>Home</span>
     </button>
     
     <button class="mob-nav-item" data-tab="gallery" onclick="mobNavClick('gallery',event)">
       <i class="fas fa-palette"></i>
-      <span>Gallery</span>
     </button>
     
     <button class="mob-nav-item" data-tab="chat" onclick="mobNavClick('chat',event)">
       <i class="fas fa-comments"></i>
-      <span>Chat</span>
     </button>
     
     <button class="mob-nav-item" data-tab="broadcast" onclick="mobNavClick('broadcast',event)">
       <i class="fas fa-bell"></i>
-      <span>Alerts</span>
     </button>
     
     <button class="mob-nav-item" data-tab="profile" onclick="mobNavClick('profile',event)">
       <i class="fas fa-user"></i>
-      <span>Profile</span>
     </button>
   </div>
 </div>
@@ -26484,7 +26481,209 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
     }
   }
   window.closeTeacherLogin = closeTeacherLogin;
-
+// ═══════════════════════════════════════════════════════
+// 👨‍🏫 ഉസ്താദ് ലോഗിൻ — Step 1: Teacher ID ചോദിക്കുക
+// ═══════════════════════════════════════════════════════
+window.askTeacherId = function() {
+  // ─── Create a nice modal instead of prompt ───
+  var old = document.getElementById('teacherIdPromptModal');
+  if (old) old.remove();
+  
+  var modal = document.createElement('div');
+  modal.id = 'teacherIdPromptModal';
+  modal.style.cssText = 
+    'position:fixed;inset:0;z-index:99999999;' +
+    'background:rgba(3,8,28,.85);backdrop-filter:blur(16px);' +
+    'display:flex;align-items:center;justify-content:center;' +
+    'padding:16px;overflow-y:auto;animation:reportFadeIn .25s ease;';
+  
+  modal.innerHTML = 
+    '<div style="max-width:400px;width:100%;' +
+      'background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.04));' +
+      'backdrop-filter:blur(28px);border:1.5px solid rgba(34,211,238,.3);' +
+      'border-radius:24px;padding:28px 22px;' +
+      'box-shadow:0 40px 90px -30px rgba(0,0,0,.95);' +
+      'margin:auto 0;position:relative;overflow:hidden;">' +
+      
+      // Top cyan bar
+      '<div style="position:absolute;top:0;left:12%;right:12%;height:2.5px;' +
+        'background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,transparent);' +
+        'filter:drop-shadow(0 0 10px rgba(34,211,238,.9));"></div>' +
+      
+      // Icon + Title
+      '<div style="text-align:center;margin-bottom:22px;">' +
+        '<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:18px;' +
+          'background:linear-gradient(140deg,#0891b2,#22d3ee);' +
+          'display:flex;align-items:center;justify-content:center;' +
+          'font-size:1.8rem;color:#fff;' +
+          'box-shadow:0 12px 28px -10px rgba(34,211,238,.8);">👨‍🏫</div>' +
+        '<h3 style="color:#fff;font-size:1.05rem;font-weight:800;margin:0 0 4px;' +
+          'text-shadow:0 2px 8px rgba(0,0,0,.5);">ഉസ്താദ് ലോഗിൻ</div>' +
+        '<p style="color:#a9cdff;font-size:.76rem;margin:0;' +
+          'letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Teacher Access</p>' +
+      '</div>' +
+      
+      // Info
+      '<div style="background:rgba(34,211,238,.10);border:1.5px solid rgba(34,211,238,.3);' +
+        'border-radius:14px;padding:12px 16px;margin-bottom:18px;' +
+        'font-size:.78rem;color:#67e8f9;line-height:1.5;">' +
+        '<i class="fas fa-info-circle"></i> ' +
+        'ഉസ്താദിന്റെ <b>Teacher ID</b> നൽകുക. <br>' +
+        '<span style="opacity:.8;font-size:.72rem;">(ഉദാ: TR001, TR002, TR003...)</span>' +
+      '</div>' +
+      
+      // Input
+      '<label style="display:block;color:#fff;font-size:.78rem;' +
+        'font-weight:800;margin-bottom:8px;">' +
+        '<i class="fas fa-id-badge" style="color:#ffd966;margin-right:6px;"></i> Teacher ID</label>' +
+      '<div style="display:flex;align-items:center;' +
+        'background:rgba(10,26,63,.65);' +
+        'border:1.5px solid rgba(34,211,238,.35);' +
+        'border-radius:14px;padding:0 14px;margin-bottom:18px;">' +
+        '<i class="fas fa-chalkboard-teacher" style="color:#ffd966;font-size:.95rem;margin-right:10px;"></i>' +
+        '<input type="text" id="teacherIdInput" placeholder="TR001" ' +
+          'autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
+          'style="flex:1;border:none;outline:none;background:transparent;' +
+          'padding:14px 0;color:#fff;font-family:inherit;font-size:16px;' +
+          'font-weight:700;letter-spacing:2px;">' +
+      '</div>' +
+      
+      // Error box
+      '<div id="teacherIdError" style="display:none;background:rgba(239,68,68,.15);' +
+        'border:1.5px solid rgba(239,68,68,.45);border-radius:12px;' +
+        'padding:10px 14px;color:#fca5a5;font-size:.78rem;' +
+        'font-weight:700;margin-bottom:14px;"></div>' +
+      
+      // Buttons
+      '<div style="display:flex;gap:10px;">' +
+        '<button type="button" onclick="document.getElementById(\'teacherIdPromptModal\').remove()" ' +
+          'style="flex:1;padding:13px;border-radius:14px;' +
+          'border:1px solid rgba(255,255,255,.2);' +
+          'background:rgba(255,255,255,.08);color:#fff;' +
+          'font-family:inherit;font-weight:800;font-size:.86rem;' +
+          'cursor:pointer;min-height:48px;">Cancel</button>' +
+        '<button type="button" id="teacherIdSubmitBtn" ' +
+          'style="flex:2;padding:13px;border-radius:14px;border:none;' +
+          'background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;' +
+          'font-family:inherit;font-weight:800;font-size:.86rem;' +
+          'cursor:pointer;min-height:48px;' +
+          'box-shadow:0 8px 20px -8px rgba(34,211,238,.7);">' +
+          '➡️ തുടരുക</button>' +
+      '</div>' +
+    '</div>';
+  
+  document.body.appendChild(modal);
+  
+  // ─── Setup input handlers ───
+  var input = document.getElementById('teacherIdInput');
+  var submitBtn = document.getElementById('teacherIdSubmitBtn');
+  var errorBox = document.getElementById('teacherIdError');
+  
+  // Auto uppercase
+  input.addEventListener('input', function() {
+    var pos = this.selectionStart;
+    var val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    this.value = val;
+    this.setSelectionRange(pos, pos);
+    errorBox.style.display = 'none';
+  });
+  
+  // Auto focus
+  setTimeout(function() {
+    input.focus();
+    // Pre-fill saved teacher ID
+    try {
+      var saved = localStorage.getItem('noor_last_teacher');
+      if (saved && !input.value) input.value = saved;
+    } catch(e) {}
+  }, 200);
+  
+  // Submit
+  function doSubmit() {
+    var tid = input.value.trim().toUpperCase();
+    if (!tid) {
+      errorBox.textContent = '❌ Teacher ID നൽകുക';
+      errorBox.style.display = 'block';
+      return;
+    }
+    if (!/^TR[A-Z0-9]*$/i.test(tid)) {
+      errorBox.textContent = '❌ Teacher ID "TR" ൽ തുടങ്ങണം (ഉദാ: TR001)';
+      errorBox.style.display = 'block';
+      return;
+    }
+    
+    // Disable button, show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ പരിശോധിക്കുന്നു...';
+    errorBox.style.display = 'none';
+    
+    // Lookup teacher
+    supabaseClient.from('teachers')
+      .select('*')
+      .eq('teacher_id', tid)
+      .maybeSingle()
+      .then(function(r) {
+        if (r.error) throw r.error;
+        
+        if (!r.data) {
+          errorBox.textContent = '❌ Teacher ID കണ്ടെത്തിയില്ല: ' + tid;
+          errorBox.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '➡️ തുടരുക';
+          return;
+        }
+        
+        if (r.data.is_active === false) {
+          errorBox.textContent = '🚫 ഈ അക്കൗണ്ട് നിഷ്ക്രിയമാണ്. അഡ്മിനെ ബന്ധപ്പെടുക.';
+          errorBox.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '➡️ തുടരുക';
+          return;
+        }
+        
+        // ✅ Found! Save and close, then show password screen
+        try {
+          localStorage.setItem('noor_last_teacher', tid);
+        } catch(e) {}
+        
+        modal.remove();
+        
+        if (typeof window.showTeacherLoginV60 === 'function') {
+          window.showTeacherLoginV60(r.data);
+        } else if (typeof window.showTeacherLogin === 'function') {
+          window.showTeacherLogin(r.data);
+        }
+      })
+      .catch(function(err) {
+        errorBox.textContent = '❌ ' + (err.message || 'Error');
+        errorBox.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '➡️ തുടരുക';
+      });
+  }
+  
+  submitBtn.addEventListener('click', doSubmit);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      doSubmit();
+    }
+  });
+  
+  // Close on outside click
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) modal.remove();
+  });
+  
+  // Close on Escape
+  var escHandler = function(e) {
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', escHandler);
+    }
+  };
+  document.addEventListener('keydown', escHandler);
+};
   // ─── Eye toggle ───
   $id('tv60Eye').addEventListener('click', function() {
     var inp = $id('tv60Pwd');
