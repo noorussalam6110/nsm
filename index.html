@@ -2537,14 +2537,6 @@ setTimeout(loadMalayalamFontForPDF, 2000);
     <span>ഉസ്താദ് ലോഗിൻ</span>
   </button>
 </div>
-<button type="button" class="nsm-btn-secondary" 
-        onclick="window.askTeacherId()"
-        style="background: rgba(34,211,238,.15); 
-               border: 1px dashed rgba(34,211,238,.5); 
-               color: #22d3ee; margin-top: 8px;">
-  <i class="fas fa-chalkboard-teacher"></i>
-  <span>👨‍🏫 ഉസ്താദ് ലോഗിൻ</span>
-</button>
         </form>
 
         <div class="nsm-card-footer">
@@ -26623,7 +26615,6 @@ window.askTeacherId = function() {
         'font-size:.78rem;color:#67e8f9;line-height:1.5;' +
       '">' +
         '<i class="fas fa-info-circle"></i> ഉസ്താദിന്റെ <b>Teacher ID</b> നൽകുക. <br>' +
-        '<span style="opacity:.75;font-size:.7rem;">(ഉദാ: TR001, TR002, TR003...)</span>' +
       '</div>' +
 
       /* Label */
@@ -26644,7 +26635,7 @@ window.askTeacherId = function() {
         'margin-bottom:14px;' +
       '">' +
         '<i class="fas fa-chalkboard-teacher" style="color:#ffd966;font-size:.95rem;margin-right:10px;flex-shrink:0;"></i>' +
-        '<input type="text" id="teacherIdInput" placeholder="TR001" ' +
+        '<input type="text" id="teacherIdInput" placeholder="Teacher Id" ' +
           'autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
           'style="' +
             'flex:1;min-width:0;' +
@@ -26730,7 +26721,7 @@ window.askTeacherId = function() {
       return;
     }
     if (!/^TR[A-Z0-9]+$/.test(tid)) {
-      errorBox.textContent = '❌ Teacher ID "TR" ൽ തുടങ്ങണം (ഉദാ: TR001)';
+      errorBox.textContent = '❌ Teacher ID കൃത്യമായി നൽകുക';
       errorBox.style.display = 'block';
       return;
     }
@@ -31522,6 +31513,130 @@ input:-webkit-autofill::first-line {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
+/* ═══════════════════════════════════════════════════════ */
+/* 🔒 v78.0 — TEACHER INPUT BULLETPROOF VISIBILITY        */
+/* Kills autofill + focus-within white flash              */
+/* ═══════════════════════════════════════════════════════ */
+
+/* 1️⃣ FORCE DARK background on ALL states of teacher input */
+#teacherLoginV60 .tv60-input-wrap,
+#teacherLoginV60 .tv60-input-wrap:hover,
+#teacherLoginV60 .tv60-input-wrap:focus,
+#teacherLoginV60 .tv60-input-wrap:focus-within,
+#teacherLoginV60 .tv60-input-wrap:active {
+  background: rgba(5, 14, 43, 0.92) !important;
+  border-color: rgba(34, 211, 238, 0.5) !important;
+}
+
+#teacherLoginV60 .tv60-input-wrap:focus-within {
+  box-shadow: 0 0 0 4px rgba(34,211,238,0.25),
+              0 10px 30px -10px rgba(34,211,238,0.6) !important;
+}
+
+/* 2️⃣ FORCE WHITE text on the input itself */
+#teacherLoginV60 input.tv60-input,
+#teacherLoginV60 #tv60Pwd {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  caret-color: #22d3ee !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  opacity: 1 !important;
+}
+
+/* 3️⃣ Kill Chrome/Safari AUTOFILL white background */
+#teacherLoginV60 input.tv60-input:-webkit-autofill,
+#teacherLoginV60 input.tv60-input:-webkit-autofill:hover,
+#teacherLoginV60 input.tv60-input:-webkit-autofill:focus,
+#teacherLoginV60 input.tv60-input:-webkit-autofill:active,
+#teacherLoginV60 #tv60Pwd:-webkit-autofill,
+#teacherLoginV60 #tv60Pwd:-webkit-autofill:hover,
+#teacherLoginV60 #tv60Pwd:-webkit-autofill:focus,
+#teacherLoginV60 #tv60Pwd:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(5, 14, 43, 0.92) inset !important;
+  box-shadow: 0 0 0 1000px rgba(5, 14, 43, 0.92) inset !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  caret-color: #22d3ee !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
+/* Firefox autofill */
+#teacherLoginV60 input.tv60-input:autofill,
+#teacherLoginV60 #tv60Pwd:autofill {
+  filter: none;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0 1000px rgba(5, 14, 43, 0.92) inset !important;
+}
+
+/* 4️⃣ Autofill first-line text color (Chrome mobile) */
+#teacherLoginV60 input.tv60-input:-webkit-autofill::first-line,
+#teacherLoginV60 #tv60Pwd:-webkit-autofill::first-line {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-size: 16px !important;
+}
+
+/* 5️⃣ Placeholder — dim but readable */
+#teacherLoginV60 input.tv60-input::placeholder,
+#teacherLoginV60 #tv60Pwd::placeholder {
+  color: rgba(255,255,255,0.55) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.55) !important;
+  opacity: 1 !important;
+}
+
+/* 6️⃣ Same fix for the ID prompt modal (askTeacherId) */
+#teacherIdPromptModal input,
+#teacherIdInput {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: transparent !important;
+  caret-color: #22d3ee !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+#teacherIdPromptModal input:-webkit-autofill,
+#teacherIdInput:-webkit-autofill {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(5, 14, 43, 0.92) inset !important;
+  box-shadow: 0 0 0 1000px rgba(5, 14, 43, 0.92) inset !important;
+}
+
+#teacherIdPromptModal input::placeholder,
+#teacherIdInput::placeholder {
+  color: rgba(255,255,255,0.5) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.5) !important;
+}
+
+/* 7️⃣ Student login inputs — same bulletproof */
+.nsm-input-wrap,
+.nsm-input-wrap:focus-within {
+  background: rgba(5, 14, 43, 0.92) !important;
+  border-color: rgba(255, 215, 102, 0.5) !important;
+}
+
+.nsm-input,
+.nsm-input#studentId,
+.nsm-input#studentPassword {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffd966 !important;
+  background: transparent !important;
+}
+
+.nsm-input:-webkit-autofill,
+.nsm-input:-webkit-autofill:focus,
+#studentId:-webkit-autofill,
+#studentPassword:-webkit-autofill {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(5, 14, 43, 0.92) inset !important;
+  box-shadow: 0 0 0 1000px rgba(5, 14, 43, 0.92) inset !important;
+  caret-color: #ffd966 !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}  
 </style>
 
 <script id="input-visibility-v77-js">
@@ -31620,6 +31735,156 @@ input:-webkit-autofill::first-line {
   });
 
   console.log('✅ v77 ready — inputs visible');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔒 v78.0 — AUTOFILL KILLER (JS)                        -->
+<!-- Chrome/Safari injects inline styles we must remove     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="autofill-killer-v78">
+(function(){
+  'use strict';
+  console.log('🔒 Autofill Killer v78 loading...');
+
+  // Find all password/text inputs we care about
+  var TARGET_IDS = ['tv60Pwd', 'studentId', 'studentPassword', 'teacherIdInput'];
+
+  function killAutofillStyles(el) {
+    if (!el) return;
+    // Remove Chrome-injected inline styles
+    el.style.setProperty('background-color', 'transparent', 'important');
+    el.style.setProperty('background', 'transparent', 'important');
+    el.style.setProperty('color', '#ffffff', 'important');
+    el.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
+    el.style.setProperty('-webkit-box-shadow', 'none', 'important');
+    el.style.setProperty('box-shadow', 'none', 'important');
+    el.style.setProperty('filter', 'none', 'important');
+  }
+
+  function fixWrapper(el) {
+    if (!el) return;
+    var wrap = el.closest('.tv60-input-wrap, .nsm-input-wrap, [style*="border-radius"]');
+    if (wrap) {
+      wrap.style.setProperty('background', 'rgba(5,14,43,0.92)', 'important');
+      wrap.style.setProperty('background-color', 'rgba(5,14,43,0.92)', 'important');
+    }
+  }
+
+  function attachToInput(el) {
+    if (!el || el._v78fixed) return;
+    el._v78fixed = true;
+
+    // Fix on focus
+    el.addEventListener('focus', function() {
+      killAutofillStyles(this);
+      fixWrapper(this);
+    }, { passive: true });
+
+    // Fix on every keystroke
+    el.addEventListener('input', function() {
+      killAutofillStyles(this);
+      fixWrapper(this);
+    }, { passive: true });
+
+    // Chrome fires 'animationstart' when autofill triggers
+    el.addEventListener('animationstart', function(e) {
+      if (e.animationName && /autofill/i.test(e.animationName)) {
+        killAutofillStyles(this);
+        fixWrapper(this);
+      }
+    });
+
+    // Safari/Chrome: also fix periodically while focused
+    var _timer = null;
+    el.addEventListener('focus', function() {
+      var self = this;
+      if (_timer) clearInterval(_timer);
+      _timer = setInterval(function() {
+        if (document.activeElement !== self) {
+          clearInterval(_timer); _timer = null; return;
+        }
+        killAutofillStyles(self);
+        fixWrapper(self);
+      }, 300);
+    });
+
+    // Immediate one-time fix
+    killAutofillStyles(el);
+  }
+
+  function scanAll() {
+    // By ID
+    TARGET_IDS.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) attachToInput(el);
+    });
+
+    // By selector (catch any dynamic ones)
+    document.querySelectorAll(
+      '.tv60-input, .nsm-input, #tv60Pwd, #teacherIdInput, input[type="password"], input[type="text"].tv60-input'
+    ).forEach(attachToInput);
+  }
+
+  // Run at multiple points
+  function init() {
+    scanAll();
+    // Also watch for modal opens
+    var tm = document.getElementById('teacherLoginV60');
+    if (tm && !tm._v78watch) {
+      tm._v78watch = true;
+      new MutationObserver(function() {
+        if (tm.classList.contains('open')) {
+          setTimeout(scanAll, 100);
+          setTimeout(scanAll, 400);
+        }
+      }).observe(tm, { attributes: true, attributeFilter: ['class'] });
+    }
+    // Watch ID prompt modal
+    var tpm = document.getElementById('teacherIdPromptModal');
+    if (tpm) {
+      new MutationObserver(function() {
+        setTimeout(scanAll, 50);
+      }).observe(tpm, { childList: true, subtree: true });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 500);
+      setTimeout(init, 1500);
+      setTimeout(init, 3000);
+    });
+  } else {
+    setTimeout(init, 500);
+    setTimeout(init, 1500);
+    setTimeout(init, 3000);
+  }
+  setTimeout(init, 5000);
+
+  // Re-scan whenever a tab regains focus (autofill often triggers here)
+  window.addEventListener('focus', function() {
+    setTimeout(scanAll, 100);
+    setTimeout(scanAll, 600);
+  });
+
+  // Watch for teacherIdPromptModal creation
+  var bodyObs = new MutationObserver(function(muts) {
+    muts.forEach(function(m) {
+      m.addedNodes && m.addedNodes.forEach(function(n) {
+        if (n.nodeType === 1) {
+          if (n.id === 'teacherIdPromptModal' ||
+              (n.querySelector && n.querySelector('#teacherIdInput'))) {
+            setTimeout(scanAll, 50);
+          }
+        }
+      });
+    });
+  });
+  if (document.body) {
+    bodyObs.observe(document.body, { childList: true, subtree: false });
+  }
+
+  console.log('✅ Autofill Killer v78 ready');
 })();
 </script>
 </body>
