@@ -38532,5 +38532,1390 @@ body.msg-menu-open .chat-msg-delete-btn { display: none !important; }
   console.log('   💡 WACHAT_forceApply() — manual filter');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📷 v94.0 — CHAT PHOTOS + EMOJI PICKER                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="chat-photos-v94-css">
+/* ═══════════════════════════════════════════════════════ */
+/* 📷 IMAGE PICKER BUTTONS IN INPUT BAR                     */
+/* ═══════════════════════════════════════════════════════ */
+.chat-photo-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #54656f;
+  font-size: 1.15rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: .2s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.chat-photo-btn:hover { background: #e2e8f0; color: #00a884; }
+.chat-photo-btn:active { transform: scale(.9); }
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🖼️ IMAGE MESSAGE BUBBLE                                   */
+/* ═══════════════════════════════════════════════════════ */
+.chat-msg-bubble.has-image {
+  padding: 4px !important;
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  max-width: 280px !important;
+  min-width: 140px !important;
+}
+.chat-msg.mine .chat-msg-bubble.has-image {
+  background: #d9fdd3 !important;
+  padding: 4px !important;
+}
+.chat-msg-bubble.has-image::before { display: none !important; }
+
+.chat-msg-image-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f1f5f9;
+  cursor: pointer;
+  line-height: 0;
+}
+.chat-msg-image-wrap img {
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+  display: block;
+  transition: transform .25s;
+  border-radius: 10px;
+}
+.chat-msg-image-wrap:hover img { transform: scale(1.02); }
+
+.chat-msg-image-caption {
+  padding: 6px 10px 4px;
+  font-size: .86rem;
+  line-height: 1.35;
+  color: #0f172a;
+  word-break: break-word;
+  white-space: pre-wrap;
+  background: transparent;
+}
+
+/* Time overlay for image-only messages */
+.chat-msg-image-wrap .img-time-badge {
+  position: absolute;
+  bottom: 6px; right: 6px;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  font-size: .6rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  backdrop-filter: blur(4px);
+}
+.chat-msg-image-wrap .img-time-badge i { font-size: .55rem; }
+
+/* Pending overlay on image */
+.chat-msg.msg-pending .chat-msg-image-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.35);
+  border-radius: 10px;
+  pointer-events: none;
+}
+.chat-msg.msg-pending .chat-msg-image-wrap::before {
+  content: '\f017';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.5);
+  animation: msgClockSpin 1.4s linear infinite;
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🖼️ IMAGE LIGHTBOX                                        */
+/* ═══════════════════════════════════════════════════════ */
+.chat-image-lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.96);
+  z-index: 100200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: lbFadeIn .2s ease;
+  cursor: zoom-out;
+}
+.chat-image-lightbox.open { display: flex; }
+@keyframes lbFadeIn { from{opacity:0} to{opacity:1} }
+
+.chat-image-lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.7);
+  animation: lbImgIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes lbImgIn {
+  from { opacity: 0; transform: scale(.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.chat-lb-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(10px);
+  z-index: 100201;
+}
+.chat-lb-close:hover { background: rgba(255,255,255,.25); }
+
+.chat-lb-actions {
+  position: absolute;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 100201;
+}
+.chat-lb-btn {
+  padding: 10px 20px;
+  border-radius: 30px;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: .82rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(10px);
+  transition: .2s;
+}
+.chat-lb-btn:hover { background: rgba(255,255,255,.25); }
+
+/* ═══════════════════════════════════════════════════════ */
+/* 🖼️ IMAGE PREVIEW MODAL (Before Send)                     */
+/* ═══════════════════════════════════════════════════════ */
+.img-preview-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,.92);
+  backdrop-filter: blur(18px);
+  z-index: 100150;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+.img-preview-overlay.open { display: flex; }
+.img-preview-card {
+  max-width: 500px;
+  width: 100%;
+  background: #fff;
+  border-radius: 20px;
+  padding: 18px;
+  margin: auto 0;
+  max-height: 94dvh;
+  overflow-y: auto;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.7);
+}
+.img-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.img-preview-title {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.img-preview-title i { color: #00a884; }
+.img-preview-close {
+  background: #f1f5f9;
+  border: none;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  color: #475569;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.img-preview-stage {
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+  max-height: 50dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.img-preview-stage img {
+  max-width: 100%;
+  max-height: 50dvh;
+  object-fit: contain;
+  display: block;
+}
+.img-preview-caption-row {
+  position: relative;
+  margin-bottom: 14px;
+}
+.img-preview-caption {
+  width: 100%;
+  padding: 12px 48px 12px 16px;
+  border: 1.5px solid rgba(100,116,139,.25);
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 16px;
+  outline: none;
+  color: #0f172a;
+  background: #f8fafc;
+  resize: none;
+  min-height: 46px;
+  max-height: 100px;
+  line-height: 1.4;
+}
+.img-preview-caption:focus {
+  border-color: #00a884;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0,168,132,.12);
+}
+.img-preview-caption-emoji {
+  position: absolute;
+  right: 8px; top: 50%;
+  transform: translateY(-50%);
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #54656f;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.img-preview-caption-emoji:hover { background: #e2e8f0; color: #00a884; }
+
+.img-preview-actions {
+  display: flex;
+  gap: 10px;
+}
+.img-preview-btn {
+  flex: 1;
+  padding: 13px 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .86rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  transition: .2s;
+}
+.img-preview-btn:active { transform: scale(.96); }
+.img-preview-btn.send {
+  background: linear-gradient(100deg, #00a884, #25d366);
+  color: #fff;
+  box-shadow: 0 10px 25px -10px rgba(0,168,132,.7);
+}
+.img-preview-btn.cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1.5px solid rgba(100,116,139,.2);
+  flex: 0.6;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 😀 FULL EMOJI PICKER                                     */
+/* ═══════════════════════════════════════════════════════ */
+.chat-emoji-picker {
+  position: absolute;
+  bottom: 100%;
+  left: 8px; right: 8px;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 10px;
+  box-shadow: 0 25px 60px -15px rgba(0,0,0,.35);
+  border: 1px solid rgba(100,116,139,.15);
+  display: none;
+  z-index: 25;
+  margin-bottom: 8px;
+  max-height: 380px;
+  flex-direction: column;
+}
+.chat-emoji-picker.show { display: flex; animation: emojiIn .25s ease; }
+@keyframes emojiIn {
+  from { opacity: 0; transform: translateY(8px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.emoji-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(100,116,139,.12);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+.emoji-picker-title {
+  font-size: .76rem;
+  font-weight: 800;
+  color: #54656f;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.emoji-picker-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: .85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.emoji-picker-close:hover { background: #f1f5f9; color: #0f172a; }
+
+/* Category tabs */
+.emoji-cats {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(100,116,139,.1);
+}
+.emoji-cats::-webkit-scrollbar { display: none; }
+.emoji-cat-btn {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.emoji-cat-btn:hover { background: #f1f5f9; }
+.emoji-cat-btn.active {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  box-shadow: 0 2px 8px -2px rgba(0,168,132,.3);
+}
+
+/* Emoji grid */
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  overflow-y: auto;
+  max-height: 260px;
+  padding: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+.emoji-grid::-webkit-scrollbar { width: 5px; }
+.emoji-grid::-webkit-scrollbar-thumb {
+  background: rgba(100,116,139,.3);
+  border-radius: 5px;
+}
+.emoji-item {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .12s;
+  line-height: 1;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.emoji-item:hover {
+  background: #f1f5f9;
+  transform: scale(1.25);
+}
+.emoji-item:active { transform: scale(.9); }
+
+@media (max-width: 500px) {
+  .emoji-grid { grid-template-columns: repeat(7, 1fr); }
+  .emoji-item { font-size: 1.3rem; }
+  .chat-emoji-picker { max-height: 340px; }
+}
+
+/* Photo picker menu (Camera / Gallery) */
+.photo-picker-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 100180;
+  box-shadow: 0 -10px 40px -10px rgba(0,0,0,.3);
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.34,1.2,.64,1);
+}
+.photo-picker-sheet.open { transform: translateY(0); }
+
+.photo-picker-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,.6);
+  backdrop-filter: blur(4px);
+  z-index: 100179;
+  display: none;
+  animation: lbFadeIn .2s ease;
+}
+.photo-picker-backdrop.open { display: block; }
+
+.photo-picker-handle {
+  width: 42px; height: 4px;
+  background: #cbd5e1;
+  border-radius: 4px;
+  margin: 0 auto 16px;
+}
+.photo-picker-title {
+  font-size: .92rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 14px;
+  text-align: center;
+}
+.photo-picker-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.photo-picker-opt {
+  padding: 18px 12px;
+  border-radius: 16px;
+  border: 2px solid rgba(100,116,139,.15);
+  background: #f8fafc;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.photo-picker-opt:hover {
+  border-color: #00a884;
+  background: #f0fdf4;
+}
+.photo-picker-opt:active { transform: scale(.96); }
+.photo-picker-opt i {
+  font-size: 1.8rem;
+  color: #00a884;
+}
+.photo-picker-opt span {
+  font-size: .82rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* Upload progress bar */
+.img-upload-progress {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: rgba(0,0,0,.15);
+  overflow: hidden;
+  border-radius: 0 0 10px 10px;
+}
+.img-upload-progress > div {
+  height: 100%;
+  background: linear-gradient(90deg, #00a884, #25d366);
+  width: 0%;
+  transition: width .3s ease;
+  border-radius: 0 0 10px 10px;
+}
+
+/* Responsive image bubble */
+@media (max-width: 500px) {
+  .chat-msg-bubble.has-image { max-width: 78vw !important; }
+  .chat-msg-image-wrap img { max-height: 60vh; }
+}
+</style>
+
+<script id="chat-photos-v94-js">
+(function(){
+  'use strict';
+  console.log('📷 Chat Photos v94 loading...');
+
+  var BUCKET = 'chat-images';
+  var MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  var MAX_DIM = 1600;
+  var QUALITY = 0.82;
+
+  // ═══════════════════════════════════════════════════
+  // 🌐 EMOJI DATABASE
+  // ═══════════════════════════════════════════════════
+  var EMOJI_CATS = {
+    '😀': {
+      name: 'Smileys',
+      emojis: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','🥲','😋','😛','😜','🤪','😝','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','😎','🤓','🧐','😕','😟','🙁','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖']
+    },
+    '👋': {
+      name: 'Hands',
+      emojis: ['👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','👶','🧒','👦','👧','🧑','👱','👨','🧔','👩','🧓','👴','👵','🙍','🙎','🙅','🙆','💁','🙋','🧏','🙇','🤦','🤷','👮','🕵️','💂','👷','🤴','👸','👳','👲','🧕','🤵','👰','🤰','🤱','👼','🎅','🤶','🦸','🦹','🧙','🧚','🧛','🧜','🧝','🧞','🧟']
+    },
+    '❤️': {
+      name: 'Hearts',
+      emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','💌','💋','💄','💍','💎','👑','🌹','🥀','🌺','🌸','🌼','🌻','🌷','💐','🌱','🌿','☘️','🍀','🎋','🎍','🌾','🌵','🌴','🌳','🌲','🍁','🍂','🍃','🍄']
+    },
+    '🍔': {
+      name: 'Food',
+      emojis: ['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','☕','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾','🧊']
+    },
+    '⚽': {
+      name: 'Activity',
+      emojis: ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🛷','⛸️','🥌','🎿','⛷️','🏂','🪂','🏋️','🤼','🤸','⛹️','🤺','🤾','🏌️','🏇','🧘','🏄','🏊','🤽','🚣','🧗','🚵','🚴','🏆','🥇','🥈','🥉','🏅','🎖️','🏵️','🎗️','🎫','🎟️','🎪','🤹','🎭','🩰','🎨','🎬','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🎸','🪕','🎻','🎲','♟️','🎯','🎳','🎮','🎰','🧩']
+    },
+    '✈️': {
+      name: 'Travel',
+      emojis: ['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🦯','🦽','🦼','🛴','🚲','🛵','🏍️','🛺','🚨','🚔','🚍','🚘','🚖','🚡','🚠','🚟','🚃','🚋','🚞','🚝','🚄','🚅','🚈','🚂','🚆','🚇','🚊','🚉','✈️','🛫','🛬','🛩️','💺','🛰️','🚀','🛸','🚁','🛶','⛵','🚤','🛥️','🛳️','⛴️','🚢','⚓','⛽','🚧','🚦','🚥','🚏','🗺️','🗿','🗽','🗼','🏰','🏯','🏟️','🎡','🎢','🎠','⛲','⛱️','🏖️','🏝️','🏜️','🌋','⛰️','🏔️','🗻','🏕️','⛺','🏠','🏡','🏘️','🏚️','🏗️','🏭','🏢','🏬','🏣','🏤','🏥','🏦','🏨','🏪','🏫','🏩','💒','🏛️','⛪','🕌','🕍','🛕','🕋','⛩️','🛤️','🛣️','🗾','🎑','🏞️','🌅','🌄','🌠','🎇','🎆','🌇','🌆','🏙️','🌃','🌌','🌉','🌁']
+    },
+    '💡': {
+      name: 'Objects',
+      emojis: ['⌚','📱','📲','💻','⌨️','🖥️','🖨️','🖱️','🖲️','🕹️','🗜️','💽','💾','💿','📀','📼','📷','📸','📹','🎥','📽️','🎞️','📞','☎️','📟','📠','📺','📻','🎙️','🎚️','🎛️','🧭','⏱️','⏲️','⏰','🕰️','⌛','⏳','📡','🔋','🔌','💡','🔦','🕯️','🪔','🧯','🛢️','💸','💵','💴','💶','💷','💰','💳','💎','⚖️','🧰','🔧','🔨','⚒️','🛠️','⛏️','🔩','⚙️','🧱','⛓️','🧲','🔫','💣','🧨','🪓','🔪','🗡️','⚔️','🛡️','🚬','⚰️','🪦','⚱️','🏺','🔮','📿','🧿','💈','⚗️','🔭','🔬','🕳️','🩹','🩺','💊','💉','🩸','🧬','🦠','🧫','🧪','🌡️','🧹','🧺','🧻','🚽','🚰','🚿','🛁','🛀','🧼','🪥','🪒','🧽','🪣','🧴','🛎️','🔑','🗝️','🚪','🪑','🛋️','🛏️','🛌','🧸','🪆','🖼️','🪞','🪟','🛍️','🛒','🎁','🎈','🎏','🎀','🪄','🪅','🎊','🎉','🎎','🏮','🎐','🧧','✉️','📩','📨','📧','💌','📥','📤','📦','🏷️','📪','📫','📬','📭','📮','📯','📜','📃','📄','📑','🧾','📊','📈','📉','🗒️','🗓️','📆','📅','🗑️','📇','🗃️','🗳️','🗄️','📋','📁','📂','🗂️','🗞️','📰','📓','📔','📒','📕','📗','📘','📙','📚','📖','🔖','🧷','🔗','📎','🖇️','📐','📏','🧮','📌','📍','✂️','🖊️','🖋️','✒️','🖌️','🖍️','📝','✏️','🔍','🔎','🔏','🔐','🔒','🔓']
+    },
+    '❗': {
+      name: 'Symbols',
+      emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉️','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🆔','⚛️','🉑','☢️','☣️','📴','📳','🈶','🈚','🈸','🈺','🈷️','✴️','🆚','💮','🉐','㊙️','㊗️','🈴','🈵','🈹','🈲','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌','⭕','🛑','⛔','📛','🚫','💯','💢','♨️','🚷','🚯','🚳','🚱','🔞','📵','🚭','❗','❕','❓','❔','‼️','⁉️','🔅','🔆','〽️','⚠️','🚸','🔱','⚜️','🔰','♻️','✅','🈯','💹','❇️','✳️','❎','🌐','💠','Ⓜ️','🌀','💤','🏧','🚾','♿','🅿️','🈳','🈂️','🛂','🛃','🛄','🛅','🚹','🚺','🚼','🚻','🚮','🎦','📶','🈁','🔣','ℹ️','🔤','🔡','🔠','🆖','🆗','🆙','🆒','🆕','🆓','0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','🔢','#️⃣','*️⃣','⏏️','▶️','⏸️','⏯️','⏹️','⏺️','⏭️','⏮️','⏩','⏪','⏫','⏬','◀️','🔼','🔽','➡️','⬅️','⬆️','⬇️','↗️','↘️','↙️','↖️','↕️','↔️','↪️','↩️','⤴️','⤵️','🔀','🔁','🔂','🔄','🔃','🎵','🎶','➕','➖','➗','✖️','♾️','💲','💱','™️','©️','®️','〰️','➰','➿','🔚','🔙','🔛','🔝','🔜','✔️','☑️','🔘','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔺','🔻','🔸','🔹','🔶','🔷','🔳','🔲','▪️','▫️','◾','◽','◼️','◻️','🟥','🟧','🟨','🟩','🟦','🟪','⬛','⬜','🟫','🔈','🔇','🔉','🔊','🔔','🔕','📣','📢','💬','💭','🗯️','♠️','♣️','♥️','♦️','🃏','🎴','🀄','🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛','🕜','🕝','🕞','🕟','🕠','🕡','🕢','🕣','🕤','🕥','🕦','🕧']
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════
+  window.CHAT_PHOTO_STATE = {
+    pendingFile: null,
+    pendingBlob: null,
+    currentLightboxUrl: null,
+    activeEmojiCat: '😀'
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🖼️ IMAGE COMPRESSION
+  // ═══════════════════════════════════════════════════
+  function compressImage(file) {
+    return new Promise(function(resolve, reject) {
+      if (!file.type.startsWith('image/')) return reject(new Error('Not an image'));
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var w = img.width, h = img.height;
+          if (w > MAX_DIM || h > MAX_DIM) {
+            if (w > h) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+            else { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+          }
+          var canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          canvas.toBlob(function(blob) {
+            if (blob) resolve(blob);
+            else reject(new Error('Compress failed'));
+          }, 'image/jpeg', QUALITY);
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 📤 UPLOAD TO SUPABASE STORAGE
+  // ═══════════════════════════════════════════════════
+  async function uploadChatImage(blob) {
+    var ext = 'jpg';
+    var filename = 'chat_' + currentUser.studentId + '_' +
+                   Date.now() + '_' +
+                   Math.random().toString(36).slice(2, 8) + '.' + ext;
+
+    var up = await supabaseClient.storage
+      .from(BUCKET)
+      .upload(filename, blob, {
+        contentType: 'image/jpeg',
+        cacheControl: '31536000',
+        upsert: false
+      });
+
+    if (up.error) throw up.error;
+
+    var pub = supabaseClient.storage.from(BUCKET).getPublicUrl(filename);
+    return pub.data.publicUrl;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 BUILD IMAGE MESSAGE ELEMENT
+  // ═══════════════════════════════════════════════════
+  function buildImageMessageEl(m, isMine, pending) {
+    var senderName = m.student_name || m.sender_name ||
+                     (isMine ? (currentUser && currentUser.name || 'Me') : 'Student');
+    var initial = (senderName || 'S').charAt(0).toUpperCase();
+
+    var timeStr = '';
+    try {
+      var d = new Date(m.created_at);
+      timeStr = String(d.getHours()).padStart(2, '0') + ':' +
+                String(d.getMinutes()).padStart(2, '0');
+    } catch(e) {}
+
+    var pendingIcon = pending
+      ? ''
+      : ' <i class="fas fa-check" style="font-size:.55rem;opacity:.9;"></i>';
+
+    var imgUrl = m.image_url || '';
+    var caption = m.message || '';
+
+    var el = document.createElement('div');
+    el.className = 'chat-msg ' + (isMine ? 'mine' : 'other') +
+                   (pending ? ' msg-pending' : '');
+    el.setAttribute('data-msg-id', m.id);
+    el.setAttribute('data-msg-type', 'image');
+
+    var captionHtml = caption
+      ? '<div class="chat-msg-image-caption">' + escapeHtml(caption) + '</div>'
+      : '';
+
+    el.innerHTML =
+      '<div class="chat-msg-avatar">' + initial + '</div>' +
+      '<div class="chat-msg-bubble-wrap">' +
+        '<div class="chat-msg-sender">' + escapeHtml(senderName) + '</div>' +
+        '<div class="chat-msg-bubble has-image">' +
+          '<div class="chat-msg-image-wrap" onclick="CHAT_PHOTO_openLightbox(\'' + imgUrl + '\')">' +
+            '<img src="' + imgUrl + '" alt="photo" loading="lazy">' +
+            '<span class="img-time-badge">' + timeStr + pendingIcon + '</span>' +
+          '</div>' +
+          captionHtml +
+        '</div>' +
+      '</div>';
+    return el;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🖼️ LIGHTBOX
+  // ═══════════════════════════════════════════════════
+  window.CHAT_PHOTO_openLightbox = function(url) {
+    if (!url) return;
+    var lb = document.getElementById('chatImageLightbox');
+    if (!lb) {
+      lb = document.createElement('div');
+      lb.id = 'chatImageLightbox';
+      lb.className = 'chat-image-lightbox';
+      lb.innerHTML =
+        '<button class="chat-lb-close" onclick="CHAT_PHOTO_closeLightbox()">' +
+          '<i class="fas fa-times"></i>' +
+        '</button>' +
+        '<img id="chatLightboxImg" src="" alt="photo">' +
+        '<div class="chat-lb-actions">' +
+          '<a id="chatLbDownload" class="chat-lb-btn" download target="_blank">' +
+            '<i class="fas fa-download"></i> Download' +
+          '</a>' +
+          '<button class="chat-lb-btn" onclick="CHAT_PHOTO_shareLightbox()">' +
+            '<i class="fas fa-share"></i> Share' +
+          '</button>' +
+        '</div>';
+      document.body.appendChild(lb);
+
+      lb.addEventListener('click', function(e) {
+        if (e.target === lb) window.CHAT_PHOTO_closeLightbox();
+      });
+    }
+    document.getElementById('chatLightboxImg').src = url;
+    var dl = document.getElementById('chatLbDownload');
+    if (dl) dl.href = url;
+    CHAT_PHOTO_STATE.currentLightboxUrl = url;
+    lb.classList.add('open');
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
+  };
+
+  window.CHAT_PHOTO_closeLightbox = function() {
+    var lb = document.getElementById('chatImageLightbox');
+    if (lb) lb.classList.remove('open');
+  };
+
+  window.CHAT_PHOTO_shareLightbox = async function() {
+    var url = CHAT_PHOTO_STATE.currentLightboxUrl;
+    if (!url) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({ url: url, title: 'Chat Image' });
+      } catch(e) {}
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 😀 EMOJI PICKER — FULL VERSION
+  // ═══════════════════════════════════════════════════
+  function buildEmojiPicker() {
+    var existing = document.getElementById('chatEmojiPicker');
+    if (existing && existing.dataset.v94) return existing;
+
+    if (existing) existing.remove();
+
+    var picker = document.createElement('div');
+    picker.id = 'chatEmojiPicker';
+    picker.className = 'chat-emoji-picker';
+    picker.dataset.v94 = '1';
+
+    // Header
+    var headerHtml =
+      '<div class="emoji-picker-header">' +
+        '<div class="emoji-picker-title">' +
+          '<i class="fas fa-smile" style="color:#00a884;margin-right:4px;"></i>' +
+          'Emojis' +
+        '</div>' +
+        '<button class="emoji-picker-close" onclick="CHAT_PHOTO_toggleEmoji()">' +
+          '<i class="fas fa-times"></i>' +
+        '</button>' +
+      '</div>';
+
+    // Category tabs
+    var catsHtml = '<div class="emoji-cats" id="emojiCats">';
+    Object.keys(EMOJI_CATS).forEach(function(key, i) {
+      catsHtml += '<button class="emoji-cat-btn' + (i === 0 ? ' active' : '') +
+                  '" data-cat="' + key + '" ' +
+                  'onclick="CHAT_PHOTO_switchEmojiCat(\'' + key + '\', this)">' +
+                  key + '</button>';
+    });
+    catsHtml += '</div>';
+
+    // Grid
+    var gridHtml = '<div class="emoji-grid" id="emojiGrid"></div>';
+
+    picker.innerHTML = headerHtml + catsHtml + gridHtml;
+
+    // Insert into chat input area
+    var inputArea = document.querySelector('.chat-input-area');
+    if (inputArea && inputArea.parentNode) {
+      inputArea.parentNode.insertBefore(picker, inputArea);
+    } else {
+      document.body.appendChild(picker);
+    }
+
+    renderEmojiGrid('😀');
+    return picker;
+  }
+
+  function renderEmojiGrid(cat) {
+    var grid = document.getElementById('emojiGrid');
+    if (!grid) return;
+    var list = EMOJI_CATS[cat] ? EMOJI_CATS[cat].emojis : [];
+    grid.innerHTML = list.map(function(e) {
+      return '<button class="emoji-item" onclick="CHAT_PHOTO_insertEmoji(\'' + e + '\')">' + e + '</button>';
+    }).join('');
+    grid.scrollTop = 0;
+  }
+
+  window.CHAT_PHOTO_switchEmojiCat = function(cat, btn) {
+    CHAT_PHOTO_STATE.activeEmojiCat = cat;
+    document.querySelectorAll('.emoji-cat-btn').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.cat === cat);
+    });
+    renderEmojiGrid(cat);
+  };
+
+  window.CHAT_PHOTO_insertEmoji = function(emoji) {
+    var inp = document.getElementById('chatInput');
+    if (!inp) return;
+    var start = inp.selectionStart || inp.value.length;
+    var end = inp.selectionEnd || inp.value.length;
+    inp.value = inp.value.slice(0, start) + emoji + inp.value.slice(end);
+    inp.selectionStart = inp.selectionEnd = start + emoji.length;
+    inp.focus();
+    if (typeof window.chatInputChange === 'function') {
+      window.chatInputChange(inp);
+    }
+    if (navigator.vibrate) try { navigator.vibrate(5); } catch(e) {}
+  };
+
+  window.CHAT_PHOTO_toggleEmoji = function() {
+    buildEmojiPicker();
+    var p = document.getElementById('chatEmojiPicker');
+    if (!p) return;
+    p.classList.toggle('show');
+  };
+
+  // Close emoji picker on outside click
+  document.addEventListener('click', function(e) {
+    var p = document.getElementById('chatEmojiPicker');
+    if (!p || !p.classList.contains('show')) return;
+    if (p.contains(e.target)) return;
+    if (e.target.closest('.chat-emoji-btn')) return;
+    p.classList.remove('show');
+  });
+
+  // ═══════════════════════════════════════════════════
+  // 📷 PHOTO PICKER SHEET
+  // ═══════════════════════════════════════════════════
+  function buildPhotoSheet() {
+    if (document.getElementById('photoPickerSheet')) return;
+
+    var backdrop = document.createElement('div');
+    backdrop.id = 'photoPickerBackdrop';
+    backdrop.className = 'photo-picker-backdrop';
+    backdrop.onclick = function() { window.CHAT_PHOTO_closeSheet(); };
+    document.body.appendChild(backdrop);
+
+    var sheet = document.createElement('div');
+    sheet.id = 'photoPickerSheet';
+    sheet.className = 'photo-picker-sheet';
+    sheet.innerHTML =
+      '<div class="photo-picker-handle"></div>' +
+      '<h4 class="photo-picker-title">Photo അയക്കുക</h4>' +
+      '<div class="photo-picker-options">' +
+        '<button class="photo-picker-opt" onclick="CHAT_PHOTO_pickCamera()">' +
+          '<i class="fas fa-camera"></i>' +
+          '<span>📷 Camera</span>' +
+        '</button>' +
+        '<button class="photo-picker-opt" onclick="CHAT_PHOTO_pickGallery()">' +
+          '<i class="fas fa-image"></i>' +
+          '<span>🖼️ Gallery</span>' +
+        '</button>' +
+      '</div>';
+    document.body.appendChild(sheet);
+
+    // Hidden file inputs
+    var camInput = document.createElement('input');
+    camInput.type = 'file';
+    camInput.accept = 'image/*';
+    camInput.capture = 'environment';
+    camInput.id = 'chatCamInput';
+    camInput.style.display = 'none';
+    camInput.onchange = handlePickedFile;
+    document.body.appendChild(camInput);
+
+    var galInput = document.createElement('input');
+    galInput.type = 'file';
+    galInput.accept = 'image/*';
+    galInput.multiple = false;
+    galInput.id = 'chatGalleryInput';
+    galInput.style.display = 'none';
+    galInput.onchange = handlePickedFile;
+    document.body.appendChild(galInput);
+  }
+
+  window.CHAT_PHOTO_openSheet = function() {
+    buildPhotoSheet();
+    var s = document.getElementById('photoPickerSheet');
+    var b = document.getElementById('photoPickerBackdrop');
+    if (s) s.classList.add('open');
+    if (b) b.classList.add('open');
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
+  };
+
+  window.CHAT_PHOTO_closeSheet = function() {
+    var s = document.getElementById('photoPickerSheet');
+    var b = document.getElementById('photoPickerBackdrop');
+    if (s) s.classList.remove('open');
+    if (b) b.classList.remove('open');
+  };
+
+  window.CHAT_PHOTO_pickCamera = function() {
+    window.CHAT_PHOTO_closeSheet();
+    setTimeout(function() {
+      document.getElementById('chatCamInput').click();
+    }, 250);
+  };
+
+  window.CHAT_PHOTO_pickGallery = function() {
+    window.CHAT_PHOTO_closeSheet();
+    setTimeout(function() {
+      document.getElementById('chatGalleryInput').click();
+    }, 250);
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 📸 HANDLE PICKED FILE → PREVIEW MODAL
+  // ═══════════════════════════════════════════════════
+  async function handlePickedFile(e) {
+    var file = e.target.files[0];
+    e.target.value = ''; // reset for same file re-pick
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('❌ Only images allowed', 'error');
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      showToast('❌ Image too large (max 5MB)', 'error');
+      return;
+    }
+
+    try {
+      showLoading(true);
+      var compressed = await compressImage(file);
+      showLoading(false);
+
+      CHAT_PHOTO_STATE.pendingFile = file;
+      CHAT_PHOTO_STATE.pendingBlob = compressed;
+
+      openPreviewModal(compressed);
+    } catch(err) {
+      showLoading(false);
+      showToast('❌ ' + (err.message || 'Image error'), 'error');
+    }
+  }
+
+  function openPreviewModal(blob) {
+    var old = document.getElementById('imgPreviewOverlay');
+    if (old) old.remove();
+
+    var url = URL.createObjectURL(blob);
+
+    var modal = document.createElement('div');
+    modal.id = 'imgPreviewOverlay';
+    modal.className = 'img-preview-overlay open';
+    modal.innerHTML =
+      '<div class="img-preview-card">' +
+        '<div class="img-preview-header">' +
+          '<div class="img-preview-title">' +
+            '<i class="fas fa-image"></i> Preview' +
+          '</div>' +
+          '<button class="img-preview-close" onclick="CHAT_PHOTO_closePreview()">' +
+            '<i class="fas fa-times"></i>' +
+          '</button>' +
+        '</div>' +
+        '<div class="img-preview-stage">' +
+          '<img id="imgPreviewImg" src="' + url + '" alt="preview">' +
+        '</div>' +
+        '<div class="img-preview-caption-row">' +
+          '<textarea id="imgPreviewCaption" class="img-preview-caption" ' +
+                    'placeholder="Caption എഴുതാം (optional)..." ' +
+                    'maxlength="500" ' +
+                    'oninput="CHAT_PHOTO_captionChange(this)"></textarea>' +
+          '<button class="img-preview-caption-emoji" ' +
+                  'onclick="CHAT_PHOTO_insertCaptionEmoji()" ' +
+                  'title="Emoji">' +
+            '<i class="far fa-smile"></i>' +
+          '</button>' +
+        '</div>' +
+        '<div class="img-preview-actions">' +
+          '<button class="img-preview-btn cancel" ' +
+                  'onclick="CHAT_PHOTO_closePreview()">Cancel</button>' +
+          '<button class="img-preview-btn send" id="imgPreviewSendBtn" ' +
+                  'onclick="CHAT_PHOTO_sendImage()">' +
+            '<i class="fas fa-paper-plane"></i> Send' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) window.CHAT_PHOTO_closePreview();
+    });
+
+    setTimeout(function() {
+      var inp = document.getElementById('imgPreviewCaption');
+      if (inp && window.innerWidth > 600) inp.focus();
+    }, 300);
+
+    modal._previewUrl = url;
+  }
+
+  window.CHAT_PHOTO_closePreview = function() {
+    var m = document.getElementById('imgPreviewOverlay');
+    if (m) {
+      if (m._previewUrl) URL.revokeObjectURL(m._previewUrl);
+      m.remove();
+    }
+    CHAT_PHOTO_STATE.pendingBlob = null;
+    CHAT_PHOTO_STATE.pendingFile = null;
+  };
+
+  window.CHAT_PHOTO_captionChange = function(el) {
+    // just to hook if needed
+  };
+
+  window.CHAT_PHOTO_insertCaptionEmoji = function() {
+    var inp = document.getElementById('imgPreviewCaption');
+    if (!inp) return;
+    var commonEmojis = ['😀','😂','❤️','👍','🎉','🔥','😍','🙏','✨','💯','😎','🌟'];
+    var pick = commonEmojis[Math.floor(Math.random() * commonEmojis.length)];
+    inp.value += pick;
+    inp.focus();
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 📤 SEND IMAGE MESSAGE
+  // ═══════════════════════════════════════════════════
+  window.CHAT_PHOTO_sendImage = async function() {
+    var blob = CHAT_PHOTO_STATE.pendingBlob;
+    if (!blob) {
+      showToast('❌ No image', 'error');
+      return;
+    }
+    var s = window.CHAT_STATE;
+    if (!s || !currentUser) {
+      showToast('❌ Chat not ready', 'error');
+      return;
+    }
+
+    var caption = (document.getElementById('imgPreviewCaption') || {}).value || '';
+    caption = caption.trim();
+
+    var sendBtn = document.getElementById('imgPreviewSendBtn');
+    if (sendBtn) {
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    }
+
+    var isClass = s.activeChat === 'class';
+    var table = isClass ? 'class_messages' : 'direct_messages';
+    var chatId = isClass ? String(currentUser.class || '') : s.activeChat;
+
+    var tempId = 'tmp_img_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+
+    try {
+      // ─── 1. Upload to storage ───
+      var publicUrl = await uploadChatImage(blob);
+
+      // ─── 2. Create temp message with LOCAL preview ───
+      var localPreviewUrl = document.getElementById('imgPreviewImg').src;
+      var tempMsg = {
+        id: tempId,
+        message: caption,
+        message_type: 'image',
+        image_url: publicUrl,        // ← Use real URL immediately (already uploaded)
+        created_at: new Date().toISOString(),
+        _pending: true
+      };
+      if (isClass) {
+        tempMsg.class = chatId;
+        tempMsg.studentid = currentUser.studentId;
+        tempMsg.student_name = currentUser.name;
+      } else {
+        tempMsg.sender_id = currentUser.studentId;
+        tempMsg.receiver_id = chatId;
+      }
+
+      if (!s.messages) s.messages = [];
+      s.messages.push(tempMsg);
+
+      // ─── 3. Append to DOM immediately ───
+      var container = document.getElementById('chatMessages');
+      var tempEl = null;
+      if (container) {
+        var empty = container.querySelector('.chat-empty, .chat-cleared-notice');
+        if (empty) empty.remove();
+        tempEl = buildImageMessageEl(tempMsg, true, true);
+        container.appendChild(tempEl);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      // Close preview
+      window.CHAT_PHOTO_closePreview();
+
+      if (navigator.vibrate) try { navigator.vibrate(12); } catch(e) {}
+
+      // ─── 4. Save to DB ───
+      var payload = isClass ? {
+        class: chatId,
+        studentid: currentUser.studentId,
+        student_name: currentUser.name,
+        message: caption,
+        message_type: 'image',
+        image_url: publicUrl
+      } : {
+        sender_id: currentUser.studentId,
+        receiver_id: chatId,
+        message: caption,
+        message_type: 'image',
+        image_url: publicUrl
+      };
+
+      var r = await supabaseClient.from(table).insert(payload).select().single();
+      if (r.error) throw r.error;
+
+      var real = r.data;
+
+      // ─── 5. Swap temp with real ───
+      var idx = s.messages.findIndex(function(m){ return m.id === tempId; });
+      if (idx > -1) s.messages[idx] = real;
+
+      if (tempEl && tempEl.parentNode) {
+        tempEl.setAttribute('data-msg-id', real.id);
+        tempEl.classList.remove('msg-pending');
+      }
+
+      showToast('✅ Image sent', 'success');
+
+    } catch(err) {
+      console.error('Send image error:', err);
+
+      // Rollback
+      var idx2 = s.messages.findIndex(function(m){ return m.id === tempId; });
+      if (idx2 > -1) s.messages.splice(idx2, 1);
+
+      if (tempEl && tempEl.parentNode) {
+        tempEl.classList.add('msg-failed');
+        tempEl.classList.remove('msg-pending');
+        setTimeout(function() { if (tempEl.parentNode) tempEl.remove(); }, 5000);
+      }
+
+      showToast('❌ ' + (err.message || 'Upload failed'), 'error');
+    } finally {
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+      }
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 INJECT PHOTO BUTTON INTO INPUT AREA
+  // ═══════════════════════════════════════════════════
+  function injectPhotoButton() {
+    var area = document.querySelector('.chat-input-area');
+    if (!area) return;
+    if (area.querySelector('.chat-photo-btn')) return;
+
+    var wrap = area.querySelector('.chat-input-wrap');
+    if (!wrap) return;
+
+    // Photo button on left side
+    var photoBtn = document.createElement('button');
+    photoBtn.type = 'button';
+    photoBtn.className = 'chat-photo-btn';
+    photoBtn.title = 'Send Photo';
+    photoBtn.innerHTML = '<i class="fas fa-camera"></i>';
+    photoBtn.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.CHAT_PHOTO_openSheet();
+    };
+    wrap.insertBefore(photoBtn, wrap.firstChild);
+
+    // Emoji button — replace existing onclick with our picker
+    var emojiBtn = wrap.querySelector('.chat-emoji-btn');
+    if (emojiBtn) {
+      emojiBtn.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.CHAT_PHOTO_toggleEmoji();
+      };
+    }
+
+    console.log('✅ Photo button + emoji button injected');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 RENDER IMAGE MESSAGES IN DOM (for loaded msgs)
+  // ═══════════════════════════════════════════════════
+  function renderImageMessages() {
+    var c = document.getElementById('chatMessages');
+    if (!c) return;
+    var s = window.CHAT_STATE;
+    if (!s || !s.messages) return;
+
+    var nodes = c.querySelectorAll('.chat-msg');
+    nodes.forEach(function(node, i) {
+      var m = s.messages[i];
+      if (!m) return;
+      if (m.message_type !== 'image') return;
+      if (node.dataset.v94Image) return;
+      if (!m.image_url) return;
+
+      // Only upgrade if it's still a text bubble
+      var bubble = node.querySelector('.chat-msg-bubble');
+      if (!bubble || bubble.classList.contains('has-image')) return;
+
+      var isMine = node.classList.contains('mine');
+      var timeEl = node.querySelector('.chat-msg-time');
+      var timeStr = timeEl ? timeEl.textContent.replace(/[^0-9:]/g,'').substring(0,5) : '';
+      var caption = m.message || '';
+
+      var newBubble = document.createElement('div');
+      newBubble.className = 'chat-msg-bubble has-image';
+      newBubble.innerHTML =
+        '<div class="chat-msg-image-wrap" onclick="CHAT_PHOTO_openLightbox(\'' + m.image_url + '\')">' +
+          '<img src="' + m.image_url + '" alt="photo" loading="lazy">' +
+          '<span class="img-time-badge">' + timeStr + '</span>' +
+        '</div>' +
+        (caption ? '<div class="chat-msg-image-caption">' + escapeHtml(caption) + '</div>' : '');
+
+      bubble.parentNode.replaceChild(newBubble, bubble);
+
+      if (timeEl) timeEl.style.display = 'none';
+
+      node.dataset.v94Image = '1';
+      node.dataset.msgType = 'image';
+    });
+  }
+
+  function watchForImageRender() {
+    var c = document.getElementById('chatMessages');
+    if (!c || c._v94watch) return;
+    c._v94watch = true;
+
+    var pending = null;
+    new MutationObserver(function() {
+      if (pending) clearTimeout(pending);
+      pending = setTimeout(function() {
+        pending = null;
+        renderImageMessages();
+      }, 120);
+    }).observe(c, { childList: true });
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 HOOKS
+  // ═══════════════════════════════════════════════════
+  function hookChatOpeners() {
+    ['openClassChat', 'openDirectChatWith'].forEach(function(fn) {
+      if (typeof window[fn] !== 'function') return;
+      if (window[fn]._v94hooked) return;
+      var orig = window[fn];
+      window[fn] = async function() {
+        var r = await orig.apply(this, arguments);
+        setTimeout(function() {
+          injectPhotoButton();
+          watchForImageRender();
+          renderImageMessages();
+        }, 200);
+        setTimeout(renderImageMessages, 600);
+        setTimeout(renderImageMessages, 1400);
+        return r;
+      };
+      window[fn]._v94hooked = true;
+    });
+  }
+
+  function hookPanel() {
+    if (typeof window.openChatPanel !== 'function') return;
+    if (window.openChatPanel._v94hooked) return;
+    var orig = window.openChatPanel;
+    window.openChatPanel = async function() {
+      var r = await orig.apply(this, arguments);
+      setTimeout(function() {
+        injectPhotoButton();
+        watchForImageRender();
+      }, 400);
+      return r;
+    };
+    window.openChatPanel._v94hooked = true;
+  }
+
+  // Hook send to allow sending image via main input (URL-only shortcut)
+  function hookSendForImages() {
+    if (typeof window.sendChatMessage !== 'function') return;
+    if (window.sendChatMessage._v94hooked) return;
+    // No change needed — text send still works fine
+    window.sendChatMessage._v94hooked = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  function init() {
+    buildEmojiPicker();
+    buildPhotoSheet();
+    hookChatOpeners();
+    hookPanel();
+    hookSendForImages();
+
+    // Inject button if panel is already open
+    var panel = document.getElementById('chatPanel');
+    if (panel && panel.classList.contains('open')) {
+      injectPhotoButton();
+      watchForImageRender();
+      renderImageMessages();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2500);
+      setTimeout(init, 5000);
+    });
+  } else {
+    setTimeout(init, 2500);
+    setTimeout(init, 5000);
+  }
+
+  // Periodic re-inject
+  setInterval(function() {
+    var panel = document.getElementById('chatPanel');
+    if (panel && panel.classList.contains('open')) {
+      injectPhotoButton();
+      watchForImageRender();
+      renderImageMessages();
+    }
+  }, 3000);
+
+  // Escape closes lightbox + preview
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    var lb = document.getElementById('chatImageLightbox');
+    if (lb && lb.classList.contains('open')) { window.CHAT_PHOTO_closeLightbox(); return; }
+    var pv = document.getElementById('imgPreviewOverlay');
+    if (pv) { window.CHAT_PHOTO_closePreview(); return; }
+    var ps = document.getElementById('photoPickerSheet');
+    if (ps && ps.classList.contains('open')) { window.CHAT_PHOTO_closeSheet(); return; }
+    var ep = document.getElementById('chatEmojiPicker');
+    if (ep && ep.classList.contains('show')) { ep.classList.remove('show'); return; }
+  });
+
+  console.log('✅ Chat Photos v94 ready');
+  console.log('   📷 Camera + Gallery picker');
+  console.log('   😀 Full emoji picker (300+)');
+  console.log('   🖼️ Image bubbles + lightbox');
+})();
+</script>
 </body>
 </html>
