@@ -37536,5 +37536,523 @@ body.msg-menu-open .chat-msg-delete-btn { display: none !important; }
   console.log('   • Duplicate realtime messages prevent ചെയ്യും');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 💚 v92.0 — WHATSAPP STYLE + DUPLICATE KILLER          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="wa-style-v92-css">
+/* ═══════════════════════════════════════════════════════ */
+/* 💚 WHATSAPP MESSAGE BUBBLES                             */
+/* ═══════════════════════════════════════════════════════ */
+
+/* Kill old conflicting styles */
+.chat-msg-bubble { max-width: 65% !important; }
+.chat-msg-bubble-wrap { max-width: 80% !important; }
+
+/* Message row layout */
+.chat-msg {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 6px !important;
+  margin-bottom: 4px !important;
+  max-width: 100% !important;
+  position: relative !important;
+  animation: waMsgIn .18s ease-out !important;
+}
+@keyframes waMsgIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.chat-msg.mine {
+  justify-content: flex-end !important;
+  flex-direction: row !important;
+  padding-left: 50px !important;
+}
+.chat-msg.other {
+  justify-content: flex-start !important;
+  padding-right: 50px !important;
+}
+
+/* Avatar — small like WhatsApp */
+.chat-msg-avatar {
+  width: 28px !important;
+  height: 28px !important;
+  font-size: .72rem !important;
+  flex-shrink: 0 !important;
+  align-self: flex-end !important;
+  margin-bottom: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+}
+.chat-msg.mine .chat-msg-avatar { display: none !important; }
+
+/* Bubble wrap */
+.chat-msg-bubble-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+.chat-msg.mine .chat-msg-bubble-wrap { align-items: flex-end !important; }
+
+/* Sender name — small, colored */
+.chat-msg-sender {
+  font-size: .68rem !important;
+  font-weight: 800 !important;
+  padding: 0 6px 2px 10px !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+  letter-spacing: .2px !important;
+}
+.chat-msg.mine .chat-msg-sender { display: none !important; }
+.chat-msg.other .chat-msg-sender {
+  color: #7c3aed !important;
+  text-transform: capitalize;
+}
+
+/* ═══ THE BUBBLE ═══ */
+.chat-msg-bubble {
+  padding: 6px 10px 7px !important;
+  font-size: .86rem !important;
+  line-height: 1.4 !important;
+  border-radius: 8px !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: pre-wrap !important;
+  position: relative !important;
+  box-shadow: 0 1px 1px rgba(0,0,0,.08) !important;
+  max-width: 100% !important;
+  min-width: 60px !important;
+}
+
+/* RECEIVED (other) — white like WhatsApp */
+.chat-msg.other .chat-msg-bubble {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: none !important;
+  border-radius: 8px 8px 8px 2px !important;
+}
+.chat-msg.other .chat-msg-bubble::before {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: -6px !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-style: solid !important;
+  border-width: 0 8px 8px 0 !important;
+  border-color: transparent #ffffff transparent transparent !important;
+}
+
+/* SENT (mine) — WhatsApp green */
+.chat-msg.mine .chat-msg-bubble {
+  background: #d9fdd3 !important;
+  color: #0f172a !important;
+  border: none !important;
+  border-radius: 8px 8px 2px 8px !important;
+}
+.chat-msg.mine .chat-msg-bubble::before {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  right: -6px !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-style: solid !important;
+  border-width: 0 0 8px 8px !important;
+  border-color: transparent transparent transparent #d9fdd3 !important;
+}
+
+/* Time + tick — small, inline at bottom-right of bubble */
+.chat-msg-time {
+  font-size: .6rem !important;
+  color: #667781 !important;
+  padding: 0 4px !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  justify-content: flex-end !important;
+  opacity: .95 !important;
+}
+.chat-msg.mine .chat-msg-time { color: #667781 !important; }
+.chat-msg.other .chat-msg-time { color: #8696a0 !important; }
+
+/* For "mine" messages, time should appear inside the bubble (WhatsApp style) */
+.chat-msg.mine .chat-msg-bubble {
+  padding-right: 56px !important;
+  position: relative !important;
+}
+.chat-msg.mine .chat-msg-time {
+  position: absolute !important;
+  bottom: 4px !important;
+  right: 8px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.chat-msg.mine .chat-msg-bubble-wrap {
+  position: relative !important;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 💚 WHATSAPP BACKGROUND (subtle)                          */
+/* ═══════════════════════════════════════════════════════ */
+#chatMessages {
+  background: #efeae2 !important;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 80 80'%3E%3Cg fill='%23d4cdc3' fill-opacity='0.35'%3E%3Cpath d='M14 16a2 2 0 100-4 2 2 0 000 4zm20 0a2 2 0 100-4 2 2 0 000 4zm20 0a2 2 0 100-4 2 2 0 000 4zm-50 20a2 2 0 100-4 2 2 0 000 4zm20 0a2 2 0 100-4 2 2 0 000 4zm20 0a2 2 0 100-4 2 2 0 000 4zm20 0a2 2 0 100-4 2 2 0 000 4zM4 56a2 2 0 100-4 2 2 0 000 4zm20 0a2 2 0 100-4 2 2 0 000 4zm20 0a2 2 0 100-4 2 2 0 000 4zm20 0a2 2 0 100-4 2 2 0 000 4z'/%3E%3C/g%3E%3C/svg%3E") !important;
+  padding: 12px 8px 80px !important;
+}
+
+/* Date separator WhatsApp-style */
+.chat-date-separator {
+  background: #ffffff !important;
+  color: #54656f !important;
+  padding: 5px 12px !important;
+  border-radius: 8px !important;
+  font-size: .68rem !important;
+  font-weight: 700 !important;
+  margin: 10px auto !important;
+  box-shadow: 0 1px 1px rgba(0,0,0,.08) !important;
+  display: table !important;
+  text-transform: uppercase !important;
+  letter-spacing: .3px !important;
+}
+.chat-date-separator::before,
+.chat-date-separator::after { display: none !important; }
+
+/* Pending clock */
+.chat-msg.msg-pending .chat-msg-bubble { opacity: .82 !important; }
+
+/* Chat input — WhatsApp-like */
+.chat-input-area {
+  background: #efeae2 !important;
+  border-top: none !important;
+  padding: 8px 10px 10px !important;
+}
+.chat-input-wrap {
+  background: #ffffff !important;
+  border: none !important;
+  border-radius: 24px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,.1) !important;
+  padding: 4px 8px 4px 16px !important;
+}
+.chat-input {
+  font-size: 15px !important;
+  padding: 10px 0 !important;
+}
+.chat-send-btn {
+  background: #00a884 !important;
+  box-shadow: 0 2px 8px -2px rgba(0,168,132,.7) !important;
+}
+.chat-send-btn:hover:not(:disabled) {
+  background: #008f6f !important;
+}
+
+/* Header WhatsApp-like */
+.chat-header {
+  background: #075e54 !important;
+  color: #fff !important;
+  border-bottom: none !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15) !important;
+}
+.chat-header-name,
+.chat-header-meta { color: #fff !important; }
+.chat-header-meta .online-dot { background: #25d366 !important; }
+.chat-header-action { color: #fff !important; }
+.chat-header-action:hover { background: rgba(255,255,255,.15) !important; }
+.chat-header-avatar {
+  background: #128c7e !important;
+}
+
+/* Sidebar WhatsApp-like */
+.chat-sidebar {
+  background: #111b21 !important;
+}
+.chat-sidebar-header {
+  background: #202c33 !important;
+  border-bottom-color: #2a3942 !important;
+}
+.chat-tab-side.active {
+  background: #00a884 !important;
+}
+.friend-item.active {
+  background: #2a3942 !important;
+}
+</style>
+
+<script id="wa-style-v92-js">
+(function(){
+  'use strict';
+  console.log('💚 WhatsApp Style v92 loading...');
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 DEDUP — signature based on content+sender+time
+  // ═══════════════════════════════════════════════════
+  function getSignature(m) {
+    if (!m) return '';
+    var sender = m.studentid || m.sender_id || '';
+    var msg = (m.message || '').trim();
+    var t = 0;
+    try {
+      t = new Date(m.created_at).getTime();
+    } catch(e) { t = 0; }
+    // Round time to nearest 10s to catch temp vs real (small delay)
+    var tRounded = Math.floor(t / 10000) * 10000;
+    return sender + '|' + msg + '|' + tRounded;
+  }
+
+  function dedupMessages(arr) {
+    if (!Array.isArray(arr)) return [];
+    var seen = new Set();
+    var out = [];
+    for (var i = 0; i < arr.length; i++) {
+      var m = arr[i];
+      if (!m) continue;
+      var sig = getSignature(m);
+
+      // Same message already present → skip the duplicate
+      if (sig && seen.has(sig)) {
+        // Prefer the one with real ID (not _pending / tmp_)
+        var existingIdx = out.findIndex(function(x){
+          return getSignature(x) === sig;
+        });
+        var isPending = m._pending || String(m.id).startsWith('tmp_');
+        var existingIsPending = out[existingIdx] &&
+          (out[existingIdx]._pending || String(out[existingIdx].id).startsWith('tmp_'));
+
+        // If existing is pending and this is real → replace
+        if (existingIsPending && !isPending) {
+          out[existingIdx] = m;
+        }
+        continue;
+      }
+
+      if (sig) seen.add(sig);
+      out.push(m);
+    }
+    return out;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 PATCH renderMessages — dedupe before rendering
+  // ═══════════════════════════════════════════════════
+  function patchRender() {
+    if (typeof window.renderMessages !== 'function') return false;
+    if (window.renderMessages._v92) return true;
+
+    // renderMessages is a local function in the chat script, not on window.
+    // We patch CHAT_STATE.messages directly with a helper, and also intercept
+    // the realtime handler that pushes to CHAT_STATE.messages.
+
+    // So instead we patch the CHAT_STATE.messages array + the realtime callbacks.
+    console.log('⚠️ renderMessages not exposed — using array-level dedup');
+
+    // Patch Array.prototype.push on CHAT_STATE.messages
+    return true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 INTERCEPT CHAT_STATE.messages with a Proxy
+  // ═══════════════════════════════════════════════════
+  function proxyMessages() {
+    var s = window.CHAT_STATE;
+    if (!s) return false;
+    if (s._v92proxied) return true;
+
+    // Set up a periodic dedup (safe + simple)
+    setInterval(function() {
+      try {
+        var st = window.CHAT_STATE;
+        if (!st || !Array.isArray(st.messages)) return;
+        if (st.messages.length < 2) return;
+
+        var deduped = dedupMessages(st.messages);
+        if (deduped.length !== st.messages.length) {
+          console.log('🧹 Deduped',
+            (st.messages.length - deduped.length),
+            'duplicate(s)');
+          st.messages.length = 0;
+          for (var i = 0; i < deduped.length; i++) {
+            st.messages.push(deduped[i]);
+          }
+        }
+      } catch(e) { /* silent */ }
+    }, 200);
+
+    s._v92proxied = true;
+    return true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 DOM-LEVEL DEDUP — Most reliable fallback
+  // ═══════════════════════════════════════════════════
+  function dedupDOM() {
+    var container = document.getElementById('chatMessages');
+    if (!container) return;
+
+    var nodes = container.querySelectorAll('.chat-msg');
+    if (nodes.length < 2) return;
+
+    var seen = new Map(); // signature → element
+
+    nodes.forEach(function(node) {
+      if (node.style.display === 'none') return;
+
+      var bubble = node.querySelector('.chat-msg-bubble');
+      var timeEl = node.querySelector('.chat-msg-time');
+      if (!bubble) return;
+
+      var senderEl = node.querySelector('.chat-msg-sender');
+      var sender = senderEl ? senderEl.textContent.trim() : '';
+      var isMine = node.classList.contains('mine');
+      var msg = bubble.textContent.trim();
+      var time = timeEl ? timeEl.textContent.replace(/[^0-9:]/g,'') : '';
+
+      // Signature: sender + message + minute
+      var sig = (isMine ? 'MINE' : sender) + '|' + msg + '|' + time;
+
+      if (seen.has(sig)) {
+        // Duplicate — keep the real (non-pending) one
+        var existing = seen.get(sig);
+        var existingIsPending = existing.classList.contains('msg-pending');
+        var currentIsPending = node.classList.contains('msg-pending');
+
+        if (existingIsPending && !currentIsPending) {
+          // Replace — remove old, keep current
+          existing.remove();
+          seen.set(sig, node);
+        } else {
+          // Remove current duplicate
+          node.remove();
+        }
+      } else {
+        seen.set(sig, node);
+      }
+    });
+  }
+
+  // Watch chatMessages for duplicates and clean them
+  function watchAndClean() {
+    var container = document.getElementById('chatMessages');
+    if (!container || container._v92watch) return;
+    container._v92watch = true;
+
+    var pending = null;
+    var obs = new MutationObserver(function() {
+      if (pending) return;
+      pending = setTimeout(function() {
+        pending = null;
+        dedupDOM();
+      }, 80);
+    });
+    obs.observe(container, { childList: true, subtree: false });
+
+    // Also scan on open
+    dedupDOM();
+    console.log('✅ DOM dedup watcher active');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 HOOK INTO openClassChat + openDirectChatWith
+  // ═══════════════════════════════════════════════════
+  function hookOpen() {
+    var s = window.CHAT_STATE;
+    if (!s) return;
+
+    ['openClassChat', 'openDirectChatWith'].forEach(function(fn) {
+      if (typeof window[fn] !== 'function') return;
+      if (window[fn]._v92hooked) return;
+      var orig = window[fn];
+      window[fn] = async function() {
+        var r = await orig.apply(this, arguments);
+        setTimeout(watchAndClean, 200);
+        setTimeout(dedupDOM, 400);
+        setTimeout(dedupDOM, 900);
+        return r;
+      };
+      window[fn]._v92hooked = true;
+    });
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 HOOK INTO openChatPanel
+  // ═══════════════════════════════════════════════════
+  function hookPanel() {
+    if (typeof window.openChatPanel !== 'function') return;
+    if (window.openChatPanel._v92hooked) return;
+    var orig = window.openChatPanel;
+    window.openChatPanel = async function() {
+      var r = await orig.apply(this, arguments);
+      setTimeout(watchAndClean, 300);
+      setTimeout(function() {
+        proxyMessages();
+        dedupDOM();
+      }, 800);
+      return r;
+    };
+    window.openChatPanel._v92hooked = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 HOOK INTO sendChatMessage — clean after send
+  // ═══════════════════════════════════════════════════
+  function hookSend() {
+    if (typeof window.sendChatMessage !== 'function') return;
+    if (window.sendChatMessage._v92hooked) return;
+    var orig = window.sendChatMessage;
+    window.sendChatMessage = async function() {
+      var r = await orig.apply(this, arguments);
+      setTimeout(dedupDOM, 500);
+      setTimeout(dedupDOM, 1500);
+      return r;
+    };
+    window.sendChatMessage._v92hooked = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  function init() {
+    hookOpen();
+    hookPanel();
+    hookSend();
+    proxyMessages();
+    watchAndClean();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2500);
+      setTimeout(init, 5000);
+    });
+  } else {
+    setTimeout(init, 2500);
+    setTimeout(init, 5000);
+  }
+
+  // Periodic safety net
+  setInterval(function() {
+    var panel = document.getElementById('chatPanel');
+    if (panel && panel.classList.contains('open')) {
+      hookOpen();
+      hookPanel();
+      hookSend();
+      dedupDOM();
+    }
+  }, 3000);
+
+  // Expose for manual call
+  window.v92CleanChat = dedupDOM;
+
+  console.log('✅ WhatsApp Style v92 ready');
+  console.log('   • Duplicate messages auto-removed');
+  console.log('   • WhatsApp-style bubbles');
+  console.log('   • Green sent / white received');
+})();
+</script>
 </body>
 </html>
