@@ -33455,5 +33455,1677 @@ body.admin-mode .wa-bot-fab.show { display: flex !important; }
   console.log('   • Broadcast option ഉണ്ട്');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📱 v80.1 — PARENT WHATSAPP BOT (Fixed + Teacher Ready)  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="parent-wa-bot-css-v2">
+/* ─── FAB Button ─── */
+.wa-bot-fab {
+  position: fixed;
+  bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  left: 20px;
+  z-index: 9999988;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.3);
+  cursor: pointer;
+  display: none;
+  align-items: center; justify-content: center;
+  font-size: 1.35rem;
+  color: #fff;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  box-shadow: 0 15px 40px -12px rgba(37,211,102,.9);
+  transition: all .25s ease;
+  animation: waBotPulse 3s ease-in-out infinite;
+}
+.wa-bot-fab.show { display: flex; }
+@keyframes waBotPulse {
+  0%,100% { box-shadow: 0 15px 40px -12px rgba(37,211,102,.9), 0 0 0 0 rgba(37,211,102,.5); }
+  50% { box-shadow: 0 15px 40px -12px rgba(37,211,102,.9), 0 0 0 14px rgba(37,211,102,0); }
+}
+.wa-bot-fab:hover { transform: scale(1.08); }
+.wa-bot-fab:active { transform: scale(.94); }
+
+/* ─── Panel ─── */
+.wa-bot-panel {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  z-index: 100060;
+  display: none;
+  align-items: flex-start; justify-content: center;
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.wa-bot-panel.open { display: flex; }
+.wa-bot-card {
+  max-width: 660px; width: 100%;
+  background: #fff;
+  border-radius: 22px;
+  padding: 22px;
+  margin: auto 0;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.7);
+  max-height: 94dvh;
+  overflow-y: auto;
+}
+.wa-bot-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 10px;
+}
+.wa-bot-header-left {
+  display: flex; align-items: center; gap: 12px;
+  min-width: 0;
+}
+.wa-bot-logo {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(140deg, #25D366, #128C7E);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.4rem;
+  box-shadow: 0 8px 20px -8px rgba(37,211,102,.7);
+  flex-shrink: 0;
+}
+.wa-bot-title {
+  font-size: 1.05rem; font-weight: 900;
+  color: #0f172a; margin: 0 0 2px;
+}
+.wa-bot-subtitle {
+  font-size: .72rem; color: #64748b; margin: 0;
+  font-weight: 600;
+}
+.wa-bot-close {
+  background: #f1f5f9; border: none;
+  width: 38px; height: 38px; border-radius: 50%;
+  color: #475569; font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ─── Filter row (Class + Search) ─── */
+.wa-bot-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+@media (max-width: 500px) {
+  .wa-bot-filters { grid-template-columns: 1fr; }
+}
+.wa-bot-filter-box {
+  background: #f0fdf4;
+  border: 1.5px solid rgba(37,211,102,.3);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.wa-bot-filter-label {
+  font-size: .62rem;
+  font-weight: 800;
+  color: #065f46;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  display: block;
+}
+.wa-bot-filter-select,
+.wa-bot-filter-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid rgba(100,116,139,.25);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  outline: none;
+  background: #fff;
+}
+.wa-bot-filter-select:focus,
+.wa-bot-filter-input:focus {
+  border-color: #25D366;
+  box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+}
+
+/* ─── Parent select ─── */
+.wa-bot-parent-box {
+  background: #f0fdf4;
+  border: 1.5px solid rgba(37,211,102,.3);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.wa-bot-parent-count {
+  font-size: .68rem;
+  font-weight: 800;
+  color: #065f46;
+  text-align: right;
+  margin-top: 6px;
+}
+.wa-bot-parent-select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid rgba(100,116,139,.25);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  outline: none;
+  background: #fff;
+}
+.wa-bot-parent-select:focus {
+  border-color: #25D366;
+  box-shadow: 0 0 0 4px rgba(37,211,102,.15);
+}
+
+/* ─── Templates ─── */
+.wa-bot-templates-label {
+  font-size: .78rem; font-weight: 800;
+  color: #475569; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.wa-bot-templates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.wa-bot-template {
+  background: #f8fafc;
+  border: 1.5px solid rgba(100,116,139,.15);
+  border-radius: 12px;
+  padding: 12px 10px;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+  min-height: 80px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+.wa-bot-template:hover {
+  border-color: rgba(37,211,102,.5);
+  background: #f0fdf4;
+  transform: translateY(-2px);
+}
+.wa-bot-template.active {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  border-color: #25D366;
+  box-shadow: 0 4px 12px -6px rgba(37,211,102,.5);
+}
+.wa-bot-template-icon {
+  font-size: 1.6rem; line-height: 1;
+}
+.wa-bot-template-name {
+  font-size: .72rem; font-weight: 800;
+  color: #0f172a; line-height: 1.25;
+}
+
+/* ─── Preview ─── */
+.wa-bot-preview {
+  background: #e7ffdb;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+  position: relative;
+  border-left: 4px solid #25D366;
+}
+.wa-bot-preview-label {
+  font-size: .68rem; font-weight: 800;
+  color: #065f46; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+.wa-bot-preview-text {
+  font-size: .82rem;
+  color: #0f172a;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'Anek Malayalam', sans-serif;
+  min-height: 60px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px 0;
+  outline: none;
+}
+.wa-bot-preview-text:empty::before {
+  content: 'ഒരു template select ചെയ്യുക...';
+  color: #94a3b8;
+  font-style: italic;
+}
+.wa-bot-preview-text:focus {
+  background: rgba(255,255,255,.5);
+  border-radius: 6px;
+}
+
+/* ─── Actions ─── */
+.wa-bot-actions {
+  display: flex; gap: 10px;
+}
+.wa-bot-btn {
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .86rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  transition: all .2s;
+  min-height: 50px;
+  -webkit-tap-highlight-color: transparent;
+}
+.wa-bot-btn:active { transform: scale(.96); }
+.wa-bot-btn.send {
+  background: linear-gradient(100deg, #25D366, #128C7E);
+  color: #fff;
+  box-shadow: 0 10px 25px -10px rgba(37,211,102,.7);
+}
+.wa-bot-btn.send:disabled {
+  opacity: .5; cursor: not-allowed;
+}
+.wa-bot-btn.broadcast {
+  background: linear-gradient(100deg, #8b5cf6, #a78bfa);
+  color: #fff;
+  box-shadow: 0 10px 25px -10px rgba(139,92,246,.7);
+}
+.wa-bot-btn.cancel {
+  background: #f1f5f9; color: #475569;
+  border: 1.5px solid rgba(100,116,139,.2);
+  flex: 0.5;
+}
+@media (max-width: 500px) {
+  .wa-bot-card { padding: 18px 16px; border-radius: 18px; }
+  .wa-bot-templates { grid-template-columns: repeat(2, 1fr); }
+  .wa-bot-actions { flex-direction: column; }
+  .wa-bot-btn.cancel { flex: 1; }
+}
+
+/* ─── Empty state ─── */
+.wa-bot-empty {
+  text-align: center;
+  padding: 30px 20px;
+  color: #64748b;
+}
+.wa-bot-empty i {
+  font-size: 3rem; opacity: .3;
+  color: #25D366; display: block; margin-bottom: 12px;
+}
+.wa-bot-empty-title {
+  font-weight: 800; color: #0f172a;
+  margin-bottom: 6px; font-size: .92rem;
+}
+.wa-bot-empty-sub {
+  font-size: .78rem; line-height: 1.5;
+}
+</style>
+
+<script id="parent-wa-bot-v80-1">
+(function(){
+  'use strict';
+  console.log('📱 Parent WhatsApp Bot v80.1 loading (fixed)...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════════
+  window.WA_BOT_STATE = {
+    activeTemplate: null,
+    targetParent: null,
+    allParents: [],       // all fetched parents
+    filteredParents: [],  // after class+search filter
+    filterClass: 'all',
+    filterSearch: ''
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📋 TEMPLATES
+  // ═══════════════════════════════════════════════════════
+  var TEMPLATES = [
+    { key: 'fee_reminder', icon: '💰', name: 'Fee Reminder',
+      build: function(p) {
+        var br = (typeof computeFeeBreakdown === 'function')
+          ? computeFeeBreakdown(p, window.FEE_SETTINGS_CACHE || {})
+          : { totalPending: 0, pendingMonths: 0 };
+        var s = window.FEE_SETTINGS_CACHE || {};
+        return 'അസ്സലാമു അലൈക്കും ' + (p.parent_name || '') + ' 🌟\n\n' +
+          '*🧾 നൂറുസ്സലാം മദ്റസ — ഫീസ് അറിയിപ്പ്*\n' +
+          '───────────────────────\n' +
+          '👨‍👦 കുട്ടികൾ: ' + (p.student_names || '—') + '\n' +
+          '📱 മൊബൈൽ: ' + (p.mobile || '—') + '\n' +
+          '✅ അവസാനം അടച്ചത്: ' + (p.last_paid_month || '—') + '\n' +
+          '📆 ബാക്കി മാസങ്ങൾ: ' + br.pendingMonths + '\n' +
+          '💰 *ആകെ ബാക്കി: ₹' + (br.totalPending || 0).toLocaleString('en-IN') + '*\n' +
+          '───────────────────────\n\n' +
+          'ദയവായി വരിസംഖ്യ അടയ്ക്കുക.\n' +
+          (s.upiId ? '📲 UPI: ' + s.upiId + '\n' : '') +
+          '\nജസാക്കല്ലാഹു ഖൈർ 🤲\n_Noorussalam Madrasa_';
+      }
+    },
+    { key: 'fee_received', icon: '✅', name: 'Fee Received',
+      build: function(p) {
+        var h = p.payment_history || [];
+        if (typeof h === 'string') { try { h = JSON.parse(h); } catch(e) { h = []; } }
+        var last = h[h.length-1] || {};
+        return 'അസ്സലാമു അലൈക്കും ' + (p.parent_name || '') + ' 🌟\n\n' +
+          '*✅ ഫീസ് ലഭിച്ചു — Noorussalam Madrasa*\n' +
+          '───────────────────────\n' +
+          '🎓 കുട്ടികൾ: ' + (p.student_names || '—') + '\n' +
+          '📅 Date: ' + new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) + '\n' +
+          '📆 Fee Month: ' + (last.month || '—') + '\n' +
+          '💰 *തുക: ₹' + (last.amount || 0).toLocaleString('en-IN') + '*\n' +
+          '───────────────────────\n\nജസാക്കല്ലാഹു ഖൈർ 🤲\n_Noorussalam Madrasa_';
+      }
+    },
+    { key: 'attendance_alert', icon: '📆', name: 'Attendance Alert',
+      build: function(p) {
+        return 'അസ്സലാമു അലൈക്കും ' + (p.parent_name || '') + ' 🌟\n\n' +
+          '*📆 ഹാജർ അറിയിപ്പ്*\n───────────────────────\n' +
+          '🎓 കുട്ടികൾ: ' + (p.student_names || '—') + '\n\n' +
+          'ഈ മാസത്തെ ഹാജർ ശതമാനം കുറവാണ്. ദയവായി കുട്ടിയെ കൃത്യസമയത്ത് മദ്‌റസയിൽ എത്തിക്കുക.\n\n' +
+          '📞 ബന്ധപ്പെടാൻ: +91 70346 78818\n\nജസാക്കല്ലാഹു ഖൈർ 🤲\n_Noorussalam Madrasa_';
+      }
+    },
+    { key: 'absence', icon: '⚠️', name: 'Absence Notice',
+      build: function(p) {
+        return 'അസ്സലാമു അലൈക്കും ' + (p.parent_name || '') + ' 🌟\n\n' +
+          '*⚠️ ഇന്ന് ഹാജരില്ല*\n───────────────────────\n' +
+          '🎓 കുട്ടികൾ: ' + (p.student_names || '—') + '\n' +
+          '📅 Date: ' + new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'long', year:'numeric' }) + '\n\n' +
+          'ഇന്ന് മദ്‌റസയിൽ ഹാജരായിട്ടില്ല. കാരണം ഉണ്ടെങ്കിൽ അറിയിക്കുക.\n\n' +
+          '📞 +91 70346 78818\n\nജസാക്കല്ലാഹു ഖൈർ 🤲\n_Noorussalam Madrasa_';
+      }
+    },
+    { key: 'exam_reminder', icon: '📝', name: 'Exam Reminder',
+      build: function(p) {
+        return 'അസ്സലാമു അലൈക്കും ' + (p.parent_name || '') + ' 🌟\n\n' +
+          '*📝 പരീക്ഷ അറിയിപ്പ്*\n───────────────────────\n' +
+          '🎓 കുട്ടികൾ: ' + (p.student_names || '—') + '\n\n' +
+          'വരുന്ന പരീക്ഷയ്ക്ക് കുട്ടിയെ നന്നായി തയ്യാറാക്കുക.\n\n' +
+          '📞 +91 70346 78818\n\nജസാക്കല്ലാഹു ഖൈർ 🤲\n_Noorussalam Madrasa_';
+      }
+    },
+    { key: 'good_news', icon: '🏆', name: 'Good News',
+      build: function(p) {
+        return 'അസ്സലാമു അലൈക്കും ' + (p.parent_name || '') + ' 🌟\n\n' +
+          '*🏆 അഭിനന്ദനം!*\n───────────────────────\n' +
+          '🎓 കുട്ടികൾ: ' + (p.student_names || '—') + '\n\n' +
+          'മദ്‌റസയിലെ പഠനത്തിലും പെരുമാറ്റത്തിലും മികച്ച പ്രകടനം!\n\n' +
+          'ജസാക്കല്ലാഹു ഖൈർ 🤲\n_Noorussalam Madrasa_';
+      }
+    },
+    { key: 'general', icon: '📢', name: 'General Notice',
+      build: function(p) {
+        return 'അസ്സലാമു അലൈക്കും ' + (p.parent_name || '') + ' 🌟\n\n' +
+          '*📢 അറിയിപ്പ്*\n───────────────────────\n\n' +
+          'ഇവിടെ നിങ്ങളുടെ സന്ദേശം എഴുതുക...\n\n' +
+          '───────────────────────\n📞 +91 70346 78818\n\n_Noorussalam Madrasa_';
+      }
+    },
+    { key: 'parent_meeting', icon: '👨‍👩‍👧', name: 'Parent Meeting',
+      build: function(p) {
+        return 'അസ്സലാമു അലൈക്കും ' + (p.parent_name || '') + ' 🌟\n\n' +
+          '*👨‍👩‍👧 രക്ഷിതാക്കളുടെ മീറ്റിംഗ്*\n───────────────────────\n' +
+          '🎓 കുട്ടികൾ: ' + (p.student_names || '—') + '\n\n' +
+          'ദയവായി ഈ ആഴ്ച നടക്കുന്ന രക്ഷിതാക്കളുടെ മീറ്റിംഗിൽ പങ്കെടുക്കുക.\n\n' +
+          '📞 +91 70346 78818\n\nജസാക്കല്ലാഹു ഖൈർ 🤲\n_Noorussalam Madrasa_';
+      }
+    }
+  ];
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 FETCH PARENTS (Reliable)
+  // ═══════════════════════════════════════════════════════
+  async function fetchParentsData() {
+    // 1. Try global variable first
+    try {
+      if (typeof feeParentsData !== 'undefined' && Array.isArray(feeParentsData) && feeParentsData.length > 0) {
+        console.log('✅ Using global feeParentsData:', feeParentsData.length);
+        return feeParentsData.slice();
+      }
+    } catch(e) {}
+
+    // 2. Try window.feeParentsData (just in case)
+    try {
+      if (window.feeParentsData && Array.isArray(window.feeParentsData) && window.feeParentsData.length > 0) {
+        console.log('✅ Using window.feeParentsData:', window.feeParentsData.length);
+        return window.feeParentsData.slice();
+      }
+    } catch(e) {}
+
+    // 3. Fetch fresh from Supabase
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+      console.warn('❌ supabaseClient not available');
+      return [];
+    }
+
+    try {
+      console.log('📥 Fetching parents from Supabase...');
+      var r = await supabaseClient.from('fee_parents').select('*').order('parent_name');
+      if (r.error) throw r.error;
+      console.log('✅ Fetched ' + (r.data || []).length + ' parents');
+      return r.data || [];
+    } catch(e) {
+      console.error('❌ Fetch parents error:', e);
+      return [];
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 GET CLASSES OF A PARENT (from student_ids)
+  // ═══════════════════════════════════════════════════════
+  var _studentClassCache = {};
+
+  async function preloadStudentClasses(parents) {
+    // Collect all student IDs
+    var allIds = [];
+    parents.forEach(function(p) {
+      (p.student_ids || []).forEach(function(id) {
+        if (!_studentClassCache[id]) allIds.push(id);
+      });
+    });
+
+    if (allIds.length === 0) return;
+
+    try {
+      var r = await supabaseClient.from('students')
+        .select('studentid, class').in('studentid', allIds);
+      (r.data || []).forEach(function(s) {
+        _studentClassCache[s.studentid] = String(s.class || '');
+      });
+      console.log('✅ Cached classes for', (r.data || []).length, 'students');
+    } catch(e) {
+      console.warn('preloadStudentClasses:', e);
+    }
+  }
+
+  function getParentClasses(parent) {
+    var classes = new Set();
+    (parent.student_ids || []).forEach(function(id) {
+      if (_studentClassCache[id]) classes.add(_studentClassCache[id]);
+    });
+    return Array.from(classes);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 CREATE FAB
+  // ═══════════════════════════════════════════════════════
+  function createWaFab() {
+    if (document.getElementById('waBotFab')) return;
+    var fab = document.createElement('button');
+    fab.id = 'waBotFab';
+    fab.className = 'wa-bot-fab';
+    fab.title = 'WhatsApp Bot';
+    fab.innerHTML = '<i class="fab fa-whatsapp"></i>';
+    fab.onclick = function() { window.openWaBot(); };
+    document.body.appendChild(fab);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚪 OPEN BOT — Fetches data fresh
+  // ═══════════════════════════════════════════════════════
+  window.openWaBot = async function() {
+    var isAdmin = window.isAdminMode ||
+      (typeof isAdminMode !== 'undefined' && isAdminMode);
+    var isTeacher = window.isTeacherMode ||
+      (typeof isTeacherMode !== 'undefined' && isTeacherMode);
+
+    if (!isAdmin && !isTeacher) {
+      showToast('⚠️ Admin/Teacher access required', 'error');
+      return;
+    }
+
+    var old = document.getElementById('waBotPanelV80');
+    if (old) old.remove();
+
+    // Loading panel
+    var modal = document.createElement('div');
+    modal.id = 'waBotPanelV80';
+    modal.className = 'wa-bot-panel open';
+    modal.innerHTML =
+      '<div class="wa-bot-card">' +
+        '<div class="wa-bot-header">' +
+          '<div class="wa-bot-header-left">' +
+            '<div class="wa-bot-logo"><i class="fab fa-whatsapp"></i></div>' +
+            '<div>' +
+              '<h3 class="wa-bot-title">Parent WhatsApp Bot</h3>' +
+              '<p class="wa-bot-subtitle">Loading parents...</p>' +
+            '</div>' +
+          '</div>' +
+          '<button class="wa-bot-close" onclick="window.closeWaBot()"><i class="fas fa-times"></i></button>' +
+        '</div>' +
+        '<div class="wa-bot-empty"><i class="fas fa-spinner fa-spin"></i><div class="wa-bot-empty-title">ഡാറ്റ ലോഡ് ചെയ്യുന്നു...</div></div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+
+    // ─── Fetch data ───
+    try {
+      var parents = await fetchParentsData();
+
+      // If teacher mode, filter by assigned classes
+      if (isTeacher && !isAdmin) {
+        var teacherClasses = [];
+        try {
+          var teacher = window.currentTeacher || TV60?.teacher;
+          if (teacher && teacher.classes) teacherClasses = teacher.classes.map(String);
+        } catch(e) {}
+
+        if (teacherClasses.length > 0) {
+          await preloadStudentClasses(parents);
+          parents = parents.filter(function(p) {
+            var pc = getParentClasses(p);
+            return pc.some(function(c) { return teacherClasses.indexOf(c) > -1; });
+          });
+          console.log('👨‍🏫 Teacher filter applied:', teacherClasses, '→', parents.length, 'parents');
+        }
+      } else {
+        await preloadStudentClasses(parents);
+      }
+
+      window.WA_BOT_STATE.allParents = parents;
+      window.WA_BOT_STATE.filteredParents = parents;
+
+      renderBotModal(modal, parents, isTeacher);
+    } catch(e) {
+      console.error('openWaBot:', e);
+      modal.innerHTML =
+        '<div class="wa-bot-card">' +
+          '<div class="wa-bot-header">' +
+            '<div class="wa-bot-header-left">' +
+              '<div class="wa-bot-logo"><i class="fab fa-whatsapp"></i></div>' +
+              '<div><h3 class="wa-bot-title">Parent WhatsApp Bot</h3></div>' +
+            '</div>' +
+            '<button class="wa-bot-close" onclick="window.closeWaBot()"><i class="fas fa-times"></i></button>' +
+          '</div>' +
+          '<div class="wa-bot-empty">' +
+            '<i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i>' +
+            '<div class="wa-bot-empty-title">Error</div>' +
+            '<div class="wa-bot-empty-sub">' + escapeHtml(e.message || 'Failed to load') + '</div>' +
+          '</div>' +
+        '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER FULL MODAL
+  // ═══════════════════════════════════════════════════════
+  function renderBotModal(modal, parents, isTeacher) {
+    var isAdmin = !isTeacher;
+
+    // Collect available classes
+    var classSet = new Set();
+    parents.forEach(function(p) {
+      getParentClasses(p).forEach(function(c) { classSet.add(c); });
+    });
+    var classes = Array.from(classSet).sort(function(a,b){ return parseInt(a)-parseInt(b); });
+
+    // Class filter options
+    var classOptions = '<option value="all">🌟 All Classes (' + parents.length + ')</option>';
+    classes.forEach(function(c) {
+      var cnt = parents.filter(function(p) {
+        return getParentClasses(p).indexOf(c) > -1;
+      }).length;
+      classOptions += '<option value="' + c + '">📚 Class ' + c + ' (' + cnt + ')</option>';
+    });
+
+    // Templates HTML
+    var templatesHtml = TEMPLATES.map(function(t) {
+      return '<div class="wa-bot-template" data-tmpl="' + t.key + '">' +
+        '<div class="wa-bot-template-icon">' + t.icon + '</div>' +
+        '<div class="wa-bot-template-name">' + t.name + '</div>' +
+      '</div>';
+    }).join('');
+
+    // Empty state
+    if (parents.length === 0) {
+      modal.innerHTML =
+        '<div class="wa-bot-card">' +
+          '<div class="wa-bot-header">' +
+            '<div class="wa-bot-header-left">' +
+              '<div class="wa-bot-logo"><i class="fab fa-whatsapp"></i></div>' +
+              '<div><h3 class="wa-bot-title">Parent WhatsApp Bot</h3>' +
+                '<p class="wa-bot-subtitle">രക്ഷിതാക്കൾക്ക് messages അയക്കുക</p></div>' +
+            '</div>' +
+            '<button class="wa-bot-close" onclick="window.closeWaBot()"><i class="fas fa-times"></i></button>' +
+          '</div>' +
+          '<div class="wa-bot-empty">' +
+            '<i class="fas fa-users-slash"></i>' +
+            '<div class="wa-bot-empty-title">' + (isTeacher ? 'Class-ൽ parents ഇല്ല' : 'Parents ഇല്ല') + '</div>' +
+            '<div class="wa-bot-empty-sub">' +
+              (isTeacher ? 'Teacher-നു assign ചെയ്ത classes-ൽ fee records ഇല്ല' : 'Fees Mgmt-ൽ ആദ്യം parents add ചെയ്യുക') +
+            '</div>' +
+          '</div>' +
+          '<div class="wa-bot-actions" style="margin-top:16px;">' +
+            '<button class="wa-bot-btn cancel" onclick="window.closeWaBot()">Close</button>' +
+          '</div>' +
+        '</div>';
+      return;
+    }
+
+    // Full modal
+    modal.innerHTML =
+      '<div class="wa-bot-card">' +
+
+        // Header
+        '<div class="wa-bot-header">' +
+          '<div class="wa-bot-header-left">' +
+            '<div class="wa-bot-logo"><i class="fab fa-whatsapp"></i></div>' +
+            '<div>' +
+              '<h3 class="wa-bot-title">Parent WhatsApp Bot</h3>' +
+              '<p class="wa-bot-subtitle">' +
+                (isTeacher ? '👨‍🏫 Teacher Mode — ' : '👑 Admin Mode — ') +
+                parents.length + ' parents' +
+              '</p>' +
+            '</div>' +
+          '</div>' +
+          '<button class="wa-bot-close" onclick="window.closeWaBot()"><i class="fas fa-times"></i></button>' +
+        '</div>' +
+
+        // Filters
+        '<div class="wa-bot-filters">' +
+          '<div class="wa-bot-filter-box">' +
+            '<label class="wa-bot-filter-label">📚 Class Filter</label>' +
+            '<select id="waBotClassFilter" class="wa-bot-filter-select" onchange="window.waBotApplyFilters()">' +
+              classOptions +
+            '</select>' +
+          '</div>' +
+          '<div class="wa-bot-filter-box">' +
+            '<label class="wa-bot-filter-label">🔍 Search</label>' +
+            '<input type="text" id="waBotSearchInput" class="wa-bot-filter-input" placeholder="Name / Mobile" oninput="window.waBotApplyFilters()">' +
+          '</div>' +
+        '</div>' +
+
+        // Parent dropdown
+        '<div class="wa-bot-parent-box">' +
+          '<div class="wa-bot-filter-label" style="margin-bottom:8px;">🎯 Select Parent</div>' +
+          '<select id="waBotTargetSelect" class="wa-bot-parent-select" onchange="window.waBotSelectParent(this.value)">' +
+            '<option value="">-- Select Parent --</option>' +
+          '</select>' +
+          '<div class="wa-bot-parent-count" id="waBotParentCount">' + parents.length + ' parents available</div>' +
+        '</div>' +
+
+        // Templates
+        '<div class="wa-bot-templates-label">' +
+          '<i class="fas fa-layer-group"></i> Template select ചെയ്യുക' +
+        '</div>' +
+        '<div class="wa-bot-templates" id="waBotTemplates">' + templatesHtml + '</div>' +
+
+        // Preview
+        '<div class="wa-bot-preview">' +
+          '<div class="wa-bot-preview-label">📄 Message Preview (edit ചെയ്യാം)</div>' +
+          '<div class="wa-bot-preview-text" id="waBotPreviewText" contenteditable="true"></div>' +
+        '</div>' +
+
+        // Actions
+        '<div class="wa-bot-actions">' +
+          '<button class="wa-bot-btn send" id="waBotSendBtn" onclick="window.sendWaBotMessage()" disabled>' +
+            '<i class="fab fa-whatsapp"></i> Send' +
+          '</button>' +
+          (isAdmin ?
+            '<button class="wa-bot-btn broadcast" onclick="window.broadcastWaBot()">' +
+              '<i class="fas fa-bullhorn"></i> Broadcast All' +
+            '</button>' : '') +
+          '<button class="wa-bot-btn cancel" onclick="window.closeWaBot()">Close</button>' +
+        '</div>' +
+      '</div>';
+
+    // Bind template clicks
+    setTimeout(function() {
+      document.querySelectorAll('#waBotTemplates .wa-bot-template').forEach(function(el) {
+        el.addEventListener('click', function() {
+          document.querySelectorAll('#waBotTemplates .wa-bot-template').forEach(function(x) {
+            x.classList.remove('active');
+          });
+          this.classList.add('active');
+          window.WA_BOT_STATE.activeTemplate = this.dataset.tmpl;
+          window.waBotRegeneratePreview();
+        });
+      });
+
+      // Initial parent dropdown populate
+      window.waBotApplyFilters();
+    }, 100);
+
+    // Close on outside click
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) window.closeWaBot();
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔍 APPLY CLASS + SEARCH FILTERS
+  // ═══════════════════════════════════════════════════════
+  window.waBotApplyFilters = function() {
+    var classSel = document.getElementById('waBotClassFilter');
+    var searchInp = document.getElementById('waBotSearchInput');
+    var classVal = classSel ? classSel.value : 'all';
+    var search = (searchInp ? searchInp.value : '').toLowerCase().trim();
+
+    window.WA_BOT_STATE.filterClass = classVal;
+    window.WA_BOT_STATE.filterSearch = search;
+
+    var filtered = (window.WA_BOT_STATE.allParents || []).filter(function(p) {
+      // Class filter
+      if (classVal !== 'all') {
+        var pc = getParentClasses(p);
+        if (pc.indexOf(classVal) === -1) return false;
+      }
+      // Search filter
+      if (search) {
+        var hay = ((p.parent_name || '') + ' ' + (p.mobile || '') + ' ' +
+                   (p.student_names || '') + ' ' + (p.student_ids || []).join(' ')).toLowerCase();
+        if (hay.indexOf(search) === -1) return false;
+      }
+      return true;
+    });
+
+    window.WA_BOT_STATE.filteredParents = filtered;
+
+    // Update dropdown
+    var sel = document.getElementById('waBotTargetSelect');
+    if (sel) {
+      var curr = sel.value;
+      var opts = '<option value="">-- Select Parent --</option>';
+      filtered.forEach(function(p) {
+        var cls = getParentClasses(p);
+        var clsLabel = cls.length ? 'C' + cls.join(',C') : '—';
+        var selected = (p.id == curr) ? ' selected' : '';
+        opts += '<option value="' + p.id + '"' + selected + '>' +
+          escapeHtml(p.parent_name || '') + ' • ' + clsLabel +
+          ' • ' + (p.mobile || '—') +
+        '</option>';
+      });
+      sel.innerHTML = opts;
+    }
+
+    // Update count
+    var cnt = document.getElementById('waBotParentCount');
+    if (cnt) {
+      cnt.textContent = filtered.length + ' / ' +
+        (window.WA_BOT_STATE.allParents || []).length + ' parents';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 SELECT PARENT
+  // ═══════════════════════════════════════════════════════
+  window.waBotSelectParent = function(parentId) {
+    if (!parentId) {
+      window.WA_BOT_STATE.targetParent = null;
+      document.getElementById('waBotSendBtn').disabled = true;
+      return;
+    }
+    var p = (window.WA_BOT_STATE.filteredParents || []).find(function(x){ return x.id == parentId; });
+    window.WA_BOT_STATE.targetParent = p || null;
+    if (p && window.WA_BOT_STATE.activeTemplate) {
+      window.waBotRegeneratePreview();
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 REGENERATE PREVIEW
+  // ═══════════════════════════════════════════════════════
+  window.waBotRegeneratePreview = function() {
+    var p = window.WA_BOT_STATE.targetParent;
+    var key = window.WA_BOT_STATE.activeTemplate;
+    if (!p || !key) return;
+
+    var tmpl = TEMPLATES.find(function(t){ return t.key === key; });
+    if (!tmpl) return;
+
+    try {
+      var msg = tmpl.build(p);
+      var preview = document.getElementById('waBotPreviewText');
+      if (preview) preview.textContent = msg;
+      var btn = document.getElementById('waBotSendBtn');
+      if (btn) btn.disabled = false;
+    } catch(e) {
+      console.error('Preview error:', e);
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📤 SEND SINGLE MESSAGE
+  // ═══════════════════════════════════════════════════════
+  window.sendWaBotMessage = function() {
+    var p = window.WA_BOT_STATE.targetParent;
+    if (!p) { showToast('❌ Parent select ചെയ്യുക', 'error'); return; }
+
+    var mobile = String(p.mobile || '').replace(/\D/g, '').slice(-10);
+    if (mobile.length !== 10) {
+      showToast('❌ Mobile invalid: ' + (p.mobile || '—'), 'error');
+      return;
+    }
+
+    var preview = document.getElementById('waBotPreviewText');
+    var msg = preview ? preview.textContent.trim() : '';
+    if (!msg) { showToast('❌ Message empty', 'error'); return; }
+
+    var link = 'https://wa.me/91' + mobile + '?text=' + encodeURIComponent(msg);
+    window.open(link, '_blank');
+    showToast('📤 WhatsApp opening...', 'success');
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📢 BROADCAST
+  // ═══════════════════════════════════════════════════════
+  window.broadcastWaBot = function() {
+    var key = window.WA_BOT_STATE.activeTemplate;
+    if (!key) { showToast('⚠️ Template select ചെയ്യുക', 'error'); return; }
+
+    var list = window.WA_BOT_STATE.filteredParents || [];
+    if (list.length === 0) { showToast('❌ Parents ഇല്ല', 'error'); return; }
+
+    if (!confirm('📢 ' + list.length + ' parents-നു broadcast അയക്കണോ?\n\n' +
+                 '⚠️ ഓരോ WhatsApp tab വെവ്വേറെ open ആകും.\nPopup blocker allow ചെയ്യുക.')) return;
+
+    var tmpl = TEMPLATES.find(function(t){ return t.key === key; });
+    if (!tmpl) return;
+
+    var sent = 0, skipped = 0;
+    list.forEach(function(p, idx) {
+      var mobile = String(p.mobile || '').replace(/\D/g, '').slice(-10);
+      if (mobile.length !== 10) { skipped++; return; }
+
+      setTimeout(function() {
+        try {
+          var msg = tmpl.build(p);
+          var link = 'https://wa.me/91' + mobile + '?text=' + encodeURIComponent(msg);
+          window.open(link, '_blank');
+          sent++;
+        } catch(e) { skipped++; }
+      }, idx * 600);
+    });
+
+    setTimeout(function() {
+      showToast('📢 ' + sent + ' opened' + (skipped ? ' | ' + skipped + ' skipped' : ''), 'success');
+    }, list.length * 600 + 500);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // ❌ CLOSE
+  // ═══════════════════════════════════════════════════════
+  window.closeWaBot = function() {
+    var m = document.getElementById('waBotPanelV80');
+    if (m) m.remove();
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 👁️ FAB VISIBILITY — Admin + Teacher
+  // ═══════════════════════════════════════════════════════
+  function updateFabVisibility() {
+    var fab = document.getElementById('waBotFab');
+    if (!fab) return;
+
+    var isAdmin = window.isAdminMode ||
+      (typeof isAdminMode !== 'undefined' && isAdminMode) ||
+      document.body.classList.contains('admin-mode');
+
+    var isTeacher = window.isTeacherMode ||
+      (typeof isTeacherMode !== 'undefined' && isTeacherMode);
+
+    var adminSec = document.getElementById('adminSection');
+    var adminVisible = adminSec && adminSec.style.display === 'block';
+
+    var teacherSec = document.getElementById('teacherDashboardV60');
+    var teacherVisible = teacherSec && teacherSec.classList.contains('open');
+
+    if (isAdmin || isTeacher || adminVisible || teacherVisible) {
+      fab.classList.add('show');
+    } else {
+      fab.classList.remove('show');
+    }
+  }
+
+  // Watch admin + teacher sections
+  ['adminSection', 'teacherDashboardV60'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    new MutationObserver(updateFabVisibility)
+      .observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
+  });
+
+  setInterval(updateFabVisibility, 1500);
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 TEACHER DASHBOARD — Add WA Bot Button
+  // ═══════════════════════════════════════════════════════
+  function addTeacherWaBotButton() {
+    var header = document.querySelector('#teacherDashboardV60 .td60-header');
+    if (!header) return;
+    if (header.querySelector('.td60-wa-bot-btn')) return;
+
+    // Find exit button area
+    var exitBtn = header.querySelector('.td60-exit-btn');
+    var target = exitBtn ? exitBtn.parentNode : header;
+
+    var btn = document.createElement('button');
+    btn.className = 'td60-wa-bot-btn td60-exit-btn';
+    btn.style.cssText =
+      'background:linear-gradient(100deg,#25D366,#128C7E);' +
+      'color:#fff;border:none;margin-right:8px;' +
+      'box-shadow:0 4px 12px -4px rgba(37,211,102,.5);';
+    btn.innerHTML = '<i class="fab fa-whatsapp"></i> Parent WhatsApp';
+    btn.onclick = function(e) {
+      e.preventDefault();
+      window.openWaBot();
+    };
+
+    if (exitBtn && exitBtn.parentNode) {
+      exitBtn.parentNode.insertBefore(btn, exitBtn);
+    } else {
+      target.appendChild(btn);
+    }
+    console.log('✅ Teacher WA Bot button added');
+  }
+
+  // Watch teacher dashboard open
+  var td = document.getElementById('teacherDashboardV60');
+  if (td) {
+    new MutationObserver(function() {
+      if (td.classList.contains('open')) {
+        setTimeout(addTeacherWaBotButton, 500);
+        setTimeout(addTeacherWaBotButton, 1500);
+      }
+    }).observe(td, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    createWaFab();
+    updateFabVisibility();
+    addTeacherWaBotButton();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2000);
+      setTimeout(init, 4000);
+    });
+  } else {
+    setTimeout(init, 2000);
+    setTimeout(init, 4000);
+  }
+
+  console.log('✅ Parent WhatsApp Bot v80.1 ready');
+  console.log('   ✔ Auto-fetches parents (no more empty dropdown)');
+  console.log('   ✔ Class-based filter');
+  console.log('   ✔ Search by name/mobile');
+  console.log('   ✔ Teacher panel button added');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔑 v81.0 — TEACHER SETTINGS + CHANGE PASSWORD          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="teacher-settings-v81-css">
+/* ─── Settings Modal ─── */
+.ts-modal {
+  position: fixed; inset: 0;
+  background: rgba(3,8,28,.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  z-index: 100070;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.ts-modal.open { display: flex; }
+.ts-card {
+  max-width: 440px; width: 100%;
+  background: linear-gradient(155deg, rgba(255,255,255,.15), rgba(255,255,255,.04));
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1.5px solid rgba(34,211,238,.3);
+  border-radius: 24px;
+  padding: 26px 22px 22px;
+  margin: auto 0;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.95),
+              0 0 70px -20px rgba(34,211,238,.35),
+              inset 0 1px 0 rgba(255,255,255,.4);
+  position: relative;
+  overflow: hidden;
+}
+.ts-top-bar {
+  position: absolute; top: 0; left: 12%; right: 12%; height: 2.5px;
+  background: linear-gradient(90deg, transparent, #22d3ee, #3b8bff, #22d3ee, transparent);
+  filter: drop-shadow(0 0 10px rgba(34,211,238,.9));
+}
+.ts-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.ts-title-row {
+  display: flex; align-items: center; gap: 12px;
+}
+.ts-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(140deg, #0891b2, #22d3ee);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.2rem;
+  box-shadow: 0 8px 20px -8px rgba(34,211,238,.7);
+  flex-shrink: 0;
+}
+.ts-title-text h3 {
+  color: #fff; font-size: 1.02rem; font-weight: 800;
+  margin: 0 0 2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+.ts-title-text p {
+  color: #a9cdff; font-size: .7rem; margin: 0;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  font-weight: 700;
+}
+.ts-close {
+  background: rgba(255,255,255,.1);
+  border: none;
+  color: #fff;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: .2s;
+  flex-shrink: 0;
+}
+.ts-close:hover { background: rgba(255,255,255,.2); }
+
+/* Info box */
+.ts-info {
+  background: rgba(34,211,238,.10);
+  border: 1.5px solid rgba(34,211,238,.3);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  font-size: .78rem;
+  color: #67e8f9;
+  line-height: 1.5;
+}
+.ts-info i { color: #22d3ee; }
+
+/* Form fields */
+.ts-field { margin-bottom: 14px; }
+.ts-label {
+  display: flex; align-items: center; gap: 7px;
+  color: #fff; font-size: .76rem; font-weight: 800;
+  margin-bottom: 8px;
+}
+.ts-label i { color: #ffd966; font-size: .85rem; }
+.ts-label .req { color: #ef4444; margin-left: 2px; }
+
+.ts-input-wrap {
+  display: flex; align-items: center;
+  background: rgba(5,14,43,.92);
+  border: 1.5px solid rgba(34,211,238,.35);
+  border-radius: 14px;
+  padding: 0 14px;
+  transition: all .25s ease;
+}
+.ts-input-wrap:focus-within {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 4px rgba(34,211,238,.2);
+}
+.ts-input-wrap .pre-icon {
+  color: #ffd966; font-size: .9rem; margin-right: 10px; flex-shrink: 0;
+}
+.ts-input {
+  flex: 1; min-width: 0;
+  border: none; outline: none;
+  background: transparent;
+  padding: 13px 0;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #22d3ee;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+.ts-input::placeholder {
+  color: rgba(255,255,255,.45) !important;
+  -webkit-text-fill-color: rgba(255,255,255,.45) !important;
+  font-weight: 500; letter-spacing: 0;
+}
+/* Autofill */
+.ts-input:-webkit-autofill,
+.ts-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(5,14,43,.92) inset !important;
+  box-shadow: 0 0 0 1000px rgba(5,14,43,.92) inset !important;
+  caret-color: #22d3ee;
+  transition: background-color 9999s ease-in-out 0s;
+}
+.ts-eye {
+  cursor: pointer; color: #ffd966; padding: 10px;
+  font-size: .95rem; flex-shrink: 0;
+  transition: color .2s;
+}
+.ts-eye:active { color: #fff; }
+
+/* Password strength */
+.ts-strength {
+  display: flex; gap: 4px;
+  margin-top: 8px;
+}
+.ts-strength-bar {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,.15);
+  border-radius: 4px;
+  transition: .3s;
+}
+.ts-strength-bar.weak { background: #ef4444; }
+.ts-strength-bar.medium { background: #f59e0b; }
+.ts-strength-bar.strong { background: #22c55e; }
+.ts-strength-text {
+  font-size: .68rem;
+  color: #a9cdff;
+  margin-top: 5px;
+  font-weight: 700;
+}
+
+/* Error box */
+.ts-error {
+  background: rgba(239,68,68,.15);
+  border: 1.5px solid rgba(239,68,68,.45);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #fca5a5;
+  font-size: .78rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: none;
+}
+.ts-error.show { display: block; }
+
+/* Success box */
+.ts-success {
+  background: rgba(34,197,94,.15);
+  border: 1.5px solid rgba(34,197,94,.45);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #86efac;
+  font-size: .78rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: none;
+}
+.ts-success.show { display: block; }
+
+/* Buttons */
+.ts-actions {
+  display: flex; gap: 10px;
+  margin-top: 20px;
+}
+.ts-btn {
+  flex: 1;
+  padding: 13px 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .86rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  transition: all .2s;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.ts-btn:active { transform: scale(.96); }
+.ts-btn.primary {
+  background: linear-gradient(100deg, #0891b2, #22d3ee);
+  color: #fff;
+  box-shadow: 0 10px 25px -10px rgba(34,211,238,.7);
+}
+.ts-btn.primary:disabled {
+  opacity: .5; cursor: not-allowed;
+}
+.ts-btn.secondary {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.2);
+}
+
+/* Settings tile button (in dashboard header) */
+.td60-settings-btn {
+  background: rgba(255,255,255,.2) !important;
+  border: 1px solid rgba(255,255,255,.3) !important;
+  color: #fff !important;
+  font-weight: 800;
+  padding: 11px 18px;
+  border-radius: 14px;
+  font-size: .82rem;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 44px;
+  margin-right: 8px;
+  transition: all .2s;
+}
+.td60-settings-btn:hover { background: rgba(255,255,255,.3) !important; }
+.td60-settings-btn:active { transform: scale(.96); }
+
+@media (max-width: 500px) {
+  .ts-card { padding: 22px 18px 18px; border-radius: 20px; }
+  .ts-title-text h3 { font-size: .94rem; }
+  .ts-icon { width: 42px; height: 42px; font-size: 1.05rem; }
+  .ts-input { font-size: 16px !important; }
+}
+</style>
+
+<script id="teacher-settings-v81-js">
+(function(){
+  'use strict';
+  console.log('🔑 Teacher Settings v81 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 CREATE SETTINGS MODAL HTML
+  // ═══════════════════════════════════════════════════════
+  function createSettingsModal() {
+    if (document.getElementById('tsModalV81')) return;
+
+    var modal = document.createElement('div');
+    modal.id = 'tsModalV81';
+    modal.className = 'ts-modal';
+    modal.innerHTML =
+      '<div class="ts-card">' +
+        '<div class="ts-top-bar"></div>' +
+
+        // Header
+        '<div class="ts-header">' +
+          '<div class="ts-title-row">' +
+            '<div class="ts-icon"><i class="fas fa-cog"></i></div>' +
+            '<div class="ts-title-text">' +
+              '<h3>Settings</h3>' +
+              '<p>Teacher Account</p>' +
+            '</div>' +
+          '</div>' +
+          '<button class="ts-close" onclick="window.closeTeacherSettings()">' +
+            '<i class="fas fa-times"></i>' +
+          '</button>' +
+        '</div>' +
+
+        // Info
+        '<div class="ts-info">' +
+          '<i class="fas fa-info-circle"></i> ' +
+          'നിങ്ങളുടെ <b>password മാറ്റാൻ</b> ഈ form ഉപയോഗിക്കുക. ' +
+          'പുതിയ password കുറഞ്ഞത് <b>6 characters</b> ഉണ്ടാകണം.' +
+        '</div>' +
+
+        // Error box
+        '<div class="ts-error" id="tsErrorBox"></div>' +
+
+        // Success box
+        '<div class="ts-success" id="tsSuccessBox"></div>' +
+
+        // Form
+        '<form id="tsPasswordForm" onsubmit="event.preventDefault();window.saveTeacherPassword();">' +
+
+          // Current password
+          '<div class="ts-field">' +
+            '<label class="ts-label">' +
+              '<i class="fas fa-lock"></i> Current Password <span class="req">*</span>' +
+            '</label>' +
+            '<div class="ts-input-wrap">' +
+              '<i class="fas fa-key pre-icon"></i>' +
+              '<input type="password" id="tsOldPwd" class="ts-input" ' +
+                'placeholder="ഇപ്പോൾ ഉള്ള password" autocomplete="current-password">' +
+              '<i class="fas fa-eye ts-eye" ' +
+                'onclick="window.tsToggleEye(\'tsOldPwd\', this)"></i>' +
+            '</div>' +
+          '</div>' +
+
+          // New password
+          '<div class="ts-field">' +
+            '<label class="ts-label">' +
+              '<i class="fas fa-lock-open"></i> New Password <span class="req">*</span>' +
+            '</label>' +
+            '<div class="ts-input-wrap">' +
+              '<i class="fas fa-star pre-icon"></i>' +
+              '<input type="password" id="tsNewPwd" class="ts-input" ' +
+                'placeholder="പുതിയ password (6+ chars)" autocomplete="new-password" ' +
+                'oninput="window.tsCheckStrength(this.value)">' +
+              '<i class="fas fa-eye ts-eye" ' +
+                'onclick="window.tsToggleEye(\'tsNewPwd\', this)"></i>' +
+            '</div>' +
+            '<div class="ts-strength">' +
+              '<div class="ts-strength-bar" id="tsStr1"></div>' +
+              '<div class="ts-strength-bar" id="tsStr2"></div>' +
+              '<div class="ts-strength-bar" id="tsStr3"></div>' +
+              '<div class="ts-strength-bar" id="tsStr4"></div>' +
+            '</div>' +
+            '<div class="ts-strength-text" id="tsStrText">ശക്തി: —</div>' +
+          '</div>' +
+
+          // Confirm password
+          '<div class="ts-field">' +
+            '<label class="ts-label">' +
+              '<i class="fas fa-lock-open"></i> Confirm New Password <span class="req">*</span>' +
+            '</label>' +
+            '<div class="ts-input-wrap">' +
+              '<i class="fas fa-check-double pre-icon"></i>' +
+              '<input type="password" id="tsConfirmPwd" class="ts-input" ' +
+                'placeholder="വീണ്ടും type ചെയ്യുക" autocomplete="new-password">' +
+              '<i class="fas fa-eye ts-eye" ' +
+                'onclick="window.tsToggleEye(\'tsConfirmPwd\', this)"></i>' +
+            '</div>' +
+          '</div>' +
+
+          // Buttons
+          '<div class="ts-actions">' +
+            '<button type="button" class="ts-btn secondary" ' +
+              'onclick="window.closeTeacherSettings()">Cancel</button>' +
+            '<button type="submit" class="ts-btn primary" id="tsSaveBtn">' +
+              '<i class="fas fa-save"></i> Save Password' +
+            '</button>' +
+          '</div>' +
+
+        '</form>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    // Close on outside click
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) window.closeTeacherSettings();
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚪 OPEN / CLOSE
+  // ═══════════════════════════════════════════════════════
+  window.openTeacherSettings = function() {
+    createSettingsModal();
+
+    // Reset
+    var form = document.getElementById('tsPasswordForm');
+    if (form) form.reset();
+    document.getElementById('tsErrorBox').classList.remove('show');
+    document.getElementById('tsSuccessBox').classList.remove('show');
+    window.tsCheckStrength('');
+
+    document.getElementById('tsModalV81').classList.add('open');
+
+    setTimeout(function() {
+      var inp = document.getElementById('tsOldPwd');
+      if (inp) inp.focus();
+    }, 300);
+
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+  };
+
+  window.closeTeacherSettings = function() {
+    var m = document.getElementById('tsModalV81');
+    if (m) m.classList.remove('open');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 👁️ TOGGLE PASSWORD VISIBILITY
+  // ═══════════════════════════════════════════════════════
+  window.tsToggleEye = function(inputId, iconEl) {
+    var inp = document.getElementById(inputId);
+    if (!inp) return;
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      iconEl.className = 'fas fa-eye-slash ts-eye';
+    } else {
+      inp.type = 'password';
+      iconEl.className = 'fas fa-eye ts-eye';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 💪 PASSWORD STRENGTH METER
+  // ═══════════════════════════════════════════════════════
+  window.tsCheckStrength = function(val) {
+    var score = 0;
+    if (!val) {
+      ['tsStr1','tsStr2','tsStr3','tsStr4'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.className = 'ts-strength-bar';
+      });
+      var t = document.getElementById('tsStrText');
+      if (t) t.textContent = 'ശക്തി: —';
+      return;
+    }
+
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    // Clamp to 4
+    score = Math.min(4, score);
+
+    var classNames = ['', 'weak', 'weak', 'medium', 'strong'];
+    for (var i = 1; i <= 4; i++) {
+      var bar = document.getElementById('tsStr' + i);
+      if (bar) {
+        bar.className = 'ts-strength-bar' + (i <= score ? ' ' + classNames[score] : '');
+      }
+    }
+
+    var text = document.getElementById('tsStrText');
+    if (text) {
+      var labels = ['—', 'വളരെ ദുർബലം', 'ദുർബലം', 'നല്ലത്', 'മികച്ചത്'];
+      var colors = ['#a9cdff', '#ef4444', '#f59e0b', '#f59e0b', '#22c55e'];
+      text.textContent = 'ശക്തി: ' + labels[score];
+      text.style.color = colors[score];
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 💾 SAVE NEW PASSWORD
+  // ═══════════════════════════════════════════════════════
+  window.saveTeacherPassword = async function() {
+    var oldPwd = document.getElementById('tsOldPwd').value;
+    var newPwd = document.getElementById('tsNewPwd').value;
+    var confPwd = document.getElementById('tsConfirmPwd').value;
+
+    var errBox = document.getElementById('tsErrorBox');
+    var sucBox = document.getElementById('tsSuccessBox');
+    var saveBtn = document.getElementById('tsSaveBtn');
+
+    errBox.classList.remove('show');
+    sucBox.classList.remove('show');
+
+    // ─── Validation ───
+    if (!oldPwd || !newPwd || !confPwd) {
+      errBox.textContent = '❌ എല്ലാ fields-ഉം പൂരിപ്പിക്കുക';
+      errBox.classList.add('show');
+      return;
+    }
+    if (newPwd.length < 6) {
+      errBox.textContent = '❌ പുതിയ password കുറഞ്ഞത് 6 characters വേണം';
+      errBox.classList.add('show');
+      return;
+    }
+    if (newPwd !== confPwd) {
+      errBox.textContent = '❌ രണ്ട് പുതിയ passwords ഒരുപോലെയല്ല';
+      errBox.classList.add('show');
+      return;
+    }
+    if (newPwd === oldPwd) {
+      errBox.textContent = '❌ പുതിയ password പഴയതിൽ നിന്ന് വ്യത്യസ്തമാകണം';
+      errBox.classList.add('show');
+      return;
+    }
+
+    // ─── Get teacher ───
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    if (!teacher || !teacher.teacher_id) {
+      errBox.textContent = '❌ Teacher session not found. Please re-login.';
+      errBox.classList.add('show');
+      return;
+    }
+
+    // ─── Verify old password ───
+    if (oldPwd !== teacher.password) {
+      errBox.textContent = '❌ തെറ്റായ current password';
+      errBox.classList.add('show');
+      document.getElementById('tsOldPwd').value = '';
+      document.getElementById('tsOldPwd').focus();
+      if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch(e) {}
+      return;
+    }
+
+    // ─── Save to DB ───
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+    try {
+      var r = await supabaseClient.from('teachers').update({
+        password: newPwd,
+        must_change_password: false,
+        password_changed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }).eq('teacher_id', teacher.teacher_id);
+
+      if (r.error) throw r.error;
+
+      // ─── Update local session ───
+      teacher.password = newPwd;
+      teacher.must_change_password = false;
+
+      // Update localStorage session
+      try {
+        var sess = JSON.parse(localStorage.getItem('noor_teacher_session') || '{}');
+        sess.password_changed = true;
+        sess.password_changed_at = new Date().toISOString();
+        localStorage.setItem('noor_teacher_session', JSON.stringify(sess));
+      } catch(e) {}
+
+      // Update TV60 state
+      if (window.TV60 && window.TV60.teacher) {
+        window.TV60.teacher.password = newPwd;
+        window.TV60.teacher.must_change_password = false;
+      }
+
+      // ─── Success ───
+      sucBox.textContent = '✅ Password മാറ്റി! അടുത്ത ലോഗിൻ മുതൽ പുതിയ password ഉപയോഗിക്കുക.';
+      sucBox.classList.add('show');
+
+      // Clear inputs
+      document.getElementById('tsOldPwd').value = '';
+      document.getElementById('tsNewPwd').value = '';
+      document.getElementById('tsConfirmPwd').value = '';
+      window.tsCheckStrength('');
+
+      // Confetti + haptic
+      if (typeof confetti !== 'undefined') {
+        confetti({ particleCount: 100, spread: 80, origin: { y: .5 },
+                   colors: ['#22d3ee','#0891b2','#34d399','#fbbf24'] });
+      }
+      if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
+
+      showToast('🔑 Password updated successfully', 'success');
+
+      // Auto-close after 2.5s
+      setTimeout(function() {
+        window.closeTeacherSettings();
+      }, 2500);
+
+    } catch(e) {
+      console.error('saveTeacherPassword error:', e);
+      errBox.textContent = '❌ ' + (e.message || 'Failed to save');
+      errBox.classList.add('show');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Password';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 ADD SETTINGS BUTTON TO TEACHER DASHBOARD HEADER
+  // ═══════════════════════════════════════════════════════
+  function addSettingsButton() {
+    var header = document.querySelector('#teacherDashboardV60 .td60-header');
+    if (!header) return;
+    if (header.querySelector('.td60-settings-btn')) return;
+
+    var exitBtn = header.querySelector('.td60-exit-btn');
+    if (!exitBtn) return;
+
+    // Don't add if already have WA bot button — insert before it
+    var btn = document.createElement('button');
+    btn.className = 'td60-settings-btn';
+    btn.innerHTML = '<i class="fas fa-cog"></i> Settings';
+    btn.title = 'Change Password';
+    btn.onclick = function(e) {
+      e.preventDefault();
+      window.openTeacherSettings();
+    };
+
+    // Insert before Exit button
+    exitBtn.parentNode.insertBefore(btn, exitBtn);
+
+    console.log('✅ Teacher Settings button added');
+  }
+
+  // Watch for teacher dashboard open
+  var td = document.getElementById('teacherDashboardV60');
+  if (td) {
+    new MutationObserver(function() {
+      if (td.classList.contains('open')) {
+        setTimeout(addSettingsButton, 500);
+        setTimeout(addSettingsButton, 1500);
+      }
+    }).observe(td, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // Also run initial
+  setTimeout(addSettingsButton, 2000);
+  setTimeout(addSettingsButton, 4000);
+  setInterval(function() {
+    var td2 = document.getElementById('teacherDashboardV60');
+    if (td2 && td2.classList.contains('open')) {
+      addSettingsButton();
+    }
+  }, 3000);
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    createSettingsModal();
+    addSettingsButton();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2000);
+      setTimeout(init, 4000);
+    });
+  } else {
+    setTimeout(init, 2000);
+    setTimeout(init, 4000);
+  }
+
+  console.log('✅ Teacher Settings v81 ready');
+})();
+</script>
 </body>
 </html>
