@@ -1615,9 +1615,17 @@ setTimeout(loadMalayalamFontForPDF, 2000);
   #noticeBoardModal, #findStudentIdModal, #forgotModal,
   #securityModal, #passwordSetupModal, #pwdResetModal {
     padding: 0 !important;
-    align-items: flex-end !important;
+    align-items: flex-start !important;
     justify-content: center !important;
   }
+    /* Modal card-ൽ auto margin add ചെയ്യുക */
+  #globalModal > div,
+  #passbookModal > div,
+  #editProfileModal > div {
+    margin: auto 0 !important;
+    max-height: calc(100dvh - 24px) !important;
+  }
+}
   #globalModal > div, #passbookModal > div, #studentWithdrawalModal > div,
   #notificationsModal > div, #editProfileModal > div, #topperModal > div,
   #topperCropModal > div, #uploadCreationModal > div, #notesModal > div,
@@ -2514,6 +2522,12 @@ setTimeout(loadMalayalamFontForPDF, 2000);
             <i class="fas fa-home"></i>
             <span>Home</span>
           </button>
+        <button type="button" class="nsm-btn-secondary" 
+        onclick="window.showTeacherLoginV60 && window.showTeacherLoginV60({teacher_id:'__demo__', name:'Teacher', password:''})"
+        style="background: transparent; border: 1px dashed rgba(212,175,55,.5); color: #ffd966; margin-top: 8px;">
+  <i class="fas fa-chalkboard-teacher"></i>
+  <span>👨‍🏫 ഉസ്താദ് ലോഗിൻ</span>
+</button>
         </form>
 
         <div class="nsm-card-footer">
@@ -2842,20 +2856,30 @@ setTimeout(loadMalayalamFontForPDF, 2000);
 <div class="mob-bottom-nav" id="mobBottomNav">
   <div class="nav-items" id="liquidNavItems">
     <div class="active-pill" id="liquidActivePill"></div>
-
+    
     <button class="mob-nav-item active" data-tab="home" onclick="mobNavClick('home',event)">
       <i class="fas fa-home"></i>
       <span>Home</span>
     </button>
-
+    
+    <button class="mob-nav-item" data-tab="gallery" onclick="mobNavClick('gallery',event)">
+      <i class="fas fa-palette"></i>
+      <span>Gallery</span>
+    </button>
+    
+    <button class="mob-nav-item" data-tab="chat" onclick="mobNavClick('chat',event)">
+      <i class="fas fa-comments"></i>
+      <span>Chat</span>
+    </button>
+    
+    <button class="mob-nav-item" data-tab="broadcast" onclick="mobNavClick('broadcast',event)">
+      <i class="fas fa-bell"></i>
+      <span>Alerts</span>
+    </button>
+    
     <button class="mob-nav-item" data-tab="profile" onclick="mobNavClick('profile',event)">
       <i class="fas fa-user"></i>
       <span>Profile</span>
-    </button>
-
-    <button class="mob-nav-item" data-tab="broadcast" onclick="mobNavClick('broadcast',event)">
-      <i class="fas fa-broadcast-tower"></i>
-      <span>Broadcast</span>
     </button>
   </div>
 </div>
@@ -5566,6 +5590,8 @@ function mobNavClick(section, ev){
   }
   if(section === 'profile')         showProfileCard();
   else if(section === 'broadcast')  openNotificationsModal();
+  else if(section === 'gallery')    openCreationsGallery();
+  else if(section === 'chat')       openChatPanel();
   else                              window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 window.mobNavClick = mobNavClick;
@@ -11941,7 +11967,7 @@ if('serviceWorker' in navigator){
   setInterval(function(){
     try{
       if(typeof currentUser !== 'undefined' && currentUser) window.currentUser = currentUser;
-      if(typeof supabaseClient !== 'undefined' && supabaseClient) window.supabaseClient = supabaseClient;
+      if(typeof supabaseClient !== 'undefined' && supabaseClient) supabaseClient = supabaseClient;
       if(typeof showToast === 'function' && !window.showToast) window.showToast = showToast;
       if(typeof escapeHtml === 'function' && !window.escapeHtml) window.escapeHtml = escapeHtml;
       if(typeof formatDate === 'function' && !window.formatDate) window.formatDate = formatDate;
@@ -12016,7 +12042,7 @@ if('serviceWorker' in navigator){
 
   window.logAudit = async function(action, table, recordId, oldData, newData){
     try {
-      var client = (typeof supabaseClient !== 'undefined' && supabaseClient) || window.supabaseClient;
+      var client = (typeof supabaseClient !== 'undefined' && supabaseClient) || supabaseClient;
       if (!client) return;
       var u = getU();
       var adm = window.isAdminMode || (typeof isAdminMode !== 'undefined' && isAdminMode);
@@ -12032,7 +12058,7 @@ if('serviceWorker' in navigator){
 
   function sendError(p){
     try {
-      var c = (typeof supabaseClient !== 'undefined' && supabaseClient) || window.supabaseClient;
+      var c = (typeof supabaseClient !== 'undefined' && supabaseClient) || supabaseClient;
       if (!c) return;
       var u = getU();
       c.from('error_logs').insert({
@@ -15252,7 +15278,7 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
 @media (max-width: 900px) {
   .chat-fab {
     bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-    right: 78px;
+    right: 90px;
     width: 52px; height: 52px;
     font-size: 1.25rem;
   }
@@ -15489,6 +15515,7 @@ body.modal-open .chat-fab { display: none !important; }
 
 .chat-header {
   padding: 14px 18px;
+  padding-top: max(14px, env(safe-area-inset-top, 14px));
   background: #fff;
   border-bottom: 1px solid rgba(100,116,139,.15);
   display: flex;
@@ -16680,6 +16707,26 @@ body.modal-open .chat-fab { display: none !important; }
     }
     if (navigator.vibrate) navigator.vibrate(15);
   };
+    if (window.visualViewport && !window._chatKeyboardBound) {
+    window._chatKeyboardBound = true;
+    window.visualViewport.addEventListener('resize', function() {
+      var panel = document.getElementById('chatPanel');
+      if (!panel || !panel.classList.contains('open')) return;
+      if (window.innerWidth > 900) return;
+      var vv = window.visualViewport;
+      var keyboardOpen = (window.innerHeight - vv.height) > 120;
+      if (keyboardOpen) {
+        panel.style.height = vv.height + 'px';
+        panel.style.top = vv.offsetTop + 'px';
+      } else {
+        panel.style.height = '';
+        panel.style.top = '';
+      }
+    });
+  }
+
+  if (navigator.vibrate) navigator.vibrate(15);
+};
 
   window.closeChatPanel = function() {
     document.getElementById('chatPanel').classList.remove('open');
@@ -17797,7 +17844,9 @@ body.modal-open .chat-fab { display: none !important; }
     toggleEmojiPicker, insertEmoji, chatRefresh, chatScrollToBottom,
     toggleReaction, showReactionMenu, deleteMessage,
     openAddFriendModal, closeAddFriendModal, sendFriendRequest,
-    acceptFriend, rejectFriend, loadFriendsList, loadFriendRequests
+    acceptFriend, rejectFriend, loadFriendsList, loadFriendRequests,
+    renderSidebar,
+    renderClassSection, renderFriendsSection, renderRequestsSection 
   });
 
   console.log('🎨👥 Social Pack v29.0 loaded — Avatar + Chat ready');
@@ -25757,7 +25806,7 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 
   /* ─── INTERNAL LOADERS (Self-contained) ─── */
   async function _loadWeekInternal() {
-    if (!currentUser || !window.supabaseClient) return;
+    if (!currentUser || !supabaseClient) return;
     try {
       var end = new Date();
       var start = new Date();
@@ -25767,7 +25816,7 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
           String(d.getMonth() + 1).padStart(2, '0') + '-' +
           String(d.getDate()).padStart(2, '0');
       }
-      var r = await window.supabaseClient.from('namaz_log')
+      var r = await supabaseClient.from('namaz_log')
         .select('*')
         .eq('studentid', currentUser.studentId)
         .gte('prayer_date', fmt(start))
@@ -25794,7 +25843,7 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   }
 
   async function _loadMonthInternal() {
-    if (!currentUser || !window.supabaseClient) return;
+    if (!currentUser || !supabaseClient) return;
     try {
       var today = new Date();
       var year = today.getFullYear();
@@ -25808,7 +25857,7 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
           String(d.getDate()).padStart(2, '0');
       }
 
-      var r = await window.supabaseClient.from('namaz_log')
+      var r = await supabaseClient.from('namaz_log')
         .select('*')
         .eq('studentid', currentUser.studentId)
         .gte('prayer_date', fmt(firstDay))
@@ -25842,9 +25891,9 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   }
 
   async function _loadStreakInternal() {
-    if (!currentUser || !window.supabaseClient) return;
+    if (!currentUser || !supabaseClient) return;
     try {
-      var r = await window.supabaseClient.from('namaz_streaks')
+      var r = await supabaseClient.from('namaz_streaks')
         .select('*')
         .eq('studentid', currentUser.studentId)
         .maybeSingle();
@@ -26227,7 +26276,7 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 /* ═══════════════════════════════════════════════════════ */
 #teacherDashboardV60{min-height:100vh;background:linear-gradient(160deg,#f0f9ff 0%,#dbeafe 50%,#e0f2fe 100%);padding:16px;padding-bottom:100px;display:none}
 #teacherDashboardV60.open{display:block}
-.td60-header{max-width:1200px;margin:0 auto 18px;background:linear-gradient(135deg,#0891b2,#22d3ee,#3b8bff);border-radius:22px;padding:18px 22px;box-shadow:0 12px 30px -12px rgba(8,145,178,.6);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px}
+.td60-header{max-width:1200px;margin:0 auto 18px;padding: 18px 22px;padding-top: max(18px, env(safe-area-inset-top, 18px));background:linear-gradient(135deg,#0891b2,#22d3ee,#3b8bff);border-radius:22px;padding:18px 22px;box-shadow:0 12px 30px -12px rgba(8,145,178,.6);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px}
 .td60-header-left{display:flex;align-items:center;gap:14px;flex:1;min-width:0}
 .td60-avatar{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#fff;flex-shrink:0}
 .td60-info{min-width:0;flex:1}
@@ -27102,10 +27151,10 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 
   // ─── Hook into Login Form (adds TR detection) ───
   function installLoginHandler() {
+    if (form._v60Hooked || form._v32Hooked) return;
     var form = $id('loginForm');
     if (!form) return;
-    if (form._v60Hooked) return;
-    var newForm = form.cloneNode(true);
+    if (form._v60Hooked || form._v32Hooked || form._v61Hooked) return;    var newForm = form.cloneNode(true);
     form.parentNode.replaceChild(newForm, form);
     newForm._v60Hooked = true;
     var sidInput = $id('studentId');
@@ -30247,7 +30296,7 @@ html:has(body.teacher-view-open) {
   }
 
   // Safety net — check every 800ms
-  setInterval(forceUnlockForTeacher, 800);
+  setInterval(forceUnlockForTeacher, 200);
 
   // ───────────────────────────────────────────────────
   // 🐛 DEBUG helper
