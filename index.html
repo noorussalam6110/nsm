@@ -37180,5 +37180,361 @@ body.msg-menu-open .chat-msg-delete-btn { display: none !important; }
   console.log('   • Long-press or right-click on any message');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 💬 v91.0 — INSTANT SEND (WhatsApp-style optimistic UI) -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="instant-send-v91-css">
+/* Pending message (before DB confirms) */
+.chat-msg.msg-pending .chat-msg-bubble {
+  opacity: .78;
+  position: relative;
+}
+.chat-msg.msg-pending .chat-msg-bubble::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.15);
+  pointer-events: none;
+}
+.chat-msg.msg-pending .chat-msg-time { opacity: .75; }
+
+/* Clock icon spin */
+.msg-clock-icon {
+  animation: msgClockSpin 1.4s linear infinite;
+  display: inline-block;
+}
+@keyframes msgClockSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Failed message (red tint) */
+.chat-msg.msg-failed .chat-msg-bubble {
+  background: linear-gradient(100deg, #dc2626, #ef4444) !important;
+  opacity: 1;
+}
+.chat-msg.msg-failed .chat-msg-time { color: #fca5a5 !important; }
+
+/* Success tick animation */
+.msg-tick-icon {
+  animation: msgTickPop .4s cubic-bezier(.34,1.56,.64,1);
+  display: inline-block;
+}
+@keyframes msgTickPop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
+</style>
+
+<script id="instant-send-v91-js">
+(function(){
+  'use strict';
+  console.log('💬 Instant Send v91 loading...');
+
+  var TMP_PREFIX = 'tmp_';
+  var SEND_TIMEOUT = 15000;
+
+  // ═══════════════════════════════════════════════════
+  // 🛡️ STEP 1: Install realtime dedup interceptor
+  //    (Prevents duplicate when realtime fires late)
+  // ═══════════════════════════════════════════════════
+  function installRealtimeDedup() {
+    if (!window.supabaseClient) return false;
+    if (supabaseClient._v91dedup) return true;
+    supabaseClient._v91dedup = true;
+
+    var _origChannel = supabaseClient.channel.bind(supabaseClient);
+    supabaseClient.channel = function(name) {
+      var ch = _origChannel(name);
+      var _origOn = ch.on.bind(ch);
+      ch.on = function(evt, filter, handler) {
+        if (evt === 'postgres_changes' && filter &&
+            (filter.table === 'class_messages' || filter.table === 'direct_messages') &&
+            filter.event === 'INSERT' && typeof handler === 'function') {
+
+          var wrapped = function(payload) {
+            try {
+              var msg = payload && payload.new;
+              var st = window.CHAT_STATE;
+              if (msg && msg.id && st && st.messages) {
+
+                // ✅ Case A: Exact ID already present — skip
+                if (st.messages.some(function(m){ return m.id === msg.id; })) {
+                  return;
+                }
+
+                // ✅ Case B: Match a pending message (same text/sender/recent)
+                var pendingIdx = -1;
+                for (var i = 0; i < st.messages.length; i++) {
+                  var m = st.messages[i];
+                  if (!m._pending) continue;
+                  var s1 = m.studentid || m.sender_id;
+                  var s2 = msg.studentid || msg.sender_id;
+                  if (s1 !== s2) continue;
+                  if ((m.message || '') !== (msg.message || '')) continue;
+                  var t1 = new Date(m.created_at).getTime();
+                  var t2 = new Date(msg.created_at).getTime();
+                  if (Math.abs(t1 - t2) < 30000) { pendingIdx = i; break; }
+                }
+
+                if (pendingIdx > -1) {
+                  // Remove pending, let handler add real one
+                  st.messages.splice(pendingIdx, 1);
+                }
+              }
+            } catch(e) { /* silent */ }
+            return handler.apply(this, arguments);
+          };
+          return _origOn(evt, filter, wrapped);
+        }
+        return _origOn.apply(ch, arguments);
+      };
+      return ch;
+    };
+    console.log('✅ Realtime dedup interceptor installed');
+    return true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🛠️ HELPERS
+  // ═══════════════════════════════════════════════════
+  function v91Esc(s) {
+    return String(s || '').replace(/[&<>"]/g, function(m){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[m];
+    });
+  }
+
+  function v91Time(iso) {
+    try {
+      var d = new Date(iso);
+      return String(d.getHours()).padStart(2,'0') + ':' +
+             String(d.getMinutes()).padStart(2,'0');
+    } catch(e) { return ''; }
+  }
+
+  function v91ScrollBottom(smooth) {
+    var c = document.getElementById('chatMessages');
+    if (!c) return;
+    if (smooth) {
+      try { c.scrollTo({ top: c.scrollHeight, behavior: 'smooth' }); }
+      catch(e) { c.scrollTop = c.scrollHeight; }
+    } else {
+      setTimeout(function(){ c.scrollTop = c.scrollHeight; }, 30);
+    }
+  }
+
+  function v91BuildMsgEl(m, isMine, pending) {
+    var senderName = m.student_name || m.sender_name ||
+                     (isMine ? (currentUser && currentUser.name || 'Me') : 'Student');
+    var initial = (senderName || 'S').charAt(0).toUpperCase();
+    var timeStr = v91Time(m.created_at);
+    var pendingIcon = pending
+      ? ' <i class="fas fa-clock msg-clock-icon"></i>'
+      : ' <i class="fas fa-check msg-tick-icon" style="opacity:.85;font-size:.62rem;"></i>';
+
+    var el = document.createElement('div');
+    el.className = 'chat-msg ' + (isMine ? 'mine' : 'other') + (pending ? ' msg-pending' : '');
+    el.setAttribute('data-msg-id', m.id);
+    el.innerHTML =
+      '<div class="chat-msg-avatar">' + initial + '</div>' +
+      '<div class="chat-msg-bubble-wrap">' +
+        '<div class="chat-msg-sender">' + v91Esc(senderName) + '</div>' +
+        '<div class="chat-msg-bubble">' + v91Esc(m.message) + '</div>' +
+        '<div class="chat-msg-time">' + timeStr + pendingIcon + '</div>' +
+      '</div>';
+    return el;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 STEP 2: Override sendChatMessage — Optimistic UI
+  // ═══════════════════════════════════════════════════
+  function patchSend() {
+    if (typeof window.sendChatMessage !== 'function') return false;
+    if (window.sendChatMessage._v91) return true;
+
+    var _orig = window.sendChatMessage;
+
+    window.sendChatMessage = async function() {
+      var input = document.getElementById('chatInput');
+      var state = window.CHAT_STATE;
+
+      // Fallback to original if state not ready
+      if (!input || !state || !currentUser) {
+        return _orig.apply(this, arguments);
+      }
+
+      var text = (input.value || '').trim();
+      if (!text) return;
+
+      var isClass = state.activeChat === 'class';
+      var table = isClass ? 'class_messages' : 'direct_messages';
+      var chatId = isClass ? String(currentUser.class || '') : state.activeChat;
+
+      // ─── 1. Clear input immediately ───
+      input.value = '';
+      input.style.height = 'auto';
+      var sendBtn = document.getElementById('chatSendBtn');
+      if (sendBtn) sendBtn.disabled = true;
+
+      // ─── 2. Create pending message ───
+      var tempId = TMP_PREFIX + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+      var tempMsg = {
+        id: tempId,
+        message: text,
+        message_type: 'text',
+        created_at: new Date().toISOString(),
+        _pending: true
+      };
+      if (isClass) {
+        tempMsg.class = chatId;
+        tempMsg.studentid = currentUser.studentId;
+        tempMsg.student_name = currentUser.name;
+      } else {
+        tempMsg.sender_id = currentUser.studentId;
+        tempMsg.receiver_id = chatId;
+      }
+
+      if (!state.messages) state.messages = [];
+      state.messages.push(tempMsg);
+
+      // ─── 3. Append to DOM immediately (WhatsApp-style) ───
+      var container = document.getElementById('chatMessages');
+      var tempEl = null;
+      if (container) {
+        var empty = container.querySelector('.chat-empty, .chat-cleared-notice');
+        if (empty) empty.remove();
+        tempEl = v91BuildMsgEl(tempMsg, true, true);
+        container.appendChild(tempEl);
+        v91ScrollBottom(true);
+      }
+
+      // Haptic feedback
+      if (navigator.vibrate) try { navigator.vibrate(8); } catch(e) {}
+
+      // ─── 4. Send to DB ───
+      try {
+        var payload = isClass ? {
+          class: chatId,
+          studentid: currentUser.studentId,
+          student_name: currentUser.name,
+          message: text,
+          message_type: 'text'
+        } : {
+          sender_id: currentUser.studentId,
+          receiver_id: chatId,
+          message: text,
+          message_type: 'text'
+        };
+
+        // Timeout guard
+        var insertPromise = supabaseClient.from(table)
+          .insert(payload).select().single();
+
+        var timeoutPromise = new Promise(function(_, rej) {
+          setTimeout(function() { rej(new Error('Timeout — check connection')); }, SEND_TIMEOUT);
+        });
+
+        var r = await Promise.race([insertPromise, timeoutPromise]);
+        if (r.error) throw r.error;
+
+        var real = r.data;
+
+        // ─── 5. Swap temp → real in state ───
+        var idx = state.messages.findIndex(function(m){ return m.id === tempId; });
+        if (idx > -1) state.messages[idx] = real;
+
+        // ─── 6. Update DOM (clock → tick) ───
+        if (tempEl && tempEl.parentNode) {
+          tempEl.setAttribute('data-msg-id', real.id);
+          tempEl.classList.remove('msg-pending');
+          var timeEl = tempEl.querySelector('.chat-msg-time');
+          if (timeEl) {
+            timeEl.innerHTML = v91Time(real.created_at) +
+              ' <i class="fas fa-check msg-tick-icon" style="opacity:.85;font-size:.62rem;"></i>';
+          }
+        }
+
+        // If realtime hasn't fired yet, we've already shown the message ✓
+
+      } catch(e) {
+        // ─── 7. Rollback on error ───
+        var idx2 = state.messages.findIndex(function(m){ return m.id === tempId; });
+        if (idx2 > -1) state.messages.splice(idx2, 1);
+
+        if (tempEl && tempEl.parentNode) {
+          tempEl.classList.add('msg-failed');
+          tempEl.classList.remove('msg-pending');
+          var tEl = tempEl.querySelector('.chat-msg-time');
+          if (tEl) {
+            tEl.innerHTML = v91Time(new Date().toISOString()) +
+              ' <i class="fas fa-exclamation-circle" style="color:#fca5a5;"></i>';
+          }
+          // Auto-remove after 5s
+          setTimeout(function() {
+            if (tempEl && tempEl.parentNode) tempEl.remove();
+          }, 5000);
+        }
+
+        showToast('❌ ' + (e.message || 'Send failed'), 'error');
+        if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch(x) {}
+      }
+
+      if (sendBtn) sendBtn.disabled = false;
+      try { input.focus(); } catch(e) {}
+    };
+
+    window.sendChatMessage._v91 = true;
+    console.log('✅ sendChatMessage patched (optimistic UI)');
+    return true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 STEP 3: Also patch DM send if different function
+  // ═══════════════════════════════════════════════════
+  function patchAll() {
+    var ok1 = installRealtimeDedup();
+    var ok2 = patchSend();
+    return ok1 && ok2;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  function init() {
+    patchAll();
+    var tries = 0;
+    var t = setInterval(function() {
+      tries++;
+      var ok = patchAll();
+      if (ok || tries > 40) clearInterval(t);
+    }, 500);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  setTimeout(init, 2000);
+  setTimeout(init, 5000);
+
+  // Re-apply after login
+  if (typeof window.completeLogin === 'function' && !window.completeLogin._v91) {
+    var _origCL = window.completeLogin;
+    window.completeLogin = async function() {
+      var r = await _origCL.apply(this, arguments);
+      setTimeout(patchAll, 1500);
+      return r;
+    };
+    window.completeLogin._v91 = true;
+  }
+
+  console.log('✅ Instant Send v91 ready');
+  console.log('   • പോസ്റ്റ് ചെയ്ത ഉടനെ കാണും (clock icon)');
+  console.log('   • DB-ൽ save ആയാൽ ✓ tick');
+  console.log('   • Duplicate realtime messages prevent ചെയ്യും');
+})();
+</script>
 </body>
 </html>
