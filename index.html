@@ -38054,5 +38054,483 @@ body.msg-menu-open .chat-msg-delete-btn { display: none !important; }
   console.log('   • Green sent / white received');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🧹 v93.0 — CLEAR CHAT (Robust + localStorage Fallback) -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="clear-chat-v93-css">
+/* Hidden by clear filter */
+.chat-msg.msg-hidden-clear {
+  display: none !important;
+}
+/* Clear chat button — more prominent */
+.chat-dropdown-item[data-clear-chat] {
+  color: #b45309 !important;
+  font-weight: 800 !important;
+}
+.chat-dropdown-item[data-clear-chat] i {
+  color: #b45309 !important;
+}
+/* Highlighted broom button for class chat */
+.chat-header-action[data-clear-class] {
+  background: rgba(251, 191, 36, .2) !important;
+  border: 1px solid rgba(251, 191, 36, .4) !important;
+  color: #fbbf24 !important;
+}
+.chat-header-action[data-clear-class]:hover {
+  background: rgba(251, 191, 36, .35) !important;
+}
+</style>
+
+<script id="clear-chat-v93-js">
+(function(){
+  'use strict';
+  console.log('🧹 Clear Chat v93 loading...');
+
+  // ═══════════════════════════════════════════════════
+  // 🌐 STATE — localStorage fallback
+  // ═══════════════════════════════════════════════════
+  var LOCAL_CLEARS_KEY = 'noor_chat_clears_v93';
+  var LOCAL_HIDDEN_KEY = 'noor_hidden_msgs_v93';
+
+  window.WACHAT_V93 = {
+    clears: {},
+    hiddenMsgs: {},
+    dbAvailable: true,
+    loaded: false
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 💾 LOCAL STORAGE HELPERS
+  // ═══════════════════════════════════════════════════
+  function loadLocal() {
+    try {
+      var c = JSON.parse(localStorage.getItem(LOCAL_CLEARS_KEY) || '{}');
+      var h = JSON.parse(localStorage.getItem(LOCAL_HIDDEN_KEY) || '{}');
+      // Filter by current user
+      var sid = currentUser ? currentUser.studentId : 'guest';
+      WACHAT_V93.clears = c[sid] || {};
+      WACHAT_V93.hiddenMsgs = h[sid] || {};
+    } catch(e) {
+      WACHAT_V93.clears = {};
+      WACHAT_V93.hiddenMsgs = {};
+    }
+  }
+
+  function saveLocal() {
+    try {
+      var sid = currentUser ? currentUser.studentId : 'guest';
+      var c = JSON.parse(localStorage.getItem(LOCAL_CLEARS_KEY) || '{}');
+      var h = JSON.parse(localStorage.getItem(LOCAL_HIDDEN_KEY) || '{}');
+      c[sid] = WACHAT_V93.clears;
+      h[sid] = WACHAT_V93.hiddenMsgs;
+      localStorage.setItem(LOCAL_CLEARS_KEY, JSON.stringify(c));
+      localStorage.setItem(LOCAL_HIDDEN_KEY, JSON.stringify(h));
+    } catch(e) { console.warn('saveLocal:', e); }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 📥 LOAD FROM DB (merge with local)
+  // ═══════════════════════════════════════════════════
+  async function loadFromDB() {
+    if (!currentUser || !supabaseClient) return;
+    try {
+      // Try chat_clears
+      var cr = await supabaseClient.from('chat_clears')
+        .select('*').eq('studentid', currentUser.studentId);
+      if (cr.error) {
+        if (/does not exist|relation/i.test(cr.error.message || '')) {
+          WACHAT_V93.dbAvailable = false;
+          console.warn('⚠️ chat_clears table missing — using localStorage only');
+          return;
+        }
+      } else {
+        (cr.data || []).forEach(function(c) {
+          WACHAT_V93.clears[c.chat_type + ':' + c.chat_id] =
+            new Date(c.cleared_at).getTime();
+        });
+      }
+
+      // Try hidden_messages
+      var hr = await supabaseClient.from('hidden_messages')
+        .select('*').eq('studentid', currentUser.studentId);
+      if (!hr.error) {
+        (hr.data || []).forEach(function(h) {
+          WACHAT_V93.hiddenMsgs[h.message_table + ':' + h.message_id] = true;
+        });
+      }
+    } catch(e) {
+      console.warn('loadFromDB:', e);
+    }
+  }
+
+  async function loadAll() {
+    loadLocal();
+    await loadFromDB();
+    WACHAT_V93.loaded = true;
+    console.log('✅ Clear data loaded —',
+      'clears:', Object.keys(WACHAT_V93.clears).length,
+      '| hidden:', Object.keys(WACHAT_V93.hiddenMsgs).length,
+      '| DB:', WACHAT_V93.dbAvailable ? 'OK' : 'fallback');
+    // Sync local from DB too
+    saveLocal();
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 GET CURRENT CHAT KEY
+  // ═══════════════════════════════════════════════════
+  function getCurrentChatKey() {
+    var s = window.CHAT_STATE;
+    if (!s || !currentUser) return null;
+    if (s.activeChat === 'class') return 'class:' + (currentUser.class || '');
+    return 'direct:' + s.activeChat;
+  }
+
+  function getCurrentTable() {
+    var s = window.CHAT_STATE;
+    if (!s) return null;
+    return s.activeChat === 'class' ? 'class_messages' : 'direct_messages';
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 APPLY FILTER — CSS class based, DOM-safe
+  // ═══════════════════════════════════════════════════
+  function applyFilter() {
+    var container = document.getElementById('chatMessages');
+    if (!container) return;
+    var s = window.CHAT_STATE;
+    if (!s) return;
+
+    var key = getCurrentChatKey();
+    if (!key) return;
+
+    var clearedAt = WACHAT_V93.clears[key] || 0;
+    var table = getCurrentTable();
+    var messages = s.messages || [];
+
+    // Get all DOM message nodes in order
+    var nodes = Array.from(container.querySelectorAll('.chat-msg'));
+    var visibleCount = 0;
+
+    nodes.forEach(function(node) {
+      // Skip already-hidden-by-clear nodes we set earlier
+      node.classList.remove('msg-hidden-clear');
+
+      // Match node to message via data-msg-id
+      var msgId = node.getAttribute('data-msg-id');
+      var m = null;
+
+      if (msgId) {
+        // Find by ID (works for real messages)
+        m = messages.find(function(x){
+          return String(x.id) === String(msgId);
+        });
+        // Also check temp messages
+        if (!m) {
+          m = messages.find(function(x){
+            return String(x.id) === msgId;
+          });
+        }
+      }
+
+      // If not found by ID, try matching by content order
+      if (!m) {
+        // Use DOM order to find corresponding message
+        var idx = nodes.indexOf(node);
+        if (idx >= 0 && messages[idx]) m = messages[idx];
+      }
+
+      if (!m) return;
+
+      var shouldHide = false;
+
+      // Rule 1: Before clear time
+      if (clearedAt > 0) {
+        var msgTime = m.created_at ? new Date(m.created_at).getTime() : 0;
+        if (msgTime > 0 && msgTime <= clearedAt) shouldHide = true;
+      }
+
+      // Rule 2: Explicitly hidden message
+      if (!shouldHide && table && WACHAT_V93.hiddenMsgs[table + ':' + m.id]) {
+        shouldHide = true;
+      }
+
+      if (shouldHide) {
+        node.classList.add('msg-hidden-clear');
+      } else {
+        visibleCount++;
+      }
+    });
+
+    // Show "cleared" notice if all hidden
+    var oldNotice = container.querySelector('.chat-cleared-notice');
+    if (oldNotice) oldNotice.remove();
+
+    if (clearedAt > 0 && visibleCount === 0) {
+      var notice = document.createElement('div');
+      notice.className = 'chat-cleared-notice';
+      try {
+        var d = new Date(clearedAt);
+        var label = d.toLocaleDateString('en-IN',
+          { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        notice.innerHTML =
+          '<i class="fas fa-broom"></i>' +
+          'Chat cleared • ' + label +
+          '<div style="margin-top:6px;font-size:.7rem;">New messages ഇവിടെ കാണാം ✓</div>';
+      } catch(e) {
+        notice.innerHTML = '<i class="fas fa-broom"></i>Chat cleared';
+      }
+      container.appendChild(notice);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🧹 CLEAR CHAT
+  // ═══════════════════════════════════════════════════
+  window.WACHAT_clearChat = async function() {
+    var key = getCurrentChatKey();
+    if (!key) {
+      showToast('❌ Chat not open', 'error');
+      return;
+    }
+    var parts = key.split(':');
+    var chatType = parts[0];
+    var chatId = parts.slice(1).join(':');
+
+    if (!confirm(
+      '🧹 Clear this chat?\n\n' +
+      '✅ നിങ്ങൾക്ക് മാത്രം messages hide ആകും\n' +
+      '👥 മറ്റുള്ളവർക്ക് കാണാം\n' +
+      '💾 അടുത്ത login-ലും hidden ആയിരിക്കും\n\n' +
+      'Proceed?'
+    )) return;
+
+    var now = Date.now();
+
+    // 1. Save to localStorage IMMEDIATELY (guaranteed)
+    WACHAT_V93.clears[key] = now;
+    saveLocal();
+
+    // 2. Apply filter right away (instant feedback)
+    applyFilter();
+
+    // 3. Try DB save in background (best-effort)
+    try {
+      var r = await supabaseClient.from('chat_clears').upsert({
+        studentid: currentUser.studentId,
+        chat_type: chatType,
+        chat_id: chatId,
+        cleared_at: new Date(now).toISOString()
+      }, { onConflict: 'studentid,chat_type,chat_id' });
+
+      if (r.error && !/does not exist|relation/i.test(r.error.message || '')) {
+        console.warn('DB clear save error:', r.error.message);
+      }
+    } catch(e) {
+      console.warn('DB save failed (localStorage still works):', e);
+    }
+
+    showToast('🧹 Chat cleared', 'success');
+    if (navigator.vibrate) try { navigator.vibrate([20, 30, 20]); } catch(x) {}
+
+    // Confetti (small)
+    if (typeof confetti !== 'undefined') {
+      confetti({
+        particleCount: 40, spread: 60,
+        origin: { y: .8 },
+        colors: ['#00a884', '#25d366', '#34d399']
+      });
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 INJECT CLEAR BUTTONS
+  // ═══════════════════════════════════════════════════
+  function injectClearButton() {
+    var s = window.CHAT_STATE;
+    if (!s) return;
+
+    // For class chat — add broom icon in header
+    if (s.activeChat === 'class') {
+      var header = document.querySelector('.chat-header-actions');
+      if (header && !header.querySelector('[data-clear-class]')) {
+        var b = document.createElement('button');
+        b.className = 'chat-header-action';
+        b.setAttribute('data-clear-class', '1');
+        b.title = 'Clear Chat';
+        b.innerHTML = '<i class="fas fa-broom"></i>';
+        b.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.WACHAT_clearChat();
+        };
+        header.insertBefore(b, header.firstChild);
+      }
+    }
+
+    // For direct chat — add in dropdown
+    var dropdown = document.getElementById('chatHeaderDropdown');
+    if (dropdown && !dropdown.querySelector('[data-clear-chat]')) {
+      var btn = document.createElement('button');
+      btn.className = 'chat-dropdown-item';
+      btn.setAttribute('data-clear-chat', '1');
+      btn.innerHTML = '<i class="fas fa-broom"></i> Clear Chat';
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        dropdown.classList.remove('open');
+        window.WACHAT_clearChat();
+      };
+
+      var divider = dropdown.querySelector('.chat-dropdown-divider');
+      if (divider) dropdown.insertBefore(btn, divider);
+      else dropdown.appendChild(btn);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔄 WATCH FOR RE-RENDERS — Re-apply filter
+  // ═══════════════════════════════════════════════════
+  function watchMessages() {
+    var c = document.getElementById('chatMessages');
+    if (!c || c._v93watch) return;
+    c._v93watch = true;
+
+    var pending = null;
+    new MutationObserver(function(muts) {
+      var hit = false;
+      muts.forEach(function(m) {
+        if (m.type === 'childList' && m.addedNodes.length) hit = true;
+      });
+      if (!hit) return;
+
+      if (pending) clearTimeout(pending);
+      pending = setTimeout(function() {
+        pending = null;
+        applyFilter();
+      }, 60);
+    }).observe(c, { childList: true });
+
+    console.log('✅ Message watcher attached');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔗 HOOKS
+  // ═══════════════════════════════════════════════════
+  function hookChatOpeners() {
+    ['openClassChat', 'openDirectChatWith'].forEach(function(fn) {
+      if (typeof window[fn] !== 'function') return;
+      if (window[fn]._v93hooked) return;
+      var orig = window[fn];
+      window[fn] = async function() {
+        var r = await orig.apply(this, arguments);
+        setTimeout(function() {
+          watchMessages();
+          injectClearButton();
+          applyFilter();
+        }, 200);
+        setTimeout(applyFilter, 600);
+        setTimeout(applyFilter, 1200);
+        return r;
+      };
+      window[fn]._v93hooked = true;
+    });
+  }
+
+  function hookChatPanel() {
+    if (typeof window.openChatPanel !== 'function') return;
+    if (window.openChatPanel._v93hooked) return;
+    var orig = window.openChatPanel;
+    window.openChatPanel = async function() {
+      var r = await orig.apply(this, arguments);
+      setTimeout(async function() {
+        if (!WACHAT_V93.loaded) await loadAll();
+        watchMessages();
+        injectClearButton();
+        applyFilter();
+      }, 500);
+      return r;
+    };
+    window.openChatPanel._v93hooked = true;
+  }
+
+  // Hook into login to load data
+  function hookLogin() {
+    if (typeof window.completeLogin !== 'function') return;
+    if (window.completeLogin._v93hooked) return;
+    var orig = window.completeLogin;
+    window.completeLogin = async function(student) {
+      var r = await orig.apply(this, arguments);
+      setTimeout(function() { loadAll(); }, 2500);
+      return r;
+    };
+    window.completeLogin._v93hooked = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🐛 DEBUG HELPER
+  // ═══════════════════════════════════════════════════
+  window.WACHAT_debug = function() {
+    var s = window.CHAT_STATE;
+    var key = getCurrentChatKey();
+    console.log('=== CLEAR CHAT DEBUG ===');
+    console.log('Current user:', currentUser ? currentUser.studentId : 'NONE');
+    console.log('Active chat:', s ? s.activeChat : 'NONE');
+    console.log('Chat key:', key);
+    console.log('Cleared at:', key ? WACHAT_V93.clears[key] : 'N/A');
+    console.log('All clears:', WACHAT_V93.clears);
+    console.log('Hidden msgs:', Object.keys(WACHAT_V93.hiddenMsgs).length);
+    console.log('DB available:', WACHAT_V93.dbAvailable);
+    console.log('Messages in state:', s && s.messages ? s.messages.length : 0);
+    var container = document.getElementById('chatMessages');
+    if (container) {
+      console.log('DOM messages:', container.querySelectorAll('.chat-msg').length);
+      console.log('Hidden by clear:', container.querySelectorAll('.msg-hidden-clear').length);
+    }
+  };
+
+  window.WACHAT_forceApply = function() {
+    applyFilter();
+    showToast('🔄 Filter applied', 'info');
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  async function init() {
+    hookChatOpeners();
+    hookChatPanel();
+    hookLogin();
+    if (currentUser) {
+      await loadAll();
+      watchMessages();
+      injectClearButton();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 3000);
+      setTimeout(init, 6000);
+    });
+  } else {
+    setTimeout(init, 3000);
+    setTimeout(init, 6000);
+  }
+
+  // Periodic re-apply (safety)
+  setInterval(function() {
+    var panel = document.getElementById('chatPanel');
+    if (panel && panel.classList.contains('open')) {
+      hookChatOpeners();
+      hookChatPanel();
+      injectClearButton();
+      applyFilter();
+    }
+  }, 2500);
+
+  console.log('✅ Clear Chat v93 ready');
+  console.log('   💡 WACHAT_debug() — check state');
+  console.log('   💡 WACHAT_forceApply() — manual filter');
+})();
+</script>
 </body>
 </html>
