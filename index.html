@@ -27682,7 +27682,7 @@ window.askTeacherId = function() {
   window.openTeacherForm = async function(teacherId) {
     var isEdit = !!teacherId;
     var t = isEdit ? (window._teachersList || []).find(function(x) { return x.teacher_id === teacherId; }) : {};
-    var nextId = '*****';
+    var nextId = 'TR001';
     if (!isEdit) {
       try {
         var r = await supabaseClient.from('teachers').select('teacher_id').order('teacher_id', { ascending: false }).limit(1);
@@ -28719,11 +28719,6 @@ ALTER TABLE teacher_login_logs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "allow_all_teacher_logs" ON teacher_login_logs;
 CREATE POLICY "allow_all_teacher_logs" ON teacher_login_logs FOR ALL USING (true) WITH CHECK (true);
 
--- Insert a sample teacher (optional)
-INSERT INTO teachers (teacher_id, name, subject, classes, password, is_active)
-VALUES ('TR001', 'Suhail P', 'Arabic', '["1","2","3"]'::jsonb, 'ustad123', true)
-ON CONFLICT (teacher_id) DO NOTHING;
--->
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 🚫 v63.0 — SENT REQUESTS TAB + CANCEL FEATURE           -->
 <!-- ═══════════════════════════════════════════════════════ -->
