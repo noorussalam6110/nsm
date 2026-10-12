@@ -20346,7 +20346,7 @@ ON CONFLICT (key) DO NOTHING;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid rgba(180,200,230,.5);
-  padding: 12px 16px;
+  padding: calc(22px + env(safe-area-inset-top, 0px)) 16px 22px;
   margin: -16px -16px 16px;
   box-shadow: 0 4px 20px -12px rgba(0,0,0,.12);
 }
@@ -25100,9 +25100,9 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   #teacherLoginV60 .tv60-btn-secondary{font-size:.68rem}
 }
 @media (min-width: 901px){
-  #teacherLoginV60{padding:24px;display:none;align-items:center;justify-content:center;}
+  #teacherLoginV60{padding:24px;display:none;align-items:flex-start;justify-content:center;}
   #teacherLoginV60.open{display:flex !important}
-  #teacherLoginV60 .tv60-card{max-width:440px;margin:0}
+  #teacherLoginV60 .tv60-card{max-width:440px;margin:auto 0}
 }
 
 /* ═══════════════════════════════════════════════════════ */
@@ -41802,6 +41802,21 @@ document.addEventListener('touchend', function(e) {
   // 6️⃣ History Modal — Cumulative + Attractive
   // ═══════════════════════════════════════════════════════
   window.NV112_openHistory = async function() {
+    // Guard: user + modal elements
+    if (!currentUser || !currentUser.studentId) {
+      if (typeof showToast === 'function') showToast('❌ Login ആവശ്യമാണ്', 'error');
+      return;
+    }
+    var _m  = document.getElementById('globalModal');
+    var _mt = document.getElementById('modalTitle');
+    var _mb = document.getElementById('modalContentBody');
+    if (!_m || !_mt || !_mb) {
+      if (typeof showToast === 'function') showToast('❌ Modal unavailable — page reload ചെയ്യൂ', 'error');
+      return;
+    }
+    var modalTitleSpan = _mt;
+    var modalBodyDiv  = _mb;
+    var modal         = _m;
     modalTitleSpan.innerText = '🕌 നമസ്കാര ചരിത്രം';
     modalBodyDiv.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
     modal.style.display = 'flex';
