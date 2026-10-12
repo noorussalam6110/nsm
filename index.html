@@ -45157,5 +45157,441 @@ document.addEventListener('touchend', function(e) {
   console.log('✅ Absolute scroll fix ready — type SCROLL_debug() to check');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📱 MOBILE HEADER SAFE-AREA FIX — v114                  -->
+<!-- Status bar overlap പൂർണ്ണമായി പരിഹരിക്കുന്നു         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="mobile-safe-area-master">
+/* ═══════════════════════════════════════════════════════ */
+/* 🎯 Universal safe-area padding for ALL fixed headers    */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+
+  /* ─── Universal override: every FIXED top element ─── */
+  body,
+  #dashboardSection,
+  #adminSection,
+  #teacherDashboardV60,
+  #loginSection,
+  .nsm-login-wrapper,
+  .nsm-body,
+  .creations-overlay,
+  #creationsOverlay,
+  #publicFeedOverlay,
+  .public-feed-overlay,
+  #studentFeesOverlay,
+  .chat-panel,
+  .ai-panel,
+  .survey-overlay,
+  #studentFeesOverlay {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ─── Every MODAL that's fixed full-screen ─── */
+  #globalModal,
+  #passbookModal,
+  #studentWithdrawalModal,
+  #notificationsModal,
+  #editProfileModal,
+  #topperModal,
+  #topperCropModal,
+  #uploadCreationModal,
+  #notesModal,
+  #noticeBoardModal,
+  #findStudentIdModal,
+  #forgotModal,
+  #helpModal,
+  #creationLightbox,
+  #quizModal,
+  #rewardsModal,
+  #addFriendModal,
+  #avatarCustomizerModal,
+  #reportModal,
+  #posterPopupV102,
+  #receiptModalV79,
+  #waBotPanelV80,
+  #pwdMgrModalV82,
+  #teacherLoginV60,
+  #tsModalV81,
+  #posterFullscreenV102,
+  .quiz-modal-overlay,
+  .avatar-customizer-modal,
+  .add-friend-modal,
+  .report-modal-overlay,
+  .poster-popup-overlay,
+  .namaz-state-picker,
+  .image-lightbox,
+  .chat-image-lightbox,
+  .modal-glass-wrapper {
+    padding-top: max(16px, env(safe-area-inset-top, 16px)) !important;
+  }
+
+  /* ─── Dashboard header (top card) — push down ─── */
+  #dashboardSection > .container,
+  #adminSection > .container {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+  }
+
+  /* ─── Dashboard header card itself ─── */
+  .dashboard-header-glow {
+    margin-top: 0 !important;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px)) !important;
+    border-radius: 20px !important;
+  }
+
+  /* ─── Creations header (കലാസൃഷ്ടികൾ page top bar) ─── */
+  .creations-header {
+    margin-top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+    padding-top: 16px !important;
+  }
+
+  /* ─── Upload Creation Modal top bar ─── */
+  #uploadCreationModal > div {
+    margin-top: max(16px, env(safe-area-inset-top, 16px)) !important;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 32px) !important;
+  }
+
+  /* ─── AI panel head ─── */
+  .ai-head {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* ─── Chat header ─── */
+  .chat-header {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+  }
+  .chat-sidebar-header {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* ─── Teacher dashboard header ─── */
+  .td60-header {
+    margin-top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+  }
+  .td60-main-header {
+    /* Not fixed, no padding needed */
+  }
+
+  /* ─── Public feed header ─── */
+  #publicFeedOverlay .pf-header {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* ─── Global modal sticky title bar ─── */
+  #globalModal > div > div:first-child {
+    padding-top: calc(16px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* ─── Notifications / Passbook / Withdrawal modal headers ─── */
+  #notificationsModal .modal-glass > div:first-child,
+  #passbookModal .modal-glass > div:first-child,
+  #studentWithdrawalModal .modal-glass > div:first-child,
+  #notesModal .modal-glass > div:first-child,
+  #noticeBoardModal .modal-glass > div:first-child,
+  #editProfileModal .modal-glass > div:first-child {
+    padding-top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* ─── Login page navbar / hero ─── */
+  .nsm-navbar {
+    padding-top: calc(10px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* ─── Bottom nav safe area (already mostly OK, ensure) ─── */
+  .mob-bottom-nav {
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 8px)) !important;
+  }
+
+  /* ─── FAB buttons push up from bottom nav ─── */
+  .ai-fab, .wa-bot-fab, .chat-fab {
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* ─── Very small phones (rare edge cases) ─── */
+@media (max-width: 400px) {
+  .dashboard-header-glow {
+    padding-top: calc(14px + env(safe-area-inset-top, 0px)) !important;
+  }
+  #uploadCreationModal > div,
+  #globalModal > div {
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 16px) !important;
+  }
+}
+</style>
+
+<script id="mobile-safe-area-master-js">
+/* ═══════════════════════════════════════════════════════ */
+/* 🚀 Runtime safe-area enforcer — for dynamically added   */
+/*    modals, overlays, and headers                       */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  console.log('📱 Mobile Safe-Area v114 loading...');
+
+  // Detect if device needs safe area (iPhone notch / Android status bar)
+  var IS_MOBILE = window.matchMedia('(max-width: 900px)').matches;
+  var HAS_SAFE_TOP = false;
+
+  // Probe safe area
+  try {
+    var probe = document.createElement('div');
+    probe.style.cssText = 'position:fixed;top:0;left:0;height:env(safe-area-inset-top, 0px);width:1px;pointer-events:none;';
+    document.body.appendChild(probe);
+    var h = probe.getBoundingClientRect().height;
+    document.body.removeChild(probe);
+    HAS_SAFE_TOP = h > 0;
+    console.log('📱 Safe-area-inset-top detected:', h + 'px');
+  } catch(e) {}
+
+  // If no safe area inset but mobile → still need padding (Android status bar ~24px)
+  var FALLBACK_TOP = IS_MOBILE ? 28 : 0;
+
+  function applySafeArea(el, mode) {
+    if (!el || el._v114Applied === mode) return;
+    el._v114Applied = mode;
+
+    var existing = parseFloat(el.style.paddingTop) || 0;
+    var topPad = HAS_SAFE_TOP
+      ? 'calc(' + existing + 'px + env(safe-area-inset-top, 0px))'
+      : (existing + FALLBACK_TOP) + 'px';
+
+    el.style.setProperty('padding-top', topPad, 'important');
+    el.style.setProperty('box-sizing', 'border-box', 'important');
+  }
+
+  // List of FIXED top-anchored elements that may get injected dynamically
+  var FIXED_TOP_SELECTORS = [
+    '.creations-header',
+    '.dashboard-header-glow',
+    '.td60-header',
+    '#publicFeedOverlay .pf-header',
+    '.ai-head',
+    '.chat-header',
+    '.chat-sidebar-header'
+  ];
+
+  var MODAL_SELECTORS = [
+    '#uploadCreationModal',
+    '#globalModal',
+    '#passbookModal',
+    '#studentWithdrawalModal',
+    '#notificationsModal',
+    '#editProfileModal',
+    '#topperModal',
+    '#notesModal',
+    '#noticeBoardModal',
+    '#findStudentIdModal',
+    '#helpModal',
+    '#creationLightbox',
+    '#quizModal',
+    '#rewardsModal',
+    '#addFriendModal',
+    '#avatarCustomizerModal',
+    '#reportModal',
+    '#posterPopupV102',
+    '#receiptModalV79',
+    '#waBotPanelV80',
+    '#pwdMgrModalV82',
+    '#teacherLoginV60',
+    '#tsModalV81',
+    '.quiz-modal-overlay',
+    '.avatar-customizer-modal',
+    '.add-friend-modal',
+    '.report-modal-overlay',
+    '.poster-popup-overlay',
+    '.namaz-state-picker',
+    '.chat-image-lightbox',
+    '.image-lightbox',
+    '.survey-overlay'
+  ];
+
+  function scanAndFix() {
+    if (!IS_MOBILE) return;
+
+    FIXED_TOP_SELECTORS.forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(function(el) {
+        // Only if it's at page top (top:0, or first child)
+        var rect = el.getBoundingClientRect();
+        if (rect.top < 100) {
+          applySafeArea(el, 'header');
+        }
+      });
+    });
+
+    MODAL_SELECTORS.forEach(function(sel) {
+      var el = document.querySelector(sel);
+      if (!el) return;
+      var visible = el.classList.contains('open') ||
+                    el.style.display === 'flex' ||
+                    el.style.display === 'block';
+      if (visible) {
+        // Modals: pad the container so content starts below status bar
+        var cur = parseFloat(el.style.paddingTop) || 0;
+        var topPad = HAS_SAFE_TOP
+          ? 'max(' + cur + 'px, env(safe-area-inset-top, 16px))'
+          : Math.max(cur, 16) + 'px';
+        el.style.setProperty('padding-top', topPad, 'important');
+        el.style.setProperty('box-sizing', 'border-box', 'important');
+      }
+    });
+  }
+
+  // Initial run
+  setTimeout(scanAndFix, 500);
+  setTimeout(scanAndFix, 1500);
+  setTimeout(scanAndFix, 3500);
+  setTimeout(scanAndFix, 6000);
+
+  // Watch for dynamically added modals/headers
+  if (document.body) {
+    var pending = null;
+    var obs = new MutationObserver(function(muts) {
+      var hit = false;
+      muts.forEach(function(m) {
+        if (m.type === 'childList' && m.addedNodes.length > 0) {
+          hit = true;
+        } else if (m.type === 'attributes' &&
+                   (m.attributeName === 'style' || m.attributeName === 'class')) {
+          hit = true;
+        }
+      });
+      if (!hit) return;
+      if (pending) return;
+      pending = setTimeout(function() {
+        pending = null;
+        scanAndFix();
+      }, 250);
+    });
+    obs.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+  }
+
+  // On orientation change / resize — reapply
+  window.addEventListener('orientationchange', function() {
+    setTimeout(scanAndFix, 400);
+  });
+  window.addEventListener('resize', function() {
+    IS_MOBILE = window.matchMedia('(max-width: 900px)').matches;
+    setTimeout(scanAndFix, 250);
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 Special: Fix uploadCreationModal (has nested structure)
+  // ═══════════════════════════════════════════════════════
+  function fixUploadModal() {
+    var m = document.getElementById('uploadCreationModal');
+    if (!m) return;
+    var visible = m.style.display === 'flex' || m.style.display === 'block';
+    if (!visible) return;
+    var card = m.querySelector('div > div');
+    if (card) {
+      card.style.setProperty('margin-top',
+        HAS_SAFE_TOP ? 'max(16px, env(safe-area-inset-top, 16px))' : '20px',
+        'important');
+      card.style.setProperty('max-height',
+        'calc(100dvh - env(safe-area-inset-top, 0px) - 32px)',
+        'important');
+    }
+  }
+
+  // Special handler for creation lightbox
+  function fixCreationLightbox() {
+    var lb = document.getElementById('creationLightbox');
+    if (!lb) return;
+    if (!lb.classList.contains('open')) return;
+    var content = lb.querySelector('.cl-content');
+    if (content) {
+      content.style.setProperty('max-height',
+        'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px)',
+        'important');
+    }
+  }
+
+  // Hook into modal openers
+  ['openUploadCreationModal', 'openCreationLightbox', 'openCreationsGallery'].forEach(function(fnName) {
+    var orig = window[fnName];
+    if (typeof orig === 'function' && !orig._v114) {
+      window[fnName] = function() {
+        var r = orig.apply(this, arguments);
+        setTimeout(function() {
+          fixUploadModal();
+          fixCreationLightbox();
+          scanAndFix();
+        }, 200);
+        setTimeout(scanAndFix, 600);
+        return r;
+      };
+      window[fnName]._v114 = true;
+    }
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 Creations Gallery overlay — push header down
+  // ═══════════════════════════════════════════════════════
+  function fixCreationsOverlay() {
+    var el = document.getElementById('creationsOverlay');
+    if (!el || !el.classList.contains('open')) return;
+
+    var header = el.querySelector('.creations-header');
+    if (header && header.parentNode) {
+      header.parentNode.style.setProperty('padding-top',
+        HAS_SAFE_TOP ? 'env(safe-area-inset-top, 0px)' : '24px',
+        'important');
+    }
+
+    // Also the container
+    var container = el.querySelector('.creations-container');
+    if (container) {
+      container.style.setProperty('padding-top',
+        HAS_SAFE_TOP ? 'env(safe-area-inset-top, 0px)' : '20px',
+        'important');
+    }
+  }
+
+  var _origOpenGallery = window.openCreationsGallery;
+  if (typeof _origOpenGallery === 'function' && !_origOpenGallery._v114) {
+    window.openCreationsGallery = function() {
+      var r = _origOpenGallery.apply(this, arguments);
+      setTimeout(fixCreationsOverlay, 150);
+      setTimeout(fixCreationsOverlay, 500);
+      return r;
+    };
+    window.openCreationsGallery._v114 = true;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════════
+  window.SAFE_debug = function() {
+    console.log('=== SAFE AREA DEBUG ===');
+    console.log('Mobile?', IS_MOBILE);
+    console.log('Has safe-area-inset-top?', HAS_SAFE_TOP);
+    console.log('Fallback top padding:', FALLBACK_TOP + 'px');
+    var probe = document.createElement('div');
+    probe.style.cssText = 'position:fixed;top:0;height:env(safe-area-inset-top, 0px);width:1px;pointer-events:none;';
+    document.body.appendChild(probe);
+    console.log('Computed inset-top:', probe.getBoundingClientRect().height + 'px');
+    document.body.removeChild(probe);
+
+    ['dashboardHeader', 'creations-header', 'uploadCreationModal', 'globalModal'].forEach(function(name) {
+      var el;
+      if (name === 'dashboardHeader') el = document.querySelector('.dashboard-header-glow');
+      else el = document.querySelector('.' + name) || document.getElementById(name);
+      if (!el) { console.log('  ' + name + ': NOT FOUND'); return; }
+      var cs = getComputedStyle(el);
+      console.log('  ' + name + ': padding-top=' + cs.paddingTop + ', top=' + el.getBoundingClientRect().top + 'px');
+    });
+  };
+
+  console.log('✅ Mobile Safe-Area v114 ready');
+  console.log('   💡 SAFE_debug() — check status');
+})();
+</script>
 </body>
 </html>
