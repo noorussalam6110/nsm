@@ -43888,5 +43888,967 @@ document.addEventListener('touchend', function(e) {
 })();
 </script>
 <!-- ═══════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔧 v112.0 — MASTER FIX                                 -->
+<!-- Safe-area + Wheel Scroll + Namaz Rebuild + Cumulative -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<style id="v112-master-css">
+/* ═══════════════════════════════════════════════════════ */
+/* 1️⃣ SAFE AREA — Mobile status bar respect                */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .nsm-login-wrapper {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    box-sizing: border-box !important;
+  }
+  #dashboardSection,
+  #adminSection {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    box-sizing: border-box !important;
+  }
+  #dashboardSection > .container,
+  #adminSection > .container {
+    padding-top: 12px !important;
+  }
+  #teacherDashboardV60 {
+    padding-top: max(12px, env(safe-area-inset-top, 12px)) !important;
+  }
+  #creationsOverlay,
+  #studentFeesOverlay,
+  .public-feed-overlay,
+  .chat-panel,
+  .ai-panel {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    box-sizing: border-box !important;
+  }
+  #globalModal,
+  #passbookModal,
+  #notificationsModal,
+  #editProfileModal,
+  #helpModal,
+  .quiz-modal-overlay,
+  .avatar-customizer-modal,
+  .add-friend-modal,
+  .report-modal-overlay,
+  .poster-popup-overlay {
+    padding-top: max(16px, env(safe-area-inset-top, 16px)) !important;
+  }
+  /* Login card also needs it */
+  .nsm-body {
+    padding-top: 0 !important;
+  }
+  .nsm-navbar {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 2️⃣ NAMAZ WIDGET v112 — Attractive + Cumulative          */
+/* ═══════════════════════════════════════════════════════ */
+.namaz-widget-v112 {
+  background: linear-gradient(140deg, #065f46 0%, #059669 35%, #10b981 70%, #34d399 100%);
+  border-radius: 22px;
+  padding: 18px 16px 16px;
+  margin-bottom: 16px;
+  color: #fff;
+  box-shadow: 0 15px 35px -12px rgba(5,150,105,.75),
+              0 0 0 1px rgba(255,255,255,.06) inset;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.namaz-widget-v112::before {
+  content: '';
+  position: absolute;
+  top: -60%; right: -40%;
+  width: 220%; height: 220%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.14), transparent 45%);
+  pointer-events: none;
+  z-index: 0;
+  animation: nv112Orb 12s ease-in-out infinite;
+}
+@keyframes nv112Orb {
+  0%,100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.15); }
+}
+.namaz-widget-v112 > * { position: relative; z-index: 1; }
+
+/* Header */
+.nv112-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.nv112-title {
+  display: flex; align-items: center; gap: 9px;
+  font-size: .98rem; font-weight: 900;
+  text-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+.nv112-mosque {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,.22);
+  border-radius: 12px;
+  font-size: 1.15rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.15);
+}
+.nv112-date {
+  font-size: .66rem;
+  background: rgba(255,255,255,.22);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.15);
+}
+
+/* 5 Prayer Grid */
+.nv112-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.nv112-prayer {
+  background: rgba(255,255,255,.14);
+  border: 1.5px solid rgba(255,255,255,.22);
+  border-radius: 14px;
+  padding: 9px 3px 8px;
+  cursor: pointer;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  color: #fff;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 78px;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.nv112-prayer:active { transform: scale(.92); }
+
+.nv112-prayer.state-adaa {
+  background: linear-gradient(140deg, #fbbf24, #f59e0b) !important;
+  border-color: transparent !important;
+  color: #03132e !important;
+  box-shadow: 0 6px 15px -4px rgba(251,191,36,.7), inset 0 1px 0 rgba(255,255,255,.3) !important;
+}
+.nv112-prayer.state-qada {
+  background: linear-gradient(140deg, #f97316, #fb923c) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 6px 15px -4px rgba(249,115,22,.7), inset 0 1px 0 rgba(255,255,255,.3) !important;
+}
+.nv112-prayer.state-none {
+  background: linear-gradient(140deg, #64748b, #94a3b8) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 6px 15px -4px rgba(100,116,139,.5) !important;
+}
+
+.nv112-prayer-ico {
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 3px;
+  line-height: 1;
+}
+.nv112-prayer-name {
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .3px;
+  line-height: 1.15;
+  display: block;
+  margin-bottom: 2px;
+}
+.nv112-prayer-state {
+  font-size: .5rem;
+  font-weight: 800;
+  opacity: .9;
+  line-height: 1;
+  display: block;
+  letter-spacing: .2px;
+}
+
+/* Stats Grid */
+.nv112-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(0,0,0,.15);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.nv112-stat {
+  background: rgba(255,255,255,.13);
+  border-radius: 11px;
+  padding: 9px 4px 7px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,.1);
+  transition: transform .2s;
+}
+.nv112-stat:active { transform: scale(.96); }
+.nv112-stat-num {
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,.3);
+}
+.nv112-stat.adaa .nv112-stat-num { color: #fef3c7; }
+.nv112-stat.qada .nv112-stat-num { color: #fed7aa; }
+.nv112-stat.streak .nv112-stat-num { color: #fef3c7; }
+.nv112-stat.month .nv112-stat-num { color: #a7f3d0; }
+.nv112-stat-lbl {
+  font-size: .56rem;
+  opacity: .92;
+  margin-top: 3px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  line-height: 1.15;
+}
+
+/* History Button */
+.nv112-history-btn {
+  width: 100%;
+  background: rgba(255,255,255,.22);
+  border: 1.5px solid rgba(255,255,255,.3);
+  color: #fff;
+  border-radius: 13px;
+  padding: 11px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .82rem;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+.nv112-history-btn:active { transform: scale(.97); }
+.nv112-history-btn:hover { background: rgba(255,255,255,.32); }
+
+/* ═══════════════════════════════════════════════════════ */
+/* 3️⃣ STATE PICKER MODAL                                    */
+/* ═══════════════════════════════════════════════════════ */
+.nv112-picker-overlay {
+  position: fixed; inset: 0;
+  background: rgba(3,8,28,.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 100200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  padding-top: max(20px, env(safe-area-inset-top, 20px));
+  overflow-y: auto;
+}
+.nv112-picker-overlay.open { display: flex; }
+.nv112-picker-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 22px;
+  max-width: 380px;
+  width: 100%;
+  margin: auto 0;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.7);
+  animation: nv112Pop .35s cubic-bezier(.34,1.56,.64,1);
+  max-height: 92dvh;
+  overflow-y: auto;
+}
+@keyframes nv112Pop {
+  from { opacity: 0; transform: scale(.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.nv112-picker-head {
+  text-align: center;
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+.nv112-picker-sub {
+  text-align: center;
+  font-size: .78rem;
+  color: #64748b;
+  margin-bottom: 18px;
+}
+.nv112-opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 2px solid rgba(100,116,139,.15);
+  background: #f8fafc;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: 8px;
+  width: 100%;
+  text-align: left;
+  min-height: 64px;
+  -webkit-tap-highlight-color: transparent;
+}
+.nv112-opt:active { transform: scale(.97); }
+.nv112-opt.adaa:hover, .nv112-opt.adaa.active { border-color: #059669; background: #f0fdf4; }
+.nv112-opt.qada:hover, .nv112-opt.qada.active { border-color: #f97316; background: #fff7ed; }
+.nv112-opt.none:hover, .nv112-opt.none.active { border-color: #64748b; background: #f1f5f9; }
+.nv112-opt-ico {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.nv112-opt.adaa .nv112-opt-ico { background: linear-gradient(140deg,#059669,#34d399); color: #fff; }
+.nv112-opt.qada .nv112-opt-ico { background: linear-gradient(140deg,#f97316,#fb923c); color: #fff; }
+.nv112-opt.none .nv112-opt-ico { background: linear-gradient(140deg,#64748b,#94a3b8); color: #fff; }
+.nv112-opt-txt { flex: 1; }
+.nv112-opt-txt strong {
+  display: block;
+  font-weight: 900;
+  color: #0f172a;
+  font-size: .94rem;
+  margin-bottom: 2px;
+}
+.nv112-opt-txt small {
+  color: #64748b;
+  font-size: .72rem;
+  font-weight: 700;
+}
+.nv112-picker-cancel {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(100,116,139,.2);
+  background: #f1f5f9;
+  color: #475569;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .86rem;
+  cursor: pointer;
+  min-height: 46px;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 4️⃣ HISTORY MODAL                                          */
+/* ═══════════════════════════════════════════════════════ */
+.nv112-hstat {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.nv112-hcard {
+  border-radius: 16px;
+  padding: 14px 10px;
+  text-align: center;
+  border: 1.5px solid transparent;
+}
+.nv112-hcard.adaa {
+  background: linear-gradient(140deg,#f0fdf4,#d1fae5);
+  border-color: rgba(5,150,105,.35);
+}
+.nv112-hcard.qada {
+  background: linear-gradient(140deg,#fff7ed,#ffedd5);
+  border-color: rgba(249,115,22,.35);
+}
+.nv112-hcard.streak {
+  background: linear-gradient(140deg,#fef3c7,#fde68a);
+  border-color: rgba(180,83,9,.35);
+}
+.nv112-hcard.month {
+  background: linear-gradient(140deg,#eff6ff,#dbeafe);
+  border-color: rgba(59,130,246,.35);
+}
+.nv112-hnum {
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #0f172a;
+}
+.nv112-hcard.adaa .nv112-hnum { color: #059669; }
+.nv112-hcard.qada .nv112-hnum { color: #ea580c; }
+.nv112-hcard.streak .nv112-hnum { color: #b45309; }
+.nv112-hcard.month .nv112-hnum { color: #2563eb; }
+.nv112-hlbl {
+  font-size: .66rem;
+  color: #64748b;
+  margin-top: 6px;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+.nv112-history-label {
+  font-size: .82rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 16px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nv112-history-label i { color: #059669; }
+.nv112-history-wrap {
+  max-height: 55vh;
+  overflow-y: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(100,116,139,.15);
+  -webkit-overflow-scrolling: touch;
+}
+.nv112-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+}
+.nv112-history-table th {
+  padding: 10px 6px;
+  text-align: center;
+  background: #f0fdf4;
+  color: #059669;
+  font-size: .62rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  letter-spacing: .3px;
+}
+.nv112-history-table th:first-child { text-align: left; padding-left: 12px; }
+.nv112-history-table td {
+  padding: 9px 6px;
+  text-align: center;
+  border-bottom: 1px solid rgba(100,116,139,.08);
+  font-weight: 700;
+}
+.nv112-history-table td:first-child {
+  text-align: left;
+  padding-left: 12px;
+  font-weight: 900;
+  color: #0f172a;
+  font-size: .74rem;
+}
+.nv112-history-table tr:last-child td { border-bottom: none; }
+
+/* Mobile */
+@media (max-width: 500px) {
+  .namaz-widget-v112 { padding: 16px 13px 14px; border-radius: 18px; }
+  .nv112-title { font-size: .9rem; }
+  .nv112-mosque { width: 32px; height: 32px; font-size: 1rem; }
+  .nv112-prayer { min-height: 72px; padding: 8px 2px 6px; }
+  .nv112-prayer-ico { font-size: 1.05rem; }
+  .nv112-prayer-name { font-size: .58rem; }
+  .nv112-prayer-state { font-size: .46rem; }
+  .nv112-stat-num { font-size: 1.1rem; }
+  .nv112-stat-lbl { font-size: .52rem; }
+  .nv112-stats { padding: 8px; gap: 5px; }
+  .nv112-stat { padding: 7px 3px 6px; }
+  .nv112-picker-card { padding: 20px 18px; }
+  .nv112-hnum { font-size: 1.35rem; }
+}
+@media (max-width: 380px) {
+  .nv112-stat-lbl { font-size: .48rem; }
+  .nv112-prayer-state { display: none; }
+}
+</style>
+
+<script id="v112-master-js">
+(function(){
+  'use strict';
+  console.log('🔧 v112 Master Fix loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 1️⃣ WHEEL SCROLL + SCROLL-LOCK RELEASE
+  // ═══════════════════════════════════════════════════════
+  function fixScrollLock() {
+    var modalOpen =
+      document.body.classList.contains('login-active') ||
+      document.body.classList.contains('modal-open') ||
+      document.body.classList.contains('ai-panel-open');
+    if (modalOpen) return;
+
+    // Release position:fixed stuck body
+    if (document.body.style.position === 'fixed') {
+      var y = parseInt(document.body.style.top || '0') * -1;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.body.style.overflow = '';
+      document.body.style.overflowY = '';
+      window.scrollTo(0, Math.abs(y));
+    }
+    // Release stuck overflow:hidden on body/html
+    if (document.body.style.overflow === 'hidden') document.body.style.overflow = '';
+    if (document.body.style.overflowY === 'hidden') document.body.style.overflowY = '';
+    if (document.documentElement.style.overflow === 'hidden') document.documentElement.style.overflow = '';
+    if (document.documentElement.style.overflowY === 'hidden') document.documentElement.style.overflowY = '';
+  }
+  fixScrollLock();
+  setInterval(fixScrollLock, 1200);
+
+  // ═══════════════════════════════════════════════════════
+  // 2️⃣ GLOBAL WHEEL HANDLER — Trackpad/touchpad scroll
+  //    Works everywhere: modals, dashboards, overlays, etc.
+  // ═══════════════════════════════════════════════════════
+  document.addEventListener('wheel', function(e) {
+    if (e.ctrlKey) return;   // pinch-zoom
+    if (e.defaultPrevented) return;
+
+    // Find nearest scrollable ancestor
+    var el = e.target;
+    var scrollable = null;
+    while (el && el !== document.body && el !== document.documentElement) {
+      var oy = window.getComputedStyle(el).overflowY;
+      if (oy === 'auto' || oy === 'scroll') {
+        var canDown = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+        var canUp = el.scrollTop > 0;
+        if ((e.deltaY > 0 && canDown) || (e.deltaY < 0 && canUp)) {
+          scrollable = el;
+          break;
+        }
+      }
+      el = el.parentElement;
+    }
+
+    // If no inner scroll container can scroll, scroll the page
+    if (!scrollable) {
+      // But only when body itself can scroll (no active modal)
+      var bodyScrollable = document.body.scrollHeight > window.innerHeight;
+      if (bodyScrollable) {
+        window.scrollBy({ top: e.deltaY, left: 0, behavior: 'auto' });
+        e.preventDefault();
+      }
+    }
+  }, { passive: false });
+
+  // Also for trackpad horizontal scroll (optional)
+  document.addEventListener('wheel', function(e) {
+    if (e.shiftKey || e.deltaX === 0) return;
+    var el = e.target;
+    while (el && el !== document.body && el !== document.documentElement) {
+      var ox = window.getComputedStyle(el).overflowX;
+      if (ox === 'auto' || ox === 'scroll') {
+        var canRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+        var canLeft = el.scrollLeft > 0;
+        if ((e.deltaX > 0 && canRight) || (e.deltaX < 0 && canLeft)) {
+          return; // native handles it
+        }
+      }
+      el = el.parentElement;
+    }
+  }, { passive: true });
+
+  // ═══════════════════════════════════════════════════════
+  // 3️⃣ NAMAZ WIDGET v112 — Cumulative, attractive
+  // ═══════════════════════════════════════════════════════
+  var PRAYERS = [
+    { key: 'fajr',    name: 'ഫജ്‌ർ',    icon: '🌅' },
+    { key: 'dhuhr',   name: 'ളുഹ്‌ർ',   icon: '☀️' },
+    { key: 'asr',     name: 'അസ്‌ർ',    icon: '🌤️' },
+    { key: 'maghrib', name: 'മഗ്‌രിബ്', icon: '🌇' },
+    { key: 'isha',    name: 'ഇശാ',     icon: '🌙' }
+  ];
+  var STATES = {
+    adaa: { label: 'അദാഅ്', icon: '✅', xp: 2 },
+    qada: { label: 'ഖളാഅ്', icon: '⏰', xp: 1 },
+    none: { label: 'ഇല്ല',  icon: '❌', xp: 0 }
+  };
+  var NAMZ = {
+    today: null,
+    totals: { adaa: 0, qada: 0, streak: 0, thisMonthAdaa: 0, thisMonthQada: 0 },
+    loaded: false
+  };
+  window.NAMZ_V112 = NAMZ;
+
+  // ─── Load data ───
+  async function loadNamazData() {
+    if (!supabaseClient || !currentUser) return;
+    var today = new Date().toISOString().split('T')[0];
+    try {
+      var r = await supabaseClient.from('namaz_log')
+        .select('*').eq('studentid', currentUser.studentId)
+        .eq('prayer_date', today).maybeSingle();
+
+      NAMZ.today = r.data || {
+        studentid: currentUser.studentId, prayer_date: today,
+        fajr: 'none', dhuhr: 'none', asr: 'none', maghrib: 'none', isha: 'none'
+      };
+
+      var hr = await supabaseClient.from('namaz_log')
+        .select('*').eq('studentid', currentUser.studentId)
+        .order('prayer_date', { ascending: false }).limit(400);
+      var logs = hr.data || [];
+
+      var adaa = 0, qada = 0, monthAdaa = 0, monthQada = 0;
+      var dateMap = {};
+      var monthPrefix = today.substring(0, 7);
+
+      logs.forEach(function(log) {
+        var dTot = 0;
+        var inMonth = log.prayer_date.indexOf(monthPrefix) === 0;
+        PRAYERS.forEach(function(p) {
+          var st = log[p.key] || 'none';
+          if (st === 'adaa') { adaa++; dTot++; if (inMonth) monthAdaa++; }
+          else if (st === 'qada') { qada++; dTot++; if (inMonth) monthQada++; }
+        });
+        dateMap[log.prayer_date] = dTot;
+      });
+
+      // Compute streak
+      var streak = 0;
+      var cd = new Date(); cd.setHours(0,0,0,0);
+      for (var i = 0; i < 400; i++) {
+        var dStr = cd.toISOString().split('T')[0];
+        var t = dateMap[dStr] || 0;
+        if (t >= 5) {
+          streak++;
+          cd.setDate(cd.getDate() - 1);
+        } else if (i === 0) {
+          cd.setDate(cd.getDate() - 1);
+          continue;
+        } else break;
+      }
+
+      NAMZ.totals = {
+        adaa: adaa, qada: qada, streak: streak,
+        thisMonthAdaa: monthAdaa, thisMonthQada: monthQada
+      };
+      NAMZ.loaded = true;
+      renderWidget();
+    } catch(e) {
+      console.warn('loadNamazData:', e);
+    }
+  }
+
+  // ─── Render ───
+  function renderWidget() {
+    var widget = document.getElementById('namazWidget');
+    if (!widget || !widget.classList.contains('namaz-widget-v112')) {
+      if (widget) widget.remove();
+      widget = document.createElement('div');
+      widget.id = 'namazWidget';
+      widget.className = 'namaz-widget-v112';
+      document.body.appendChild(widget);   // temp, will reposition
+    }
+    ensurePosition(widget);
+
+    var t = NAMZ.today;
+    if (!t) return;
+    var tot = NAMZ.totals;
+
+    var html = '';
+    html += '<div class="nv112-header">';
+    html += '<div class="nv112-title"><span class="nv112-mosque">🕌</span> ഇന്നത്തെ നമസ്കാരം</div>';
+    html += '<div class="nv112-date">' +
+      new Date().toLocaleDateString('en-IN', {day:'numeric',month:'short'}) +
+      '</div></div>';
+
+    html += '<div class="nv112-grid">';
+    PRAYERS.forEach(function(p) {
+      var state = t[p.key] || 'none';
+      var s = STATES[state];
+      html += '<button class="nv112-prayer state-' + state + '" onclick="NV112_openPicker(\'' + p.key + '\')">';
+      html += '<span class="nv112-prayer-ico">' + p.icon + '</span>';
+      html += '<span class="nv112-prayer-name">' + p.name + '</span>';
+      html += '<span class="nv112-prayer-state">' + s.icon + ' ' + s.label + '</span>';
+      html += '</button>';
+    });
+    html += '</div>';
+
+    html += '<div class="nv112-stats">';
+    html += '<div class="nv112-stat adaa"><div class="nv112-stat-num">' + tot.adaa + '</div><div class="nv112-stat-lbl">✅ അദാഅ്</div></div>';
+    html += '<div class="nv112-stat qada"><div class="nv112-stat-num">' + tot.qada + '</div><div class="nv112-stat-lbl">⏰ ഖളാഅ്</div></div>';
+    html += '<div class="nv112-stat streak"><div class="nv112-stat-num">' + tot.streak + '🔥</div><div class="nv112-stat-lbl">Streak</div></div>';
+    html += '<div class="nv112-stat month"><div class="nv112-stat-num">' + (tot.thisMonthAdaa + tot.thisMonthQada) + '</div><div class="nv112-stat-lbl">ഈ മാസം</div></div>';
+    html += '</div>';
+
+    html += '<button class="nv112-history-btn" onclick="NV112_openHistory()">';
+    html += '<i class="fas fa-history"></i> മുഴുവൻ ചരിത്രം കാണുക';
+    html += '</button>';
+
+    widget.innerHTML = html;
+  }
+
+  // ─── Force position INSIDE dailyHub (between prayer & islamic cards) ───
+  function ensurePosition(widget) {
+    var prayerCard = document.getElementById('prayerCard');
+    var dailyHub = document.getElementById('dailyHub');
+    if (!dailyHub || !prayerCard) return;
+
+    // Best: prayer → widget → islamic → exam
+    if (prayerCard.parentNode === dailyHub) {
+      var after = prayerCard.nextElementSibling;
+      if (after !== widget) {
+        dailyHub.insertBefore(widget, after);
+      }
+      return;
+    }
+    // Fallback: append to dailyHub
+    if (widget.parentNode !== dailyHub) {
+      dailyHub.appendChild(widget);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 4️⃣ Picker Modal
+  // ═══════════════════════════════════════════════════════
+  window.NV112_openPicker = function(prayerKey) {
+    var old = document.getElementById('nv112Picker');
+    if (old) old.remove();
+    var cur = NAMZ.today ? (NAMZ.today[prayerKey] || 'none') : 'none';
+    var p = PRAYERS.find(function(x){ return x.key === prayerKey; });
+
+    var modal = document.createElement('div');
+    modal.id = 'nv112Picker';
+    modal.className = 'nv112-picker-overlay open';
+    modal.innerHTML =
+      '<div class="nv112-picker-card">' +
+        '<div class="nv112-picker-head">' + p.icon + ' ' + p.name + '</div>' +
+        '<div class="nv112-picker-sub">ഇന്നത്തെ നില തിരഞ്ഞെടുക്കുക</div>' +
+        ['adaa','qada','none'].map(function(k) {
+          var s = STATES[k];
+          var active = cur === k ? ' active' : '';
+          var xpHint = k === 'none' ? 'XP ഇല്ല' : '+' + s.xp + ' XP';
+          return '<button class="nv112-opt ' + k + active + '" onclick="NV112_setState(\'' + prayerKey + '\',\'' + k + '\')">' +
+            '<div class="nv112-opt-ico">' + s.icon + '</div>' +
+            '<div class="nv112-opt-txt"><strong>' + s.label + '</strong><small>' + xpHint + '</small></div>' +
+            '</button>';
+        }).join('') +
+        '<button class="nv112-picker-cancel" onclick="NV112_closePicker()">Cancel</button>' +
+      '</div>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) NV112_closePicker();
+    });
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
+  };
+
+  window.NV112_closePicker = function() {
+    var m = document.getElementById('nv112Picker');
+    if (m) m.remove();
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 5️⃣ Save State — XP: adaa=2, qada=1
+  // ═══════════════════════════════════════════════════════
+  window.NV112_setState = async function(prayerKey, state) {
+    if (!currentUser) return;
+    var today = new Date().toISOString().split('T')[0];
+    if (!NAMZ.today || NAMZ.today.prayer_date !== today) {
+      showToast('❌ ഇന്നത്തെ ദിവസം മാത്രം edit ചെയ്യാം', 'error');
+      return;
+    }
+    var old = NAMZ.today[prayerKey] || 'none';
+    if (old === state) { NV112_closePicker(); return; }
+
+    NAMZ.today[prayerKey] = state;
+    NV112_closePicker();
+
+    // Update totals
+    if (old === 'adaa') NAMZ.totals.adaa--;
+    else if (old === 'qada') NAMZ.totals.qada--;
+    if (state === 'adaa') { NAMZ.totals.adaa++; NAMZ.totals.thisMonthAdaa++; }
+    else if (state === 'qada') { NAMZ.totals.qada++; NAMZ.totals.thisMonthQada++; }
+
+    renderWidget();
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
+
+    try {
+      var payload = {
+        studentid: currentUser.studentId,
+        prayer_date: today,
+        fajr: NAMZ.today.fajr || 'none',
+        dhuhr: NAMZ.today.dhuhr || 'none',
+        asr: NAMZ.today.asr || 'none',
+        maghrib: NAMZ.today.maghrib || 'none',
+        isha: NAMZ.today.isha || 'none',
+        marked_by: 'student',
+        updated_at: new Date().toISOString()
+      };
+      var r = await supabaseClient.from('namaz_log')
+        .upsert(payload, { onConflict: 'studentid,prayer_date' });
+      if (r.error) throw r.error;
+
+      var p = PRAYERS.find(function(x){ return x.key === prayerKey; });
+      var xp = STATES[state].xp;
+      var msg = STATES[state].icon + ' ' + p.name + ' — ' + STATES[state].label;
+      if (xp > 0) msg += ' (+' + xp + ' XP)';
+      showToast(msg, 'success');
+
+      // XP award: adaa=2, qada=1 (half)
+      if (xp > 0 && typeof window.awardXP === 'function') {
+        try { await window.awardXP(xp, 'Namaz: ' + prayerKey); } catch(e) {}
+      }
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+      // Revert
+      NAMZ.today[prayerKey] = old;
+      if (state === 'adaa') NAMZ.totals.adaa--;
+      else if (state === 'qada') NAMZ.totals.qada--;
+      if (old === 'adaa') NAMZ.totals.adaa++;
+      else if (old === 'qada') NAMZ.totals.qada++;
+      renderWidget();
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 6️⃣ History Modal — Cumulative + Attractive
+  // ═══════════════════════════════════════════════════════
+  window.NV112_openHistory = async function() {
+    modalTitleSpan.innerText = '🕌 നമസ്കാര ചരിത്രം';
+    modalBodyDiv.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    modal.style.display = 'flex';
+
+    try {
+      var r = await supabaseClient.from('namaz_log')
+        .select('*').eq('studentid', currentUser.studentId)
+        .order('prayer_date', { ascending: false }).limit(90);
+      var rows = r.data || [];
+
+      var html = '';
+      // Cumulative summary
+      html += '<div class="nv112-hstat">';
+      html += '<div class="nv112-hcard adaa"><div class="nv112-hnum">' + NAMZ.totals.adaa + '</div><div class="nv112-hlbl">✅ അദാഅ് (All-time)</div></div>';
+      html += '<div class="nv112-hcard qada"><div class="nv112-hnum">' + NAMZ.totals.qada + '</div><div class="nv112-hlbl">⏰ ഖളാഅ് (All-time)</div></div>';
+      html += '</div>';
+      html += '<div class="nv112-hstat">';
+      html += '<div class="nv112-hcard streak"><div class="nv112-hnum">' + NAMZ.totals.streak + '🔥</div><div class="nv112-hlbl">Streak (Days)</div></div>';
+      html += '<div class="nv112-hcard month"><div class="nv112-hnum">' + (NAMZ.totals.thisMonthAdaa + NAMZ.totals.thisMonthQada) + '</div><div class="nv112-hlbl">📅 ഈ മാസം</div></div>';
+      html += '</div>';
+
+      if (rows.length === 0) {
+        html += '<div style="text-align:center;padding:40px;color:#64748b;">ഇതുവരെ റെക്കോർഡുകൾ ഇല്ല</div>';
+      } else {
+        html += '<div class="nv112-history-label"><i class="fas fa-calendar-alt"></i> കഴിഞ്ഞ 90 ദിവസം</div>';
+        html += '<div class="nv112-history-wrap"><table class="nv112-history-table">';
+        html += '<thead><tr><th>Date</th>';
+        PRAYERS.forEach(function(p) { html += '<th>' + p.icon + '</th>'; });
+        html += '<th>Total</th></tr></thead><tbody>';
+
+        var today = new Date().toISOString().split('T')[0];
+        rows.forEach(function(row) {
+          var d = new Date(row.prayer_date + 'T00:00:00');
+          var isToday = row.prayer_date === today;
+          var dayTotal = 0;
+          html += '<tr style="' + (isToday ? 'background:#fef3c7;' : '') + '">';
+          html += '<td>' + d.toLocaleDateString('en-IN', {day:'2-digit',month:'short'});
+          if (isToday) html += ' <small style="color:#b45309;font-size:.6rem;">• Today</small>';
+          html += '</td>';
+          PRAYERS.forEach(function(p) {
+            var st = row[p.key] || 'none';
+            var color = st === 'adaa' ? '#059669' : st === 'qada' ? '#ea580c' : '#cbd5e1';
+            var ico = st === 'adaa' ? '✅' : st === 'qada' ? '⏰' : '—';
+            if (st !== 'none') dayTotal++;
+            html += '<td style="color:' + color + ';font-size:1rem;">' + ico + '</td>';
+          });
+          var totColor = dayTotal === 5 ? '#059669' : dayTotal >= 3 ? '#b45309' : '#dc2626';
+          html += '<td style="color:' + totColor + ';font-weight:900;">' + dayTotal + '/5</td>';
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+        html += '<div style="display:flex;gap:14px;justify-content:center;font-size:.72rem;color:#64748b;margin-top:14px;flex-wrap:wrap;font-weight:800;">';
+        html += '<span>✅ അദാഅ്</span><span>⏰ ഖളാഅ്</span><span>— ഇല്ല</span>';
+        html += '</div>';
+      }
+
+      html += '<div style="margin-top:20px;"><button class="btn-cancel" style="width:100%;padding:12px;border-radius:14px;" onclick="closeModal(\'globalModal\')">Close</button></div>';
+      modalBodyDiv.innerHTML = html;
+    } catch(e) {
+      modalBodyDiv.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + e.message + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 7️⃣ Cleanup old v111 widget + init
+  // ═══════════════════════════════════════════════════════
+  function cleanupOld() {
+    var w = document.getElementById('namazWidget');
+    if (w && !w.classList.contains('namaz-widget-v112')) {
+      w.remove();
+    }
+  }
+
+  function init() {
+    cleanupOld();
+    if (currentUser) loadNamazData();
+  }
+
+  // Hook login
+  var _oL = window.completeLogin;
+  if (typeof _oL === 'function' && !window.completeLogin._v112) {
+    window.completeLogin = async function(s) {
+      var r = await _oL.apply(this, arguments);
+      setTimeout(function() {
+        cleanupOld();
+        loadNamazData();
+      }, 1800);
+      return r;
+    };
+    window.completeLogin._v112 = true;
+  }
+
+  // Watch dashboard
+  var dash = document.getElementById('dashboardSection');
+  if (dash) {
+    new MutationObserver(function() {
+      if (dash.style.display === 'block' && currentUser) {
+        cleanupOld();
+        setTimeout(function() {
+          if (!NAMZ.loaded) loadNamazData();
+          else {
+            var w = document.getElementById('namazWidget');
+            if (w) ensurePosition(w);
+          }
+        }, 700);
+      }
+    }).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Periodic safety
+  setInterval(function() {
+    if (currentUser && document.getElementById('dashboardSection')?.style.display === 'block') {
+      cleanupOld();
+      var w = document.getElementById('namazWidget');
+      if (w) ensurePosition(w);
+    }
+  }, 6000);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2500);
+      setTimeout(init, 4500);
+      setTimeout(init, 7000);
+    });
+  } else {
+    setTimeout(init, 2500);
+    setTimeout(init, 4500);
+    setTimeout(init, 7000);
+  }
+
+  console.log('✅ v112 ready — scroll + safe-area + namaz cumulative');
+})();
+</script>
 </body>
 </html>
