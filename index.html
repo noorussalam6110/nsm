@@ -69,7 +69,7 @@ body.light-mode{
 /* ============================================================ */
 /* 🌐 BASE + SCROLL                                             */
 /* ============================================================ */
-html{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+html{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:auto}
 body{
   background:linear-gradient(155deg,var(--b950),var(--b900) 22%,var(--b800) 45%,var(--b700) 68%,var(--b600));
   background-attachment:fixed;min-height:100vh;color:var(--txt);
@@ -841,7 +841,26 @@ body.ai-panel-open .ai-fab{display:none!important}
 /* ============================================================ */
 @media(max-width:900px){
   .nsm-navbar{display:none!important}
-  .nsm-login-wrapper{height:100vh;height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+  #dashboardSection, #adminSection {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    box-sizing: border-box !important;
+  }
+  #loginSection.nsm-login-wrapper,
+  .nsm-login-wrapper{
+    height:100vh;height:100dvh;max-height:100dvh;
+    display:flex;flex-direction:column;overflow:hidden;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    box-sizing: border-box !important;
+  }
+  #teacherDashboardV60 {
+    padding-top: max(12px, env(safe-area-inset-top, 12px)) !important;
+  }
+  #globalModal, #passbookModal, #notificationsModal,
+  #editProfileModal, #helpModal, #findStudentIdModal,
+  .quiz-modal-overlay, .avatar-customizer-modal,
+  .add-friend-modal, .report-modal-overlay {
+    padding-top: max(16px, env(safe-area-inset-top, 16px)) !important;
+  }
   .nsm-ticker{height:38px;border-top:1px solid rgba(212,175,55,.4);border-bottom:none}
   .nsm-ticker-track{padding-left:16px;font-size:.74rem}
   .nsm-ticker-item{padding:0 22px}
@@ -42550,9 +42569,11 @@ body.emergency-perf * {
 <!-- 📱 v110.0 — SWIPE-BACK GESTURE + SMOOTH SCROLL         -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <style id="mobile-gestures-v110-css">
-/* Smooth native scrolling everywhere */
-/* v110 — Smooth scroll: html-only, no body scroll chain conflict */
+/* v113 — smooth scroll removed (was slowing trackpad wheel) */
 html {
+  scroll-behavior: auto;
+}
+html a[href^="#"] {
   scroll-behavior: smooth;
 }
 /* (Original html & body rules already have -webkit-overflow-scrolling */
@@ -43511,7 +43532,7 @@ document.addEventListener('touchend', function(e) {
     try {
       var r = await supabaseClient.from('namaz_log')
         .select('*').eq('studentid', currentUser.studentId)
-        .order('prayer_date', { ascending: false }).limit(365);
+        .order('prayer_date', { ascending: false }).limit(5000);
 
       var logs = r.data || [];
       var adaa = 0, qada = 0, none = 0;
@@ -43616,12 +43637,19 @@ document.addEventListener('touchend', function(e) {
     var prayerCard = document.getElementById('prayerCard');
     var dailyHub = document.getElementById('dailyHub');
 
-    // Priority 1: Insert after prayer card inside daily hub
-    if (prayerCard && prayerCard.parentNode) {
+    // Priority 1: Insert after prayer card (inside daily hub)
+    if (prayerCard && prayerCard.parentNode && dailyHub &&
+        prayerCard.parentNode === dailyHub) {
       var nextEl = prayerCard.nextElementSibling;
       if (nextEl !== widget) {
-        prayerCard.parentNode.insertBefore(widget, nextEl);
+        dailyHub.insertBefore(widget, nextEl);
       }
+      return;
+    }
+
+    // Priority 2: Insert inside dailyHub directly after prayer card position
+    if (dailyHub && prayerCard) {
+      dailyHub.insertBefore(widget, prayerCard.nextElementSibling);
       return;
     }
 
