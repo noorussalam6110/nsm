@@ -42963,5 +42963,374 @@ body.emergency-perf * {
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- END NAMAZ 3-STATE v110                                  -->
 <!-- ═══════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📱 v110.0 — SWIPE-BACK GESTURE + SMOOTH SCROLL         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="mobile-gestures-v110-css">
+/* Smooth native scrolling everywhere */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+body {
+  -webkit-overflow-scrolling: touch;
+}
+body:not(.login-active):not(.modal-open):not(.ai-panel-open) {
+  overflow-y: auto !important;
+}
+#dashboardSection,
+#adminSection,
+#teacherDashboardV60,
+.nsm-login-side,
+.nsm-body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+.modal-glass,
+.ai-body,
+.chat-messages,
+.chat-sidebar-list,
+#modalContentBody,
+.namaz-history-wrap,
+.td60-table-wrap,
+.td60-panel,
+.creations-overlay,
+.pf-feed,
+#tdCommentsList {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Prevent text selection during swipe */
+body.swiping-back * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  cursor: grabbing !important;
+}
+</style>
+
+<script id="mobile-gestures-v110-js">
+(function(){
+  'use strict';
+  console.log('📱 Mobile Gestures v110 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🌊 PART A: SMOOTH SCROLL — Reset any stuck body locks
+  // ═══════════════════════════════════════════════════════
+  function fixStuckScroll() {
+    // Skip if any modal is truly open
+    var isModalOpen =
+      document.body.classList.contains('login-active') ||
+      document.body.classList.contains('modal-open') ||
+      document.body.classList.contains('ai-panel-open');
+
+    if (!isModalOpen) {
+      // Reset any inline stuck styles
+      if (document.body.style.position === 'fixed') {
+        var scrollY = parseInt(document.body.style.top || '0') * -1;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
+        document.body.style.overflow = '';
+        document.body.style.overflowY = '';
+        window.scrollTo(0, Math.abs(scrollY));
+      }
+      if (document.documentElement.style.overflow === 'hidden' &&
+          !document.body.classList.contains('login-active')) {
+        document.documentElement.style.overflow = '';
+        document.documentElement.style.overflowY = '';
+      }
+    }
+  }
+
+  // Run on visibility change (returning from background)
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      setTimeout(fixStuckScroll, 100);
+      setTimeout(fixStuckScroll, 500);
+    }
+  });
+
+  // Run on modal close (listen for class changes)
+  var modalObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.attributeName === 'class' || m.attributeName === 'style') {
+        setTimeout(fixStuckScroll, 150);
+      }
+    });
+  });
+  if (document.body) {
+    modalObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class', 'style']
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 👈 PART B: SWIPE-BACK GESTURE
+  // ═══════════════════════════════════════════════════════
+  if (!('ontouchstart' in window)) {
+    console.log('ℹ️ No touch — swipe-back disabled');
+    return;
+  }
+
+  var EDGE_ZONE = 30;         // Start swipe from left 30px
+  var TRIGGER_DIST = 90;      // Must swipe 90px to trigger close
+  var VERTICAL_LIMIT = 120;   // Max vertical drift allowed
+
+  var startX = 0, startY = 0;
+  var tracking = false;
+  var activeTarget = null;
+  var swipeTriggered = false;
+
+  // Which overlays can be closed with swipe-back
+  function findActiveOverlay() {
+    // Priority 1: chat panel (mobile sub-view first)
+    var chatPanel = document.getElementById('chatPanel');
+    if (chatPanel && chatPanel.classList.contains('open')) {
+      var chatMain = document.getElementById('chatMain');
+      if (chatMain && chatMain.classList.contains('show-mobile')) {
+        return {
+          el: chatPanel,
+          action: function() {
+            if (typeof window.chatBackToList === 'function') {
+              window.chatBackToList();
+            } else if (typeof window.closeChatPanel === 'function') {
+              window.closeChatPanel();
+            }
+          }
+        };
+      }
+      return {
+        el: chatPanel,
+        action: function() {
+          if (typeof window.closeChatPanel === 'function') window.closeChatPanel();
+        }
+      };
+    }
+
+    // Priority 2: named modals with known close functions
+    var closeMap = [
+      { id: 'creationsOverlay',        fn: 'closeCreationsGallery' },
+      { id: 'publicFeedOverlay',       fn: 'closePublicCreationsFeed' },
+      { id: 'avatarCustomizerModal',   fn: 'closeAvatarCustomizer' },
+      { id: 'quizModal',               fn: 'closeQuizModal' },
+      { id: 'rewardsModal',            fn: 'closeRewardsModal' },
+      { id: 'addFriendModal',          fn: 'closeAddFriendModal' },
+      { id: 'reportModal',             fn: null },   // handled manually
+      { id: 'teacherLoginV60',         fn: 'closeTeacherLogin' },
+      { id: 'posterPopupV102',         fn: null },
+      { id: 'namazStatePicker',        fn: 'closeNamazStatePicker' },
+      { id: 'receiptModalV79',         fn: null },
+      { id: 'waBotPanelV80',           fn: null },
+      { id: 'pwdMgrModalV82',          fn: null }
+    ];
+
+    for (var i = 0; i < closeMap.length; i++) {
+      var el = document.getElementById(closeMap[i].id);
+      if (!el) continue;
+      var isOpen = el.classList.contains('open') ||
+                   el.style.display === 'flex' ||
+                   el.style.display === 'block';
+      if (!isOpen) continue;
+
+      // Skip full-screen modals that shouldn't close (feedback forms)
+      if (closeMap[i].id === 'globalModal' &&
+          !document.getElementById('closeModalBtn')) continue;
+
+      return {
+        el: el,
+        action: (function(fn, elRef) {
+          return function() {
+            if (fn && typeof window[fn] === 'function') {
+              try { window[fn](); } catch(e) {}
+            } else {
+              // Fallback: remove open class + hide
+              elRef.classList.remove('open');
+              if (elRef.style.display === 'flex' || elRef.style.display === 'block') {
+                elRef.style.display = 'none';
+              }
+            }
+          };
+        })(closeMap[i].fn, el)
+      };
+    }
+
+    // Priority 3: generic modals with display:flex
+    var genericIds = [
+      'globalModal','passbookModal','studentWithdrawalModal',
+      'notificationsModal','editProfileModal','topperModal',
+      'uploadCreationModal','notesModal','noticeBoardModal',
+      'findStudentIdModal','helpModal','creationLightbox',
+      'surveyPopup','passwordSetupModal'
+    ];
+    for (var j = 0; j < genericIds.length; j++) {
+      var gEl = document.getElementById(genericIds[j]);
+      if (!gEl) continue;
+      var gOpen = gEl.classList.contains('open') ||
+                  gEl.style.display === 'flex';
+      if (gOpen) {
+        return {
+          el: gEl,
+          action: (function(elRef) {
+            return function() {
+              // Try standard close functions
+              var fnMap = {
+                'globalModal': function() { if (typeof window.closeModal === 'function') window.closeModal('globalModal'); else elRef.style.display = 'none'; },
+                'passbookModal': function() { if (typeof window.closePassbook === 'function') window.closePassbook(); else elRef.style.display = 'none'; },
+                'notificationsModal': function() { if (typeof window.closeNotificationsModal === 'function') window.closeNotificationsModal(); else elRef.style.display = 'none'; },
+                'editProfileModal': function() { if (typeof window.closeEditProfile === 'function') window.closeEditProfile(); else elRef.style.display = 'none'; },
+                'helpModal': function() { if (typeof window.closeHelpModal === 'function') window.closeHelpModal(); else elRef.classList.remove('active'); },
+                'creationLightbox': function() { if (typeof window.closeCreationLightbox === 'function') window.closeCreationLightbox(); else elRef.classList.remove('open'); },
+                'surveyPopup': function() { elRef.classList.remove('open'); document.body.style.overflow = ''; }
+              };
+              var customFn = fnMap[elRef.id];
+              if (customFn) customFn();
+              else {
+                elRef.style.display = 'none';
+                elRef.classList.remove('open');
+              }
+            };
+          })(gEl)
+        };
+      }
+    }
+
+    return null;
+  }
+
+  document.addEventListener('touchstart', function(e) {
+    if (e.touches.length !== 1) return;
+    var t = e.touches[0];
+
+    // Must start near left edge
+    if (t.clientX > EDGE_ZONE) return;
+
+    // Skip if start inside input/textarea/editable
+    if (e.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+
+    // Skip if start on horizontal scroller
+    if (e.target.closest('.leaderboard-scroll, .ig-filter-chips, .emoji-cats, .photo-picker-options, .namaz-prayer-btn, .quiz-classes-grid')) return;
+
+    startX = t.clientX;
+    startY = t.clientY;
+    tracking = true;
+    swipeTriggered = false;
+    activeTarget = findActiveOverlay();
+
+    if (!activeTarget) {
+      tracking = false;
+      return;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!tracking || !activeTarget) return;
+    var t = e.touches[0];
+    var dx = t.clientX - startX;
+    var dy = Math.abs(t.clientY - startY);
+
+    // If user moves too vertically, cancel
+    if (dy > VERTICAL_LIMIT) {
+      tracking = false;
+      if (activeTarget.el) {
+        activeTarget.el.style.transform = '';
+        activeTarget.el.style.transition = '';
+      }
+      activeTarget = null;
+      return;
+    }
+
+    if (dx > 10) {
+      // Optional visual feedback (subtle)
+      if (!document.body.classList.contains('swiping-back')) {
+        document.body.classList.add('swiping-back');
+      }
+      // Slight elastic transform to feel responsive
+      var offset = Math.min(dx * 0.15, 30);
+      if (activeTarget.el && activeTarget.el.style.position !== 'fixed') {
+        activeTarget.el.style.transition = 'none';
+        activeTarget.el.style.transform = 'translateX(' + offset + 'px)';
+      }
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (!tracking) return;
+    tracking = false;
+    document.body.classList.remove('swiping-back');
+
+    if (!activeTarget || !activeTarget.el) {
+      activeTarget = null;
+      return;
+    }
+
+    var t = e.changedTouches[0];
+    var dx = t.clientX - startX;
+
+    // Reset transform
+    if (activeTarget.el.style.transform) {
+      activeTarget.el.style.transition = 'transform .25s ease';
+      activeTarget.el.style.transform = '';
+      setTimeout(function() {
+        if (activeTarget && activeTarget.el) {
+          activeTarget.el.style.transition = '';
+        }
+      }, 260);
+    }
+
+    // Trigger close if swipe far enough
+    if (dx > TRIGGER_DIST) {
+      swipeTriggered = true;
+      if (navigator.vibrate) {
+        try { navigator.vibrate(15); } catch(err) {}
+      }
+      try {
+        activeTarget.action();
+      } catch(err) {
+        console.warn('swipe-back action error:', err);
+      }
+    }
+
+    setTimeout(function() {
+      activeTarget = null;
+      swipeTriggered = false;
+    }, 300);
+
+  }, { passive: true });
+
+  document.addEventListener('touchcancel', function() {
+    tracking = false;
+    document.body.classList.remove('swiping-back');
+    if (activeTarget && activeTarget.el && activeTarget.el.style.transform) {
+      activeTarget.el.style.transition = 'transform .2s';
+      activeTarget.el.style.transform = '';
+      setTimeout(function() {
+        if (activeTarget && activeTarget.el) activeTarget.el.style.transition = '';
+      }, 220);
+    }
+    activeTarget = null;
+  }, { passive: true });
+
+  // ═══════════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════════
+  window.SWIPE_debug = function() {
+    console.log('=== SWIPE DEBUG v110 ===');
+    console.log('Touch supported?', 'ontouchstart' in window);
+    console.log('Active overlay:', findActiveOverlay() ? findActiveOverlay().el.id : 'none');
+    console.log('Tracking?', tracking);
+    console.log('Swipe triggered?', swipeTriggered);
+  };
+
+  console.log('✅ Swipe-back + Smooth scroll ready');
+  console.log('   💡 SWIPE_debug() — check status');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- END MOBILE GESTURES v110                                -->
+<!-- ═══════════════════════════════════════════════════════ -->
 </body>
 </html>
