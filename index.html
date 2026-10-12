@@ -20631,7 +20631,20 @@ ON CONFLICT (key) DO NOTHING;
   }
   .ig-feed-topbar {
     margin: -12px -12px 12px;
-    padding: 10px 14px;
+    padding: calc(30px + env(safe-area-inset-top, 0px)) 16px 22px;
+  }
+  .ig-feed-topbar-inner {
+    gap: 10px;
+  }
+  .ig-topbar-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.15rem;
+  }
+  .ig-topbar-btn.primary {
+    height: 44px;
+    padding: 0 18px;
+    font-size: .82rem;
   }
   .ig-post-media img { max-height: 500px; }
   .ig-post-text-content { font-size: .94rem; line-height: 1.7; }
@@ -41802,33 +41815,84 @@ document.addEventListener('touchend', function(e) {
   // 6️⃣ History Modal — Cumulative + Attractive
   // ═══════════════════════════════════════════════════════
   window.NV112_openHistory = async function() {
-    // Guard: user + modal elements
+    // ─── Guards ───
     if (!currentUser || !currentUser.studentId) {
       if (typeof showToast === 'function') showToast('❌ Login ആവശ്യമാണ്', 'error');
       return;
     }
-    var _m  = document.getElementById('globalModal');
-    var _mt = document.getElementById('modalTitle');
-    var _mb = document.getElementById('modalContentBody');
-    if (!_m || !_mt || !_mb) {
-      if (typeof showToast === 'function') showToast('❌ Modal unavailable — page reload ചെയ്യൂ', 'error');
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+      if (typeof showToast === 'function') showToast('❌ Database unavailable', 'error');
       return;
     }
-    var modalTitleSpan = _mt;
-    var modalBodyDiv  = _mb;
-    var modal         = _m;
-    modalTitleSpan.innerText = '🕌 നമസ്കാര ചരിത്രം';
-    modalBodyDiv.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
-    modal.style.display = 'flex';
 
+    // ─── Build standalone modal (independent of globalModal) ───
+    var old = document.getElementById('nv112HistoryModal');
+    if (old) old.remove();
+
+    var wrapper = document.createElement('div');
+    wrapper.id = 'nv112HistoryModal';
+    wrapper.style.cssText =
+      'position:fixed;inset:0;background:rgba(3,8,28,.88);' +
+      'backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);' +
+      'z-index:100400;display:flex;align-items:flex-start;justify-content:center;' +
+      'padding:16px;padding-top:max(20px,env(safe-area-inset-top,20px));' +
+      'padding-bottom:max(20px,env(safe-area-inset-bottom,20px));' +
+      'overflow-y:auto;-webkit-overflow-scrolling:touch;';
+
+    wrapper.innerHTML =
+      '<div style="background:#fff;border-radius:24px;max-width:640px;width:100%;' +
+                  'margin:auto 0;max-height:calc(100dvh - 40px);' +
+                  'display:flex;flex-direction:column;overflow:hidden;' +
+                  'box-shadow:0 40px 90px -30px rgba(0,0,0,.7);' +
+                  'animation:nv112Pop .35s cubic-bezier(.34,1.56,.64,1);">' +
+        // Header
+        '<div style="padding:16px 20px;background:linear-gradient(135deg,#059669,#10b981);' +
+                    'display:flex;align-items:center;justify-content:space-between;' +
+                    'flex-shrink:0;color:#fff;">' +
+          '<div style="display:flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:900;">' +
+            '<span style="font-size:1.3rem;">🕌</span> നമസ്കാര ചരിത്രം' +
+          '</div>' +
+          '<button type="button" onclick="document.getElementById(\'nv112HistoryModal\').remove()" ' +
+                  'style="background:rgba(255,255,255,.22);border:none;color:#fff;' +
+                         'width:38px;height:38px;border-radius:50%;font-size:1rem;' +
+                         'cursor:pointer;display:flex;align-items:center;' +
+                         'justify-content:center;">✕</button>' +
+        '</div>' +
+        // Body
+        '<div id="nv112HistoryBody" style="padding:18px;overflow-y:auto;' +
+             '-webkit-overflow-scrolling:touch;flex:1 1 auto;">' +
+          '<div style="text-align:center;padding:30px;color:#64748b;">' +
+            '<div class="spinner-sm" style="margin:0 auto 10px;"></div>' +
+            'Loading...' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(wrapper);
+    document.body.style.overflow = 'hidden';
+
+    // Close on backdrop
+    wrapper.addEventListener('click', function(e) {
+      if (e.target === wrapper) {
+        wrapper.remove();
+        document.body.style.overflow = '';
+      }
+    });
+
+    var body = document.getElementById('nv112HistoryBody');
+
+    // ─── Fetch + Render ───
     try {
       var r = await supabaseClient.from('namaz_log')
         .select('*').eq('studentid', currentUser.studentId)
         .order('prayer_date', { ascending: false }).limit(90);
+
+      if (r.error) throw r.error;
       var rows = r.data || [];
 
       var html = '';
-      // Cumulative summary
+
+      // Cumulative summary cards
       html += '<div class="nv112-hstat">';
       html += '<div class="nv112-hcard adaa"><div class="nv112-hnum">' + NAMZ.totals.adaa + '</div><div class="nv112-hlbl">✅ അദാഅ് (All-time)</div></div>';
       html += '<div class="nv112-hcard qada"><div class="nv112-hnum">' + NAMZ.totals.qada + '</div><div class="nv112-hlbl">⏰ ഖളാഅ് (All-time)</div></div>';
@@ -41839,7 +41903,9 @@ document.addEventListener('touchend', function(e) {
       html += '</div>';
 
       if (rows.length === 0) {
-        html += '<div style="text-align:center;padding:40px;color:#64748b;">ഇതുവരെ റെക്കോർഡുകൾ ഇല്ല</div>';
+        html += '<div style="text-align:center;padding:40px 20px;color:#64748b;">' +
+                '<i class="fas fa-inbox" style="font-size:2.5rem;opacity:.35;display:block;margin-bottom:12px;"></i>' +
+                'ഇതുവരെ റെക്കോർഡുകൾ ഇല്ല</div>';
       } else {
         html += '<div class="nv112-history-label"><i class="fas fa-calendar-alt"></i> കഴിഞ്ഞ 90 ദിവസം</div>';
         html += '<div class="nv112-history-wrap"><table class="nv112-history-table">';
@@ -41873,10 +41939,24 @@ document.addEventListener('touchend', function(e) {
         html += '</div>';
       }
 
-      html += '<div style="margin-top:20px;"><button class="btn-cancel" style="width:100%;padding:12px;border-radius:14px;" onclick="closeModal(\'globalModal\')">Close</button></div>';
-      modalBodyDiv.innerHTML = html;
+      // Close button at bottom
+      html += '<div style="margin-top:20px;">' +
+              '<button type="button" ' +
+                      'onclick="document.getElementById(\'nv112HistoryModal\').remove();document.body.style.overflow=\'\';" ' +
+                      'style="width:100%;padding:13px;border-radius:14px;' +
+                             'border:1.5px solid rgba(100,116,139,.2);' +
+                             'background:#f1f5f9;color:#475569;' +
+                             'font-family:inherit;font-weight:800;font-size:.9rem;' +
+                             'cursor:pointer;">Close</button></div>';
+
+      body.innerHTML = html;
+
+      if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
     } catch(e) {
-      modalBodyDiv.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + e.message + '</div>';
+      console.error('NV112_openHistory error:', e);
+      body.innerHTML = '<div style="color:#dc2626;padding:20px;text-align:center;">' +
+                       '<i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i>' +
+                       'Error: ' + (e.message || 'unknown') + '</div>';
     }
   };
 
