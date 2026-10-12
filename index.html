@@ -913,12 +913,47 @@ body.ai-panel-open .ai-fab{display:none!important}
   .nsm-copyright{margin-top:6px!important;font-size:.56rem!important}
   .container{padding:12px}
   .dashboard-header-glow{
-    border-radius:0 0 28px 28px!important;
-    padding: calc(18px + env(safe-area-inset-top, 0px)) 18px 24px!important;
-    margin: 0 -12px 18px -12px!important;
+    position: sticky!important;
+    top: 0!important;
+    z-index: 500!important;
+    border-radius: 0 0 24px 24px!important;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 16px!important;
+    margin: 0 -12px 16px -12px!important;
     flex-direction: column!important;
     align-items: stretch!important;
-    gap: 14px!important;
+    gap: 12px!important;
+    box-shadow: 0 8px 24px -8px rgba(21,71,168,.45)!important;
+    backdrop-filter: blur(16px) saturate(160%)!important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%)!important;
+  }
+  .dashboard-header-glow > .d-flex.align-items-center.gap-3{
+    width: 100%!important;
+    min-width: 0!important;
+    gap: 12px!important;
+  }
+  .dashboard-header-glow .avatar-neon{
+    width: 52px!important;
+    height: 52px!important;
+    flex-shrink: 0!important;
+  }
+  #studentFullName{
+    font-size: 1rem!important;
+    line-height: 1.2!important;
+    white-space: normal!important;
+    word-break: break-word!important;
+    max-width: 100%!important;
+    overflow: visible!important;
+  }
+  .dashboard-header-glow .header-meta{
+    font-size: .7rem!important;
+    flex-wrap: wrap!important;
+    gap: 6px 10px!important;
+    margin-top: 4px!important;
+  }
+  .dashboard-header-glow .hdr-actions{
+    width: 100%!important;
+    justify-content: flex-end!important;
+    gap: 8px!important;
   }
   .dashboard-header-glow > .d-flex.align-items-center.gap-3{
     width: 100%!important;
@@ -25235,12 +25270,46 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 @keyframes td60Spin{to{transform:rotate(360deg)}}
 @media (max-width: 600px) {
   .td60-header{
-    padding: calc(18px + env(safe-area-inset-top, 0px)) 16px 16px!important;
-    border-radius: 18px!important;
-    margin-top: 0!important;
+    position: sticky!important;
+    top: 0!important;
+    z-index: 500!important;
+    border-radius: 0 0 20px 20px!important;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px!important;
+    margin: 0 -16px 14px -16px!important;
     flex-direction: column!important;
     align-items: stretch!important;
     gap: 12px!important;
+    box-shadow: 0 8px 24px -8px rgba(8,145,178,.5)!important;
+    backdrop-filter: blur(16px) saturate(160%)!important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%)!important;
+  }
+  .td60-header-left{
+    width: 100%!important;
+    min-width: 0!important;
+  }
+  .td60-avatar{
+    width: 52px!important;
+    height: 52px!important;
+    font-size: 1.25rem!important;
+    flex-shrink: 0!important;
+  }
+  .td60-name{
+    font-size: 1rem!important;
+    white-space: normal!important;
+    word-break: break-word!important;
+  }
+  .td60-meta{
+    font-size: .68rem!important;
+    flex-wrap: wrap!important;
+    gap: 6px 10px!important;
+  }
+  .td60-header > .td60-exit-btn,
+  .td60-header .td60-settings-btn,
+  .td60-header .td60-wa-bot-btn{
+    width: 100%!important;
+    justify-content: center!important;
+    margin-right: 0!important;
+    margin-bottom: 6px!important;
   }
   .td60-header-left{width: 100%!important;}
   .td60-header .td60-exit-btn{width: 100%!important;justify-content: center!important;}
@@ -44122,6 +44191,113 @@ document.addEventListener('touchend', function(e) {
   console.log('✅ Creation Reject v123 ready');
   console.log('   💡 Admin → Creations → Red ❌ button');
   console.log('   💡 REJECT_test(id, "reason") — manual test');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📌 v124.0 — MOBILE FIXED HEADERS (JS ENFORCER)         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="mobile-fixed-headers-v124">
+@media (max-width: 900px) {
+  /* Universal sticky fallback — applies to all 3 headers */
+  #dashboardSection .dashboard-header-glow,
+  #adminSection .dashboard-header-glow,
+  #teacherDashboardV60 .td60-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 500 !important;
+  }
+  /* Ensure containers don't clip sticky */
+  #dashboardSection > .container,
+  #adminSection > .container,
+  #teacherDashboardV60 {
+    overflow: visible !important;
+  }
+  /* Small screens — extra compact header */
+  @media (max-width: 420px) {
+    .dashboard-header-glow .avatar-neon,
+    #teacherDashboardV60 .td60-avatar {
+      width: 46px !important;
+      height: 46px !important;
+      font-size: 1.1rem !important;
+    }
+    #studentFullName { font-size: .94rem !important; }
+    .td60-name { font-size: .94rem !important; }
+  }
+}
+</style>
+
+<script id="mobile-fixed-headers-v124-js">
+(function(){
+  'use strict';
+  if (window.innerWidth > 900) {
+    window.addEventListener('resize', initOnce);
+    return;
+  }
+  var _done = false;
+  function initOnce(){
+    if (_done) return;
+    if (window.innerWidth > 900) return;
+    _done = true;
+
+    function apply(el){
+      if (!el) return;
+      el.style.setProperty('position', 'sticky', 'important');
+      el.style.setProperty('top', '0', 'important');
+      el.style.setProperty('z-index', '500', 'important');
+      // Ensure parent doesn't clip
+      var p = el.parentElement;
+      while (p && p !== document.body){
+        var ov = getComputedStyle(p);
+        if (ov.overflow === 'hidden' || ov.overflowY === 'hidden'){
+          p.style.setProperty('overflow', 'visible', 'important');
+          p.style.setProperty('overflow-y', 'visible', 'important');
+        }
+        p = p.parentElement;
+      }
+    }
+
+    var sels = [
+      '#dashboardSection .dashboard-header-glow',
+      '#adminSection .dashboard-header-glow',
+      '#teacherDashboardV60 .td60-header'
+    ];
+    sels.forEach(function(s){
+      document.querySelectorAll(s).forEach(apply);
+    });
+    console.log('✅ Fixed headers applied (v124)');
+  }
+  setTimeout(initOnce, 800);
+  setTimeout(initOnce, 2500);
+  setTimeout(initOnce, 5000);
+
+  // Re-apply when dashboard/teacher becomes visible
+  ['dashboardSection','adminSection','teacherDashboardV60'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) {
+      new MutationObserver(function(){
+        var visible = el.style.display === 'block' ||
+                      el.classList.contains('open');
+        if (visible) setTimeout(initOnce, 300);
+      }).observe(el, { attributes: true, attributeFilter: ['style','class'] });
+    }
+  });
+
+  window.HEADER_debug = function(){
+    console.log('=== HEADER STICKY DEBUG ===');
+    ['#dashboardSection .dashboard-header-glow',
+     '#teacherDashboardV60 .td60-header'].forEach(function(s){
+      var el = document.querySelector(s);
+      if (!el) { console.log(s, 'NOT FOUND'); return; }
+      var cs = getComputedStyle(el);
+      console.log(s, {
+        position: cs.position,
+        top: cs.top,
+        zIndex: cs.zIndex,
+        height: el.offsetHeight + 'px'
+      });
+    });
+  };
+  console.log('✅ Fixed headers v124 ready — HEADER_debug() to check');
 })();
 </script>
 </body>
