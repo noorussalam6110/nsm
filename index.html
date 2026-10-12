@@ -27455,6 +27455,10 @@ window.askTeacherId = function() {
       await renderTeacherStats(teacher);
       renderClassTabs(teacher);
       toast('✅ സ്വാഗതം, ' + (teacher.name || '').split(' ')[0] + '!', 'success');
+      setTimeout(function() {
+        subscribeTeacherNotifications(teacher);
+        addTeacherNotifBell();
+      }, 800);
       if (typeof confetti !== 'undefined') {
         setTimeout(function() {
           confetti({ particleCount: 100, spread: 80, origin: { y: .6 }, colors: ['#0891b2','#22d3ee','#3b8bff','#fbbf24'] });
@@ -27528,7 +27532,8 @@ var TABS = [
   { key: 'timetable',  label: 'Timetable',   icon: 'fa-clock' },
   { key: 'homework',   label: 'Homework',    icon: 'fa-book' },
   { key: 'notice',     label: 'Notice',      icon: 'fa-bullhorn' },
-  { key: 'namaz',      label: 'Namaz',       icon: 'fa-mosque' },
+  { key: 'namaz',      label: 'Namaz Review',icon: 'fa-mosque' },
+  { key: 'creations',  label: 'Creations',   icon: 'fa-palette' },
   { key: 'chat',       label: 'Class Chat',  icon: 'fa-comments' }
 ];
 
@@ -27564,7 +27569,8 @@ else if (tab === 'marks') await panelMarks(panel, cls);
 else if (tab === 'timetable') await panelTimetable(panel, cls);
 else if (tab === 'homework') await panelHomework(panel, cls);
 else if (tab === 'notice') await panelNotice(panel, cls);
-else if (tab === 'namaz') await panelNamaz(panel, cls);
+else if (tab === 'namaz') await panelNamazReview(panel, cls);
+else if (tab === 'creations') await panelCreations(panel, cls);
 else if (tab === 'chat') await panelChat(panel, cls);
     } catch(e) {
       console.error('Panel error:', e);
@@ -28495,7 +28501,596 @@ window.teacherTTCopyFrom = async function(targetCls) {
     var form = $id('loginForm');
     if (form && !form._v60Hooked) installLoginHandler();
   }, 6000);
+  // ═══════════════════════════════════════════════════════
+  // 🎨 TEACHER PANEL — CREATIONS (കുട്ടികളുടെ സൃഷ്ടികൾ)
+  // ═══════════════════════════════════════════════════════
+  async function panelCreations(panel, cls) {
+    panel.innerHTML =
+      '<div class="td60-toolbar">' +
+        '<button class="td60-btn primary" onclick="loadClassCreations(\'' + cls + '\')">' +
+          '<i class="fas fa-sync-alt"></i> Refresh' +
+        '</button>' +
+        '<select id="td60CreationsFilter" class="td60-toolbar-select" ' +
+                'onchange="loadClassCreations(\'' + cls + '\')" ' +
+                'style="padding:9px 13px;border:1.5px solid rgba(100,116,139,.25);border-radius:10px;font-family:inherit;font-size:14px;outline:none;">' +
+          '<option value="all">എല്ലാം</option>' +
+          '<option value="pending">⏳ Pending Only</option>' +
+          '<option value="approved">✅ Approved Only</option>' +
+        '</select>' +
+      '</div>' +
+      '<div id="td60CreationsBody"></div>';
+    loadClassCreations(cls);
+  }
 
+  window.loadClassCreations = async function(cls) {
+    var body = document.getElementById('td60CreationsBody');
+    if (!body) return;
+    body.innerHTML = '<div style="text-align:center;padding:30px;"><div class="td60-spinner"></div></div>';
+
+    var filter = document.getElementById('td60CreationsFilter') ?
+                 document.getElementById('td60CreationsFilter').value : 'all';
+
+    try {
+      var sr = await supabaseClient.from('students')
+        .select('studentid, name, roll').eq('class', cls);
+      var students = sr.data || [];
+      if (!students.length) {
+        body.innerHTML = '<div class="td60-empty"><i class="fas fa-users"></i>No students in this class</div>';
+        return;
+      }
+
+      var ids = students.map(function(s) { return s.studentid; });
+      var r = await supabaseClient.from('student_creations')
+        .select('*').in('studentid', ids)
+        .order('created_at', { ascending: false }).limit(100);
+      var creations = r.data || [];
+
+      if (filter === 'pending') creations = creations.filter(function(c) { return !c.approved; });
+      if (filter === 'approved') creations = creations.filter(function(c) { return c.approved; });
+
+      if (!creations.length) {
+        body.innerHTML = '<div class="td60-empty"><i class="fas fa-palette"></i>No creations found</div>';
+        return;
+      }
+
+      var smap = {};
+      students.forEach(function(s) { smap[s.studentid] = s; });
+
+      var h = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;">';
+      creations.forEach(function(c) {
+        var student = smap[c.studentid] || { name: 'Student', roll: '' };
+        var ft = c.file_type || 'image';
+        var url = c.file_url || c.image_url;
+        var preview = '';
+
+        if (ft === 'text') {
+          var txt = (c.text_content || '').substring(0, 80);
+          preview = '<div style="background:#f0f9ff;padding:12px;border-radius:10px;font-size:.72rem;color:#0f172a;line-height:1.4;height:100px;overflow:hidden;">' +
+                    escapeHtml(txt) + '...</div>';
+        } else if (ft === 'pdf') {
+          preview = '<div style="background:#fee2e2;padding:20px;border-radius:10px;text-align:center;height:100px;display:flex;align-items:center;justify-content:center;">' +
+                    '<div><i class="fas fa-file-pdf" style="font-size:2rem;color:#dc2626;"></i>' +
+                    '<div style="font-size:.68rem;color:#991b1b;font-weight:800;margin-top:4px;">PDF</div></div></div>';
+        } else {
+          preview = '<img src="' + escapeHtml(url) + '" style="width:100%;height:100px;object-fit:cover;border-radius:10px;" loading="lazy" alt="">';
+        }
+
+        h += '<div style="background:#fff;border-radius:14px;border:1.5px solid rgba(180,200,230,.5);padding:10px;transition:.2s;">';
+
+        h += '<div style="cursor:pointer;" onclick="viewTeacherCreation(' + c.id + ')">';
+        h += preview;
+        h += '<div style="font-weight:800;color:#0f172a;font-size:.78rem;margin-top:8px;line-height:1.3;' +
+             'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' +
+             escapeHtml(c.title || 'Untitled') + '</div>';
+        h += '<div style="font-size:.66rem;color:#64748b;margin-top:4px;font-weight:700;">' +
+             '👤 ' + escapeHtml(student.name) + '</div>';
+        h += '</div>';
+
+        var statusBg = c.approved ? '#dcfce7' : '#fef3c7';
+        var statusColor = c.approved ? '#059669' : '#b45309';
+        var statusLabel = c.approved ? '✅ Approved' : '⏳ Pending';
+
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:6px;">';
+        h += '<span style="background:' + statusBg + ';color:' + statusColor + ';font-size:.6rem;font-weight:800;padding:3px 8px;border-radius:20px;">' + statusLabel + '</span>';
+        h += '<span style="color:#be185d;font-size:.7rem;font-weight:800;">❤️ ' + (c.likes || 0) + '</span>';
+        h += '</div>';
+
+        h += '<div style="display:flex;gap:4px;margin-top:8px;">';
+        if (!c.approved) {
+          h += '<button onclick="event.stopPropagation();window.approveCreationAdmin && window.approveCreationAdmin(' + c.id + ');setTimeout(function(){loadClassCreations(\'' + cls + '\');},600);" ' +
+               'style="flex:1;padding:6px;border-radius:8px;border:none;background:linear-gradient(100deg,#059669,#34d399);color:#fff;font-weight:800;font-size:.68rem;cursor:pointer;min-height:32px;">✅</button>';
+        }
+        h += '<button onclick="event.stopPropagation();viewTeacherCreation(' + c.id + ')" ' +
+             'style="flex:1;padding:6px;border-radius:8px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-weight:800;font-size:.68rem;cursor:pointer;min-height:32px;">👁️</button>';
+        h += '</div>';
+
+        h += '</div>';
+      });
+      h += '</div>';
+
+      body.innerHTML = h;
+    } catch(e) {
+      body.innerHTML = '<div class="td60-empty">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 👁️ VIEW CREATION — Like + Comment
+  // ═══════════════════════════════════════════════════════
+  window.viewTeacherCreation = async function(creationId) {
+    var modal = document.getElementById('globalModal');
+    if (!modal) return;
+
+    modalTitleSpan.innerText = '🎨 Creation Details';
+    modalBodyDiv.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    modal.style.display = 'flex';
+
+    try {
+      var r = await supabaseClient.from('student_creations').select('*').eq('id', creationId).single();
+      if (r.error) throw r.error;
+      var c = r.data;
+
+      var sr = await supabaseClient.from('students')
+        .select('name, class, roll, photo').eq('studentid', c.studentid).single();
+      var student = sr.data || { name: 'Student' };
+
+      var ft = c.file_type || 'image';
+      var url = c.file_url || c.image_url;
+      var mediaHtml = '';
+
+      if (ft === 'text') {
+        mediaHtml = '<div style="background:#f8fafc;border-radius:14px;padding:20px;font-size:.94rem;line-height:1.7;color:#0f172a;white-space:pre-wrap;max-height:60vh;overflow-y:auto;">' +
+                    escapeHtml(c.text_content || '') + '</div>';
+      } else if (ft === 'pdf') {
+        mediaHtml = '<iframe src="' + url + '" style="width:100%;height:60vh;border:0;border-radius:14px;"></iframe>';
+      } else {
+        mediaHtml = '<img src="' + url + '" style="width:100%;max-height:60vh;object-fit:contain;border-radius:14px;background:#000;">';
+      }
+
+      var html = '';
+      html += mediaHtml;
+      html += '<div style="margin-top:14px;">';
+      html += '<h3 style="font-size:1.05rem;font-weight:900;color:#0f172a;margin:0 0 6px;">' + escapeHtml(c.title) + '</h3>';
+      html += '<div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">' +
+              '👤 ' + escapeHtml(student.name) + ' • Class ' + escapeHtml(student.class || '—') +
+              ' • ' + new Date(c.created_at).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) +
+              '</div>';
+      if (c.description) {
+        html += '<p style="color:#475569;font-size:.86rem;line-height:1.5;margin:0 0 14px;">' +
+                escapeHtml(c.description) + '</p>';
+      }
+      html += '</div>';
+
+      var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+      var teacherId = teacher ? teacher.teacher_id : null;
+      var liked = false;
+      if (teacherId) {
+        try {
+          var lr = await supabaseClient.from('creation_likes')
+            .select('id').eq('creation_id', creationId).eq('studentid', teacherId).maybeSingle();
+          liked = !!lr.data;
+        } catch(e) {}
+      }
+
+      html += '<div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">';
+      html += '<button onclick="toggleTeacherLike(' + creationId + ')" ' +
+              'style="flex:1;padding:12px;border-radius:14px;border:none;background:' +
+              (liked ? 'linear-gradient(100deg,#be185d,#ec4899)' : 'linear-gradient(100deg,#ec4899,#f472b6)') +
+              ';color:#fff;font-weight:800;font-size:.86rem;cursor:pointer;min-height:44px;">' +
+              '<i class="fas fa-heart"></i> ' + (liked ? 'Liked' : 'Like') + ' (' + (c.likes || 0) + ')' +
+              '</button>';
+      html += '<button onclick="closeModal(\'globalModal\')" ' +
+              'style="padding:12px 20px;border-radius:14px;border:1.5px solid rgba(100,116,139,.2);background:#f1f5f9;color:#475569;font-weight:800;font-size:.86rem;cursor:pointer;min-height:44px;">Close</button>';
+      html += '</div>';
+
+      // Comments
+      html += '<div style="margin-top:20px;border-top:1px solid rgba(100,116,139,.15);padding-top:14px;">';
+      html += '<h4 style="font-size:.94rem;font-weight:900;color:#0f172a;margin:0 0 12px;display:flex;align-items:center;gap:8px;">' +
+              '<i class="fas fa-comments" style="color:#0891b2;"></i> Comments <span id="tdCommentCount" ' +
+              'style="background:rgba(8,145,178,.15);color:#0891b2;font-size:.7rem;padding:2px 10px;border-radius:20px;font-weight:800;">0</span></h4>';
+      html += '<div id="tdCommentsList" style="max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>';
+      html += '<div style="display:flex;gap:8px;align-items:center;background:#f1f5f9;border-radius:30px;padding:5px 5px 5px 16px;">';
+      html += '<input type="text" id="tdCommentInput" placeholder="Comment എഴുതുക..." ' +
+              'style="flex:1;background:transparent;border:none;outline:none;font-family:inherit;font-size:16px;padding:8px 0;color:#0f172a;">';
+      html += '<button onclick="submitTeacherComment(' + creationId + ')" ' +
+              'style="width:40px;height:40px;border-radius:50%;border:none;background:linear-gradient(140deg,#22d3ee,#3b8bff);color:#fff;font-size:.95rem;cursor:pointer;flex-shrink:0;">' +
+              '<i class="fas fa-paper-plane"></i></button>';
+      html += '</div></div>';
+
+      modalBodyDiv.innerHTML = html;
+      loadTeacherComments(creationId);
+    } catch(e) {
+      modalBodyDiv.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  window.toggleTeacherLike = async function(creationId) {
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    if (!teacher) { showToast('❌ Teacher session missing', 'error'); return; }
+
+    try {
+      var ex = await supabaseClient.from('creation_likes')
+        .select('id').eq('creation_id', creationId).eq('studentid', teacher.teacher_id).maybeSingle();
+
+      var c = await supabaseClient.from('student_creations').select('likes').eq('id', creationId).single();
+      var currentLikes = c.data ? (c.data.likes || 0) : 0;
+      var newLikes = ex.data ? Math.max(0, currentLikes - 1) : currentLikes + 1;
+
+      if (ex.data) {
+        await supabaseClient.from('creation_likes').delete().eq('id', ex.data.id);
+      } else {
+        await supabaseClient.from('creation_likes').insert({
+          creation_id: creationId,
+          studentid: teacher.teacher_id
+        });
+      }
+      await supabaseClient.from('student_creations').update({ likes: newLikes }).eq('id', creationId);
+
+      showToast(ex.data ? '💔 Unliked' : '❤️ Liked', 'success');
+      viewTeacherCreation(creationId);
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  async function loadTeacherComments(creationId) {
+    var list = document.getElementById('tdCommentsList');
+    if (!list) return;
+    list.innerHTML = '<div style="text-align:center;padding:12px;color:#94a3b8;font-size:.78rem;">Loading...</div>';
+
+    try {
+      var r = await supabaseClient.from('creation_comments')
+        .select('*').eq('creation_id', creationId)
+        .order('created_at', { ascending: true });
+      var comments = r.data || [];
+
+      var countEl = document.getElementById('tdCommentCount');
+      if (countEl) countEl.textContent = comments.length;
+
+      if (comments.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:16px;color:#94a3b8;font-size:.78rem;font-style:italic;">ഇതുവരെ comments ഇല്ല</div>';
+        return;
+      }
+
+      var ids = Array.from(new Set(comments.map(function(c) { return c.studentid; })));
+      var smap = {};
+      if (ids.length) {
+        var sr = await supabaseClient.from('students').select('studentid, name').in('studentid', ids);
+        (sr.data || []).forEach(function(s) { smap[s.studentid] = s.name; });
+      }
+
+      var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+
+      list.innerHTML = comments.map(function(c) {
+        var name = smap[c.studentid] || 'User';
+        if (teacher && c.studentid === teacher.teacher_id) name = teacher.name + ' (Teacher)';
+        var initial = name.charAt(0).toUpperCase();
+
+        return '<div style="background:#f8fafc;border-radius:12px;padding:10px;display:flex;gap:10px;">' +
+          '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,#1e6be0,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.8rem;flex-shrink:0;">' +
+            initial + '</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-weight:800;color:#0f172a;font-size:.78rem;">' + escapeHtml(name) + '</div>' +
+            '<div style="color:#475569;font-size:.82rem;margin-top:3px;line-height:1.4;word-break:break-word;">' +
+              escapeHtml(c.comment) + '</div>' +
+          '</div></div>';
+      }).join('');
+    } catch(e) {
+      list.innerHTML = '<div style="color:#dc2626;font-size:.78rem;">Error loading comments</div>';
+    }
+  }
+
+  window.submitTeacherComment = async function(creationId) {
+    var inp = document.getElementById('tdCommentInput');
+    if (!inp) return;
+    var text = inp.value.trim();
+    if (!text) return;
+
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    if (!teacher) { showToast('❌ Teacher session missing', 'error'); return; }
+
+    inp.value = '';
+    try {
+      await supabaseClient.from('creation_comments').insert({
+        creation_id: creationId,
+        studentid: teacher.teacher_id,
+        student_name: teacher.name,
+        comment: text
+      });
+      showToast('✅ Comment added', 'success');
+      loadTeacherComments(creationId);
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🕌 TEACHER — NAMAZ REVIEW (കാണാൻ മാത്രം, edit ചെയ്യാൻ പറ്റില്ല)
+  // ═══════════════════════════════════════════════════════
+  async function panelNamazReview(panel, cls) {
+    panel.innerHTML =
+      '<div class="td60-toolbar">' +
+        '<label>Date:</label>' +
+        '<input type="date" id="td60NamazDate" value="' + new Date().toISOString().split('T')[0] + '" style="padding:9px 13px;border:1.5px solid rgba(100,116,139,.25);border-radius:10px;font-family:inherit;font-size:14px;">' +
+        '<button class="td60-btn primary" onclick="loadNamazReview(\'' + cls + '\')">' +
+          '<i class="fas fa-sync-alt"></i> Load' +
+        '</button>' +
+        '<button class="td60-btn warn" onclick="loadNamazHistory(\'' + cls + '\')" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;">' +
+          '<i class="fas fa-history"></i> Full History' +
+        '</button>' +
+      '</div>' +
+      '<div id="td60NamazBody"></div>';
+    loadNamazReview(cls);
+  }
+
+  window.loadNamazReview = async function(cls) {
+    var body = document.getElementById('td60NamazBody');
+    if (!body) return;
+    body.innerHTML = '<div style="text-align:center;padding:20px;"><div class="td60-spinner"></div></div>';
+    var date = document.getElementById('td60NamazDate').value;
+
+    try {
+      var sr = await supabaseClient.from('students')
+        .select('studentid, name, roll').eq('class', cls).order('roll');
+      var students = sr.data || [];
+      if (!students.length) {
+        body.innerHTML = '<div class="td60-empty">No students</div>';
+        return;
+      }
+
+      var lr = await supabaseClient.from('namaz_log')
+        .select('*').eq('prayer_date', date)
+        .in('studentid', students.map(function(s) { return s.studentid; }));
+      var map = {};
+      (lr.data || []).forEach(function(l) { map[l.studentid] = l; });
+
+      var PRAYERS = [
+        { key: 'fajr', icon: '🌅', name: 'Fajr' },
+        { key: 'dhuhr', icon: '☀️', name: 'Dhuhr' },
+        { key: 'asr', icon: '🌤️', name: 'Asr' },
+        { key: 'maghrib', icon: '🌇', name: 'Maghrib' },
+        { key: 'isha', icon: '🌙', name: 'Isha' }
+      ];
+
+      var h = '<div class="td60-table-wrap"><table class="td60-table">';
+      h += '<thead><tr><th>Roll</th><th>Name</th>';
+      PRAYERS.forEach(function(p) { h += '<th style="text-align:center;">' + p.icon + ' ' + p.name + '</th>'; });
+      h += '<th style="text-align:center;">Score</th></tr></thead><tbody>';
+
+      students.forEach(function(s) {
+        var log = map[s.studentid] || {};
+        var adaaCount = 0, qadaCount = 0;
+        PRAYERS.forEach(function(p) {
+          if (log[p.key] === 'adaa') adaaCount++;
+          else if (log[p.key] === 'qada') qadaCount++;
+        });
+
+        h += '<tr>';
+        h += '<td style="font-weight:800;color:#0891b2;">' + escapeHtml(s.roll || '—') + '</td>';
+        h += '<td><strong>' + escapeHtml(s.name) + '</strong></td>';
+
+        PRAYERS.forEach(function(p) {
+          var st = log[p.key] || 'none';
+          var bg = st === 'adaa' ? '#059669' : st === 'qada' ? '#f59e0b' : '#dc2626';
+          var ico = st === 'adaa' ? '✅' : st === 'qada' ? '⏰' : '❌';
+          h += '<td style="text-align:center;">';
+          h += '<span style="display:inline-flex;align-items:center;justify-content:center;' +
+               'width:32px;height:32px;border-radius:8px;background:' + bg + ';color:#fff;' +
+               'font-weight:900;font-size:.85rem;">' + ico + '</span>';
+          h += '</td>';
+        });
+
+        var scoreColor = adaaCount === 5 ? '#059669' : adaaCount >= 3 ? '#f59e0b' : '#dc2626';
+        h += '<td style="text-align:center;font-weight:900;color:' + scoreColor + ';font-size:1rem;">' + adaaCount + '/5</td>';
+        h += '</tr>';
+      });
+      h += '</tbody></table></div>';
+
+      h += '<div style="display:flex;gap:16px;justify-content:center;font-size:.72rem;color:#64748b;margin-top:14px;flex-wrap:wrap;font-weight:800;">';
+      h += '<span>✅ അദാഅ്</span><span>⏰ ഖളാഅ്</span><span>❌ ഇല്ല</span>';
+      h += '</div>';
+
+      body.innerHTML = h;
+    } catch(e) {
+      body.innerHTML = '<div class="td60-empty">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  window.loadNamazHistory = async function(cls) {
+    var body = document.getElementById('td60NamazBody');
+    if (!body) return;
+    body.innerHTML = '<div style="text-align:center;padding:20px;"><div class="td60-spinner"></div></div>';
+
+    try {
+      var sr = await supabaseClient.from('students')
+        .select('studentid, name, roll').eq('class', cls).order('roll');
+      var students = sr.data || [];
+      if (!students.length) { body.innerHTML = '<div class="td60-empty">No students</div>'; return; }
+
+      var ids = students.map(function(s) { return s.studentid; });
+      var lr = await supabaseClient.from('namaz_log')
+        .select('*').in('studentid', ids)
+        .order('prayer_date', { ascending: false }).limit(500);
+      var logs = lr.data || [];
+
+      var byStudent = {};
+      logs.forEach(function(l) {
+        if (!byStudent[l.studentid]) byStudent[l.studentid] = [];
+        byStudent[l.studentid].push(l);
+      });
+
+      var h = '<div style="max-height:70vh;overflow-y:auto;">';
+      students.forEach(function(s) {
+        var studentLogs = byStudent[s.studentid] || [];
+        if (studentLogs.length === 0) return;
+
+        var totalAdaa = 0, totalQada = 0;
+        studentLogs.forEach(function(l) {
+          ['fajr','dhuhr','asr','maghrib','isha'].forEach(function(k) {
+            if (l[k] === 'adaa') totalAdaa++;
+            else if (l[k] === 'qada') totalQada++;
+          });
+        });
+
+        h += '<div style="background:#fff;border-radius:14px;border:1.5px solid rgba(100,116,139,.15);' +
+             'padding:14px;margin-bottom:10px;">';
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">';
+        h += '<div><strong style="color:#0f172a;font-size:.92rem;">' + escapeHtml(s.name) + '</strong>' +
+             ' <span style="color:#0891b2;font-size:.72rem;">Roll ' + escapeHtml(s.roll || '—') + '</span></div>';
+        h += '<div style="display:flex;gap:6px;font-size:.68rem;font-weight:800;">';
+        h += '<span style="background:#dcfce7;color:#059669;padding:4px 10px;border-radius:20px;">✅ ' + totalAdaa + '</span>';
+        h += '<span style="background:#fef3c7;color:#b45309;padding:4px 10px;border-radius:20px;">⏰ ' + totalQada + '</span>';
+        h += '</div></div>';
+
+        h += '<div style="font-size:.72rem;color:#64748b;font-weight:700;">Last 7 days:</div>';
+        h += '<div style="display:flex;gap:6px;margin-top:6px;overflow-x:auto;">';
+        studentLogs.slice(0, 7).forEach(function(l) {
+          var d = new Date(l.prayer_date + 'T00:00:00');
+          var ad = ['fajr','dhuhr','asr','maghrib','isha'].filter(function(k) { return l[k] === 'adaa'; }).length;
+          h += '<div style="background:#f8fafc;border-radius:10px;padding:8px 10px;text-align:center;flex-shrink:0;min-width:60px;">';
+          h += '<div style="font-size:.6rem;color:#64748b;font-weight:700;">' +
+               d.toLocaleDateString('en-IN', {day:'2-digit',month:'short'}) + '</div>';
+          h += '<div style="font-size:.85rem;font-weight:900;color:' +
+               (ad === 5 ? '#059669' : ad >= 3 ? '#f59e0b' : '#dc2626') + ';margin-top:2px;">' + ad + '/5</div>';
+          h += '</div>';
+        });
+        h += '</div></div>';
+      });
+      h += '</div>';
+
+      body.innerHTML = h;
+    } catch(e) {
+      body.innerHTML = '<div class="td60-empty">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔔 TEACHER REAL-TIME NOTIFICATIONS
+  // ═══════════════════════════════════════════════════════
+  var _teacherNotifChannel = null;
+
+  function subscribeTeacherNotifications(teacher) {
+    if (!supabaseClient || !teacher) return;
+    if (_teacherNotifChannel) {
+      try { supabaseClient.removeChannel(_teacherNotifChannel); } catch(e) {}
+      _teacherNotifChannel = null;
+    }
+    try {
+      _teacherNotifChannel = supabaseClient
+        .channel('teacher_notif_' + teacher.teacher_id)
+        .on('postgres_changes', {
+          event: 'INSERT', schema: 'public', table: 'notifications'
+        }, function(payload) {
+          var n = payload.new;
+          if (!n) return;
+          var tt = n.target_type || 'all';
+          var teacherClasses = (teacher.classes || []).map(String);
+          var applies = false;
+          if (tt === 'all') applies = true;
+          else if (tt === 'class' && teacherClasses.indexOf(String(n.target_class)) > -1) applies = true;
+
+          if (applies) showTeacherNotifPopup(n.title, n.message, n.type);
+        })
+        .subscribe();
+      console.log('✅ Teacher notif channel subscribed');
+    } catch(e) { console.warn('Teacher notif error:', e); }
+  }
+
+  function showTeacherNotifPopup(title, message, type) {
+    var popup = document.createElement('div');
+    popup.style.cssText =
+      'position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);' +
+      'background:linear-gradient(135deg,#0891b2,#22d3ee);color:#fff;' +
+      'padding:14px 20px;border-radius:18px;z-index:100070;max-width:92vw;width:380px;' +
+      'box-shadow:0 20px 50px -12px rgba(8,145,178,.85);display:flex;align-items:center;gap:12px;' +
+      'transition:transform .5s cubic-bezier(.34,1.56,.64,1);font-family:inherit;';
+    popup.innerHTML =
+      '<div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.25);' +
+             'display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🔔</div>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-weight:900;font-size:.88rem;margin-bottom:3px;">' + escapeHtml(title || 'New Alert') + '</div>' +
+        '<div style="font-size:.74rem;opacity:.9;line-height:1.4;">' + escapeHtml(message || '') + '</div>' +
+      '</div>' +
+      '<button onclick="this.parentNode.remove()" style="background:rgba(255,255,255,.2);border:none;' +
+             'color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.9rem;flex-shrink:0;">×</button>';
+    document.body.appendChild(popup);
+
+    requestAnimationFrame(function() {
+      popup.style.transform = 'translateX(-50%) translateY(0)';
+    });
+
+    if (navigator.vibrate) try { navigator.vibrate([40, 30, 40]); } catch(e) {}
+
+    setTimeout(function() {
+      if (popup.parentNode) {
+        popup.style.transform = 'translateX(-50%) translateY(-120%)';
+        setTimeout(function() { popup.remove(); }, 500);
+      }
+    }, 8000);
+
+    popup.onclick = function() {
+      popup.remove();
+      if (typeof window.teacherShowNotifications === 'function') window.teacherShowNotifications();
+    };
+  }
+
+  window.teacherShowNotifications = function() {
+    modalTitleSpan.innerText = '🔔 Notifications';
+    modalBodyDiv.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    modal.style.display = 'flex';
+
+    supabaseClient.from('notifications').select('*')
+      .order('created_at', { ascending: false }).limit(30)
+      .then(function(r) {
+        var list = r.data || [];
+        if (!list.length) {
+          modalBodyDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#64748b;">🔕 No notifications</div>';
+          return;
+        }
+        var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+        var teacherClasses = teacher ? (teacher.classes || []).map(String) : [];
+
+        var filtered = list.filter(function(n) {
+          var tt = n.target_type || 'all';
+          if (tt === 'all') return true;
+          if (tt === 'class' && teacherClasses.indexOf(String(n.target_class)) > -1) return true;
+          return false;
+        });
+
+        if (filtered.length === 0) {
+          modalBodyDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#64748b;">🔕 No notifications</div>';
+          return;
+        }
+
+        modalBodyDiv.innerHTML = filtered.map(function(n) {
+          var ico = n.type === 'urgent' ? '🚨' : n.type === 'important' ? '⚡' : '📢';
+          return '<div style="background:#f8fafc;border-left:4px solid #0891b2;border-radius:12px;' +
+                 'padding:12px 14px;margin-bottom:10px;">' +
+            '<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:5px;">' +
+              '<strong style="color:#0f172a;font-size:.88rem;">' + ico + ' ' + escapeHtml(n.title) + '</strong>' +
+              '<small style="color:#64748b;font-size:.7rem;">' +
+                new Date(n.created_at).toLocaleDateString('en-IN') + '</small>' +
+            '</div>' +
+            '<div style="color:#475569;font-size:.82rem;line-height:1.5;">' + escapeHtml(n.message) + '</div>' +
+          '</div>';
+        }).join('');
+      });
+  };
+
+  function addTeacherNotifBell() {
+    var header = document.querySelector('#teacherDashboardV60 .td60-header');
+    if (!header || header.querySelector('.td60-notif-btn')) return;
+    var exitBtn = header.querySelector('.td60-exit-btn');
+    if (!exitBtn) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'td60-exit-btn td60-notif-btn';
+    btn.style.cssText = 'position:relative;background:rgba(255,255,255,.2);';
+    btn.innerHTML = '<i class="fas fa-bell"></i>';
+    btn.title = 'Notifications';
+    btn.onclick = function(e) { e.preventDefault(); window.teacherShowNotifications(); };
+    exitBtn.parentNode.insertBefore(btn, exitBtn);
+  }
   console.log('✅ Teacher System v60.0 ready');
 })();
 </script>
