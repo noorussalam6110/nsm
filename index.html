@@ -18497,11 +18497,18 @@ window.openChatPanel = async function() {
 // 💬 FORCE CHAT FAB VISIBLE — Guaranteed
 // ═══════════════════════════════════════════════════════
 window.forceShowChatFab = function() {
-  if (!currentUser) return;
+  var loggedIn = document.body.classList.contains('logged-in');
+  var isAdmin = window.isAdminMode === true;
+  var isTeacher = window.isTeacherMode === true;
   var fab = document.getElementById('chatFab');
   if (!fab) return;
-  fab.style.display = 'flex';
-  fab.classList.add('show');
+  if (loggedIn && currentUser && !isAdmin && !isTeacher) {
+    fab.style.setProperty('display', 'flex', 'important');
+    fab.classList.add('show');
+  } else {
+    fab.classList.remove('show');
+    fab.style.setProperty('display', 'none', 'important');
+  }
 };
 
 // Check on login + dashboard open
@@ -33835,12 +33842,11 @@ body.admin-mode .wa-bot-fab.show { display: flex !important; }
     var fab = document.getElementById('waBotFab');
     if (!fab) return;
 
-    var isAdmin = window.isAdminMode ||
-      (typeof isAdminMode !== 'undefined' && isAdminMode) ||
+    var isAdmin = window.isAdminMode === true ||
       document.body.classList.contains('admin-mode');
 
-    var isTeacher = window.isTeacherMode ||
-      (typeof isTeacherMode !== 'undefined' && isTeacherMode);
+    var isTeacher = window.isTeacherMode === true ||
+      document.body.classList.contains('teacher-mode');
 
     var adminSec = document.getElementById('adminSection');
     var adminVisible = adminSec && adminSec.style.display === 'block';
@@ -33850,8 +33856,10 @@ body.admin-mode .wa-bot-fab.show { display: flex !important; }
 
     if (isAdmin || isTeacher || adminVisible || teacherVisible) {
       fab.classList.add('show');
+      fab.style.setProperty('display', 'flex', 'important');
     } else {
       fab.classList.remove('show');
+      fab.style.setProperty('display', 'none', 'important');
     }
   }
 
@@ -44930,5 +44938,150 @@ document.addEventListener('touchend', function(e) {
   console.log('✅ AI Integration v127 ready — AI_studyTips() / AI_weeklyReport()');
 })();
 </script> 
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎯 v128.0 — FAB CLEANUP + LOGOUT SYNC                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="fab-cleanup-v128">
+(function(){
+  'use strict';
+  console.log('🎯 FAB Cleanup v128 loading...');
+
+  // ─── Core: sync FABs based on real state ───
+  function syncFabs(){
+    var body = document.body;
+    var loggedIn = body.classList.contains('logged-in');
+    var isAdmin = window.isAdminMode === true;
+    var isTeacher = window.isTeacherMode === true;
+    var adminSec = document.getElementById('adminSection');
+    var adminVisible = adminSec && adminSec.style.display === 'block';
+    var teacherSec = document.getElementById('teacherDashboardV60');
+    var teacherVisible = teacherSec && teacherSec.classList.contains('open');
+
+    // Chat FAB → only logged-in students
+    var cf = document.getElementById('chatFab');
+    if (cf) {
+      if (loggedIn && window.currentUser && !isAdmin && !isTeacher) {
+        cf.classList.add('show');
+        cf.style.setProperty('display', 'flex', 'important');
+      } else {
+        cf.classList.remove('show');
+        cf.style.setProperty('display', 'none', 'important');
+      }
+    }
+
+    // WA Bot FAB → only admin/teacher
+    var wf = document.getElementById('waBotFab');
+    if (wf) {
+      if (isAdmin || isTeacher || adminVisible || teacherVisible) {
+        wf.classList.add('show');
+        wf.style.setProperty('display', 'flex', 'important');
+      } else {
+        wf.classList.remove('show');
+        wf.style.setProperty('display', 'none', 'important');
+      }
+    }
+  }
+  window.syncFabs = syncFabs;
+
+  // ─── Immediate run ───
+  syncFabs();
+
+  // ─── Safe interval (v100 won't kill it — delay >= 5000) ───
+  setInterval(syncFabs, 5000);
+
+  // ─── Full cleanup on logout ───
+  function fullCleanup(){
+    syncFabs();
+
+    // Close chat panel if open
+    var cp = document.getElementById('chatPanel');
+    if (cp && cp.classList.contains('open')) {
+      try { if (typeof window.closeChatPanel === 'function') window.closeChatPanel(); }
+      catch(e) { cp.classList.remove('open'); }
+    }
+
+    // Close AI panel if open
+    if (window.aiOpen && typeof window.toggleAIChat === 'function') {
+      try { window.toggleAIChat(); } catch(e) {}
+    }
+
+    // Clear notification badges
+    var nb = document.getElementById('notifBadge');
+    if (nb) { nb.style.display = 'none'; nb.textContent = '0'; }
+    var cb = document.getElementById('chatFabBadge');
+    if (cb) { cb.classList.remove('show'); cb.textContent = ''; }
+    var lb = document.getElementById('loginNotifBadge');
+    if (lb) { lb.classList.remove('show'); }
+    try { if (typeof updateAppBadge === 'function') updateAppBadge(0); } catch(e) {}
+
+    // Reset teacher flags (in case admin logout after teacher impersonation)
+    window.isTeacherMode = false;
+    window.currentTeacher = null;
+
+    console.log('🧹 Full FAB cleanup done');
+  }
+  window.fullFabCleanup = fullCleanup;
+
+  // ─── Hook every logout variant ───
+  ['logout','teacherLogout','teacherLogoutV60'].forEach(function(fnName){
+    var orig = window[fnName];
+    if (typeof orig === 'function' && !orig._v128) {
+      window[fnName] = function(){
+        var r = orig.apply(this, arguments);
+        setTimeout(fullCleanup, 10);
+        setTimeout(fullCleanup, 150);
+        setTimeout(fullCleanup, 500);
+        setTimeout(syncFabs, 1500);
+        return r;
+      };
+      window[fnName]._v128 = true;
+      console.log('✅ Hooked', fnName);
+    }
+  });
+
+  // ─── Watch body class (login-active/logged-in) ───
+  if (document.body) {
+    new MutationObserver(function(){
+      syncFabs();
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // ─── Watch section visibility ───
+  ['loginSection','dashboardSection','adminSection','teacherDashboardV60'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) {
+      new MutationObserver(syncFabs).observe(el, {
+        attributes: true, attributeFilter: ['style', 'class']
+      });
+    }
+  });
+
+  // ─── Initial hide after page fully loaded ───
+  setTimeout(syncFabs, 2000);
+  setTimeout(syncFabs, 4500);
+  setTimeout(syncFabs, 8000);
+
+  // ─── Debug helper ───
+  window.FAB_debug = function(){
+    console.log('=== FAB DEBUG v128 ===');
+    console.log('Body classes:', document.body.className);
+    console.log('logged-in?', document.body.classList.contains('logged-in'));
+    console.log('currentUser?', !!window.currentUser);
+    console.log('isAdminMode?', window.isAdminMode);
+    console.log('isTeacherMode?', window.isTeacherMode);
+    ['chatFab','waBotFab'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (!el) { console.log(id + ': NOT FOUND'); return; }
+      console.log(id + ':', {
+        display: getComputedStyle(el).display,
+        inline: el.style.display,
+        show: el.classList.contains('show')
+      });
+    });
+  };
+
+  console.log('✅ FAB Cleanup v128 ready — FAB_debug() to inspect');
+})();
+</script>
 </body>
 </html>
