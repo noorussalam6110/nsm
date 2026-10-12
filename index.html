@@ -13025,32 +13025,11 @@ if('serviceWorker' in navigator){
     }, 3500);
   };
 
+  // ❌ DISABLED — Welcome banner removed by user request
   window.injectWelcomeBanner = function(){
-    var u = window.currentUser || currentUser;
-    if(!u) return;
-    var dash = document.getElementById('dashboardSection');
-    if(!dash) return;
-    var container = dash.querySelector('.container');
-    if(!container) return;
-    var header = container.querySelector('.dashboard-header-glow');
-    if(!header) return;
-    if(container.querySelector('.student-welcome-banner')) return;
-    var hour = new Date().getHours();
-    var greeting, emoji;
-    if(hour < 5){ greeting = 'GOOD NIGHT'; emoji = '🌙'; }
-    else if(hour < 12){ greeting = 'GOOD MORNING'; emoji = '🌅'; }
-    else if(hour < 17){ greeting = 'GOOD AFTER NOON'; emoji = '☀️'; }
-    else if(hour < 20){ greeting = 'GOOD EVENING'; emoji = '🌇'; }
-    else { greeting = 'GOOD NIGHT'; emoji = '🌙'; }
-    var firstName = (u.name || 'Student').split(' ')[0];
-    var msgs = ['ഇന്ന് ഒരു മികച്ച ദിവസമായിരിക്കട്ടെ!','നിങ്ങളുടെ പഠനം തുടരൂ — വിജയം അടുത്താണ്!','ഇന്നത്തെ ലക്ഷ്യം എന്താണ്?','ഓരോ ചുവടും നിങ്ങളെ വിജയത്തിലേക്ക് നയിക്കുന്നു!'];
-    var msg = msgs[Math.floor(Math.random() * msgs.length)];
-    var banner = document.createElement('div');
-    banner.className = 'student-welcome-banner';
-    banner.innerHTML = '<div class="welcome-icon">' + emoji + '</div><div class="welcome-text"><h3>' + greeting + ', ' + firstName + '! 🌟</h3><p>' + msg + '</p></div>';
-    header.parentNode.insertBefore(banner, header.nextSibling);
+    // Do nothing — banner disabled
+    return;
   };
-
   var dash = document.getElementById('dashboardSection');
   if(dash){
     var obs = new MutationObserver(function(){
@@ -44416,6 +44395,16 @@ document.addEventListener('touchend', function(e) {
 <!-- 📌 v124.0 — MOBILE FIXED HEADERS (JS ENFORCER)         -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <style id="mobile-fixed-headers-v124">
+/* ❌ HIDE STUDENT WELCOME BANNER (removed) */
+.student-welcome-banner {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 @media (max-width: 900px) {
   /* Universal sticky fallback — applies to all 3 headers */
   #dashboardSection .dashboard-header-glow,
