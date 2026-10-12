@@ -44696,6 +44696,636 @@ document.addEventListener('touchend', function(e) {
 
   console.log('✅ Teacher Login Wheel Fix v129 ready');
   console.log('   💡 TL_SCROLL_debug() — verify state');
+})();
+/* ═══════════════════════════════════════════════════════ */
+/* 🕌 v130.0 — ADMIN NAMAZ MANAGEMENT TAB                 */
+/* Class-wise view + Edit any student's namaz records     */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  console.log('🕌 Admin Namaz Tab v130 loading...');
+
+  var PRAYERS = [
+    { key: 'fajr',    name: 'ഫജ്‌ർ',    icon: '🌅' },
+    { key: 'dhuhr',   name: 'ളുഹ്‌ർ',   icon: '☀️' },
+    { key: 'asr',     name: 'അസ്‌ർ',    icon: '🌤️' },
+    { key: 'maghrib', name: 'മഗ്‌രിബ്', icon: '🌇' },
+    { key: 'isha',    name: 'ഇശാ',     icon: '🌙' }
+  ];
+  var STATES = { adaa: '✅', qada: '⏰', none: '—' };
+
+  var ADMIN_NAMZ = { view: 'today', date: null, students: [], logs: {} };
+  window.ADMIN_NAMZ = ADMIN_NAMZ;
+
+  // ═══════════════════════════════════════════════════════
+  // 🎛️ ADD TAB BUTTON
+  // ═══════════════════════════════════════════════════════
+  function addNamazTabButton() {
+    var tabs = document.getElementById('adminTabs');
+    if (!tabs) return;
+    if (tabs.querySelector('[data-tab="namaz"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'admin-tab';
+    btn.dataset.tab = 'namaz';
+    btn.innerHTML = '🕌 നിസ്‌കാരം';
+    btn.onclick = function() { window.switchAdminTab('namaz'); };
+
+    // Insert after Moral (moralvalues)
+    var moralTab = tabs.querySelector('[data-tab="moralvalues"]');
+    if (moralTab && moralTab.parentNode) {
+      moralTab.parentNode.insertBefore(btn, moralTab.nextSibling);
+    } else {
+      tabs.appendChild(btn);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎛️ ADD TAB CONTENT
+  // ═══════════════════════════════════════════════════════
+  function addNamazTabContent() {
+    var container = document.getElementById('adminMainContent');
+    if (!container) return;
+    if (document.getElementById('adminNamazTab')) return;
+
+    var div = document.createElement('div');
+    div.id = 'adminNamazTab';
+    div.className = 'admin-tab-content';
+    div.style.display = 'none';
+    div.innerHTML =
+      // View toggle
+      '<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">' +
+        '<button class="btn-load" onclick="ADMIN_NAMZ_setView(\'today\')" ' +
+                'id="admNamzViewToday" style="background:linear-gradient(100deg,#059669,#34d399);">' +
+          '<i class="fas fa-calendar-day"></i> ഇന്ന് (Today)' +
+        '</button>' +
+        '<button class="btn-load" onclick="ADMIN_NAMZ_setView(\'range\')" ' +
+                'id="admNamzViewRange">' +
+          '<i class="fas fa-history"></i> Full History' +
+        '</button>' +
+        '<button class="btn-load" onclick="ADMIN_NAMZ_refresh()" ' +
+                'style="background:linear-gradient(100deg,#0891b2,#22d3ee);">' +
+          '<i class="fas fa-sync-alt"></i> Refresh' +
+        '</button>' +
+        '<button class="btn-pdf" onclick="ADMIN_NAMZ_exportPDF()">' +
+          '<i class="fas fa-file-pdf"></i> PDF' +
+        '</button>' +
+      '</div>' +
+
+      // Date picker (for today view)
+      '<div id="admNamzDateRow" style="display:flex;gap:10px;align-items:center;' +
+           'background:#f0fdf4;border:1.5px solid rgba(5,150,105,.3);' +
+           'border-radius:14px;padding:12px 14px;margin-bottom:14px;flex-wrap:wrap;">' +
+        '<label style="font-weight:800;color:#065f46;font-size:.82rem;">' +
+          '<i class="fas fa-calendar"></i> Date:' +
+        '</label>' +
+        '<input type="date" id="admNamzDatePicker" ' +
+               'style="padding:9px 13px;border:1.5px solid rgba(100,116,139,.25);' +
+                      'border-radius:10px;font-family:inherit;font-size:15px;' +
+                      'outline:none;background:#fff;color:#0f172a;" ' +
+               'onchange="ADMIN_NAMZ_loadToday()">' +
+        '<span style="font-size:.72rem;color:#64748b;font-weight:700;">' +
+          '← Date തിരഞ്ഞെടുത്ത് നോക്കാം' +
+        '</span>' +
+      '</div>' +
+
+      // Summary cards
+      '<div id="admNamzSummary" class="admin-summary"></div>' +
+
+      // Body
+      '<div id="admNamzBody"></div>';
+
+    container.appendChild(div);
+
+    // Set today's date
+    var dateInput = document.getElementById('admNamzDatePicker');
+    if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 PATCH — switchAdminTab
+  // ═══════════════════════════════════════════════════════
+  var _origSwitch = window.switchAdminTab;
+  if (typeof _origSwitch === 'function' && !_origSwitch._v130) {
+    window.switchAdminTab = function(tab) {
+      if (tab === 'namaz') {
+        document.querySelectorAll('.admin-tab-content').forEach(function(c) {
+          c.style.display = 'none';
+        });
+        document.querySelectorAll('.admin-tab').forEach(function(t) {
+          t.classList.remove('active');
+        });
+        var btn = document.querySelector('.admin-tab[data-tab="namaz"]');
+        if (btn) btn.classList.add('active');
+        var el = document.getElementById('adminNamazTab');
+        if (el) el.style.display = 'block';
+
+        // Default view
+        ADMIN_NAMZ.view = 'today';
+        ADMIN_NAMZ.date = new Date().toISOString().split('T')[0];
+        ADMIN_NAMZ_loadToday();
+        return;
+      }
+      return _origSwitch.apply(this, arguments);
+    };
+    window.switchAdminTab._v130 = true;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 VIEW TOGGLE
+  // ═══════════════════════════════════════════════════════
+  window.ADMIN_NAMZ_setView = function(view) {
+    ADMIN_NAMZ.view = view;
+
+    var btnToday = document.getElementById('admNamzViewToday');
+    var btnRange = document.getElementById('admNamzViewRange');
+    var dateRow  = document.getElementById('admNamzDateRow');
+
+    if (view === 'today') {
+      if (btnToday) btnToday.style.background = 'linear-gradient(100deg,#059669,#34d399)';
+      if (btnRange) btnRange.style.background = '';
+      if (dateRow) dateRow.style.display = 'flex';
+      ADMIN_NAMZ_loadToday();
+    } else {
+      if (btnToday) btnToday.style.background = '';
+      if (btnRange) btnRange.style.background = 'linear-gradient(100deg,#0891b2,#22d3ee)';
+      if (dateRow) dateRow.style.display = 'none';
+      ADMIN_NAMZ_loadFullHistory();
+    }
+  };
+
+  window.ADMIN_NAMZ_refresh = function() {
+    if (ADMIN_NAMZ.view === 'today') ADMIN_NAMZ_loadToday();
+    else ADMIN_NAMZ_loadFullHistory();
+    showToast('🔄 Refreshed', 'info');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 LOAD — Today view (all students, editable)
+  // ═══════════════════════════════════════════════════════
+  window.ADMIN_NAMZ_loadToday = async function() {
+    if (!currentAdminClass) {
+      showToast('⚠️ Class select ചെയ്യൂ', 'error');
+      return;
+    }
+    var body = document.getElementById('admNamzBody');
+    if (!body) return;
+    body.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+
+    var date = (document.getElementById('admNamzDatePicker') || {}).value
+               || new Date().toISOString().split('T')[0];
+    ADMIN_NAMZ.date = date;
+
+    try {
+      // Fetch students
+      var sq = supabaseClient.from('students').select('studentid, name, roll, class');
+      if (currentAdminClass !== 'all') sq = sq.eq('class', currentAdminClass);
+      sq = sq.order('class').order('roll').order('name');
+      var sr = await sq;
+      var students = sr.data || [];
+
+      if (!students.length) {
+        body.innerHTML = '<div class="empty-state"><i class="fas fa-users" style="font-size:3rem;opacity:.4;"></i>No students</div>';
+        return;
+      }
+
+      // Fetch logs for this date
+      var ids = students.map(function(s) { return s.studentid; });
+      var lr = await supabaseClient.from('namaz_log')
+        .select('*').eq('prayer_date', date).in('studentid', ids);
+      var logMap = {};
+      (lr.data || []).forEach(function(log) { logMap[log.studentid] = log; });
+
+      ADMIN_NAMZ.students = students;
+      ADMIN_NAMZ.logs = logMap;
+
+      renderTodayView(students, logMap, date);
+
+    } catch(e) {
+      console.error(e);
+      body.innerHTML = '<div class="empty-state" style="color:#dc2626;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  function renderTodayView(students, logMap, date) {
+    var body = document.getElementById('admNamzBody');
+    var summary = document.getElementById('admNamzSummary');
+
+    // Summary
+    var totalAdaa = 0, totalQada = 0, completed = 0;
+    students.forEach(function(s) {
+      var log = logMap[s.studentid];
+      if (!log) return;
+      var c = 0;
+      PRAYERS.forEach(function(p) {
+        if (log[p.key] === 'adaa') { totalAdaa++; c++; }
+        else if (log[p.key] === 'qada') { totalQada++; c++; }
+      });
+      if (c === 5) completed++;
+    });
+
+    if (summary) {
+      summary.innerHTML =
+        '<div class="stat"><div class="num">' + students.length + '</div><div class="label">Students</div></div>' +
+        '<div class="stat"><div class="num green">' + totalAdaa + '</div><div class="label">Total Adaa</div></div>' +
+        '<div class="stat"><div class="num orange">' + totalQada + '</div><div class="label">Total Qada</div></div>' +
+        '<div class="stat"><div class="num">' + completed + '</div><div class="label">5/5 Complete</div></div>';
+    }
+
+    // Body — table
+    var html = '';
+    html += '<div style="background:#f0fdf4;padding:10px 14px;border-radius:12px;' +
+            'margin-bottom:10px;font-size:.78rem;color:#065f46;font-weight:700;' +
+            'border:1px solid rgba(5,150,105,.25);">';
+    html += '<i class="fas fa-info-circle"></i> ' +
+            'ഓരോ prayer-ഉം tap ചെയ്ത് state change ചെയ്യാം. ' +
+            '<b>' + formatDate(date) + '</b>';
+    html += '</div>';
+
+    html += '<div class="admin-table-wrap"><table>';
+    html += '<thead><tr><th>#</th><th>Roll</th><th>Name</th>';
+    PRAYERS.forEach(function(p) {
+      html += '<th style="text-align:center;font-size:.58rem;">' + p.icon + ' ' + p.name + '</th>';
+    });
+    html += '<th style="text-align:center;">Total</th></tr></thead><tbody>';
+
+    students.forEach(function(s, i) {
+      var log = logMap[s.studentid] || {};
+      var dayCount = 0;
+      html += '<tr>';
+      html += '<td>' + (i + 1) + '</td>';
+      html += '<td style="color:#0891b2;font-weight:800;">' + escapeHtml(s.roll || '—') + '</td>';
+      html += '<td><strong>' + escapeHtml(s.name) + '</strong></td>';
+
+      PRAYERS.forEach(function(p) {
+        var st = log[p.key] || 'none';
+        var bg = st === 'adaa' ? 'linear-gradient(140deg,#059669,#34d399)'
+                : st === 'qada' ? 'linear-gradient(140deg,#f97316,#fb923c)'
+                : '#e2e8f0';
+        var fg = st === 'none' ? '#64748b' : '#fff';
+        if (st !== 'none') dayCount++;
+        html += '<td style="text-align:center;">' +
+          '<button onclick="ADMIN_NAMZ_cycleState(\'' + s.studentid + '\',\'' + p.key + '\')" ' +
+          'style="width:36px;height:36px;border-radius:10px;border:none;' +
+          'background:' + bg + ';color:' + fg + ';font-size:1rem;' +
+          'font-weight:900;cursor:pointer;font-family:inherit;">' +
+          STATES[st] + '</button></td>';
+      });
+
+      var color = dayCount === 5 ? '#059669' : dayCount >= 3 ? '#b45309' : '#dc2626';
+      html += '<td style="text-align:center;color:' + color + ';font-weight:900;">' + dayCount + '/5</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    body.innerHTML = html;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 CYCLE STATE — none → adaa → qada → none
+  // ═══════════════════════════════════════════════════════
+  window.ADMIN_NAMZ_cycleState = async function(studentId, prayerKey) {
+    if (!ADMIN_NAMZ.date) return;
+
+    var log = ADMIN_NAMZ.logs[studentId] || {
+      studentid: studentId, prayer_date: ADMIN_NAMZ.date,
+      fajr: 'none', dhuhr: 'none', asr: 'none',
+      maghrib: 'none', isha: 'none'
+    };
+    var cur = log[prayerKey] || 'none';
+    var next = cur === 'none' ? 'adaa'
+             : cur === 'adaa' ? 'qada'
+             : 'none';
+
+    log[prayerKey] = next;
+    ADMIN_NAMZ.logs[studentId] = log;
+
+    // UI feedback — re-render
+    renderTodayView(ADMIN_NAMZ.students, ADMIN_NAMZ.logs, ADMIN_NAMZ.date);
+
+    if (navigator.vibrate) try { navigator.vibrate(8); } catch(e) {}
+
+    // Save to DB
+    try {
+      var payload = {
+        studentid: studentId,
+        prayer_date: ADMIN_NAMZ.date,
+        fajr: log.fajr || 'none',
+        dhuhr: log.dhuhr || 'none',
+        asr: log.asr || 'none',
+        maghrib: log.maghrib || 'none',
+        isha: log.isha || 'none',
+        marked_by: 'ADMIN',
+        updated_at: new Date().toISOString()
+      };
+      var r = await supabaseClient.from('namaz_log')
+        .upsert(payload, { onConflict: 'studentid,prayer_date' });
+      if (r.error) throw r.error;
+
+      var p = PRAYERS.find(function(x) { return x.key === prayerKey; });
+      showToast(p.icon + ' ' + p.name + ' → ' +
+                (next === 'adaa' ? 'അദാഅ് ✅' :
+                 next === 'qada' ? 'ഖളാഅ് ⏰' : 'ഇല്ല ❌'),
+                'success');
+
+    } catch(e) {
+      console.error(e);
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📊 FULL HISTORY — Cumulative per student
+  // ═══════════════════════════════════════════════════════
+  window.ADMIN_NAMZ_loadFullHistory = async function() {
+    if (!currentAdminClass) return;
+    var body = document.getElementById('admNamzBody');
+    if (!body) return;
+    body.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    document.getElementById('admNamzSummary').innerHTML = '';
+
+    try {
+      var sq = supabaseClient.from('students').select('studentid, name, roll, class');
+      if (currentAdminClass !== 'all') sq = sq.eq('class', currentAdminClass);
+      sq = sq.order('class').order('roll').order('name');
+      var sr = await sq;
+      var students = sr.data || [];
+
+      if (!students.length) {
+        body.innerHTML = '<div class="empty-state">No students</div>';
+        return;
+      }
+
+      var ids = students.map(function(s) { return s.studentid; });
+      var lr = await supabaseClient.from('namaz_log')
+        .select('*').in('studentid', ids);
+      var byStudent = {};
+      (lr.data || []).forEach(function(log) {
+        if (!byStudent[log.studentid]) byStudent[log.studentid] = [];
+        byStudent[log.studentid].push(log);
+      });
+
+      var monthPrefix = new Date().toISOString().substring(0, 7);
+      var classAdaa = 0, classQada = 0;
+
+      var rows = students.map(function(s) {
+        var logs = byStudent[s.studentid] || [];
+        var adaa = 0, qada = 0, mAdaa = 0, mQada = 0, dates = {};
+
+        logs.forEach(function(log) {
+          var inMonth = log.prayer_date.indexOf(monthPrefix) === 0;
+          var dayCount = 0;
+          PRAYERS.forEach(function(p) {
+            var st = log[p.key];
+            if (st === 'adaa') { adaa++; dayCount++; if (inMonth) mAdaa++; }
+            else if (st === 'qada') { qada++; dayCount++; if (inMonth) mQada++; }
+          });
+          dates[log.prayer_date] = dayCount;
+        });
+
+        // Streak
+        var streak = 0;
+        var cd = new Date(); cd.setHours(0, 0, 0, 0);
+        for (var i = 0; i < 365; i++) {
+          var ds = cd.toISOString().split('T')[0];
+          if ((dates[ds] || 0) >= 5) { streak++; cd.setDate(cd.getDate() - 1); }
+          else if (i === 0) { cd.setDate(cd.getDate() - 1); }
+          else break;
+        }
+
+        classAdaa += adaa; classQada += qada;
+
+        return {
+          studentid: s.studentid, name: s.name, roll: s.roll || '—',
+          adaa: adaa, qada: qada, monthTotal: mAdaa + mQada, streak: streak
+        };
+      });
+
+      rows.sort(function(a, b) { return b.adaa - a.adaa; });
+
+      // Summary
+      var sum = document.getElementById('admNamzSummary');
+      if (sum) {
+        sum.innerHTML =
+          '<div class="stat"><div class="num">' + students.length + '</div><div class="label">Students</div></div>' +
+          '<div class="stat"><div class="num green">' + classAdaa + '</div><div class="label">Total Adaa</div></div>' +
+          '<div class="stat"><div class="num orange">' + classQada + '</div><div class="label">Total Qada</div></div>' +
+          '<div class="stat"><div class="num">' + Math.round((classAdaa + classQada) / students.length) + '</div><div class="label">Avg/Student</div></div>';
+      }
+
+      // Table
+      var html = '<div class="admin-table-wrap"><table>';
+      html += '<thead><tr>' +
+        '<th>#</th><th>Roll</th><th>Name</th>' +
+        '<th style="text-align:center;">✅ Adaa</th>' +
+        '<th style="text-align:center;">⏰ Qada</th>' +
+        '<th style="text-align:center;">🔥 Streak</th>' +
+        '<th style="text-align:center;">📅 Month</th>' +
+        '<th style="text-align:center;">View</th>' +
+      '</tr></thead><tbody>';
+
+      rows.forEach(function(s, i) {
+        var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+        html += '<tr>';
+        html += '<td>' + (i + 1) + ' ' + medal + '</td>';
+        html += '<td style="color:#0891b2;font-weight:800;">' + escapeHtml(s.roll) + '</td>';
+        html += '<td><strong>' + escapeHtml(s.name) + '</strong></td>';
+        html += '<td style="text-align:center;color:#059669;font-weight:900;">' + s.adaa + '</td>';
+        html += '<td style="text-align:center;color:#ea580c;font-weight:900;">' + s.qada + '</td>';
+        html += '<td style="text-align:center;color:#b45309;font-weight:900;">' + s.streak + '🔥</td>';
+        html += '<td style="text-align:center;color:#2563eb;font-weight:800;">' + s.monthTotal + '</td>';
+        html += '<td style="text-align:center;">' +
+          '<button onclick="ADMIN_NAMZ_viewStudent(\'' + s.studentid + '\')" ' +
+          'style="background:linear-gradient(140deg,#8b5cf6,#a78bfa);color:#fff;' +
+          'border:none;padding:5px 12px;border-radius:20px;font-size:.7rem;' +
+          'font-weight:800;cursor:pointer;font-family:inherit;">👁️</button></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+      body.innerHTML = html;
+
+    } catch(e) {
+      console.error(e);
+      body.innerHTML = '<div class="empty-state" style="color:#dc2626;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 👁️ Individual student detail (30 days)
+  // ═══════════════════════════════════════════════════════
+  window.ADMIN_NAMZ_viewStudent = async function(sid) {
+    if (!sid) return;
+    if (typeof modal === 'undefined') return;
+
+    modalTitleSpan.innerText = '🕌 Namaz Detail';
+    modalBodyDiv.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    modal.style.display = 'flex';
+
+    try {
+      var sr = await supabaseClient.from('students')
+        .select('name, roll, class').eq('studentid', sid).maybeSingle();
+      var student = sr.data || { name: sid, roll: '—', class: '' };
+
+      var lr = await supabaseClient.from('namaz_log')
+        .select('*').eq('studentid', sid)
+        .order('prayer_date', { ascending: false }).limit(30);
+      var rows = lr.data || [];
+
+      var adaa = 0, qada = 0, completeDays = 0;
+      rows.forEach(function(r) {
+        var d = 0;
+        PRAYERS.forEach(function(p) {
+          if (r[p.key] === 'adaa') { adaa++; d++; }
+          else if (r[p.key] === 'qada') { qada++; d++; }
+        });
+        if (d === 5) completeDays++;
+      });
+
+      var html = '';
+      html += '<div style="background:#f0fdf4;padding:14px;border-radius:14px;margin-bottom:14px;border:1.5px solid rgba(5,150,105,.3);">';
+      html += '<div style="font-weight:900;color:#065f46;font-size:1rem;">' + escapeHtml(student.name) + '</div>';
+      html += '<div style="font-size:.76rem;color:#0891b2;margin-top:4px;font-weight:700;">Roll ' + escapeHtml(student.roll) + ' • Class ' + escapeHtml(student.class) + ' • ' + escapeHtml(sid) + '</div>';
+      html += '</div>';
+
+      html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">';
+      html += '<div style="background:#ecfdf5;border:1.5px solid rgba(5,150,105,.3);border-radius:14px;padding:14px;text-align:center;">' +
+                '<div style="font-size:1.5rem;font-weight:900;color:#059669;">' + adaa + '</div>' +
+                '<div style="font-size:.66rem;color:#065f46;font-weight:800;margin-top:4px;">✅ അദാഅ്</div></div>';
+      html += '<div style="background:#fff7ed;border:1.5px solid rgba(249,115,22,.3);border-radius:14px;padding:14px;text-align:center;">' +
+                '<div style="font-size:1.5rem;font-weight:900;color:#ea580c;">' + qada + '</div>' +
+                '<div style="font-size:.66rem;color:#9a3412;font-weight:800;margin-top:4px;">⏰ ഖളാഅ്</div></div>';
+      html += '<div style="background:#fef3c7;border:1.5px solid rgba(180,83,9,.3);border-radius:14px;padding:14px;text-align:center;">' +
+                '<div style="font-size:1.5rem;font-weight:900;color:#b45309;">' + completeDays + '</div>' +
+                '<div style="font-size:.66rem;color:#78350f;font-weight:800;margin-top:4px;">🎯 5/5</div></div>';
+      html += '</div>';
+
+      if (rows.length === 0) {
+        html += '<div style="text-align:center;padding:30px;color:#64748b;">No records</div>';
+      } else {
+        html += '<div style="overflow-x:auto;border:1px solid rgba(100,116,139,.15);border-radius:14px;">';
+        html += '<table style="width:100%;border-collapse:collapse;font-size:.76rem;min-width:400px;">';
+        html += '<thead><tr style="background:#f0fdf4;"><th style="padding:8px;text-align:left;color:#059669;font-size:.6rem;text-transform:uppercase;">Date</th>';
+        PRAYERS.forEach(function(p) { html += '<th style="padding:8px 4px;text-align:center;color:#059669;font-size:.6rem;">' + p.icon + '</th>'; });
+        html += '<th style="padding:8px;text-align:center;color:#059669;font-size:.6rem;">Total</th></tr></thead><tbody>';
+
+        rows.forEach(function(row) {
+          var d = new Date(row.prayer_date + 'T00:00:00');
+          var tot = 0;
+          html += '<tr style="border-top:1px solid rgba(100,116,139,.08);">';
+          html += '<td style="padding:8px;font-weight:800;color:#0f172a;">' + d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + '</td>';
+          PRAYERS.forEach(function(p) {
+            var st = row[p.key] || 'none';
+            var c = st === 'adaa' ? '#059669' : st === 'qada' ? '#ea580c' : '#cbd5e1';
+            if (st !== 'none') tot++;
+            html += '<td style="padding:8px 4px;text-align:center;color:' + c + ';font-size:.95rem;">' + STATES[st] + '</td>';
+          });
+          var tc = tot === 5 ? '#059669' : tot >= 3 ? '#b45309' : '#dc2626';
+          html += '<td style="padding:8px;text-align:center;color:' + tc + ';font-weight:900;">' + tot + '/5</td>';
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+      }
+
+      html += '<div style="margin-top:16px;"><button onclick="closeModal(\'globalModal\')" class="btn-cancel" style="width:100%;padding:12px;border-radius:14px;">Close</button></div>';
+
+      modalBodyDiv.innerHTML = html;
+
+    } catch(e) {
+      modalBodyDiv.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📄 PDF Export — Today's namaz
+  // ═══════════════════════════════════════════════════════
+  window.ADMIN_NAMZ_exportPDF = async function() {
+    if (!ADMIN_NAMZ.students.length) {
+      showToast('⚠️ No data', 'error');
+      return;
+    }
+    showLoading(true);
+    try {
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+      if (typeof setupMalayalamPDF === 'function') {
+        try { await setupMalayalamPDF(doc); } catch(e) {}
+      }
+      var pw = doc.internal.pageSize.getWidth();
+
+      doc.setFillColor(5, 150, 105);
+      doc.rect(0, 0, pw, 70, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.text('NOORUSSALAM MADRASA', pw / 2, 30, { align: 'center' });
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'normal');
+      doc.text('Namaz Report — ' + formatDate(ADMIN_NAMZ.date) +
+               ' — Class ' + currentAdminClass, pw / 2, 52, { align: 'center' });
+      doc.setTextColor(0, 0, 0);
+
+      var body = ADMIN_NAMZ.students.map(function(s, i) {
+        var log = ADMIN_NAMZ.logs[s.studentid] || {};
+        var row = [i + 1, s.roll || '—', s.name];
+        var c = 0;
+        PRAYERS.forEach(function(p) {
+          var st = log[p.key] || 'none';
+          row.push(st === 'adaa' ? 'A' : st === 'qada' ? 'Q' : '—');
+          if (st !== 'none') c++;
+        });
+        row.push(c + '/5');
+        return row;
+      });
+
+      doc.autoTable({
+        startY: 90,
+        head: [['#', 'Roll', 'Name', 'Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Total']],
+        body: body,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 5 },
+        headStyles: { fillColor: [5, 150, 105], textColor: 255, fontStyle: 'bold' },
+        columnStyles: { 0: { cellWidth: 30 }, 2: { cellWidth: 150 } }
+      });
+
+      doc.save('Namaz_' + ADMIN_NAMZ.date + '_Class' + currentAdminClass + '.pdf');
+      showToast('✅ PDF downloaded', 'success');
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+    showLoading(false);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    addNamazTabButton();
+    addNamazTabContent();
+  }
+
+  setTimeout(init, 3000);
+  setTimeout(init, 6000);
+  setInterval(function() {
+    var admin = document.getElementById('adminSection');
+    if (admin && admin.style.display === 'block') {
+      addNamazTabButton();
+      addNamazTabContent();
+    }
+  }, 4000);
+
+  // Debug
+  window.ADMIN_NAMZ_debug = function() {
+    console.log('=== ADMIN NAMAZ DEBUG ===');
+    console.log('Tab exists?', !!document.getElementById('adminNamazTab'));
+    console.log('Button exists?', !!document.querySelector('[data-tab="namaz"]'));
+    console.log('View:', ADMIN_NAMZ.view);
+    console.log('Students:', ADMIN_NAMZ.students.length);
+    console.log('Date:', ADMIN_NAMZ.date);
+  };
+
+  console.log('✅ Admin Namaz Tab v130 ready');
+  console.log('   💡 Admin → 🕌 നിസ്കാരം tab');
+  console.log('   💡 ADMIN_NAMZ_debug() — check state');
 })();  
 </script>
 </body>
