@@ -912,7 +912,43 @@ body.ai-panel-open .ai-fab{display:none!important}
   .nsm-footer-chips span{font-size:.54rem!important;padding:4px 10px!important}
   .nsm-copyright{margin-top:6px!important;font-size:.56rem!important}
   .container{padding:12px}
-  .dashboard-header-glow{border-radius:0 0 28px 28px!important;padding:18px 18px 26px!important;margin:-12px -12px 18px -12px!important}
+  .dashboard-header-glow{
+    border-radius:0 0 28px 28px!important;
+    padding: calc(18px + env(safe-area-inset-top, 0px)) 18px 24px!important;
+    margin: 0 -12px 18px -12px!important;
+    flex-direction: column!important;
+    align-items: stretch!important;
+    gap: 14px!important;
+  }
+  .dashboard-header-glow > .d-flex.align-items-center.gap-3{
+    width: 100%!important;
+    min-width: 0!important;
+    gap: 12px!important;
+  }
+  .dashboard-header-glow .avatar-neon{
+    width: 56px!important;
+    height: 56px!important;
+    flex-shrink: 0!important;
+  }
+  #studentFullName{
+    font-size: 1.05rem!important;
+    line-height: 1.2!important;
+    overflow: visible!important;
+    white-space: normal!important;
+    word-break: break-word!important;
+    max-width: 100%!important;
+  }
+  .dashboard-header-glow .header-meta{
+    font-size: .72rem!important;
+    flex-wrap: wrap!important;
+    gap: 6px 12px!important;
+    margin-top: 6px!important;
+  }
+  .dashboard-header-glow .hdr-actions{
+    width: 100%!important;
+    justify-content: flex-end!important;
+    gap: 8px!important;
+  }
   .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
   .stat-value-xl{font-size:1.65rem}
   .stat-card-neon{padding:14px;border-radius:17px}
@@ -25198,7 +25234,16 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 .td60-spinner{width:32px;height:32px;border:3px solid rgba(8,145,178,.2);border-top-color:#0891b2;border-radius:50%;animation:td60Spin .8s linear infinite;margin:0 auto}
 @keyframes td60Spin{to{transform:rotate(360deg)}}
 @media (max-width: 600px) {
-  .td60-header{padding:14px 16px;border-radius:18px}
+  .td60-header{
+    padding: calc(18px + env(safe-area-inset-top, 0px)) 16px 16px!important;
+    border-radius: 18px!important;
+    margin-top: 0!important;
+    flex-direction: column!important;
+    align-items: stretch!important;
+    gap: 12px!important;
+  }
+  .td60-header-left{width: 100%!important;}
+  .td60-header .td60-exit-btn{width: 100%!important;justify-content: center!important;}
   .td60-avatar{width:50px;height:50px;font-size:1.3rem}
   .td60-name{font-size:1rem}
   .td60-meta{font-size:.68rem;gap:8px}
@@ -43001,5 +43046,324 @@ document.addEventListener('touchend', function(e) {
   console.log('   💡 td60ShowStudentNamazDetail("NSM001") — drill-down');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎁 v121.0 — CREATION APPROVE = +5 XP AUTOMATIC         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="creation-xp-reward-v121">
+(function(){
+  'use strict';
+  console.log('🎁 Creation XP Reward v121 loading...');
+
+  // ─── Helper: Level math (matches v28 XP system) ───
+  function totalXPForLevel(n){ return (n * (n + 1) / 2) * 100; }
+  function levelFromTotalXP(t){
+    var lvl = 1;
+    while (totalXPForLevel(lvl + 1) <= t) lvl++;
+    return lvl;
+  }
+  function progressForTotal(total){
+    var lvl = levelFromTotalXP(total);
+    var start = totalXPForLevel(lvl);
+    var end = totalXPForLevel(lvl + 1);
+    return { level: lvl, xp: total - start, needed: end - start };
+  }
+
+  // ─── Core: award XP to any student (works from Admin) ───
+  async function awardXPToStudent(studentId, amount, reason){
+    if (!studentId || !amount) return false;
+    try {
+      // Fetch current
+      var r = await supabaseClient.from('student_xp')
+        .select('xp, level, total_earned')
+        .eq('studentid', studentId)
+        .maybeSingle();
+
+      var old = r.data || { xp: 0, level: 1, total_earned: 0 };
+      var newTotal = (old.total_earned || 0) + amount;
+      var p = progressForTotal(newTotal);
+
+      var up = await supabaseClient.from('student_xp').upsert({
+        studentid: studentId,
+        xp: p.xp,
+        level: p.level,
+        total_earned: newTotal,
+        last_earned_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'studentid' });
+
+      if (up.error) throw up.error;
+
+      // Notification to student
+      try {
+        await supabaseClient.from('notifications').insert({
+          title: '🎨 +' + amount + ' XP — സൃഷ്ടി Approved!',
+          message: (reason || 'നിങ്ങളുടെ സൃഷ്ടി admin approve ചെയ്തു. +' + amount + ' XP ലഭിച്ചു! 🌟'),
+          type: 'important',
+          target_type: 'student',
+          target_student: studentId,
+          link_url: null
+        });
+      } catch(ne) { /* notifications table may vary */ }
+
+      console.log('✅ +' + amount + ' XP →', studentId, '(new total:', newTotal + ')');
+      return true;
+    } catch(e) {
+      console.warn('awardXPToStudent failed:', e);
+      return false;
+    }
+  }
+
+  window.creationAwardXP = awardXPToStudent;
+
+  // ─── Override approveCreationAdmin ───
+  var _origApprove = window.approveCreationAdmin;
+  if (typeof _origApprove === 'function' && !_origApprove._v121) {
+    window.approveCreationAdmin = async function(id){
+      try {
+        // 1. Get creation details BEFORE approving
+        var cr = await supabaseClient.from('student_creations')
+          .select('studentid, title, approved')
+          .eq('id', id)
+          .maybeSingle();
+
+        if (cr.error) throw cr.error;
+        var c = cr.data;
+        if (!c) { showToast('❌ Creation not found', 'error'); return; }
+
+        // 2. Prevent double-award
+        if (c.approved === true) {
+          showToast('ℹ️ Already approved', 'info');
+          if (typeof loadCreationsAdmin === 'function') loadCreationsAdmin();
+          return;
+        }
+
+        // 3. Update approved flag
+        var ur = await supabaseClient.from('student_creations')
+          .update({ approved: true, approved_at: new Date().toISOString() })
+          .eq('id', id);
+        if (ur.error) throw ur.error;
+
+        // 4. Award +5 XP
+        var ok = await awardXPToStudent(
+          c.studentid,
+          5,
+          '🎨 "' + (c.title || 'Untitled') + '" — Admin approved. +5 XP!'
+        );
+
+        // 5. Feedback
+        showToast(
+          ok ? '✅ Approved + 5 XP awarded!' : '✅ Approved (XP failed silently)',
+          'success'
+        );
+
+        if (typeof confetti !== 'undefined') {
+          confetti({
+            particleCount: 90, spread: 70, origin: { y: .7 },
+            colors: ['#ec4899','#8b5cf6','#fbbf24','#34d399']
+          });
+        }
+
+        if (typeof loadCreationsAdmin === 'function') loadCreationsAdmin();
+
+      } catch(e) {
+        console.error('approveCreationAdmin v121:', e);
+        showToast('❌ ' + e.message, 'error');
+      }
+    };
+    window.approveCreationAdmin._v121 = true;
+    console.log('✅ approveCreationAdmin hooked → +5 XP');
+  }
+
+  // ─── Also handle Teacher panel creations (calls same fn) ───
+  // (v60 teacher uses window.approveCreationAdmin — already covered)
+
+  console.log('✅ Creation XP Reward ready');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ⚡ v122.0 — MOBILE SMOOTH PERFORMANCE                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="mobile-smooth-v122-css">
+@media (max-width: 900px) {
+  /* 1. Kill GPU-heavy backdrop filters on low-end */
+  .dashboard-header-glow,
+  .student-welcome-banner,
+  .stat-card-neon,
+  .lb-card,
+  .hub-card,
+  .action-tile,
+  .chart-card,
+  .activity-timeline,
+  .palathulli-hero {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. Reduce heavy shadows */
+  .dashboard-header-glow,
+  .stat-card-neon,
+  .action-tile,
+  .hub-card,
+  .lb-card {
+    box-shadow: 0 2px 8px -3px rgba(0,0,0,.12) !important;
+  }
+
+  /* 3. Text shadows off (huge paint cost) */
+  .nsm-hero-title,
+  .nsm-hero-highlight,
+  #studentFullName,
+  .palathulli-hero *,
+  .dashboard-header-glow * {
+    text-shadow: none !important;
+  }
+
+  /* 4. Stop all decorative keyframe animations */
+  .avatar-neon,
+  .student-welcome-banner::before,
+  .dashboard-header-glow::after,
+  .nsm-btn-primary,
+  .nsm-card,
+  .nsm-card-logo img,
+  .action-ico,
+  .stat-card-neon::after,
+  .palathulli-hero::before,
+  .pala-amount,
+  .lb-card,
+  .prayer-item.active,
+  .exam-cd-num,
+  .sparkleFloat {
+    animation: none !important;
+  }
+
+  /* 5. Disable transform transitions on tiles (laggy on tap) */
+  .action-tile,
+  .action-tile .action-ico,
+  .stat-card-neon,
+  .hub-card,
+  .lb-card {
+    transition: none !important;
+    will-change: auto !important;
+  }
+
+  /* 6. Simplify scroll containers */
+  #dashboardSection,
+  #adminSection,
+  .container {
+    will-change: auto !important;
+    contain: layout style !important;
+  }
+
+  /* 7. Kill hover effects on touch (they cause "stuck" states) */
+  .action-tile:hover,
+  .hub-card:hover,
+  .stat-card-neon:hover,
+  .lb-card:hover,
+  .creation-card:hover {
+    transform: none !important;
+  }
+
+  /* 8. Reduce brightness of gradients (paint cost) */
+  body::before,
+  #dashboardSection::before,
+  #dashboardSection::after {
+    display: none !important;
+  }
+}
+
+/* ═══ Low-end device EMERGENCY overrides ═══ */
+@media (max-width: 900px) {
+  body.emergency-perf .chart-card canvas,
+  body.emergency-perf #attendanceChart,
+  body.emergency-perf #marksChart {
+    image-rendering: -webkit-optimize-contrast;
+  }
+  body.emergency-perf .hub-ico,
+  body.emergency-perf .action-ico,
+  body.emergency-perf .stat-ico {
+    box-shadow: none !important;
+    background: #e2e8f0 !important;
+    color: #334155 !important;
+  }
+}
+</style>
+
+<script id="mobile-smooth-v122-js">
+(function(){
+  'use strict';
+  if (!/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) return;
+  console.log('⚡ Mobile Smooth v122 loading...');
+
+  // ─── 1. Kill off-screen animations (saves battery + jank) ───
+  function pauseOffscreen(){
+    document.querySelectorAll(
+      '.hub-card, .stat-card-neon, .action-tile, .lb-card, .chart-card, .creation-card'
+    ).forEach(function(el){
+      var r = el.getBoundingClientRect();
+      var off = r.bottom < -100 || r.top > window.innerHeight + 200;
+      if (off) {
+        if (!el._paused) {
+          el.style.animationPlayState = 'paused';
+          el.style.visibility = 'hidden';
+          el._paused = true;
+        }
+      } else if (el._paused) {
+        el.style.animationPlayState = '';
+        el.style.visibility = '';
+        el._paused = false;
+      }
+    });
+  }
+  var _sT = null;
+  window.addEventListener('scroll', function(){
+    if (_sT) return;
+    _sT = setTimeout(function(){
+      _sT = null;
+      pauseOffscreen();
+    }, 250);
+  }, { passive: true });
+
+  // ─── 2. Freeze animations when tab hidden ───
+  document.addEventListener('visibilitychange', function(){
+    document.body.classList.toggle('tab-hidden', document.hidden);
+  });
+
+  // ─── 3. Auto-detect low-end and mark ───
+  var cores = navigator.hardwareConcurrency || 4;
+  var mem = navigator.deviceMemory || 4;
+  if (cores <= 4 || mem <= 3) {
+    document.body.classList.add('emergency-perf');
+    console.log('🔴 Low-end device flagged');
+  }
+
+  // ─── 4. Reduce confetti particles on mobile ───
+  var _cf = window.confetti;
+  if (typeof _cf === 'function' && !_cf._v122) {
+    window.confetti = function(opts){
+      if (opts){
+        opts.particleCount = Math.min(opts.particleCount || 30, 25);
+        opts.ticks = 100;
+      }
+      return _cf.apply(this, arguments);
+    };
+    window.confetti._v122 = true;
+  }
+
+  // ─── 5. Passive listeners everywhere (scroll smoothness) ───
+  document.addEventListener('touchstart', function(){}, { passive: true });
+  document.addEventListener('touchmove', function(){}, { passive: true });
+
+  // ─── 6. Throttle RAF to 30fps on mobile ───
+  var _origRAF = window.requestAnimationFrame;
+  var _frameToggle = 0;
+  window.requestAnimationFrame = function(cb){
+    if (document.hidden) return 0;
+    _frameToggle++;
+    if (_frameToggle % 2 === 0) return _origRAF.call(window, cb);
+    return _origRAF.call(window, function(){ _origRAF.call(window, cb); });
+  };
+
+  console.log('✅ Mobile Smooth v122 ready');
+})();
+</script>  
 </body>
 </html>
