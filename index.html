@@ -25113,9 +25113,21 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   #teacherLoginV60 .tv60-btn-secondary{font-size:.68rem}
 }
 @media (min-width: 901px){
-  #teacherLoginV60{padding:24px;display:none;align-items:flex-start;justify-content:center;}
-  #teacherLoginV60.open{display:flex !important}
-  #teacherLoginV60 .tv60-card{max-width:440px;margin:auto 0}
+  #teacherLoginV60{
+    padding: 0 24px !important;
+    display: none;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+  #teacherLoginV60.open{
+    display: block !important;
+  }
+  #teacherLoginV60 .tv60-card{
+    max-width: 440px;
+    width: 100%;
+    margin: 6vh auto 40px auto;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════ */
@@ -42987,6 +42999,79 @@ document.addEventListener('touchend', function(e) {
   console.log('✅ Teacher Namaz History v120 ready');
   console.log('   💡 loadNamazHistory("6") — test manually');
   console.log('   💡 td60ShowStudentNamazDetail("NSM001") — drill-down');
+})();
+</script>
+<script id="teacher-login-scroll-hardfix">
+(function(){
+  'use strict';
+
+  function fixTeacherScroll() {
+    if (window.innerWidth <= 900) return;   // Mobile handled already
+    var m = document.getElementById('teacherLoginV60');
+    if (!m || !m.classList.contains('open')) return;
+
+    // Force scroll-capable
+    m.style.setProperty('display', 'block', 'important');
+    m.style.setProperty('overflow-y', 'auto', 'important');
+    m.style.setProperty('overflow-x', 'hidden', 'important');
+    m.style.setProperty('height', '100dvh', 'important');
+    m.style.setProperty('max-height', '100dvh', 'important');
+
+    // Fix card: top gap + auto center
+    var card = m.querySelector('.tv60-card');
+    if (card) {
+      card.style.setProperty('margin', '6vh auto 40px auto', 'important');
+      card.style.setProperty('max-width', '440px', 'important');
+      card.style.setProperty('width', '100%', 'important');
+    }
+  }
+
+  // Patch askTeacherId → open flow
+  var _orig = window.showTeacherLoginV60;
+  if (typeof _orig === 'function' && !_orig._hardfix) {
+    window.showTeacherLoginV60 = function() {
+      var r = _orig.apply(this, arguments);
+      setTimeout(fixTeacherScroll, 60);
+      setTimeout(fixTeacherScroll, 300);
+      setTimeout(fixTeacherScroll, 800);
+      return r;
+    };
+    window.showTeacherLoginV60._hardfix = true;
+  }
+
+  // Belt-and-suspenders: watch class changes
+  var m = document.getElementById('teacherLoginV60');
+  if (m) {
+    new MutationObserver(function() {
+      if (m.classList.contains('open')) {
+        setTimeout(fixTeacherScroll, 50);
+        setTimeout(fixTeacherScroll, 250);
+      }
+    }).observe(m, { attributes: true, attributeFilter: ['class', 'style'] });
+  }
+
+  window.addEventListener('resize', function() {
+    setTimeout(fixTeacherScroll, 200);
+  });
+
+  window.TV_SCROLL_debug = function() {
+    var m = document.getElementById('teacherLoginV60');
+    if (!m) { console.log('❌ Modal not found'); return; }
+    console.log('=== TEACHER SCROLL DEBUG ===');
+    console.log('Open?', m.classList.contains('open'));
+    console.log('display:', getComputedStyle(m).display);
+    console.log('overflow-y:', getComputedStyle(m).overflowY);
+    console.log('height:', m.clientHeight + 'px');
+    console.log('scrollHeight:', m.scrollHeight + 'px');
+    console.log('Can scroll?', m.scrollHeight > m.clientHeight);
+    var c = m.querySelector('.tv60-card');
+    if (c) {
+      console.log('Card height:', c.offsetHeight + 'px');
+      console.log('Card top:', c.getBoundingClientRect().top + 'px');
+    }
+  };
+
+  console.log('✅ Teacher login scroll hardfix ready');
 })();
 </script>
 </body>
