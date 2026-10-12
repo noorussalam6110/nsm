@@ -41295,6 +41295,35 @@ document.addEventListener('touchend', function(e) {
   .nv112-stat-lbl { font-size: .48rem; }
   .nv112-prayer-state { display: none; }
 }
+/* ═══════════════════════════════════════════════════════ */
+/* 🔧 DESKTOP TEACHER LOGIN SCROLL FIX                    */
+/* ═══════════════════════════════════════════════════════ */
+@media (min-width: 901px) {
+  #teacherLoginV60.open {
+    display: block !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    padding: 24px 24px 60px !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  #teacherLoginV60.open .tv60-card {
+    margin: 4vh auto 60px auto !important;
+  }
+  /* Windows: make scrollbar clearly visible */
+  #teacherLoginV60.open::-webkit-scrollbar {
+    width: 10px;
+  }
+  #teacherLoginV60.open::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #22d3ee, #3b8bff);
+    border-radius: 10px;
+  }
+  #teacherLoginV60.open::-webkit-scrollbar-track {
+    background: rgba(255,255,255,.08);
+  }
+}  
 </style>
 
 <script id="v112-master-js">
@@ -44578,6 +44607,96 @@ document.addEventListener('touchend', function(e) {
 
   console.log('✅ FAB Cleanup v128 ready — FAB_debug() to inspect');
 })();
+/* ═══════════════════════════════════════════════════════ */
+/* 🖱️ v129.0 — DESKTOP TEACHER LOGIN WHEEL SCROLL FIX     */
+/* Global wheel handler-intercept-നെ override ചെയ്യുന്നു  */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  console.log('🖱️ Teacher Login Wheel Fix v129 loading...');
+
+  // Capture-phase listener — runs BEFORE global handlers
+  document.addEventListener('wheel', function(e) {
+    // Only when teacher login is open
+    var tl = document.getElementById('teacherLoginV60');
+    if (!tl || !tl.classList.contains('open')) return;
+
+    // Wheel inside teacher login? Force scroll on it
+    if (tl.contains(e.target) || e.target === tl) {
+      var delta = e.deltaY;
+      if (e.deltaMode === 1) delta *= 24;        // line mode
+      else if (e.deltaMode === 2) delta *= 100;  // page mode
+
+      var maxScroll = tl.scrollHeight - tl.clientHeight;
+      if (maxScroll <= 0) return;                // No scroll needed
+
+      // Scroll & consume event
+      tl.scrollTop += delta;
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, { passive: false, capture: true });
+
+  // Also handle keyboard (arrow keys / Page Up/Down / Space)
+  document.addEventListener('keydown', function(e) {
+    var tl = document.getElementById('teacherLoginV60');
+    if (!tl || !tl.classList.contains('open')) return;
+    var target = document.activeElement;
+    // Skip if input is focused (let typing work)
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+
+    var step = 60;
+    if (e.key === 'ArrowDown') { tl.scrollTop += step; e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { tl.scrollTop -= step; e.preventDefault(); }
+    else if (e.key === 'PageDown') { tl.scrollTop += tl.clientHeight * 0.9; e.preventDefault(); }
+    else if (e.key === 'PageUp') { tl.scrollTop -= tl.clientHeight * 0.9; e.preventDefault(); }
+    else if (e.key === ' ') { tl.scrollTop += tl.clientHeight * 0.9; e.preventDefault(); }
+    else if (e.key === 'Home') { tl.scrollTop = 0; e.preventDefault(); }
+    else if (e.key === 'End') { tl.scrollTop = tl.scrollHeight; e.preventDefault(); }
+  }, { capture: true });
+
+  // Force style re-application when modal opens
+  function ensureScrollable() {
+    var tl = document.getElementById('teacherLoginV60');
+    if (!tl || !tl.classList.contains('open')) return;
+    // Force overflow-y auto with priority
+    tl.style.setProperty('overflow-y', 'auto', 'important');
+    tl.style.setProperty('overflow-x', 'hidden', 'important');
+  }
+
+  // Hook into showTeacherLoginV60
+  var _orig = window.showTeacherLoginV60;
+  if (typeof _orig === 'function' && !_orig._v129) {
+    window.showTeacherLoginV60 = function(teacher){
+      var r = _orig.apply(this, arguments);
+      setTimeout(ensureScrollable, 100);
+      setTimeout(ensureScrollable, 500);
+      return r;
+    };
+    window.showTeacherLoginV60._v129 = true;
+  }
+
+  // Also periodically check (safety)
+  setInterval(ensureScrollable, 3000);
+
+  // Debug helper
+  window.TL_SCROLL_debug = function(){
+    var tl = document.getElementById('teacherLoginV60');
+    if (!tl) { console.log('❌ #teacherLoginV60 not found'); return; }
+    var cs = getComputedStyle(tl);
+    console.log('=== TEACHER LOGIN SCROLL DEBUG ===');
+    console.log('Open?', tl.classList.contains('open'));
+    console.log('overflow-y:', cs.overflowY);
+    console.log('overflow-x:', cs.overflowX);
+    console.log('height:', cs.height, '| clientHeight:', tl.clientHeight);
+    console.log('scrollHeight:', tl.scrollHeight);
+    console.log('Scrollable?', tl.scrollHeight > tl.clientHeight);
+    console.log('Current scrollTop:', tl.scrollTop);
+  };
+
+  console.log('✅ Teacher Login Wheel Fix v129 ready');
+  console.log('   💡 TL_SCROLL_debug() — verify state');
+})();  
 </script>
 </body>
 </html>
