@@ -42546,15 +42546,32 @@ body.emergency-perf * {
 <!-- ═══════════════════════════════════════════════════════ -->
 <style id="mobile-gestures-v110-css">
 /* Smooth native scrolling everywhere */
+/* v110 — Smooth scroll: html-only, no body scroll chain conflict */
 html {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
-body {
+/* (Original html & body rules already have -webkit-overflow-scrolling */
+/*  and overflow-y: auto — no need to duplicate them here) */
+
+/* Container-level momentum scrolling (specific scroll areas only) */
+#dashboardSection,
+#adminSection,
+#teacherDashboardV60,
+.nsm-login-side,
+.nsm-body,
+.modal-glass,
+.ai-body,
+.chat-messages,
+.chat-sidebar-list,
+#modalContentBody,
+.namaz-history-wrap,
+.td60-table-wrap,
+.td60-panel,
+.creations-overlay,
+.pf-feed,
+#tdCommentsList {
   -webkit-overflow-scrolling: touch;
-}
-body:not(.login-active):not(.modal-open):not(.ai-panel-open) {
-  overflow-y: auto !important;
+  overscroll-behavior: contain;
 }
 #dashboardSection,
 #adminSection,
@@ -42595,33 +42612,53 @@ body.swiping-back * {
   // ═══════════════════════════════════════════════════════
   // 🌊 PART A: SMOOTH SCROLL — Reset any stuck body locks
   // ═══════════════════════════════════════════════════════
-  function fixStuckScroll() {
-    // Skip if any modal is truly open
-    var isModalOpen =
-      document.body.classList.contains('login-active') ||
-      document.body.classList.contains('modal-open') ||
-      document.body.classList.contains('ai-panel-open');
+function fixStuckScroll() {
+  var isModalOpen =
+    document.body.classList.contains('login-active') ||
+    document.body.classList.contains('modal-open') ||
+    document.body.classList.contains('ai-panel-open');
 
-    if (!isModalOpen) {
-      // Reset any inline stuck styles
-      if (document.body.style.position === 'fixed') {
-        var scrollY = parseInt(document.body.style.top || '0') * -1;
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.width = '';
-        document.body.style.height = '';
-        document.body.style.overflow = '';
-        document.body.style.overflowY = '';
-        window.scrollTo(0, Math.abs(scrollY));
-      }
-      if (document.documentElement.style.overflow === 'hidden' &&
-          !document.body.classList.contains('login-active')) {
-        document.documentElement.style.overflow = '';
-        document.documentElement.style.overflowY = '';
-      }
-    }
+  if (isModalOpen) return;
+
+  // Case A: body has position:fixed
+  if (document.body.style.position === 'fixed') {
+    var scrollY = parseInt(document.body.style.top || '0') * -1;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    window.scrollTo(0, Math.abs(scrollY));
   }
+
+  // ✅ Case B: body has stuck inline overflow:hidden (without position:fixed)
+  if (document.body.style.overflow === 'hidden') {
+    document.body.style.overflow = '';
+  }
+  if (document.body.style.overflowY === 'hidden') {
+    document.body.style.overflowY = '';
+  }
+
+  // ✅ Case C: html has stuck inline overflow:hidden
+  if (document.documentElement.style.overflow === 'hidden') {
+    document.documentElement.style.overflow = '';
+  }
+  if (document.documentElement.style.overflowY === 'hidden') {
+    document.documentElement.style.overflowY = '';
+  }
+
+  // ✅ Case D: swiping-back class stuck > 5 seconds (safety)
+  if (document.body.classList.contains('swiping-back')) {
+    if (!window._swipeStartTime) window._swipeStartTime = Date.now();
+    else if (Date.now() - window._swipeStartTime > 5000) {
+      document.body.classList.remove('swiping-back');
+      window._swipeStartTime = null;
+    }
+  } else {
+    window._swipeStartTime = null;
+  }
+}
 
   // Run on visibility change (returning from background)
   document.addEventListener('visibilitychange', function() {
@@ -42811,15 +42848,16 @@ body.swiping-back * {
     var dy = Math.abs(t.clientY - startY);
 
     // If user moves too vertically, cancel
-    if (dy > VERTICAL_LIMIT) {
-      tracking = false;
-      if (activeTarget.el) {
-        activeTarget.el.style.transform = '';
-        activeTarget.el.style.transition = '';
-      }
-      activeTarget = null;
-      return;
-    }
+if (dy > VERTICAL_LIMIT) {
+  tracking = false;
+  document.body.classList.remove('swiping-back');  // ✅ ADD THIS
+  if (activeTarget.el) {
+    activeTarget.el.style.transform = '';
+    activeTarget.el.style.transition = '';
+  }
+  activeTarget = null;
+  return;
+}
 
     if (dx > 10) {
       // Optional visual feedback (subtle)
@@ -42835,10 +42873,12 @@ body.swiping-back * {
     }
   }, { passive: true });
 
-  document.addEventListener('touchend', function(e) {
-    if (!tracking) return;
-    tracking = false;
-    document.body.classList.remove('swiping-back');
+document.addEventListener('touchend', function(e) {
+  // ✅ FIX: Always remove swiping-back class FIRST (before any early return)
+  document.body.classList.remove('swiping-back');
+
+  if (!tracking) return;
+  tracking = false;
 
     if (!activeTarget || !activeTarget.el) {
       activeTarget = null;
