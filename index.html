@@ -43078,9 +43078,7 @@ document.addEventListener('touchend', function(e) {
   console.log('   💡 SWIPE_debug() — check status');
 })();
 </script>
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- END MOBILE GESTURES v110                                -->
-<!-- ═══════════════════════════════════════════════════════ -->
+
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- 🎯 v111.0 — SAFE AREA + NAMAZ 3-STATE + CUMULATIVE    -->
 <!-- ═══════════════════════════════════════════════════════ -->
@@ -44981,6 +44979,182 @@ document.addEventListener('touchend', function(e) {
   }
 
   console.log('✅ v112 ready — scroll + safe-area + namaz cumulative');
+})();
+</script>
+<script id="scroll-fix-absolute">
+/* ═══════════════════════════════════════════════════════ */
+/* 🚀 ABSOLUTE SCROLL FIX — Runtime override, CSS edit ഇല്ല */
+/* ═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  console.log('🚀 Absolute scroll fix loading...');
+
+  var LINE = 24;
+  var MULT = 1.3;
+
+  // ═══════════════════════════════════════════════════
+  // 1️⃣ RUNTIME CSS OVERRIDE (injected, doesn't touch file)
+  // ═══════════════════════════════════════════════════
+  var style = document.createElement('style');
+  style.id = 'scroll-fix-injected';
+  style.textContent = `
+    html {
+      scroll-behavior: auto !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+    }
+    body {
+      background-attachment: scroll !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      position: relative !important;
+      top: auto !important;
+      height: auto !important;
+      max-height: none !important;
+    }
+    body:not(.login-active)::before {
+      animation: none !important;
+      inset: 0 !important;
+    }
+    body:not(.login-active)::after {
+      animation: none !important;
+    }
+    /* Kill v100 emergency mode that brakes everything */
+    body.emergency-perf * {
+      animation: none !important;
+    }
+    /* Ensure scroll containers aren't blocking */
+    #dashboardSection,
+    #adminSection,
+    #teacherDashboardV60,
+    .nsm-login-side,
+    .nsm-body {
+      -webkit-overflow-scrolling: touch !important;
+      overscroll-behavior-y: auto !important;
+    }
+  `;
+  document.head.appendChild(style);
+  console.log('✅ CSS overrides injected');
+
+  // ═══════════════════════════════════════════════════
+  // 2️⃣ REMOVE EMERGENCY MODE (v100 brakes Windows scroll)
+  // ═══════════════════════════════════════════════════
+  function killEmergencyMode(){
+    if (document.body.classList.contains('emergency-perf')) {
+      document.body.classList.remove('emergency-perf');
+      console.log('🔓 Emergency-perf mode removed');
+    }
+    // Remove inline styles v100/v69 may have set
+    var body = document.body;
+    if (body.style.position === 'fixed' && !body.classList.contains('login-active')) {
+      var y = parseInt(body.style.top || '0') * -1;
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      body.style.height = '';
+      if (y > 0) window.scrollTo(0, Math.abs(y));
+      console.log('🔓 Body position lock released');
+    }
+    if (body.style.overflow === 'hidden') body.style.overflow = '';
+    if (body.style.overflowY === 'hidden') body.style.overflowY = '';
+    if (document.documentElement.style.overflow === 'hidden') document.documentElement.style.overflow = '';
+  }
+
+  killEmergencyMode();
+  // Run watchdog via setTimeout (survives setInterval throttle)
+  (function loop(){
+    killEmergencyMode();
+    setTimeout(loop, 1000);
+  })();
+
+  // ═══════════════════════════════════════════════════
+  // 3️⃣ UNLOCK BODY when logged in
+  // ═══════════════════════════════════════════════════
+  function ensureUnlocked(){
+    var dash = document.getElementById('dashboardSection');
+    var admin = document.getElementById('adminSection');
+    var teach = document.getElementById('teacherDashboardV60');
+    var loggedIn = (dash && dash.style.display === 'block') ||
+                   (admin && admin.style.display === 'block') ||
+                   (teach && teach.classList.contains('open'));
+
+    if (!loggedIn) return;
+
+    var modalOpen = document.body.classList.contains('modal-open') ||
+                    document.body.classList.contains('ai-panel-open');
+    if (modalOpen) return;
+
+    if (document.body.classList.contains('login-active')) {
+      document.body.classList.remove('login-active');
+    }
+  }
+
+  (function loop(){
+    ensureUnlocked();
+    setTimeout(loop, 700);
+  })();
+
+  // ═══════════════════════════════════════════════════
+  // 4️⃣ WHEEL HANDLER — Windows trackpad friendly
+  // ═══════════════════════════════════════════════════
+  function toPx(e){
+    var d = e.deltaY, m = e.deltaMode;
+    if (m === 1) return d * LINE;
+    if (m === 2) return d * window.innerHeight;
+    return d;
+  }
+
+  function inInnerScroller(el, dy){
+    while (el && el !== document.body && el !== document.documentElement){
+      var oy = getComputedStyle(el).overflowY;
+      if (oy === 'auto' || oy === 'scroll'){
+        var canD = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+        var canU = el.scrollTop > 0;
+        if ((dy > 0 && canD) || (dy < 0 && canU)) return true;
+      }
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  document.addEventListener('wheel', function(e){
+    if (e.ctrlKey) return;
+    if (e.defaultPrevented) return;
+
+    var px = toPx(e) * MULT;
+
+    // Let inner scrollers handle themselves
+    if (inInnerScroller(e.target, px)) return;
+
+    // Page scroll
+    var canD = window.scrollY + window.innerHeight < document.documentElement.scrollHeight - 1;
+    var canU = window.scrollY > 0;
+
+    if ((px > 0 && canD) || (px < 0 && canU)) {
+      e.preventDefault();
+      window.scrollBy(0, px);
+    }
+  }, { passive: false });
+
+  // ═══════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════
+  window.SCROLL_debug = function(){
+    console.log('=== SCROLL DEBUG ===');
+    console.log('html scroll-behavior:', getComputedStyle(document.documentElement).scrollBehavior);
+    console.log('body background-attachment:', getComputedStyle(document.body).backgroundAttachment);
+    console.log('body position:', document.body.style.position || '(auto)');
+    console.log('body overflow:', document.body.style.overflow || '(auto)');
+    console.log('body classes:', document.body.className);
+    console.log('emergency-perf?', document.body.classList.contains('emergency-perf'));
+    console.log('Page height:', document.documentElement.scrollHeight);
+    console.log('Viewport:', window.innerHeight);
+    console.log('Scrollable?', document.documentElement.scrollHeight > window.innerHeight);
+  };
+
+  console.log('✅ Absolute scroll fix ready — type SCROLL_debug() to check');
 })();
 </script>
 </body>
