@@ -912,48 +912,144 @@ body.ai-panel-open .ai-fab{display:none!important}
   .nsm-footer-chips span{font-size:.54rem!important;padding:4px 10px!important}
   .nsm-copyright{margin-top:6px!important;font-size:.56rem!important}
   .container{padding:12px}
+  /* ═══ STUDENT HEADER — Screenshot style ═══ */
   .dashboard-header-glow{
     position: sticky!important;
     top: 0!important;
     z-index: 500!important;
-    border-radius: 0 0 24px 24px!important;
-    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 16px!important;
+    border-radius: 0 0 22px 22px!important;
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 14px!important;
     margin: 0 -12px 16px -12px!important;
-    flex-direction: column!important;
-    align-items: stretch!important;
+    display: flex!important;
+    flex-direction: row!important;
+    align-items: center!important;
     gap: 12px!important;
-    box-shadow: 0 8px 24px -8px rgba(21,71,168,.45)!important;
+    box-shadow: 0 8px 22px -10px rgba(21,71,168,.5)!important;
     backdrop-filter: blur(16px) saturate(160%)!important;
     -webkit-backdrop-filter: blur(16px) saturate(160%)!important;
   }
   .dashboard-header-glow > .d-flex.align-items-center.gap-3{
-    width: 100%!important;
+    flex: 1 1 auto!important;
     min-width: 0!important;
     gap: 12px!important;
+    align-items: center!important;
   }
+  /* Avatar with white ring + online dot */
   .dashboard-header-glow .avatar-neon{
-    width: 52px!important;
-    height: 52px!important;
+    width: 54px!important;
+    height: 54px!important;
+    min-width: 54px!important;
+    font-size: 1.15rem!important;
     flex-shrink: 0!important;
+    border: 3px solid rgba(255,255,255,.95)!important;
+    box-shadow: 0 4px 14px -4px rgba(0,0,0,.35)!important;
+    position: relative!important;
   }
-  #studentFullName{
-    font-size: 1rem!important;
+  .dashboard-header-glow .avatar-neon::after{
+    content:''!important;
+    position:absolute!important;
+    bottom:-2px!important;
+    right:-2px!important;
+    width:14px!important;
+    height:14px!important;
+    border-radius:50%!important;
+    background:#22c55e!important;
+    border:2.5px solid #1a4fc4!important;
+    box-shadow:0 0 8px rgba(34,197,94,.8)!important;
+    z-index:5!important;
+  }
+  /* Info wrapper */
+  .dashboard-header-glow > .d-flex.align-items-center > div:last-child{
+    min-width: 0!important;
+    flex: 1 1 auto!important;
+  }
+  /* Greeting line */
+  .dashboard-header-glow > .d-flex.align-items-center > div:last-child::before{
+    content: 'Assalamu Alaikum 👋'!important;
+    display: block!important;
+    font-size: .82rem!important;
+    font-weight: 500!important;
+    color: rgba(255,255,255,.92)!important;
+    margin-bottom: 2px!important;
+    letter-spacing: .1px!important;
     line-height: 1.2!important;
-    white-space: normal!important;
-    word-break: break-word!important;
+  }
+  /* Name */
+  #studentFullName{
+    font-size: 1.25rem!important;
+    font-weight: 900!important;
+    line-height: 1.15!important;
+    color: #fff!important;
+    letter-spacing: .2px!important;
+    margin: 0!important;
+    white-space: nowrap!important;
+    overflow: hidden!important;
+    text-overflow: ellipsis!important;
+    text-transform: uppercase!important;
     max-width: 100%!important;
-    overflow: visible!important;
   }
+  /* Tagline replaces name's sibling */
+  #studentFullName::after{
+    content: 'Let\'s make an impact today'!important;
+    display: block!important;
+    font-size: .78rem!important;
+    font-weight: 500!important;
+    color: rgba(255,255,255,.85)!important;
+    margin-top: 3px!important;
+    text-transform: none!important;
+    letter-spacing: 0!important;
+    white-space: nowrap!important;
+    overflow: hidden!important;
+    text-overflow: ellipsis!important;
+  }
+  /* Hide ID/class meta (screenshot doesn't show it) */
   .dashboard-header-glow .header-meta{
-    font-size: .7rem!important;
-    flex-wrap: wrap!important;
-    gap: 6px 10px!important;
-    margin-top: 4px!important;
+    display: none!important;
   }
+  /* Actions — only bell visible, styled like screenshot */
   .dashboard-header-glow .hdr-actions{
-    width: 100%!important;
-    justify-content: flex-end!important;
+    flex-shrink: 0!important;
+    display: flex!important;
     gap: 8px!important;
+    align-items: center!important;
+    justify-content: flex-end!important;
+    width: auto!important;
+  }
+  /* Hide theme + exit on mobile */
+  .dashboard-header-glow .hdr-actions .theme-toggle{
+    display: none!important;
+  }
+  .dashboard-header-glow .hdr-actions .btn-exit{
+    font-size: 0!important;
+    width: 44px!important;
+    height: 44px!important;
+    min-height: 44px!important;
+    padding: 0!important;
+    border-radius: 14px!important;
+    display: inline-flex!important;
+    align-items: center!important;
+    justify-content: center!important;
+    background: rgba(255,255,255,.18)!important;
+    border: 1.5px solid rgba(255,255,255,.28)!important;
+  }
+  .dashboard-header-glow .hdr-actions .btn-exit i{
+    font-size: 1rem!important;
+    color: #fff!important;
+  }
+  /* Bell button — big rounded square like screenshot */
+  .dashboard-header-glow .hdr-actions .icon-btn{
+    width: 48px!important;
+    height: 48px!important;
+    border-radius: 15px!important;
+    background: rgba(255,255,255,.22)!important;
+    border: 1.5px solid rgba(255,255,255,.32)!important;
+    font-size: 1.15rem!important;
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,.25)!important;
+    color: #fff!important;
+  }
+  .dashboard-header-glow .hdr-actions .icon-btn:active{
+    transform: scale(.92)!important;
+    background: rgba(255,255,255,.32)!important;
   }
   .dashboard-header-glow > .d-flex.align-items-center.gap-3{
     width: 100%!important;
@@ -25269,47 +25365,134 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 .td60-spinner{width:32px;height:32px;border:3px solid rgba(8,145,178,.2);border-top-color:#0891b2;border-radius:50%;animation:td60Spin .8s linear infinite;margin:0 auto}
 @keyframes td60Spin{to{transform:rotate(360deg)}}
 @media (max-width: 600px) {
+  /* ═══ TEACHER HEADER — Compact icons ═══ */
   .td60-header{
     position: sticky!important;
     top: 0!important;
     z-index: 500!important;
     border-radius: 0 0 20px 20px!important;
-    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px!important;
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px!important;
     margin: 0 -16px 14px -16px!important;
-    flex-direction: column!important;
-    align-items: stretch!important;
-    gap: 12px!important;
-    box-shadow: 0 8px 24px -8px rgba(8,145,178,.5)!important;
+    display: flex!important;
+    flex-direction: row!important;
+    align-items: center!important;
+    gap: 10px!important;
+    box-shadow: 0 8px 22px -10px rgba(8,145,178,.55)!important;
     backdrop-filter: blur(16px) saturate(160%)!important;
     -webkit-backdrop-filter: blur(16px) saturate(160%)!important;
+    flex-wrap: nowrap!important;
   }
   .td60-header-left{
-    width: 100%!important;
+    flex: 1 1 auto!important;
     min-width: 0!important;
+    gap: 10px!important;
+    align-items: center!important;
   }
   .td60-avatar{
-    width: 52px!important;
-    height: 52px!important;
-    font-size: 1.25rem!important;
+    width: 48px!important;
+    height: 48px!important;
+    min-width: 48px!important;
+    font-size: 1.15rem!important;
     flex-shrink: 0!important;
+    border: 3px solid rgba(255,255,255,.9)!important;
+    box-shadow: 0 4px 14px -4px rgba(0,0,0,.3)!important;
+    position: relative!important;
+  }
+  .td60-avatar::after{
+    content:''!important;
+    position:absolute!important;
+    bottom:-2px!important;
+    right:-2px!important;
+    width:13px!important;
+    height:13px!important;
+    border-radius:50%!important;
+    background:#22c55e!important;
+    border:2.5px solid #0891b2!important;
+    box-shadow:0 0 8px rgba(34,197,94,.8)!important;
+    z-index:5!important;
+  }
+  .td60-info{
+    min-width: 0!important;
+    flex: 1 1 auto!important;
   }
   .td60-name{
-    font-size: 1rem!important;
-    white-space: normal!important;
-    word-break: break-word!important;
+    font-size: 1.05rem!important;
+    font-weight: 900!important;
+    line-height: 1.15!important;
+    white-space: nowrap!important;
+    overflow: hidden!important;
+    text-overflow: ellipsis!important;
+    letter-spacing: .2px!important;
+    margin: 0!important;
   }
   .td60-meta{
     font-size: .68rem!important;
-    flex-wrap: wrap!important;
     gap: 6px 10px!important;
+    flex-wrap: nowrap!important;
+    margin-top: 3px!important;
+    white-space: nowrap!important;
+    overflow: hidden!important;
+    text-overflow: ellipsis!important;
   }
+  .td60-meta span{
+    flex-shrink: 0!important;
+  }
+  /* All header buttons — small attractive circular icons */
   .td60-header > .td60-exit-btn,
   .td60-header .td60-settings-btn,
-  .td60-header .td60-wa-bot-btn{
-    width: 100%!important;
+  .td60-header .td60-wa-bot-btn,
+  .td60-header .td60-notif-btn{
+    width: 40px!important;
+    height: 40px!important;
+    min-height: 40px!important;
+    min-width: 40px!important;
+    padding: 0!important;
+    border-radius: 50%!important;
+    font-size: 0!important;
+    display: inline-flex!important;
+    align-items: center!important;
     justify-content: center!important;
-    margin-right: 0!important;
-    margin-bottom: 6px!important;
+    margin: 0!important;
+    flex-shrink: 0!important;
+    border: 1.5px solid rgba(255,255,255,.32)!important;
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,.25)!important;
+    transition: transform .15s, background .2s !important;
+    gap: 0!important;
+    overflow: hidden!important;
+  }
+  .td60-header > .td60-exit-btn i,
+  .td60-header .td60-settings-btn i,
+  .td60-header .td60-wa-bot-btn i,
+  .td60-header .td60-notif-btn i{
+    font-size: 1rem!important;
+    margin: 0!important;
+    line-height: 1!important;
+  }
+  /* Individual button backgrounds */
+  .td60-header .td60-notif-btn{
+    background: rgba(255,255,255,.22)!important;
+    color: #fff!important;
+  }
+  .td60-header .td60-wa-bot-btn{
+    background: linear-gradient(135deg, #25D366, #128C7E)!important;
+    color: #fff!important;
+    border-color: rgba(255,255,255,.4)!important;
+  }
+  .td60-header .td60-settings-btn{
+    background: rgba(255,255,255,.22)!important;
+    color: #fff!important;
+  }
+  .td60-header > .td60-exit-btn{
+    background: linear-gradient(135deg, #dc2626, #ef4444)!important;
+    color: #fff!important;
+    border-color: rgba(255,255,255,.35)!important;
+  }
+  /* Press feedback */
+  .td60-header > .td60-exit-btn:active,
+  .td60-header .td60-settings-btn:active,
+  .td60-header .td60-wa-bot-btn:active,
+  .td60-header .td60-notif-btn:active{
+    transform: scale(.9)!important;
   }
   .td60-header-left{width: 100%!important;}
   .td60-header .td60-exit-btn{width: 100%!important;justify-content: center!important;}
@@ -25318,7 +25501,43 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   .td60-meta{font-size:.68rem;gap:8px}
   .td60-panel{padding:14px}
   .td60-tab{padding:8px 12px;font-size:.7rem;min-height:38px}
-  .td60-stat{padding:14px}
+  /* Hide WA bot button on very small phones */
+  .td60-header .td60-wa-bot-btn{display:none!important}
+  /* Slightly smaller icons */
+  .td60-header > .td60-exit-btn,
+  .td60-header .td60-settings-btn,
+  .td60-header .td60-notif-btn{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    min-height:36px!important;
+  }
+  .td60-header > .td60-exit-btn i,
+  .td60-header .td60-settings-btn i,
+  .td60-header .td60-notif-btn i{
+    font-size:.9rem!important;
+  }
+  .td60-header .td60-avatar{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+  }
+  .td60-name{font-size:.98rem!important;}
+  /* Student header — smaller avatar on tiny screens */
+  .dashboard-header-glow .avatar-neon{
+    width:48px!important;
+    height:48px!important;
+    min-width:48px!important;
+  }
+  #studentFullName{font-size:1.12rem!important;}
+  .dashboard-header-glow > .d-flex.align-items-center > div:last-child::before{
+    font-size:.76rem!important;
+  }
+  #studentFullName::after{font-size:.72rem!important;}
+  .dashboard-header-glow .hdr-actions .icon-btn{
+    width:44px!important;
+    height:44px!important;
+  }  .td60-stat{padding:14px}
   .td60-stat-num{font-size:1.6rem}
 }
 </style>
