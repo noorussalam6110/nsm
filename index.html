@@ -24179,8 +24179,6 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   padding:16px;
   padding-top:max(16px,env(safe-area-inset-top,16px));
   padding-bottom:max(24px,env(safe-area-inset-bottom,24px));
-  will-change:scroll-position;
-  contain:layout style;
 }
 #teacherLoginV60.open{
   display:block !important;
@@ -24425,17 +24423,21 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   #teacherLoginV60{
     padding: 0 24px !important;
     display: none;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important;
     box-sizing: border-box !important;
   }
   #teacherLoginV60.open{
     display: block !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    padding: 20px 24px 80px !important;
   }
   #teacherLoginV60 .tv60-card{
     max-width: 440px;
     width: 100%;
-    margin: 6vh auto 40px auto;
+    margin: 20px auto 40px auto;
   }
 }
 
@@ -40319,14 +40321,13 @@ document.addEventListener('touchend', function(e) {
 @media (min-width: 901px) {
   #teacherLoginV60.open {
     display: block !important;
-    overflow-y: scroll !important;
+    overflow-y: auto !important;
     overflow-x: hidden !important;
     height: 100vh !important;
     max-height: 100vh !important;
     padding: 20px 24px 80px !important;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    will-change: scroll-position;
   }
   #teacherLoginV60.open .tv60-card {
     margin: 3vh auto 40px auto !important;
