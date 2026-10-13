@@ -43994,7 +43994,7 @@ document.addEventListener('touchend', function(e) {
     var manualElapsed = (settings.monthsElapsed !== null && settings.monthsElapsed !== undefined)
                         ? parseInt(settings.monthsElapsed) : null;
 
-    // Calculate total months elapsed
+    // ─── Total months elapsed till today ───
     var totalMonths = 0;
     if (manualElapsed !== null && !isNaN(manualElapsed) && manualElapsed >= 0) {
       totalMonths = manualElapsed;
@@ -44009,33 +44009,73 @@ document.addEventListener('touchend', function(e) {
     }
 
     var paidMonths = Number(parent.paid_months) || 0;
-    var pendingCount = Math.max(0, totalMonths - paidMonths);
 
-    // Build list of pending month strings
-    var months = [];
-    if (startMonth && pendingCount > 0) {
-      var p2 = startMonth.split('-');
-      var y = parseInt(p2[0]), m = parseInt(p2[1]);
-      // Skip already-paid months
-      m += paidMonths;
-      // Normalize
-      while (m > 12) { m -= 12; y++; }
+    // ─── Build ALL months (pending + advance) ───
+    var pendingMonths = [];
+    var advanceMonths = [];
+
+    if (startMonth) {
+      var sp = startMonth.split('-');
+      var baseY = parseInt(sp[0]);
+      var baseM = parseInt(sp[1]);
+
+      // Last paid = paidMonths
+      // Pending = paidMonths to totalMonths
+      // Advance = totalMonths to totalMonths + 12
+
+      var pendingCount = Math.max(0, totalMonths - paidMonths);
+
+      // Pending months
+      var cy = baseY, cm = baseM;
+      cm += paidMonths;
+      while (cm > 12) { cm -= 12; cy++; }
 
       for (var i = 0; i < pendingCount; i++) {
-        months.push(y + '-' + String(m).padStart(2, '0'));
-        m++;
-        if (m > 12) { m = 1; y++; }
+        pendingMonths.push(cy + '-' + String(cm).padStart(2, '0'));
+        cm++;
+        if (cm > 12) { cm = 1; cy++; }
       }
-    } else if (pendingCount > 0) {
-      // No start month — use sequential from today
-      var d = new Date();
-      for (var j = 0; j < pendingCount; j++) {
-        d.setMonth(d.getMonth() - (pendingCount - 1 - j));
-        months.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+
+      // Advance months (next 12 from current)
+      var ay = baseY, am = baseM;
+      am += totalMonths;
+      while (am > 12) { am -= 12; ay++; }
+
+      for (var j = 0; j < 12; j++) {
+        advanceMonths.push(ay + '-' + String(am).padStart(2, '0'));
+        am++;
+        if (am > 12) { am = 1; ay++; }
+      }
+    } else {
+      // No start month — use today as base
+      var today = new Date();
+      var currY = today.getFullYear();
+      var currM = today.getMonth() + 1;
+
+      // Pending (if paid < current)
+      var pendingCount = Math.max(0, totalMonths - paidMonths);
+      for (var k = 0; k < pendingCount; k++) {
+        var d = new Date();
+        d.setMonth(d.getMonth() - (pendingCount - 1 - k));
+        pendingMonths.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+      }
+
+      // Advance: next 12 months
+      for (var l = 1; l <= 12; l++) {
+        var d2 = new Date();
+        d2.setMonth(d2.getMonth() + l);
+        advanceMonths.push(d2.getFullYear() + '-' + String(d2.getMonth() + 1).padStart(2, '0'));
       }
     }
 
-    return { monthly: monthly, pendingCount: pendingCount, months: months };
+    return {
+      monthly: monthly,
+      pendingCount: pendingMonths.length,
+      advanceCount: advanceMonths.length,
+      months: pendingMonths,        // backwards compat
+      pendingMonths: pendingMonths,
+      advanceMonths: advanceMonths
+    };
   }
 
   // ═══════════════════════════════════════════════════
@@ -44075,26 +44115,56 @@ document.addEventListener('touchend', function(e) {
       'justify-content:center;padding:16px;padding-top:max(20px,env(safe-area-inset-top,20px));' +
       'overflow-y:auto;-webkit-overflow-scrolling:touch;';
 
-    var monthOptions = info.months.map(function(m, i) {
+    function buildMonthItem(m, idx, isAdvance) {
       var label = formatMonthMLHelper(m);
       var amount = info.monthly;
+      var badge = isAdvance
+        ? '<span style="background:rgba(139,92,246,.15);color:#7c3aed;' +
+          'padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;' +
+          'margin-left:6px;">ADVANCE</span>'
+        : '<span style="background:rgba(220,38,38,.12);color:#dc2626;' +
+          'padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;' +
+          'margin-left:6px;">PENDING</span>';
       return (
         '<label style="display:flex;align-items:center;gap:12px;padding:12px 14px;' +
               'background:#f8fafc;border:1.5px solid rgba(100,116,139,.15);' +
               'border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.2s;" ' +
               'class="mm-month-item">' +
           '<input type="checkbox" class="mm-month-chk" value="' + m + '" ' +
-                 'data-amount="' + amount + '" checked ' +
-                 'style="width:20px;height:20px;accent-color:#059669;flex-shrink:0;' +
-                        'cursor:pointer;" onchange="MM_updateTotal()">' +
+                 'data-amount="' + amount + '" data-type="' + (isAdvance ? 'advance' : 'pending') + '" ' +
+                 'checked style="width:20px;height:20px;accent-color:#059669;' +
+                 'flex-shrink:0;cursor:pointer;" onchange="MM_updateTotal()">' +
           '<div style="flex:1;min-width:0;">' +
-            '<div style="font-weight:800;color:#0f172a;font-size:.9rem;">' + label + '</div>' +
-            '<div style="font-size:.7rem;color:#64748b;margin-top:2px;">Month ' + (i + 1) + ' of ' + info.pendingCount + '</div>' +
+            '<div style="font-weight:800;color:#0f172a;font-size:.9rem;">' +
+              label + badge +
+            '</div>' +
+            '<div style="font-size:.7rem;color:#64748b;margin-top:2px;">' +
+              (isAdvance ? 'Future month — advance' : 'Due month #' + (idx + 1)) +
+            '</div>' +
           '</div>' +
-          '<div style="font-weight:900;color:#059669;font-size:.95rem;">₹' + amount + '</div>' +
+          '<div style="font-weight:900;color:' +
+            (isAdvance ? '#7c3aed' : '#059669') + ';font-size:.95rem;">₹' + amount + '</div>' +
         '</label>'
       );
-    }).join('');
+    }
+
+    var monthOptions = '';
+    if (info.pendingCount > 0) {
+      monthOptions += '<div style="font-size:.72rem;font-weight:900;color:#dc2626;' +
+                      'text-transform:uppercase;letter-spacing:1px;margin:6px 0 8px;">' +
+                      '⏳ Pending Months (' + info.pendingCount + ')</div>';
+      monthOptions += info.pendingMonths.map(function(m, i) {
+        return buildMonthItem(m, i, false);
+      }).join('');
+    }
+    if (info.advanceCount > 0) {
+      monthOptions += '<div style="font-size:.72rem;font-weight:900;color:#7c3aed;' +
+                      'text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">' +
+                      '💎 Advance Months (Next 12)</div>';
+      monthOptions += info.advanceMonths.map(function(m, i) {
+        return buildMonthItem(m, i, true);
+      }).join('');
+    }
 
     modal.innerHTML =
       '<div style="background:#fff;border-radius:24px;max-width:500px;width:100%;' +
@@ -44219,6 +44289,14 @@ document.addEventListener('touchend', function(e) {
       if (e.target === modal) MM_closeModal();
     });
 
+    // Uncheck advance months by default (only pending auto-checked)
+    setTimeout(function() {
+      document.querySelectorAll('.mm-month-chk[data-type="advance"]').forEach(function(c) {
+        c.checked = false;
+      });
+      MM_updateTotal();
+    }, 80);
+
     // Initial total
     setTimeout(MM_updateTotal, 100);
 
@@ -44316,10 +44394,20 @@ document.addEventListener('touchend', function(e) {
     }
 
     // Confirmation
+    var pendingCnt = 0, advanceCnt = 0;
+    var lines = selectedMonths.map(function(m) {
+      var isAdv = checked.length && Array.prototype.slice.call(checked).some(function(c) {
+        return c.value === m && c.dataset.type === 'advance';
+      });
+      if (isAdv) advanceCnt++; else pendingCnt++;
+      return '  ' + (isAdv ? '💎' : '⏳') + ' ' + formatMonthMLHelper(m);
+    });
+
     var confirmMsg = '💰 Multi-Month Payment Confirm\n\n' +
       '👤 ' + (p.parent_name || '') + '\n' +
-      '📅 ' + selectedMonths.length + ' month(s)\n' +
-      selectedMonths.map(function(m) { return '  • ' + formatMonthMLHelper(m); }).join('\n') + '\n' +
+      '📅 ' + selectedMonths.length + ' month(s)  ' +
+      '(' + pendingCnt + ' pending, ' + advanceCnt + ' advance)\n' +
+      lines.join('\n') + '\n' +
       '💵 Total: ₹' + totalAmount.toLocaleString('en-IN') +
       (notes ? '\n📝 ' + notes : '') +
       '\n\nConfirm?';
@@ -44345,22 +44433,41 @@ document.addEventListener('touchend', function(e) {
 
       var newEntries = [];
       selectedMonths.forEach(function(m, i) {
-        var amt = perMonth + (i === 0 ? remainder : 0); // First gets remainder
+        var amt = perMonth + (i === 0 ? remainder : 0);
+        var isAdv = advanceSelected.indexOf(m) > -1;
         var entry = {
           month: m,
           amount: amt,
           date: today,
           paidBy: 'Admin',
           notes: notes || null,
-          multiMonth: selectedMonths.length > 1
+          multiMonth: selectedMonths.length > 1,
+          isAdvance: isAdv || false,
+          type: isAdv ? 'advance' : 'regular'
         };
         history.push(entry);
         newEntries.push(entry);
       });
 
-      // Update parent
+      // Separate pending vs advance
+      var pendingSelected = [];
+      var advanceSelected = [];
+      checked.forEach(function(c) {
+        if (c.dataset.type === 'advance') advanceSelected.push(c.value);
+        else pendingSelected.push(c.value);
+      });
+
+      // Sort all selected months chronologically
+      var allSorted = selectedMonths.slice().sort();
+      var lastMonth = allSorted[allSorted.length - 1];
+      var firstMonth = allSorted[0];
+
+      // paid_months update: count ALL selected (pending + advance)
       var newPaidMonths = (Number(p.paid_months) || 0) + selectedMonths.length;
-      var lastMonth = selectedMonths[selectedMonths.length - 1];
+
+      // Flags
+      var hasAdvance = advanceSelected.length > 0;
+      var hasPending = pendingSelected.length > 0;
 
       var ur = await supabaseClient.from('fee_parents').update({
         last_paid_month: lastMonth,
@@ -44375,11 +44482,15 @@ document.addEventListener('touchend', function(e) {
       // Notify student(s)
       try {
         var studentIds = p.student_ids || [];
+        var advanceNote = hasAdvance
+          ? ' (ഇതിൽ ' + advanceSelected.length + ' advance month ഉൾപ്പെടുന്നു 💎)'
+          : '';
         var notifs = studentIds.map(function(sid) {
           return {
-            title: '✅ ഫീസ് ലഭിച്ചു',
+            title: '✅ ഫീസ് ലഭിച്ചു' + (hasAdvance ? ' (Advance)' : ''),
             message: '₹' + totalAmount.toLocaleString('en-IN') + ' — ' +
-                     selectedMonths.length + ' month(s) paid. ജസാക്കല്ലാഹു ഖൈർ 🤲',
+                     selectedMonths.length + ' month(s) paid' + advanceNote +
+                     '. ജസാക്കല്ലാഹു ഖൈർ 🤲',
             type: 'important',
             target_type: 'student',
             target_student: sid,
@@ -44393,9 +44504,13 @@ document.addEventListener('touchend', function(e) {
 
       // Success
       if (typeof showToast === 'function') {
+        var parts = [];
+        if (hasPending) parts.push(pendingSelected.length + ' pending');
+        if (hasAdvance) parts.push(advanceSelected.length + ' advance 💎');
         showToast(
           '✅ ' + selectedMonths.length + ' month(s) paid — ₹' +
-          totalAmount.toLocaleString('en-IN'),
+          totalAmount.toLocaleString('en-IN') +
+          (parts.length ? ' (' + parts.join(' + ') + ')' : ''),
           'success'
         );
       }
@@ -44415,12 +44530,29 @@ document.addEventListener('touchend', function(e) {
       // Show receipt (single combined receipt for full amount)
       setTimeout(function() {
         if (typeof window.showFeeReceipt === 'function') {
+          var allSorted2 = selectedMonths.slice().sort();
+          var firstM = allSorted2[0];
+          var lastM = allSorted2[allSorted2.length - 1];
+
+          var label;
+          if (selectedMonths.length === 1) {
+            label = formatMonthMLHelper(lastM) +
+                    (hasAdvance ? ' (Advance)' : '');
+          } else {
+            label = formatMonthMLHelper(firstM) + ' → ' +
+                    formatMonthMLHelper(lastM);
+            if (hasAdvance && hasPending) {
+              label += ' (Mixed: ' + pendingSelected.length + ' pending + ' +
+                       advanceSelected.length + ' advance)';
+            } else if (hasAdvance) {
+              label += ' (Advance)';
+            }
+          }
+
           window.showFeeReceipt({
             parent: p.parent_name,
             amount: totalAmount,
-            month: selectedMonths.length > 1
-              ? formatMonthMLHelper(selectedMonths[0]) + ' → ' + formatMonthMLHelper(lastMonth)
-              : formatMonthMLHelper(lastMonth),
+            month: label,
             date: today,
             studentNames: p.student_names || '',
             studentIds: p.student_ids || [],
