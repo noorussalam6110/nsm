@@ -24160,13 +24160,17 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
 /* 👨‍🏫 TEACHER LOGIN v60                                     */
 /* ═══════════════════════════════════════════════════════ */
 #teacherLoginV60{
-  position:fixed;inset:0;z-index:9999999;
+  position:fixed;
+  inset:0;
+  z-index:9999999;
   background:
     radial-gradient(ellipse at 15% 10%, rgba(34,211,238,.12), transparent 55%),
     radial-gradient(ellipse at 85% 90%, rgba(139,92,246,.15), transparent 55%),
     linear-gradient(155deg,#050e2b 0%,#03081c 50%,#071433 100%);
-  height:100vh;height:100dvh;max-height:100dvh;
-  overflow-y:auto !important;overflow-x:hidden !important;
+  height:100vh;
+  height:100dvh;
+  overflow-y:scroll !important;
+  overflow-x:hidden !important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain;
   touch-action:pan-y;
@@ -24175,8 +24179,21 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   padding:16px;
   padding-top:max(16px,env(safe-area-inset-top,16px));
   padding-bottom:max(24px,env(safe-area-inset-bottom,24px));
+  will-change:scroll-position;
+  contain:layout style;
 }
-#teacherLoginV60.open{display:block !important}
+#teacherLoginV60.open{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+/* Force every inner element to allow normal layout */
+#teacherLoginV60 .tv60-card{
+  position:relative !important;
+  margin:0 auto 40px auto !important;
+  overflow:visible !important;
+}
 
 #teacherLoginV60 .tv60-card{
   max-width:420px;width:100%;
@@ -40302,29 +40319,29 @@ document.addEventListener('touchend', function(e) {
 @media (min-width: 901px) {
   #teacherLoginV60.open {
     display: block !important;
-    overflow-y: auto !important;
+    overflow-y: scroll !important;
     overflow-x: hidden !important;
     height: 100vh !important;
     max-height: 100vh !important;
-    padding: 24px 24px 60px !important;
+    padding: 20px 24px 80px !important;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    will-change: scroll-position;
   }
   #teacherLoginV60.open .tv60-card {
-    margin: 4vh auto 60px auto !important;
+    margin: 3vh auto 40px auto !important;
   }
-  /* Windows: make scrollbar clearly visible */
-  #teacherLoginV60.open::-webkit-scrollbar {
+  #teacherLoginV60::-webkit-scrollbar {
     width: 10px;
   }
-  #teacherLoginV60.open::-webkit-scrollbar-thumb {
+  #teacherLoginV60::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #22d3ee, #3b8bff);
     border-radius: 10px;
   }
-  #teacherLoginV60.open::-webkit-scrollbar-track {
+  #teacherLoginV60::-webkit-scrollbar-track {
     background: rgba(255,255,255,.08);
   }
-}  
+}
 </style>
 
 <script id="v112-master-js">
@@ -43264,89 +43281,105 @@ document.addEventListener('touchend', function(e) {
 /* ═══════════════════════════════════════════════════════ */
 (function(){
   'use strict';
-  console.log('🖱️ Teacher Login Wheel Fix v129 loading...');
+  console.log('🖱️ Teacher Login Scroll v129b loading...');
 
-  // Capture-phase listener — runs BEFORE global handlers
+  function ensureScrollable() {
+    var tl = document.getElementById('teacherLoginV60');
+    if (!tl) return;
+    if (!tl.classList.contains('open')) return;
+
+    // Force overflow on the container
+    tl.style.setProperty('overflow-y', 'scroll', 'important');
+    tl.style.setProperty('overflow-x', 'hidden', 'important');
+    tl.style.setProperty('height', '100vh', 'important');
+    tl.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
+
+    // Auto scroll to top when freshly opened
+    if (tl._justOpened) {
+      tl._justOpened = false;
+      tl.scrollTop = 0;
+    }
+  }
+  window.TL_ensureScrollable = ensureScrollable;
+
+  // ─── Wheel handling: only when NOT scrollable natively ───
   document.addEventListener('wheel', function(e) {
-    // Only when teacher login is open
     var tl = document.getElementById('teacherLoginV60');
     if (!tl || !tl.classList.contains('open')) return;
+    if (!tl.contains(e.target) && e.target !== tl) return;
 
-    // Wheel inside teacher login? Force scroll on it
-    if (tl.contains(e.target) || e.target === tl) {
-      var delta = e.deltaY;
-      if (e.deltaMode === 1) delta *= 24;        // line mode
-      else if (e.deltaMode === 2) delta *= 100;  // page mode
-
-      var maxScroll = tl.scrollHeight - tl.clientHeight;
-      if (maxScroll <= 0) return;                // No scroll needed
-
-      // Scroll & consume event
-      tl.scrollTop += delta;
-      e.preventDefault();
-      e.stopPropagation();
+    // Let native scrolling work — do NOT preventDefault
+    // Just ensure the container overflow is set
+    if (getComputedStyle(tl).overflowY !== 'scroll' &&
+        getComputedStyle(tl).overflowY !== 'auto') {
+      tl.style.setProperty('overflow-y', 'scroll', 'important');
     }
-  }, { passive: false, capture: true });
+  }, { passive: true, capture: true });
 
-  // Also handle keyboard (arrow keys / Page Up/Down / Space)
+  // ─── Keyboard navigation ───
   document.addEventListener('keydown', function(e) {
     var tl = document.getElementById('teacherLoginV60');
     if (!tl || !tl.classList.contains('open')) return;
-    var target = document.activeElement;
-    // Skip if input is focused (let typing work)
-    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+    var t = document.activeElement;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
 
-    var step = 60;
-    if (e.key === 'ArrowDown') { tl.scrollTop += step; e.preventDefault(); }
-    else if (e.key === 'ArrowUp') { tl.scrollTop -= step; e.preventDefault(); }
-    else if (e.key === 'PageDown') { tl.scrollTop += tl.clientHeight * 0.9; e.preventDefault(); }
-    else if (e.key === 'PageUp') { tl.scrollTop -= tl.clientHeight * 0.9; e.preventDefault(); }
-    else if (e.key === ' ') { tl.scrollTop += tl.clientHeight * 0.9; e.preventDefault(); }
-    else if (e.key === 'Home') { tl.scrollTop = 0; e.preventDefault(); }
-    else if (e.key === 'End') { tl.scrollTop = tl.scrollHeight; e.preventDefault(); }
+    var step = 80;
+    var handled = false;
+    if (e.key === 'ArrowDown') { tl.scrollTop += step; handled = true; }
+    else if (e.key === 'ArrowUp') { tl.scrollTop -= step; handled = true; }
+    else if (e.key === 'PageDown') { tl.scrollTop += tl.clientHeight * 0.9; handled = true; }
+    else if (e.key === 'PageUp') { tl.scrollTop -= tl.clientHeight * 0.9; handled = true; }
+    else if (e.key === 'Home') { tl.scrollTop = 0; handled = true; }
+    else if (e.key === 'End') { tl.scrollTop = tl.scrollHeight; handled = true; }
+
+    if (handled) e.preventDefault();
   }, { capture: true });
 
-  // Force style re-application when modal opens
-  function ensureScrollable() {
-    var tl = document.getElementById('teacherLoginV60');
-    if (!tl || !tl.classList.contains('open')) return;
-    // Force overflow-y auto with priority
-    tl.style.setProperty('overflow-y', 'auto', 'important');
-    tl.style.setProperty('overflow-x', 'hidden', 'important');
-  }
-
-  // Hook into showTeacherLoginV60
+  // ─── Hook showTeacherLoginV60 ───
   var _orig = window.showTeacherLoginV60;
-  if (typeof _orig === 'function' && !_orig._v129) {
+  if (typeof _orig === 'function' && !_orig._v129b) {
     window.showTeacherLoginV60 = function(teacher){
+      var tl = document.getElementById('teacherLoginV60');
+      if (tl) tl._justOpened = true;
       var r = _orig.apply(this, arguments);
-      setTimeout(ensureScrollable, 100);
-      setTimeout(ensureScrollable, 500);
+      setTimeout(ensureScrollable, 50);
+      setTimeout(ensureScrollable, 200);
+      setTimeout(ensureScrollable, 800);
       return r;
     };
-    window.showTeacherLoginV60._v129 = true;
+    window.showTeacherLoginV60._v129b = true;
   }
 
-  // Also periodically check (safety)
-  setInterval(ensureScrollable, 3000);
+  // ─── Periodic safety (uses setTimeout to avoid v100 interval kill) ───
+  function loop() {
+    ensureScrollable();
+    setTimeout(loop, 2000);
+  }
+  setTimeout(loop, 1500);
 
-  // Debug helper
+  // ─── Debug ───
   window.TL_SCROLL_debug = function(){
     var tl = document.getElementById('teacherLoginV60');
     if (!tl) { console.log('❌ #teacherLoginV60 not found'); return; }
     var cs = getComputedStyle(tl);
     console.log('=== TEACHER LOGIN SCROLL DEBUG ===');
     console.log('Open?', tl.classList.contains('open'));
+    console.log('display:', cs.display);
     console.log('overflow-y:', cs.overflowY);
-    console.log('overflow-x:', cs.overflowX);
-    console.log('height:', cs.height, '| clientHeight:', tl.clientHeight);
+    console.log('height:', cs.height);
+    console.log('clientHeight:', tl.clientHeight);
     console.log('scrollHeight:', tl.scrollHeight);
     console.log('Scrollable?', tl.scrollHeight > tl.clientHeight);
-    console.log('Current scrollTop:', tl.scrollTop);
+    console.log('scrollTop:', tl.scrollTop);
+    var card = tl.querySelector('.tv60-card');
+    if (card) {
+      var cr = card.getBoundingClientRect();
+      console.log('Card rect: top=' + Math.round(cr.top) + ' bottom=' + Math.round(cr.bottom) + ' height=' + Math.round(cr.height));
+    }
   };
 
-  console.log('✅ Teacher Login Wheel Fix v129 ready');
-  console.log('   💡 TL_SCROLL_debug() — verify state');
+  console.log('✅ Teacher Login Scroll v129b ready');
+  console.log('   💡 TL_SCROLL_debug() — check');
 })();
 /* ═══════════════════════════════════════════════════════ */
 /* 🕌 v130.0 — ADMIN NAMAZ MANAGEMENT TAB                 */
@@ -44925,6 +44958,60 @@ document.addEventListener('touchend', function(e) {
   console.log('✅ Quiz Master Enforce v134 ready');
   console.log('   💡 QUIZ_RELOAD() — diagnose');
   console.log('   💡 QUIZ_FIX_DB() — create missing DB rows');
+})();
+</script>
+<script id="teacher-scroll-enforcer-v135">
+(function(){
+  'use strict';
+  console.log('📜 Teacher Scroll Enforcer v135 loading...');
+
+  function forceScroll() {
+    var tl = document.getElementById('teacherLoginV60');
+    if (!tl || !tl.classList.contains('open')) return;
+
+    // Aggressively reset all possible blockers
+    tl.style.setProperty('overflow-y', 'scroll', 'important');
+    tl.style.setProperty('overflow-x', 'hidden', 'important');
+    tl.style.setProperty('height', '100vh', 'important');
+    tl.style.setProperty('max-height', '100vh', 'important');
+    tl.style.setProperty('touch-action', 'pan-y', 'important');
+    tl.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
+    tl.style.setProperty('overscroll-behavior', 'contain', 'important');
+
+    // Remove any body scroll locks (they don't affect this, but be safe)
+    // Don't touch document.body scroll — just the container
+  }
+  window.TL_FORCE_SCROLL = forceScroll;
+
+  // Watch for teacher login opening
+  var tl = document.getElementById('teacherLoginV60');
+  if (tl) {
+    new MutationObserver(function() {
+      if (tl.classList.contains('open')) {
+        forceScroll();
+        setTimeout(forceScroll, 100);
+        setTimeout(forceScroll, 400);
+        setTimeout(forceScroll, 1000);
+      }
+    }).observe(tl, { attributes: true, attributeFilter: ['class', 'style'] });
+  }
+
+  // Hook window.TV60 too if present
+  setTimeout(function(){
+    if (window.TV60 && window.TV60.teacher) {
+      forceScroll();
+    }
+  }, 3000);
+
+  // Periodic (setTimeout loop, bypasses v100 interval kill)
+  function loop() {
+    if (tl && tl.classList.contains('open')) forceScroll();
+    setTimeout(loop, 2500);
+  }
+  setTimeout(loop, 1000);
+
+  console.log('✅ Teacher Scroll Enforcer v135 ready');
+  console.log('   💡 TL_FORCE_SCROLL() — manual fix');
 })();
 </script>
 </body>
