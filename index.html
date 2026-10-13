@@ -9671,15 +9671,22 @@ async function loadFeeSettings(){
 
 async function getFeeParentByUID(sid){
   if(!supabaseClient || !sid) return null;
+
+  // 1️⃣ Try via students.fee_parent_id (may not exist)
   try{
     var sr = await supabaseClient.from('students').select('fee_parent_id').eq('studentid', sid).maybeSingle();
     if(sr.data && sr.data.fee_parent_id){
       var pr = await supabaseClient.from('fee_parents').select('*').eq('id', sr.data.fee_parent_id).maybeSingle();
       if(pr.data) return pr.data;
     }
+  }catch(e){ /* column may not exist — safe to ignore */ }
+
+  // 2️⃣ Fallback: search student_ids array (always works)
+  try{
     var r2 = await supabaseClient.from('fee_parents').select('*').contains('student_ids', [sid]).maybeSingle();
     if(r2.data) return r2.data;
-  }catch(e){ console.warn('getFeeParentByUID:', e); }
+  }catch(e){ console.warn('getFeeParentByUID fallback:', e); }
+
   return null;
 }
 
@@ -10168,10 +10175,16 @@ async function saveFeeParent(e, id){
     var savedId = id;
     if(id){ await supabaseClient.from('fee_parents').update(obj).eq('id', id); }
     else{ var ins = await supabaseClient.from('fee_parents').insert(obj).select().single(); if(ins.data) savedId = ins.data.id; }
-    if(savedId){
-      await supabaseClient.from('students').update({ fee_parent_id: null }).eq('fee_parent_id', savedId);
-      await supabaseClient.from('students').update({ fee_parent_id: savedId }).in('studentid', selectedStudentIds);
-    }
+if(savedId){
+  // Best-effort: sync students.fee_parent_id (only if column exists)
+  try{
+    await supabaseClient.from('students').update({ fee_parent_id: null }).eq('fee_parent_id', savedId);
+    await supabaseClient.from('students').update({ fee_parent_id: savedId }).in('studentid', selectedStudentIds);
+  }catch(e){
+    // Column missing — silent ignore. student_ids array is source of truth.
+    console.warn('fee_parent_id column missing — using student_ids array only');
+  }
+}
     showToast(id ? '✅ Updated' : '✅ Added','success');
     closeModal('globalModal');
     loadFeeParentsAdmin();
@@ -22730,399 +22743,7 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   console.log('   💡 Type debugDashboardOrder() to see current order');
 })();
 </script>
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!-- 🔧 v37.3 — FEE FILTER SELF-CONTAINED (Own Settings)        -->
-<!-- ═══════════════════════════════════════════════════════════ -->
-<script id="fee-filter-final-fix">
-(function(){
-  'use strict';
-  console.log('🔧 Fee Filter v37.3 — Self-contained');
 
-  // ═══════════════════════════════════════════════════════
-  // 🌐 LOCAL STATE (isolated from main app)
-  // ═══════════════════════════════════════════════════════
-  window._feeData = window._feeData || [];
-  window._feeSettings = window._feeSettings || {};
-  window._feeFilter = window._feeFilter || 'all';
-  window._feeSearch = window._feeSearch || '';
-
-  // ═══════════════════════════════════════════════════════
-  // 📥 FETCH BOTH DATA + SETTINGS
-  // ═══════════════════════════════════════════════════════
-  async function fetchAll() {
-    if (!supabaseClient) return false;
-    try {
-      // Fetch parents
-      var pr = await supabaseClient.from('fee_parents').select('*').order('parent_name');
-      window._feeData = pr.data || [];
-
-      // Fetch settings
-      var sr = await supabaseClient.from('fee_settings').select('*');
-      var s = {};
-      (sr.data || []).forEach(function(x) { s[x.setting_key] = x.value; });
-
-      window._feeSettings = {
-        monthlyFee: parseInt(s.monthly_fee) || 200,
-        startMonth: s.start_month || '',
-        monthsElapsed: (s.months_elapsed !== '' && s.months_elapsed !== undefined && s.months_elapsed !== null)
-                       ? parseInt(s.months_elapsed) : null
-      };
-
-      console.log('✅ Fetched', window._feeData.length, 'parents | Settings:', window._feeSettings);
-      return true;
-    } catch(e) {
-      console.error('❌ Fetch error:', e);
-      return false;
-    }
-  }
-  window.fetchFeeData = fetchAll;
-
-  // ═══════════════════════════════════════════════════════
-  // 🧮 CALCULATE BREAKDOWN — Self-contained (matches original)
-  // ═══════════════════════════════════════════════════════
-  function calcMonthsElapsed(startMonth, manual) {
-    if (manual !== null && manual !== undefined && manual !== '' && !isNaN(manual) && parseInt(manual) >= 0) {
-      return parseInt(manual);
-    }
-    if (!startMonth) return 0;
-    var p = String(startMonth).split('-');
-    if (p.length !== 2) return 0;
-    var sy = parseInt(p[0]), sm = parseInt(p[1]);
-    if (isNaN(sy) || isNaN(sm)) return 0;
-    var now = new Date();
-    var months = (now.getFullYear() - sy) * 12 + (now.getMonth() + 1 - sm) + 1;
-    if (now.getDate() < 20) months = Math.max(0, months - 1);
-    return Math.max(0, months);
-  }
-
-  function computeBreakdown(p) {
-    var settings = window._feeSettings || {};
-    var monthlyFee = Number(settings.monthlyFee) || 200;
-    var monthsElapsed = calcMonthsElapsed(settings.startMonth, settings.monthsElapsed);
-    var paidMonths = Number(p.paid_months) || 0;
-    var prevBalance = Number(p.previous_balance) || 0;
-    var pendingMonths = Math.max(0, monthsElapsed - paidMonths);
-    var pendingAmount = pendingMonths * monthlyFee;
-    var totalPending = pendingAmount + prevBalance;
-    return {
-      monthlyFee: monthlyFee,
-      monthsElapsed: monthsElapsed,
-      paidMonths: paidMonths,
-      pendingMonths: pendingMonths,
-      totalPending: totalPending
-    };
-  }
-
-  function getStatus(p) {
-    var br = computeBreakdown(p);
-    return br.totalPending > 0 ? 'pending' : 'paid';
-  }
-
-  function getDue(p) {
-    return computeBreakdown(p).totalPending;
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // 🎯 RENDER FILTER BAR + TABLE
-  // ═══════════════════════════════════════════════════════
-  function render() {
-    var tab = document.getElementById('adminFeeParentsTab');
-    if (!tab) return;
-
-    var data = window._feeData || [];
-
-    // Real counts
-    var pending = 0, paid = 0;
-    data.forEach(function(p) {
-      if (getStatus(p) === 'pending') pending++;
-      else paid++;
-    });
-
-    console.log('📊 Real counts — All:', data.length, 'Pending:', pending, 'Paid:', paid);
-
-    // Remove old filter
-    var old = tab.querySelector('.fee-filter-clean');
-    if (old) old.remove();
-
-    // Build new filter
-    var filter = window._feeFilter;
-    var filterHtml = 
-      '<div class="fee-filter-clean">' +
-        '<span class="ff-label"><i class="fas fa-filter"></i> Filter:</span>' +
-        '<button class="ff-btn ' + (filter === 'all' ? 'active' : '') + '" data-fee-filter="all" onclick="window.applyFeeFilter(\'all\')">' +
-          '<i class="fas fa-list"></i> All <span class="ff-count">' + data.length + '</span>' +
-        '</button>' +
-        '<button class="ff-btn pending ' + (filter === 'pending' ? 'active' : '') + '" data-fee-filter="pending" onclick="window.applyFeeFilter(\'pending\')">' +
-          '<i class="fas fa-hourglass-half"></i> Pending <span class="ff-count">' + pending + '</span>' +
-        '</button>' +
-        '<button class="ff-btn paid ' + (filter === 'paid' ? 'active' : '') + '" data-fee-filter="paid" onclick="window.applyFeeFilter(\'paid\')">' +
-          '<i class="fas fa-check-circle"></i> Paid <span class="ff-count">' + paid + '</span>' +
-        '</button>' +
-        '<div class="ff-actions">' +
-          '<button class="ff-btn" onclick="window.downloadFeeFilteredPDF()" style="background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;border-color:transparent;">' +
-            '<i class="fas fa-file-pdf"></i> PDF (' + (filter === 'all' ? 'All' : filter === 'pending' ? 'Pending' : 'Paid') + ')' +
-          '</button>' +
-        '</div>' +
-      '</div>';
-
-    var wrap = document.getElementById('feeParentsWrap');
-    if (wrap && wrap.parentNode) {
-      wrap.parentNode.insertBefore(document.createRange().createContextualFragment(filterHtml), wrap);
-    }
-
-    // Render table
-    renderTable();
-  }
-
-  function renderTable() {
-    var wrap = document.getElementById('feeParentsWrap');
-    if (!wrap) return;
-
-    var filter = window._feeFilter;
-    var search = (window._feeSearch || '').toLowerCase().trim();
-    var data = window._feeData || [];
-
-    var filtered = data.filter(function(p) {
-      if (filter !== 'all' && getStatus(p) !== filter) return false;
-      if (search) {
-        var hay = ((p.parent_name || '') + ' ' + (p.mobile || '') + ' ' + 
-                   (p.student_ids || []).join(' ') + ' ' + (p.student_names || '')).toLowerCase();
-        if (hay.indexOf(search) === -1) return false;
-      }
-      return true;
-    });
-
-    if (filtered.length === 0) {
-      var msg = filter === 'all' ? 'No records' :
-                filter === 'pending' ? 'പെൻഡിംഗ് റെക്കോർഡുകൾ ഇല്ല ✅' :
-                'Paid records ഇല്ല';
-      wrap.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#64748b;">' + msg + '</div>';
-      return;
-    }
-
-    var h = '<table><thead><tr>' +
-      '<th>#</th><th>Parent</th><th>UID / Students</th><th>Mobile</th>' +
-      '<th>Last Paid</th><th>Due</th><th>Status</th><th>Actions</th>' +
-      '</tr></thead><tbody>';
-
-    filtered.forEach(function(p, i) {
-      var st = getStatus(p);
-      var due = getDue(p);
-      var stColor = st === 'pending' ? '#dc2626' : '#059669';
-      var stLabel = st === 'pending' ? '⏳ Pending' : '✅ Paid';
-
-      var ids = p.student_ids || [];
-      var uidChips = ids.length === 0
-        ? '<span style="color:#94a3b8;font-size:.7rem;">No UID</span>'
-        : ids.map(function(u) {
-            return '<span style="display:inline-block;background:#ecfeff;color:#0891b2;padding:2px 8px;border-radius:20px;font-size:.65rem;font-weight:800;margin:1px 2px;">' + u + '</span>';
-          }).join('');
-
-      var studentNames = p.student_names
-        ? '<div style="font-size:.68rem;color:#64748b;margin-top:4px;">' + (p.student_names) + '</div>'
-        : '';
-
-      h += '<tr>';
-      h += '<td>' + (i+1) + '</td>';
-      h += '<td><strong>' + (p.parent_name || '') + '</strong></td>';
-      h += '<td><div style="max-width:220px;">' + uidChips + studentNames + '</div></td>';
-      h += '<td>' + (p.mobile || '') + '</td>';
-      h += '<td>' + (p.last_paid_month || '—') + '</td>';
-      h += '<td style="color:' + stColor + ';font-weight:900;">₹' + due.toLocaleString() + '</td>';
-      h += '<td><span style="color:' + stColor + ';font-weight:800;font-size:.72rem;">' + stLabel + '</span></td>';
-      h += '<td>';
-      h += '<button onclick="markFeePaid(' + p.id + ')" style="background:linear-gradient(100deg,#059669,#34d399);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">✅</button>';
-      h += '<button onclick="viewPaymentHistoryAdmin(' + p.id + ')" style="background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">📜</button>';
-      h += '<button onclick="sendFeeWhatsAppAdmin(' + p.id + ')" style="background:linear-gradient(100deg,#25D366,#128C7E);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">💬</button>';
-      h += '<button onclick="editFeeParent(' + p.id + ')" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">✏️</button>';
-      h += '<button onclick="deleteFeeParent(' + p.id + ')" style="background:linear-gradient(100deg,#b91c1c,#f87171);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;">🗑️</button>';
-      h += '</td>';
-      h += '</tr>';
-    });
-
-    h += '</tbody></table>';
-    wrap.innerHTML = h;
-    console.log('✅ Table rendered:', filtered.length, 'rows');
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // 🎯 PUBLIC API
-  // ═══════════════════════════════════════════════════════
-  window.applyFeeFilter = function(filter) {
-    window._feeFilter = filter || 'all';
-    render();
-  };
-
-  window.reloadFeeTab = async function() {
-    await fetchAll();
-    render();
-  };
-
-  // ═══════════════════════════════════════════════════════
-  // 📄 PDF DOWNLOAD
-  // ═══════════════════════════════════════════════════════
-  window.downloadFeeFilteredPDF = async function() {
-    var filter = window._feeFilter || 'all';
-    var search = (window._feeSearch || '').toLowerCase().trim();
-    var data = window._feeData || [];
-
-    var list = data.filter(function(p) {
-      if (filter !== 'all' && getStatus(p) !== filter) return false;
-      if (search) {
-        var hay = ((p.parent_name || '') + ' ' + (p.mobile || '') + ' ' + 
-                   (p.student_ids || []).join(' ') + ' ' + (p.student_names || '')).toLowerCase();
-        if (hay.indexOf(search) === -1) return false;
-      }
-      return true;
-    });
-
-    if (list.length === 0) {
-      showToast('⚠️ No data', 'error');
-      return;
-    }
-
-    var filterLabel = filter === 'all' ? 'All Records' :
-                     filter === 'pending' ? 'Pending Only' : 'Paid Only';
-
-    showLoading(true);
-    try {
-      if (typeof window.waitForPDFLibs === 'function') {
-        await window.waitForPDFLibs(6000);
-      }
-
-      var jsPDF = window.jspdf.jsPDF;
-      var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
-
-      if (typeof setupMalayalamPDF === 'function') {
-        try { await setupMalayalamPDF(doc); } catch(e) {}
-      }
-
-      var pw = doc.internal.pageSize.getWidth();
-      doc.setFillColor(21, 71, 168);
-      doc.rect(0, 0, pw, 80, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(18);
-      doc.setFont(undefined, 'bold');
-      doc.text('NOORUSSALAM MADRASA', pw / 2, 32, { align: 'center' });
-      doc.setFontSize(11);
-      doc.setFont(undefined, 'normal');
-      doc.text('Fee Report — ' + filterLabel + ' — ' + new Date().toLocaleDateString('en-IN'),
-               pw / 2, 55, { align: 'center' });
-      doc.setTextColor(0, 0, 0);
-
-      var rows = list.map(function(p, i) {
-        var br = computeBreakdown(p);
-        var status = getStatus(p) === 'pending' ? 'Pending' : 'Paid';
-        return [
-          i + 1,
-          p.parent_name || '',
-          (p.student_ids || []).join(', '),
-          p.student_names || '',
-          p.mobile || '',
-          p.last_paid_month || '—',
-          br.paidMonths,
-          br.pendingMonths,
-          'Rs.' + br.totalPending.toLocaleString(),
-          status
-        ];
-      });
-
-      var totalDue = list.reduce(function(s, p) { return s + getDue(p); }, 0);
-
-      doc.autoTable({
-        startY: 100,
-        head: [['#', 'Parent', 'UIDs', 'Students', 'Mobile', 'Last Paid', 'Paid', 'Pend', 'Due', 'Status']],
-        body: rows,
-        foot: [['', '', '', '', '', '', '', '', 'Total: Rs.' + totalDue.toLocaleString(), '']],
-        theme: 'grid',
-        styles: { fontSize: 7.5, cellPadding: 4 },
-        headStyles: { fillColor: [30, 107, 224], textColor: 255, fontStyle: 'bold', fontSize: 8 },
-        footStyles: { fillColor: [240, 245, 255], textColor: [0,0,0], fontStyle: 'bold' }
-      });
-
-      doc.save('Fee_Report_' + filter + '_' + new Date().toISOString().split('T')[0] + '.pdf');
-      showToast('✅ PDF Downloaded — ' + list.length + ' records', 'success');
-      if (typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
-    } catch(e) {
-      console.error('PDF error:', e);
-      showToast('❌ ' + e.message, 'error');
-    }
-    showLoading(false);
-  };
-
-  // ═══════════════════════════════════════════════════════
-  // 🔍 SEARCH BINDING
-  // ═══════════════════════════════════════════════════════
-  function bindSearch() {
-    var inp = document.getElementById('feeParentSearch');
-    if (!inp || inp._feeBound2) return;
-    inp._feeBound2 = true;
-    inp.addEventListener('input', function() {
-      window._feeSearch = this.value;
-      renderTable();
-    });
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // 🔄 HOOKS
-  // ═══════════════════════════════════════════════════════
-  var _origLoad = window.loadFeeParentsAdmin;
-  window.loadFeeParentsAdmin = async function() {
-    var r = await _origLoad.apply(this, arguments);
-    setTimeout(async function() {
-      await fetchAll();
-      render();
-      bindSearch();
-    }, 400);
-    return r;
-  };
-
-  var _origSwitch = window.switchAdminTab;
-  window.switchAdminTab = function(tab) {
-    var r = _origSwitch.apply(this, arguments);
-    if (tab === 'feeparents') {
-      setTimeout(async function() {
-        await fetchAll();
-        render();
-        bindSearch();
-      }, 600);
-    }
-    return r;
-  };
-
-  // Watchdog
-  setInterval(function() {
-    var tab = document.getElementById('adminFeeParentsTab');
-    if (!tab || tab.style.display !== 'block') return;
-    var el = tab.querySelector('[data-fee-filter="all"] .ff-count');
-    if (el && el.textContent === '0' && (window._feeData || []).length === 0) {
-      fetchAll().then(function() { render(); bindSearch(); });
-    }
-  }, 4000);
-
-  // ═══════════════════════════════════════════════════════
-  // 🚀 INIT
-  // ═══════════════════════════════════════════════════════
-  async function init() {
-    var tab = document.getElementById('adminFeeParentsTab');
-    if (tab && tab.style.display === 'block') {
-      await fetchAll();
-      render();
-      bindSearch();
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(init, 2500);
-    });
-  } else {
-    setTimeout(init, 2500);
-  }
-
-  console.log('✅ Fee Filter v37.3 ready');
-})();
-</script>
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- 🔄 v38.0 — XP REWARD RESET SYSTEM                          -->
 <!-- ═══════════════════════════════════════════════════════════ -->
@@ -31485,8 +31106,11 @@ CREATE POLICY "allow_all_teacher_logs" ON teacher_login_logs FOR ALL USING (true
   var _origMarkPaid = window.markFeePaid;
   if (typeof _origMarkPaid === 'function') {
     window.markFeePaid = async function(id) {
-      // Find parent data
-      var p = (window.feeParentsData || []).find(function(x){ return x.id === id; });
+      // Find parent data — try window first, then scope fallback
+      var list = window.feeParentsData
+        || (typeof feeParentsData !== 'undefined' ? feeParentsData : [])
+        || [];
+      var p = list.find(function(x){ return x.id === id; });
       if (!p) { return _origMarkPaid.apply(this, arguments); }
 
       // Original prompt flow
@@ -44354,6 +43978,585 @@ document.addEventListener('touchend', function(e) {
   console.log('   💡 Admin → 🕌 നിസ്കാരം tab');
   console.log('   💡 ADMIN_NAMZ_debug() — check state');
 })();  
+</script>
+<script id="multi-month-fee-v131">
+(function(){
+  'use strict';
+  console.log('💰 Multi-Month Fee v131 loading...');
+
+  // ═══════════════════════════════════════════════════
+  // 🧮 HELPER: Get all pending months
+  // ═══════════════════════════════════════════════════
+  function getPendingMonths(parent) {
+    var settings = window.FEE_SETTINGS_CACHE || {};
+    var monthly = Number(settings.monthlyFee) || 200;
+    var startMonth = settings.startMonth || '';
+    var manualElapsed = (settings.monthsElapsed !== null && settings.monthsElapsed !== undefined)
+                        ? parseInt(settings.monthsElapsed) : null;
+
+    // Calculate total months elapsed
+    var totalMonths = 0;
+    if (manualElapsed !== null && !isNaN(manualElapsed) && manualElapsed >= 0) {
+      totalMonths = manualElapsed;
+    } else if (startMonth) {
+      var p = String(startMonth).split('-');
+      if (p.length === 2) {
+        var sy = parseInt(p[0]), sm = parseInt(p[1]);
+        var now = new Date();
+        totalMonths = (now.getFullYear() - sy) * 12 + (now.getMonth() + 1 - sm) + 1;
+        if (now.getDate() < 20) totalMonths = Math.max(0, totalMonths - 1);
+      }
+    }
+
+    var paidMonths = Number(parent.paid_months) || 0;
+    var pendingCount = Math.max(0, totalMonths - paidMonths);
+
+    // Build list of pending month strings
+    var months = [];
+    if (startMonth && pendingCount > 0) {
+      var p2 = startMonth.split('-');
+      var y = parseInt(p2[0]), m = parseInt(p2[1]);
+      // Skip already-paid months
+      m += paidMonths;
+      // Normalize
+      while (m > 12) { m -= 12; y++; }
+
+      for (var i = 0; i < pendingCount; i++) {
+        months.push(y + '-' + String(m).padStart(2, '0'));
+        m++;
+        if (m > 12) { m = 1; y++; }
+      }
+    } else if (pendingCount > 0) {
+      // No start month — use sequential from today
+      var d = new Date();
+      for (var j = 0; j < pendingCount; j++) {
+        d.setMonth(d.getMonth() - (pendingCount - 1 - j));
+        months.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+      }
+    }
+
+    return { monthly: monthly, pendingCount: pendingCount, months: months };
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎨 OPEN MULTI-MONTH MODAL
+  // ═══════════════════════════════════════════════════
+  window.openMultiMonthFeeModal = async function(parentId) {
+    if (!currentUser && !window.isAdminMode) {
+      if (typeof showToast === 'function') showToast('❌ Admin access required', 'error');
+      return;
+    }
+
+    var parents = window.feeParentsData
+      || (typeof feeParentsData !== 'undefined' ? feeParentsData : [])
+      || [];
+    var p = parents.find(function(x) { return x.id === parentId; });
+    if (!p) {
+      if (typeof showToast === 'function') showToast('❌ Parent not found', 'error');
+      return;
+    }
+
+    var info = getPendingMonths(p);
+
+    if (info.pendingCount === 0) {
+      if (typeof showToast === 'function') showToast('✅ ബാക്കി ഇല്ല! All paid', 'success');
+      return;
+    }
+
+    // Build modal
+    var old = document.getElementById('multiMonthFeeModal');
+    if (old) old.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'multiMonthFeeModal';
+    modal.style.cssText =
+      'position:fixed;inset:0;background:rgba(3,8,28,.9);backdrop-filter:blur(16px);' +
+      '-webkit-backdrop-filter:blur(16px);z-index:100650;display:flex;align-items:flex-start;' +
+      'justify-content:center;padding:16px;padding-top:max(20px,env(safe-area-inset-top,20px));' +
+      'overflow-y:auto;-webkit-overflow-scrolling:touch;';
+
+    var monthOptions = info.months.map(function(m, i) {
+      var label = formatMonthMLHelper(m);
+      var amount = info.monthly;
+      return (
+        '<label style="display:flex;align-items:center;gap:12px;padding:12px 14px;' +
+              'background:#f8fafc;border:1.5px solid rgba(100,116,139,.15);' +
+              'border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.2s;" ' +
+              'class="mm-month-item">' +
+          '<input type="checkbox" class="mm-month-chk" value="' + m + '" ' +
+                 'data-amount="' + amount + '" checked ' +
+                 'style="width:20px;height:20px;accent-color:#059669;flex-shrink:0;' +
+                        'cursor:pointer;" onchange="MM_updateTotal()">' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-weight:800;color:#0f172a;font-size:.9rem;">' + label + '</div>' +
+            '<div style="font-size:.7rem;color:#64748b;margin-top:2px;">Month ' + (i + 1) + ' of ' + info.pendingCount + '</div>' +
+          '</div>' +
+          '<div style="font-weight:900;color:#059669;font-size:.95rem;">₹' + amount + '</div>' +
+        '</label>'
+      );
+    }).join('');
+
+    modal.innerHTML =
+      '<div style="background:#fff;border-radius:24px;max-width:500px;width:100%;' +
+                  'margin:auto 0;box-shadow:0 40px 90px -30px rgba(0,0,0,.7);' +
+                  'max-height:calc(100dvh - 40px);display:flex;flex-direction:column;' +
+                  'overflow:hidden;">' +
+
+        // Header
+        '<div style="padding:18px 20px;background:linear-gradient(135deg,#059669,#10b981,#34d399);' +
+                    'color:#fff;display:flex;align-items:center;justify-content:space-between;' +
+                    'flex-shrink:0;">' +
+          '<div style="display:flex;align-items:center;gap:12px;min-width:0;">' +
+            '<div style="width:44px;height:44px;border-radius:14px;' +
+                        'background:rgba(255,255,255,.22);display:flex;align-items:center;' +
+                        'justify-content:center;font-size:1.4rem;flex-shrink:0;">💰</div>' +
+            '<div style="min-width:0;">' +
+              '<div style="font-weight:900;font-size:1.05rem;line-height:1.2;">Multi-Month Payment</div>' +
+              '<div style="font-size:.72rem;opacity:.92;margin-top:2px;font-weight:700;' +
+                          'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;' +
+                          'max-width:280px;">' + escapeHtml(p.parent_name || '') + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<button type="button" onclick="MM_closeModal()" ' +
+                  'style="background:rgba(255,255,255,.22);border:none;color:#fff;' +
+                         'width:38px;height:38px;border-radius:50%;font-size:1rem;cursor:pointer;' +
+                         'display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>' +
+        '</div>' +
+
+        // Body
+        '<div style="padding:18px;overflow-y:auto;flex:1 1 auto;">' +
+
+          // Info banner
+          '<div style="background:#ecfdf5;border:1.5px solid rgba(5,150,105,.3);' +
+                      'border-radius:12px;padding:12px 14px;margin-bottom:14px;' +
+                      'font-size:.8rem;color:#065f46;font-weight:700;line-height:1.5;">' +
+            '<i class="fas fa-info-circle"></i> ' +
+            '<b>' + info.pendingCount + ' months pending</b> — അടയ്ക്കേണ്ട മാസങ്ങൾ select ചെയ്യുക.' +
+            ' ഓരോന്നും ₹' + info.monthly + ' വീതം.' +
+          '</div>' +
+
+          // Quick buttons
+          '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
+            '<button type="button" onclick="MM_selectAll(true)" ' +
+                    'style="flex:1;padding:9px 12px;border-radius:10px;border:1.5px solid rgba(5,150,105,.3);' +
+                           'background:#ecfdf5;color:#059669;font-family:inherit;font-weight:800;' +
+                           'font-size:.76rem;cursor:pointer;">' +
+              '<i class="fas fa-check-double"></i> Select All</button>' +
+            '<button type="button" onclick="MM_selectAll(false)" ' +
+                    'style="flex:1;padding:9px 12px;border-radius:10px;border:1.5px solid rgba(100,116,139,.2);' +
+                           'background:#f1f5f9;color:#475569;font-family:inherit;font-weight:800;' +
+                           'font-size:.76rem;cursor:pointer;">' +
+              '<i class="fas fa-times"></i> Clear</button>' +
+          '</div>' +
+
+          // Months list
+          '<div style="font-weight:800;color:#475569;font-size:.78rem;margin-bottom:8px;">' +
+            '📅 Select Months to Pay:' +
+          '</div>' +
+          '<div id="mmMonthsList">' + monthOptions + '</div>' +
+
+          // Custom amount override
+          '<div style="margin-top:16px;padding:14px;background:#fef3c7;border:1.5px solid rgba(180,83,9,.3);' +
+                      'border-radius:12px;">' +
+            '<label style="display:block;font-size:.76rem;font-weight:800;color:#92400e;margin-bottom:6px;">' +
+              '✏️ Custom Amount (optional)' +
+            '</label>' +
+            '<input type="number" id="mmCustomAmount" placeholder="Auto-calculated amount" ' +
+                   'min="0" step="1" ' +
+                   'style="width:100%;padding:11px 14px;border:1.5px solid rgba(100,116,139,.25);' +
+                          'border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;' +
+                          'color:#0f172a;background:#fff;outline:none;" ' +
+                   'oninput="MM_updateTotal()">' +
+            '<div style="font-size:.7rem;color:#78350f;margin-top:6px;font-weight:700;">' +
+              '💡 Blank ആയാൽ auto-select ചെയ്ത months-ന്റെ total വരും' +
+            '</div>' +
+          '</div>' +
+
+          // Notes/Reason (optional)
+          '<div style="margin-top:12px;">' +
+            '<label style="display:block;font-size:.76rem;font-weight:800;color:#475569;margin-bottom:6px;">' +
+              '📝 Notes (optional)' +
+            '</label>' +
+            '<input type="text" id="mmNotes" maxlength="200" ' +
+                   'placeholder="e.g., ഫീസ് ഒരുമിച്ച് അടച്ചു" ' +
+                   'style="width:100%;padding:11px 14px;border:1.5px solid rgba(100,116,139,.25);' +
+                          'border-radius:10px;font-family:inherit;font-size:16px;' +
+                          'color:#0f172a;background:#fff;outline:none;">' +
+          '</div>' +
+
+        '</div>' +
+
+        // Sticky total + submit
+        '<div style="padding:14px 18px;background:#f8fafc;border-top:2px solid rgba(5,150,105,.2);' +
+                    'flex-shrink:0;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+            '<span style="font-size:.82rem;color:#64748b;font-weight:800;">' +
+              'Total Amount:' +
+            '</span>' +
+            '<span id="mmTotalAmount" style="font-size:1.5rem;font-weight:900;color:#059669;">₹0</span>' +
+          '</div>' +
+          '<div style="display:flex;gap:10px;">' +
+            '<button type="button" onclick="MM_closeModal()" ' +
+                    'style="flex:.6;padding:13px;border-radius:14px;border:1.5px solid rgba(100,116,139,.2);' +
+                           'background:#fff;color:#475569;font-family:inherit;font-weight:800;' +
+                           'font-size:.86rem;cursor:pointer;min-height:48px;">Cancel</button>' +
+            '<button type="button" id="mmSubmitBtn" onclick="MM_submit()" ' +
+                    'style="flex:2;padding:13px;border-radius:14px;border:none;' +
+                           'background:linear-gradient(100deg,#059669,#34d399);color:#fff;' +
+                           'font-family:inherit;font-weight:900;font-size:.88rem;cursor:pointer;' +
+                           'min-height:48px;display:inline-flex;align-items:center;' +
+                           'justify-content:center;gap:8px;' +
+                           'box-shadow:0 10px 25px -10px rgba(5,150,105,.7);">' +
+              '<i class="fas fa-check-circle"></i> Confirm Payment' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) MM_closeModal();
+    });
+
+    // Initial total
+    setTimeout(MM_updateTotal, 100);
+
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🎛️ MODAL CONTROLS
+  // ═══════════════════════════════════════════════════
+  window.MM_closeModal = function() {
+    var m = document.getElementById('multiMonthFeeModal');
+    if (m) m.remove();
+  };
+
+  window.MM_selectAll = function(state) {
+    document.querySelectorAll('.mm-month-chk').forEach(function(c) {
+      c.checked = state;
+    });
+    window.MM_updateTotal();
+  };
+
+  window.MM_updateTotal = function() {
+    var checked = document.querySelectorAll('.mm-month-chk:checked');
+    var autoTotal = 0;
+    checked.forEach(function(c) {
+      autoTotal += parseInt(c.dataset.amount) || 0;
+    });
+
+    var custom = document.getElementById('mmCustomAmount');
+    var total = (custom && custom.value && parseInt(custom.value) > 0)
+                ? parseInt(custom.value)
+                : autoTotal;
+
+    var el = document.getElementById('mmTotalAmount');
+    if (el) el.textContent = '₹' + total.toLocaleString('en-IN');
+
+    // Highlight selected months visually
+    document.querySelectorAll('.mm-month-item').forEach(function(item) {
+      var chk = item.querySelector('.mm-month-chk');
+      if (chk && chk.checked) {
+        item.style.background = '#f0fdf4';
+        item.style.borderColor = 'rgba(5,150,105,.5)';
+      } else {
+        item.style.background = '#f8fafc';
+        item.style.borderColor = 'rgba(100,116,139,.15)';
+      }
+    });
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 💾 SUBMIT MULTI-MONTH PAYMENT
+  // ═══════════════════════════════════════════════════
+  window.MM_submit = async function() {
+    var checked = document.querySelectorAll('.mm-month-chk:checked');
+    if (checked.length === 0) {
+      if (typeof showToast === 'function') showToast('⚠️ കുറഞ്ഞത് ഒരു month select ചെയ്യൂ', 'error');
+      return;
+    }
+
+    var modal = document.getElementById('multiMonthFeeModal');
+    if (!modal) return;
+
+    // Extract parent ID from stored context
+    var parentId = window._mmCurrentParentId;
+    if (!parentId) {
+      if (typeof showToast === 'function') showToast('❌ Parent missing', 'error');
+      return;
+    }
+
+    var parents = window.feeParentsData
+      || (typeof feeParentsData !== 'undefined' ? feeParentsData : [])
+      || [];
+    var p = parents.find(function(x) { return x.id === parentId; });
+    if (!p) {
+      if (typeof showToast === 'function') showToast('❌ Parent not found', 'error');
+      return;
+    }
+
+    // Collect selected months + amount
+    var selectedMonths = [];
+    var autoTotal = 0;
+    checked.forEach(function(c) {
+      selectedMonths.push(c.value);
+      autoTotal += parseInt(c.dataset.amount) || 0;
+    });
+
+    var customInput = document.getElementById('mmCustomAmount');
+    var customVal = customInput && customInput.value ? parseInt(customInput.value) : 0;
+    var totalAmount = customVal > 0 ? customVal : autoTotal;
+    var notes = (document.getElementById('mmNotes').value || '').trim();
+
+    if (totalAmount <= 0) {
+      if (typeof showToast === 'function') showToast('⚠️ Amount 0 ആകരുത്', 'error');
+      return;
+    }
+
+    // Confirmation
+    var confirmMsg = '💰 Multi-Month Payment Confirm\n\n' +
+      '👤 ' + (p.parent_name || '') + '\n' +
+      '📅 ' + selectedMonths.length + ' month(s)\n' +
+      selectedMonths.map(function(m) { return '  • ' + formatMonthMLHelper(m); }).join('\n') + '\n' +
+      '💵 Total: ₹' + totalAmount.toLocaleString('en-IN') +
+      (notes ? '\n📝 ' + notes : '') +
+      '\n\nConfirm?';
+
+    if (!confirm(confirmMsg)) return;
+
+    var btn = document.getElementById('mmSubmitBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    }
+
+    try {
+      // Build history entries — split amount equally, or distribute
+      var history = p.payment_history || [];
+      if (typeof history === 'string') {
+        try { history = JSON.parse(history); } catch(e) { history = []; }
+      }
+
+      var today = new Date().toISOString().split('T')[0];
+      var perMonth = Math.floor(totalAmount / selectedMonths.length);
+      var remainder = totalAmount - (perMonth * selectedMonths.length);
+
+      var newEntries = [];
+      selectedMonths.forEach(function(m, i) {
+        var amt = perMonth + (i === 0 ? remainder : 0); // First gets remainder
+        var entry = {
+          month: m,
+          amount: amt,
+          date: today,
+          paidBy: 'Admin',
+          notes: notes || null,
+          multiMonth: selectedMonths.length > 1
+        };
+        history.push(entry);
+        newEntries.push(entry);
+      });
+
+      // Update parent
+      var newPaidMonths = (Number(p.paid_months) || 0) + selectedMonths.length;
+      var lastMonth = selectedMonths[selectedMonths.length - 1];
+
+      var ur = await supabaseClient.from('fee_parents').update({
+        last_paid_month: lastMonth,
+        last_paid_date: today,
+        paid_months: newPaidMonths,
+        payment_history: history,
+        updated_at: new Date().toISOString()
+      }).eq('id', parentId);
+
+      if (ur.error) throw ur.error;
+
+      // Notify student(s)
+      try {
+        var studentIds = p.student_ids || [];
+        var notifs = studentIds.map(function(sid) {
+          return {
+            title: '✅ ഫീസ് ലഭിച്ചു',
+            message: '₹' + totalAmount.toLocaleString('en-IN') + ' — ' +
+                     selectedMonths.length + ' month(s) paid. ജസാക്കല്ലാഹു ഖൈർ 🤲',
+            type: 'important',
+            target_type: 'student',
+            target_student: sid,
+            link_url: null
+          };
+        });
+        if (notifs.length > 0) {
+          await supabaseClient.from('notifications').insert(notifs);
+        }
+      } catch(e) { /* ignore */ }
+
+      // Success
+      if (typeof showToast === 'function') {
+        showToast(
+          '✅ ' + selectedMonths.length + ' month(s) paid — ₹' +
+          totalAmount.toLocaleString('en-IN'),
+          'success'
+        );
+      }
+
+      if (typeof confetti !== 'undefined') {
+        confetti({
+          particleCount: 100, spread: 80, origin: { y: .7 },
+          colors: ['#059669','#34d399','#10b981','#fbbf24']
+        });
+      }
+
+      if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
+
+      // Close modal
+      MM_closeModal();
+
+      // Show receipt (single combined receipt for full amount)
+      setTimeout(function() {
+        if (typeof window.showFeeReceipt === 'function') {
+          window.showFeeReceipt({
+            parent: p.parent_name,
+            amount: totalAmount,
+            month: selectedMonths.length > 1
+              ? formatMonthMLHelper(selectedMonths[0]) + ' → ' + formatMonthMLHelper(lastMonth)
+              : formatMonthMLHelper(lastMonth),
+            date: today,
+            studentNames: p.student_names || '',
+            studentIds: p.student_ids || [],
+            mobile: p.mobile,
+            paidBy: 'Admin'
+          });
+        }
+      }, 500);
+
+      // Reload admin table
+      if (typeof window.loadFeeParentsAdmin === 'function') {
+        setTimeout(window.loadFeeParentsAdmin, 1500);
+      }
+
+    } catch(e) {
+      console.error('MM_submit error:', e);
+      if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Payment';
+      }
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 📅 HELPER: Format month to Malayalam
+  // ═══════════════════════════════════════════════════
+  function formatMonthMLHelper(m) {
+    if (typeof formatMonthML === 'function') return formatMonthML(m);
+    // Fallback
+    var ML = ['ജനുവരി','ഫെബ്രുവരി','മാർച്ച്','ഏപ്രിൽ','മേയ്','ജൂൺ',
+              'ജൂലൈ','ഓഗസ്റ്റ്','സെപ്റ്റംബർ','ഒക്ടോബർ','നവംബർ','ഡിസംബർ'];
+    var p = String(m).split('-');
+    if (p.length === 2) {
+      var mi = parseInt(p[1]) - 1;
+      if (mi >= 0 && mi <= 11) return ML[mi] + ' ' + p[0];
+    }
+    return m;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 OVERRIDE markFeePaid — use new multi-month modal
+  // ═══════════════════════════════════════════════════
+  var _origMarkPaid = window.markFeePaid;
+  if (typeof _origMarkPaid === 'function') {
+    window.markFeePaid = function(id) {
+      window._mmCurrentParentId = id;
+      window.openMultiMonthFeeModal(id);
+    };
+    console.log('✅ markFeePaid → multi-month modal');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎨 INJECT "Multi-Month" button in admin table
+  // ═══════════════════════════════════════════════════
+  function injectMultiMonthBtn() {
+    var wrap = document.getElementById('feeParentsWrap');
+    if (!wrap) return;
+
+    wrap.querySelectorAll('tr').forEach(function(row) {
+      var cell = row.querySelector('td:last-child');
+      if (!cell) return;
+      if (cell.querySelector('.btn-multi-month')) return;
+
+      // Find any existing button to get parent ID
+      var anyBtn = cell.querySelector('[onclick*="markFeePaid"]')
+                || cell.querySelector('[onclick*="editFeeParent"]');
+      if (!anyBtn) return;
+
+      var m = anyBtn.getAttribute('onclick').match(/(\d+)/);
+      if (!m) return;
+      var pid = m[1];
+
+      // Insert multi-month button as the FIRST action
+      var btn = document.createElement('button');
+      btn.className = 'btn-multi-month';
+      btn.innerHTML = '💰+';
+      btn.title = 'Multi-Month Payment';
+      btn.setAttribute('onclick', 'window.openMultiMonthFeeModal(' + pid + ')');
+      btn.style.cssText =
+        'background:linear-gradient(100deg,#7c3aed,#a78bfa);color:#fff;border:none;' +
+        'padding:5px 10px;border-radius:30px;font-size:.7rem;font-weight:800;' +
+        'cursor:pointer;margin-right:4px;min-width:42px;';
+
+      cell.insertBefore(btn, cell.firstChild);
+    });
+  }
+
+  // Hook into loadFeeParentsAdmin
+  var _origLoad = window.loadFeeParentsAdmin;
+  if (typeof _origLoad === 'function' && !_origLoad._v131) {
+    window.loadFeeParentsAdmin = async function() {
+      var r = await _origLoad.apply(this, arguments);
+      setTimeout(injectMultiMonthBtn, 300);
+      setTimeout(injectMultiMonthBtn, 900);
+      return r;
+    };
+    window.loadFeeParentsAdmin._v131 = true;
+  }
+
+  // Watch table for changes
+  var _mo = new MutationObserver(function() {
+    clearTimeout(window._mmBtnTimer);
+    window._mmBtnTimer = setTimeout(injectMultiMonthBtn, 150);
+  });
+  setTimeout(function() {
+    var w = document.getElementById('feeParentsWrap');
+    if (w) _mo.observe(w, { childList: true, subtree: true });
+  }, 3500);
+
+  // Safety scan every 5s
+  setInterval(injectMultiMonthBtn, 5000);
+
+  // ═══════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════
+  window.MM_debug = function(parentId) {
+    var parents = window.feeParentsData
+      || (typeof feeParentsData !== 'undefined' ? feeParentsData : []);
+    var p = parents.find(function(x) { return x.id === parentId; });
+    if (!p) { console.log('❌ Parent not found:', parentId); return; }
+    console.log('=== MULTI-MONTH DEBUG ===');
+    console.log('Parent:', p.parent_name);
+    console.log('Paid months:', p.paid_months);
+    console.log('Settings:', window.FEE_SETTINGS_CACHE);
+    var info = getPendingMonths(p);
+    console.log('Pending:', info.pendingCount, 'months');
+    console.log('Months list:', info.months);
+    console.log('Total due:', info.pendingCount * info.monthly);
+  };
+
+  console.log('✅ Multi-Month Fee v131 ready');
+  console.log('   💡 Admin → Fee table → "💰+" button');
+  console.log('   💡 markFeePaid() → auto opens new modal');
+  console.log('   💡 MM_debug(parentId) — test');
+})();
 </script>
 </body>
 </html>
