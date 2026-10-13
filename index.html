@@ -44019,13 +44019,13 @@ document.addEventListener('touchend', function(e) {
       var sp = startMonth.split('-');
       baseY = parseInt(sp[0]); baseM = parseInt(sp[1]);
     } else {
+      // No start month — assume parent started N months ago where N = pending + paid
       var t = new Date();
-      baseY = t.getFullYear(); baseM = t.getMonth() + 1;
-      // Adjust: assume paid months started from beginning
-      var diff = pending + paid;
-      baseM = baseM - diff + 1;
-      while (baseM < 1) { baseM += 12; baseY--; }
-      while (baseM > 12) { baseM -= 12; baseY++; }
+      var totalBack = pending + paid;
+      // First unpaid month = current month - pending + 1
+      var firstUnpaidDate = new Date(t.getFullYear(), t.getMonth() - pending + 1, 1);
+      baseY = firstUnpaidDate.getFullYear();
+      baseM = firstUnpaidDate.getMonth() + 1;
     }
 
     // Start from first unpaid month
@@ -44081,18 +44081,70 @@ document.addEventListener('touchend', function(e) {
   // ═══════════════════════════════════════════════════
   // 🎨 MAIN MODAL
   // ═══════════════════════════════════════════════════
-  window.openFeeManager = function(parentId) {
-    var parents = window.feeParentsData
-      || (typeof feeParentsData !== 'undefined' ? feeParentsData : [])
-      || [];
-    var p = parents.find(function(x) { return x.id === parentId; });
+  window.openFeeManager = async function(parentId) {
+    if (!parentId) {
+      showToast('❌ Parent ID missing', 'error');
+      return;
+    }
+
+    showLoading(true);
+
+    // ─── Fetch parent FRESH from DB ───
+    var p = null;
+    try {
+      var pr = await supabaseClient.from('fee_parents')
+        .select('*').eq('id', parentId).maybeSingle();
+      if (pr.error) throw pr.error;
+      p = pr.data;
+    } catch(e) {
+      console.warn('Parent fetch failed, trying cache:', e);
+      var parents = window.feeParentsData
+        || (typeof feeParentsData !== 'undefined' ? feeParentsData : [])
+        || [];
+      p = parents.find(function(x) { return x.id === parentId; });
+    }
+
     if (!p) {
+      showLoading(false);
       showToast('❌ Parent not found', 'error');
       return;
     }
 
+    // ─── Fetch settings FRESH from DB ───
+    try {
+      var sr = await supabaseClient.from('fee_settings').select('*');
+      if (!sr.error) {
+        var s = {};
+        (sr.data || []).forEach(function(x) { s[x.setting_key] = x.value; });
+        window.FEE_SETTINGS_CACHE = {
+          monthlyFee: parseInt(s.monthly_fee) || 200,
+          startMonth: s.start_month || '',
+          monthsElapsed: (s.months_elapsed !== '' && s.months_elapsed !== undefined && s.months_elapsed !== null)
+                         ? parseInt(s.months_elapsed) : null,
+          upiId: s.upi_id || '',
+          payeeName: s.payee_name || ''
+        };
+        console.log('✅ Settings loaded:', window.FEE_SETTINGS_CACHE);
+      }
+    } catch(e) {
+      console.warn('Settings fetch failed:', e);
+    }
+
+    console.log('📋 Parent data:', p);
+    console.log('📊 Settings:', window.FEE_SETTINGS_CACHE);
+
+    showLoading(false);
+
     window._fmCurrentParent = p;
     var info = analyzeMonths(p);
+
+    console.log('🧮 Analyzed info:', info);
+
+    // ─── Warn if no settings ───
+    if (!window.FEE_SETTINGS_CACHE || !window.FEE_SETTINGS_CACHE.startMonth) {
+      // Still open modal, but show warning
+      console.warn('⚠️ No start_month set in settings — using fallback');
+    }
 
     // Remove old
     var old = document.getElementById('feeMgrModal');
@@ -44239,7 +44291,17 @@ document.addEventListener('touchend', function(e) {
             '<span style="color:#dc2626;">Pending</span> auto-selected. ' +
             '<span style="color:#7c3aed;">Advance</span> optional.' +
           '</div>' +
-
+          // Warn if no pending
+          (info.pending === 0
+            ? '<div style="background:#fef3c7;border:1.5px solid rgba(180,83,9,.3);' +
+              'border-radius:10px;padding:12px 14px;margin-bottom:14px;' +
+              'font-size:.78rem;color:#92400e;font-weight:700;line-height:1.5;">' +
+              '<i class="fas fa-info-circle"></i> ' +
+              '<b>⚠️ No pending months</b><br>' +
+              'Admin Settings → Fee Settings ൽ <b>Start Month</b> സെറ്റ് ചെയ്യണം. ' +
+              'അല്ലെങ്കിൽ pending months കണക്കാക്കാൻ പറ്റില്ല.' +
+              '</div>'
+            : '') +
           // Month grid
           '<div style="font-size:.72rem;font-weight:900;color:#475569;' +
                       'text-transform:uppercase;letter-spacing:1px;' +
