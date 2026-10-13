@@ -44633,5 +44633,299 @@ document.addEventListener('touchend', function(e) {
   console.log('   💡 FM_debug(parentId) — check');
 })();
 </script>
+<script id="quiz-master-enforce-v134">
+(function(){
+  'use strict';
+  console.log('🎯 Quiz Master Enforce v134 loading...');
+
+  // ═══════════════════════════════════════════════════
+  // 1️⃣ CSS — !important beats ANY inline style
+  // ═══════════════════════════════════════════════════
+  var css = document.createElement('style');
+  css.id = 'quiz-master-enforce-css';
+  css.textContent =
+    'body.quiz-master-off .action-tile[data-action="quiz"],' +
+    'body.quiz-class-off .action-tile[data-action="quiz"] {' +
+    '  display: none !important;' +
+    '  visibility: hidden !important;' +
+    '  pointer-events: none !important;' +
+    '  position: absolute !important;' +
+    '  width: 0 !important;' +
+    '  height: 0 !important;' +
+    '  margin: 0 !important;' +
+    '  padding: 0 !important;' +
+    '  overflow: hidden !important;' +
+    '  opacity: 0 !important;' +
+    '}';
+  document.head.appendChild(css);
+
+  // ═══════════════════════════════════════════════════
+  // 2️⃣ Reload quiz state from DB — always fresh
+  // ═══════════════════════════════════════════════════
+  async function reloadQuizState() {
+    if (!window.supabaseClient) return null;
+    try {
+      // Master toggle
+      var mr = await window.supabaseClient.from('settings')
+        .select('value').eq('key', 'quiz_enabled').maybeSingle();
+
+      var master = true;
+      if (mr && mr.data && mr.data.value !== null && mr.data.value !== undefined) {
+        master = String(mr.data.value).toLowerCase() === 'true';
+      } else {
+        console.warn('⚠️ quiz_enabled row missing in settings table');
+      }
+
+      // Per-class
+      var keys = [];
+      for (var i = 1; i <= 10; i++) keys.push('quiz_enabled_class_' + i);
+      var cr = await window.supabaseClient.from('settings')
+        .select('key, value').in('key', keys);
+
+      var cls = {};
+      for (var j = 1; j <= 10; j++) cls[String(j)] = true;
+      (cr.data || []).forEach(function(row) {
+        var c = row.key.replace('quiz_enabled_class_', '');
+        cls[c] = String(row.value).toLowerCase() === 'true';
+      });
+
+      // Sync to QUIZ_V96
+      if (!window.QUIZ_V96) {
+        window.QUIZ_V96 = {
+          master: master, classes: cls, loaded: true,
+          ALL_CLASSES: ['1','2','3','4','5','6','7','8','9','10']
+        };
+      } else {
+        window.QUIZ_V96.master = master;
+        window.QUIZ_V96.classes = cls;
+        window.QUIZ_V96.loaded = true;
+      }
+
+      console.log('📊 Quiz state:', { master: master, classes: cls });
+      return { master: master, classes: cls };
+    } catch(e) {
+      console.warn('reloadQuizState failed:', e);
+      return null;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 3️⃣ Apply state → toggle body class
+  // ═══════════════════════════════════════════════════
+  function applyState() {
+    // Skip for admin/teacher
+    if (window.isAdminMode || window.isTeacherMode) {
+      document.body.classList.remove('quiz-master-off');
+      document.body.classList.remove('quiz-class-off');
+      return;
+    }
+
+    var master = window.QUIZ_V96 ? window.QUIZ_V96.master : true;
+    var cls = window.QUIZ_V96 ? (window.QUIZ_V96.classes || {}) : {};
+    var myClass = (window.currentUser && window.currentUser.class)
+                  ? String(window.currentUser.class) : null;
+
+    // Master OFF → hide for everyone
+    if (!master) {
+      document.body.classList.add('quiz-master-off');
+      document.body.classList.remove('quiz-class-off');
+      return;
+    }
+
+    document.body.classList.remove('quiz-master-off');
+
+    // Class-specific OFF
+    if (myClass && cls[myClass] === false) {
+      document.body.classList.add('quiz-class-off');
+    } else {
+      document.body.classList.remove('quiz-class-off');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 4️⃣ INIT + LOGIN HOOKS
+  // ═══════════════════════════════════════════════════
+  async function initState() {
+    await reloadQuizState();
+    applyState();
+  }
+
+  // Hook completeLogin
+  var _origLogin = window.completeLogin;
+  if (typeof _origLogin === 'function' && !_origLogin._v134) {
+    window.completeLogin = async function(student) {
+      var r = await _origLogin.apply(this, arguments);
+      setTimeout(initState, 800);
+      setTimeout(initState, 2500);
+      setTimeout(initState, 5000);
+      return r;
+    };
+    window.completeLogin._v134 = true;
+    console.log('✅ completeLogin hooked');
+  }
+
+  // Hook applyStudentPortalVisibility — re-apply AFTER main runs
+  var _origVis = window.applyStudentPortalVisibility;
+  if (typeof _origVis === 'function' && !_origVis._v134) {
+    window.applyStudentPortalVisibility = function() {
+      var r = _origVis.apply(this, arguments);
+      applyState();   // ← re-applies our class
+      return r;
+    };
+    window.applyStudentPortalVisibility._v134 = true;
+    console.log('✅ applyStudentPortalVisibility hooked');
+  }
+
+  // Hook admin toggle
+  if (window.QUIZ_V96_flipMaster && !window.QUIZ_V96_flipMaster._v134) {
+    var _origFlip = window.QUIZ_V96_flipMaster;
+    window.QUIZ_V96_flipMaster = async function() {
+      var r = await _origFlip.apply(this, arguments);
+      applyState();
+      return r;
+    };
+    window.QUIZ_V96_flipMaster._v134 = true;
+  }
+  if (window.QUIZ_V96_flipClass && !window.QUIZ_V96_flipClass._v134) {
+    var _origFlipC = window.QUIZ_V96_flipClass;
+    window.QUIZ_V96_flipClass = async function() {
+      var r = await _origFlipC.apply(this, arguments);
+      applyState();
+      return r;
+    };
+    window.QUIZ_V96_flipClass._v134 = true;
+  }
+  if (window.QUIZ_V96_setAll && !window.QUIZ_V96_setAll._v134) {
+    var _origSetAll = window.QUIZ_V96_setAll;
+    window.QUIZ_V96_setAll = async function() {
+      var r = await _origSetAll.apply(this, arguments);
+      applyState();
+      return r;
+    };
+    window.QUIZ_V96_setAll._v134 = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 5️⃣ Watch DOM events that might re-show tile
+  // ═══════════════════════════════════════════════════
+  // Dashboard open
+  var _dash = document.getElementById('dashboardSection');
+  if (_dash) {
+    new MutationObserver(function() {
+      if (_dash.style.display === 'block') {
+        setTimeout(applyState, 500);
+        setTimeout(applyState, 2000);
+      }
+    }).observe(_dash, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Quick actions grid changes
+  setTimeout(function() {
+    var grid = document.getElementById('quickActionsGrid');
+    if (grid && !grid._v134) {
+      grid._v134 = true;
+      new MutationObserver(function() {
+        setTimeout(applyState, 100);
+      }).observe(grid, { childList: true, subtree: false });
+    }
+  }, 3000);
+
+  // Body class change watcher (re-apply if removed)
+  if (document.body) {
+    new MutationObserver(function() {
+      if (!window.QUIZ_V96 || !window.currentUser) return;
+      var master = window.QUIZ_V96.master;
+      var cls = window.QUIZ_V96.classes || {};
+      var mc = String(window.currentUser.class || '');
+      var shouldHide = !master || (mc && cls[mc] === false);
+      var hasClass = document.body.classList.contains('quiz-master-off')
+                  || document.body.classList.contains('quiz-class-off');
+      if (shouldHide && !hasClass) {
+        applyState();
+      }
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 6️⃣ Periodic enforce — setTimeout recursion (v100 won't kill)
+  // ═══════════════════════════════════════════════════
+  function scheduleEnforce() {
+    setTimeout(function() {
+      if (window.currentUser && !window.isAdminMode && !window.isTeacherMode) {
+        applyState();
+      }
+      scheduleEnforce();
+    }, 12000);  // every 12s
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 7️⃣ BOOT
+  // ═══════════════════════════════════════════════════
+  setTimeout(initState, 2500);
+  setTimeout(initState, 5500);
+  setTimeout(initState, 10000);
+  scheduleEnforce();
+
+  // ═══════════════════════════════════════════════════
+  // 8️⃣ DEBUG — QUIZ_RELOAD()
+  // ═══════════════════════════════════════════════════
+  window.QUIZ_RELOAD = async function() {
+    await initState();
+    var s = window.QUIZ_V96 || {};
+    console.log('=== QUIZ STATE DEBUG ===');
+    console.log('Master:', s.master);
+    console.log('Classes:', s.classes);
+    console.log('My class:', window.currentUser ? window.currentUser.class : '—');
+    console.log('Body classes:', document.body.className);
+    var tile = document.querySelector('.action-tile[data-action="quiz"]');
+    if (tile) {
+      var cs = getComputedStyle(tile);
+      console.log('Quiz tile computed display:', cs.display);
+      console.log('Quiz tile visibility:', cs.visibility);
+      console.log('Quiz tile inline display:', tile.style.display);
+    } else {
+      console.log('Quiz tile: NOT FOUND (may be hidden by CSS)');
+    }
+    if (typeof showToast === 'function') showToast('✅ State reloaded', 'success');
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 9️⃣ SQL HELPER (Supabase-ൽ run ചെയ്യണമെങ്കിൽ)
+  // ═══════════════════════════════════════════════════
+  window.QUIZ_FIX_DB = async function() {
+    try {
+      // Ensure row exists
+      var existing = await window.supabaseClient.from('settings')
+        .select('key').eq('key', 'quiz_enabled').maybeSingle();
+
+      if (!existing.data) {
+        await window.supabaseClient.from('settings')
+          .insert({ key: 'quiz_enabled', value: 'true' });
+        console.log('✅ Created quiz_enabled row');
+      }
+
+      // Ensure per-class rows
+      for (var i = 1; i <= 10; i++) {
+        var k = 'quiz_enabled_class_' + i;
+        var ex = await window.supabaseClient.from('settings')
+          .select('key').eq('key', k).maybeSingle();
+        if (!ex.data) {
+          await window.supabaseClient.from('settings')
+            .insert({ key: k, value: 'true' });
+        }
+      }
+      console.log('✅ All quiz settings rows exist');
+      if (typeof showToast === 'function') showToast('✅ DB fixed', 'success');
+    } catch(e) {
+      console.error('QUIZ_FIX_DB failed:', e);
+      if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  console.log('✅ Quiz Master Enforce v134 ready');
+  console.log('   💡 QUIZ_RELOAD() — diagnose');
+  console.log('   💡 QUIZ_FIX_DB() — create missing DB rows');
+})();
+</script>
 </body>
 </html>
