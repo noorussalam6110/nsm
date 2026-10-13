@@ -43979,138 +43979,129 @@ document.addEventListener('touchend', function(e) {
   console.log('   💡 ADMIN_NAMZ_debug() — check state');
 })();  
 </script>
-<script id="simple-fee-v132">
+<script id="fee-manager-v133">
 (function(){
   'use strict';
-  console.log('💰 Simple Fee Manager v132 loading...');
+  console.log('💰 Fee Manager v133 (All Pending + Clean UI) loading...');
 
   // ═══════════════════════════════════════════════════
-  // 🧮 HELPER — All months info for a parent
+  // 🚫 1. HIDE 🧾 Receipt + 💬 WhatsApp buttons
   // ═══════════════════════════════════════════════════
-  function analyzeMonths(parent) {
+  var css = document.createElement('style');
+  css.id = 'fee-cleanup-css';
+  css.textContent = `
+    #feeParentsWrap .btn-receipt,
+    #feeParentsWrap [onclick*="showHistoryReceipt"],
+    #feeParentsWrap [onclick*="sendFeeWhatsAppAdmin"],
+    #feeParentsWrap button[style*="25D366"] {
+      display: none !important;
+    }
+  `;
+  document.head.appendChild(css);
+
+  // ═══════════════════════════════════════════════════
+  // 📅 MALAYALAM MONTH NAMES
+  // ═══════════════════════════════════════════════════
+  var ML = ['ജനുവരി','ഫെബ്രുവരി','മാർച്ച്','ഏപ്രിൽ','മേയ്','ജൂൺ',
+            'ജൂലൈ','ഓഗസ്റ്റ്','സെപ്റ്റംബർ','ഒക്ടോബർ','നവംബർ','ഡിസംബർ'];
+  var ML_S = ['ജനു','ഫെബ്രു','മാർ','ഏപ്രി','മേയ്','ജൂൺ',
+              'ജൂലൈ','ഓഗ','സെപ്റ്റ','ഒക്ടോ','നവം','ഡിസം'];
+
+  function fmtMl(key, short) {
+    var p = String(key).split('-');
+    if (p.length !== 2) return key;
+    var mi = parseInt(p[1]) - 1;
+    if (mi < 0 || mi > 11) return key;
+    return (short ? ML_S[mi] : ML[mi]) + ' ' + p[0];
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🧮 ANALYZE — ALL pending, no cap
+  // ═══════════════════════════════════════════════════
+  function analyze(p) {
     var s = window.FEE_SETTINGS_CACHE || {};
     var monthly = Number(s.monthlyFee) || 200;
     var startMonth = s.startMonth || '';
-    var manualElapsed = (s.monthsElapsed !== null && s.monthsElapsed !== undefined)
-                        ? parseInt(s.monthsElapsed) : null;
+    var manualElapsed = s.monthsElapsed;
 
-    // Total months elapsed till today
+    // Total months elapsed
     var elapsed = 0;
-    if (manualElapsed !== null && !isNaN(manualElapsed) && manualElapsed >= 0) {
+    if (manualElapsed !== null && manualElapsed !== undefined &&
+        !isNaN(manualElapsed) && manualElapsed >= 0) {
       elapsed = manualElapsed;
     } else if (startMonth) {
-      var p = String(startMonth).split('-');
-      if (p.length === 2) {
-        var sy = parseInt(p[0]), sm = parseInt(p[1]);
+      var sp = String(startMonth).split('-');
+      if (sp.length === 2) {
+        var sy = parseInt(sp[0]), sm = parseInt(sp[1]);
         var now = new Date();
         elapsed = (now.getFullYear() - sy) * 12 + (now.getMonth() + 1 - sm) + 1;
         if (now.getDate() < 20) elapsed = Math.max(0, elapsed - 1);
       }
     }
 
-    var paid = Number(parent.paid_months) || 0;
-    var pending = Math.max(0, elapsed - paid);
+    var paid = Number(p.paid_months) || 0;
+    var pending = Math.max(0, elapsed - paid);   // ⭐ NO CAP
 
-    // Build list: pending + next 6 advance
-    var list = [];
+    // Base month
     var baseY, baseM;
-
     if (startMonth) {
-      var sp = startMonth.split('-');
-      baseY = parseInt(sp[0]); baseM = parseInt(sp[1]);
+      var sp2 = String(startMonth).split('-');
+      baseY = parseInt(sp2[0]); baseM = parseInt(sp2[1]);
     } else {
-      // No start month — assume parent started N months ago where N = pending + paid
+      // Fallback: assume cycle started (pending + paid) months ago
       var t = new Date();
-      var totalBack = pending + paid;
-      // First unpaid month = current month - pending + 1
-      var firstUnpaidDate = new Date(t.getFullYear(), t.getMonth() - pending + 1, 1);
-      baseY = firstUnpaidDate.getFullYear();
-      baseM = firstUnpaidDate.getMonth() + 1;
+      var back = pending + paid;
+      var d0 = new Date(t.getFullYear(), t.getMonth() - back + 1, 1);
+      baseY = d0.getFullYear(); baseM = d0.getMonth() + 1;
     }
 
-    // Start from first unpaid month
+    var list = [];
     var cy = baseY, cm = baseM;
     cm += paid;
     while (cm > 12) { cm -= 12; cy++; }
 
-    // Pending months
+    // ⭐ ALL pending months
     for (var i = 0; i < pending; i++) {
       list.push({
         key: cy + '-' + String(cm).padStart(2, '0'),
-        y: cy, m: cm,
         status: 'pending'
       });
       cm++; if (cm > 12) { cm = 1; cy++; }
     }
 
-    // 6 advance months
-    for (var j = 0; j < 6; j++) {
+    // 12 advance months
+    for (var j = 0; j < 12; j++) {
       list.push({
         key: cy + '-' + String(cm).padStart(2, '0'),
-        y: cy, m: cm,
         status: 'advance'
       });
       cm++; if (cm > 12) { cm = 1; cy++; }
     }
 
-    return {
-      monthly: monthly,
-      paid: paid,
-      pending: pending,
-      total: elapsed,
-      list: list
-    };
-  }
-
-  // ═══════════════════════════════════════════════════
-  // 📅 Malayalam month name
-  // ═══════════════════════════════════════════════════
-  var ML_MONTHS = ['ജനുവരി','ഫെബ്രുവരി','മാർച്ച്','ഏപ്രിൽ','മേയ്','ജൂൺ',
-                   'ജൂലൈ','ഓഗസ്റ്റ്','സെപ്റ്റംബർ','ഒക്ടോബർ','നവംബർ','ഡിസംബർ'];
-  var ML_MONTHS_SHORT = ['ജനു','ഫെബ്രു','മാർ','ഏപ്രി','മേയ്','ജൂൺ',
-                         'ജൂലൈ','ഓഗ','സെപ്റ്റ','ഒക്ടോ','നവം','ഡിസം'];
-
-  function mlMonth(key, short) {
-    var p = String(key).split('-');
-    if (p.length !== 2) return key;
-    var mi = parseInt(p[1]) - 1;
-    var arr = short ? ML_MONTHS_SHORT : ML_MONTHS;
-    return (arr[mi] || p[1]) + ' ' + p[0];
+    return { monthly: monthly, paid: paid, pending: pending, elapsed: elapsed, list: list };
   }
 
   // ═══════════════════════════════════════════════════
   // 🎨 MAIN MODAL
   // ═══════════════════════════════════════════════════
   window.openFeeManager = async function(parentId) {
-    if (!parentId) {
-      showToast('❌ Parent ID missing', 'error');
-      return;
-    }
-
+    if (!parentId) { showToast('❌ Parent ID missing', 'error'); return; }
     showLoading(true);
 
-    // ─── Fetch parent FRESH from DB ───
+    // Fetch parent fresh
     var p = null;
     try {
-      var pr = await supabaseClient.from('fee_parents')
-        .select('*').eq('id', parentId).maybeSingle();
+      var pr = await supabaseClient.from('fee_parents').select('*').eq('id', parentId).maybeSingle();
       if (pr.error) throw pr.error;
       p = pr.data;
     } catch(e) {
-      console.warn('Parent fetch failed, trying cache:', e);
-      var parents = window.feeParentsData
-        || (typeof feeParentsData !== 'undefined' ? feeParentsData : [])
-        || [];
-      p = parents.find(function(x) { return x.id === parentId; });
-    }
-
-    if (!p) {
       showLoading(false);
-      showToast('❌ Parent not found', 'error');
+      showToast('❌ Parent fetch failed', 'error');
       return;
     }
+    if (!p) { showLoading(false); showToast('❌ Parent not found', 'error'); return; }
 
-    // ─── Fetch settings FRESH from DB ───
+    // Fetch settings fresh
     try {
       var sr = await supabaseClient.from('fee_settings').select('*');
       if (!sr.error) {
@@ -44119,34 +44110,27 @@ document.addEventListener('touchend', function(e) {
         window.FEE_SETTINGS_CACHE = {
           monthlyFee: parseInt(s.monthly_fee) || 200,
           startMonth: s.start_month || '',
-          monthsElapsed: (s.months_elapsed !== '' && s.months_elapsed !== undefined && s.months_elapsed !== null)
-                         ? parseInt(s.months_elapsed) : null,
-          upiId: s.upi_id || '',
-          payeeName: s.payee_name || ''
+          monthsElapsed: (s.months_elapsed !== '' && s.months_elapsed !== undefined &&
+                          s.months_elapsed !== null) ? parseInt(s.months_elapsed) : null
         };
-        console.log('✅ Settings loaded:', window.FEE_SETTINGS_CACHE);
       }
-    } catch(e) {
-      console.warn('Settings fetch failed:', e);
-    }
-
-    console.log('📋 Parent data:', p);
-    console.log('📊 Settings:', window.FEE_SETTINGS_CACHE);
+    } catch(e) {}
 
     showLoading(false);
 
+    var info = analyze(p);
     window._fmCurrentParent = p;
-    var info = analyzeMonths(p);
+    window._fmInfo = info;
 
-    console.log('🧮 Analyzed info:', info);
+    console.log('📊 Fee analysis:', {
+      elapsed: info.elapsed, paid: info.paid,
+      pending: info.pending, monthly: info.monthly
+    });
 
-    // ─── Warn if no settings ───
-    if (!window.FEE_SETTINGS_CACHE || !window.FEE_SETTINGS_CACHE.startMonth) {
-      // Still open modal, but show warning
-      console.warn('⚠️ No start_month set in settings — using fallback');
-    }
+    buildModal(p, info);
+  };
 
-    // Remove old
+  function buildModal(p, info) {
     var old = document.getElementById('feeMgrModal');
     if (old) old.remove();
 
@@ -44163,38 +44147,35 @@ document.addEventListener('touchend', function(e) {
     // Build month pills
     var monthPills = info.list.map(function(m) {
       var isPending = m.status === 'pending';
-      var color = isPending ? '#dc2626' : '#7c3aed';
-      var label = isPending ? 'pending' : 'advance';
-      return '<button type="button" class="fm-pill" data-key="' + m.key + '" ' +
-             'data-status="' + m.status + '" ' +
+      return '<button type="button" class="fm-pill" ' +
+             'data-key="' + m.key + '" data-status="' + m.status + '" ' +
              'data-amount="' + info.monthly + '" ' +
              'data-selected="' + (isPending ? 'true' : 'false') + '" ' +
              'onclick="FM_toggleMonth(this)" ' +
-             'style="padding:10px 14px;border-radius:12px;border:2px solid #cbd5e1;' +
-                    'background:#fff;color:#475569;font-family:inherit;' +
-                    'font-weight:800;font-size:.82rem;cursor:pointer;' +
+             'style="padding:10px 12px;border-radius:12px;border:2px solid #cbd5e1;' +
+                    'background:#f8fafc;color:#64748b;font-family:inherit;' +
+                    'font-weight:800;font-size:.8rem;cursor:pointer;' +
                     'transition:.2s;text-align:center;' +
                     'display:flex;flex-direction:column;align-items:center;gap:3px;' +
-                    'min-width:100px;">' +
-        '<span style="font-size:.9rem;">' + mlMonth(m.key, true) + '</span>' +
-        '<span style="font-size:.6rem;font-weight:800;letter-spacing:.5px;' +
-                     'text-transform:uppercase;color:' + color + ';">' +
-          label +
+                    'min-width:95px;min-height:56px;justify-content:center;">' +
+        '<span style="font-size:.86rem;">' + fmtMl(m.key, true) + '</span>' +
+        '<span style="font-size:.56rem;font-weight:900;letter-spacing:.5px;' +
+                     'text-transform:uppercase;color:' +
+                     (isPending ? '#dc2626' : '#7c3aed') + ';">' +
+          (isPending ? 'PENDING' : 'ADVANCE') +
         '</span>' +
       '</button>';
     }).join('');
 
     modal.innerHTML =
-      '<div style="background:#fff;border-radius:24px;max-width:560px;width:100%;' +
+      '<div style="background:#fff;border-radius:24px;max-width:580px;width:100%;' +
                   'margin:auto 0;box-shadow:0 40px 90px -30px rgba(0,0,0,.7);' +
                   'max-height:calc(100dvh - 32px);' +
                   'display:flex;flex-direction:column;overflow:hidden;">' +
 
-        // ─── HEADER ───
-        '<div style="padding:16px 20px;' +
-                    'background:linear-gradient(135deg,#059669,#10b981,#34d399);' +
-                    'color:#fff;display:flex;align-items:center;justify-content:space-between;' +
-                    'flex-shrink:0;">' +
+        // HEADER
+        '<div style="padding:16px 20px;background:linear-gradient(135deg,#059669,#10b981,#34d399);' +
+                    'color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">' +
           '<div style="display:flex;align-items:center;gap:12px;min-width:0;">' +
             '<div style="width:44px;height:44px;border-radius:14px;' +
                         'background:rgba(255,255,255,.22);' +
@@ -44202,11 +44183,9 @@ document.addEventListener('touchend', function(e) {
                         'font-size:1.4rem;flex-shrink:0;">💰</div>' +
             '<div style="min-width:0;">' +
               '<div style="font-weight:900;font-size:1rem;line-height:1.2;">' +
-                escapeHtml(p.parent_name || '') +
-              '</div>' +
+                escapeHtml(p.parent_name || '') + '</div>' +
               '<div style="font-size:.7rem;opacity:.9;margin-top:2px;font-weight:700;">' +
-                '📱 ' + escapeHtml(p.mobile || '—') +
-              '</div>' +
+                '📱 ' + escapeHtml(p.mobile || '—') + '</div>' +
             '</div>' +
           '</div>' +
           '<button type="button" onclick="FM_close()" ' +
@@ -44216,106 +44195,100 @@ document.addEventListener('touchend', function(e) {
                          'justify-content:center;flex-shrink:0;">✕</button>' +
         '</div>' +
 
-        // ─── STATS STRIP ───
-        '<div style="padding:14px 18px;background:#f0fdf4;border-bottom:1px solid rgba(100,116,139,.1);' +
+        // STATS
+        '<div style="padding:14px 18px;background:#f0fdf4;' +
+                    'border-bottom:1px solid rgba(100,116,139,.1);' +
                     'display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;">' +
           '<div style="flex:1;min-width:70px;text-align:center;">' +
-            '<div style="font-size:1.15rem;font-weight:900;color:#0f172a;">' +
-              info.paid +
-            '</div>' +
+            '<div style="font-size:1.15rem;font-weight:900;color:#0f172a;">' + info.paid + '</div>' +
             '<div style="font-size:.6rem;color:#64748b;font-weight:800;' +
                         'text-transform:uppercase;margin-top:2px;">Paid</div>' +
           '</div>' +
           '<div style="flex:1;min-width:70px;text-align:center;border-left:1px solid rgba(100,116,139,.15);' +
                       'border-right:1px solid rgba(100,116,139,.15);">' +
-            '<div style="font-size:1.15rem;font-weight:900;color:#dc2626;">' +
-              info.pending +
-            '</div>' +
+            '<div style="font-size:1.15rem;font-weight:900;color:#dc2626;">' + info.pending + '</div>' +
             '<div style="font-size:.6rem;color:#64748b;font-weight:800;' +
                         'text-transform:uppercase;margin-top:2px;">Pending</div>' +
           '</div>' +
           '<div style="flex:1;min-width:70px;text-align:center;">' +
-            '<div style="font-size:1.15rem;font-weight:900;color:#059669;">' +
-              '₹' + info.monthly +
-            '</div>' +
+            '<div style="font-size:1.15rem;font-weight:900;color:#059669;">₹' + info.monthly + '</div>' +
             '<div style="font-size:.6rem;color:#64748b;font-weight:800;' +
                         'text-transform:uppercase;margin-top:2px;">Per Month</div>' +
           '</div>' +
         '</div>' +
 
-        // ─── BODY ───
+        // BODY
         '<div style="padding:16px 18px;overflow-y:auto;flex:1 1 auto;">' +
+
+          // ⭐ ALL PENDING INFO
+          (info.pending > 0
+            ? '<div style="background:linear-gradient(135deg,#fee2e2,#fecaca);' +
+              'border:1.5px solid rgba(220,38,38,.4);border-radius:12px;' +
+              'padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;' +
+              'justify-content:space-between;gap:10px;flex-wrap:wrap;">' +
+              '<div style="font-size:.82rem;font-weight:800;color:#991b1b;">' +
+                '⏳ <b>' + info.pending + ' pending months</b> — ₹' +
+                (info.pending * info.monthly).toLocaleString('en-IN') +
+              '</div>' +
+              '<button type="button" onclick="FM_quickAction(\'allPending\')" ' +
+                      'style="background:#dc2626;color:#fff;border:none;' +
+                             'padding:8px 14px;border-radius:20px;' +
+                             'font-family:inherit;font-weight:800;font-size:.72rem;' +
+                             'cursor:pointer;min-height:36px;' +
+                             'box-shadow:0 4px 10px -4px rgba(220,38,38,.6);">' +
+                '⚡ Mark ALL Pending</button>' +
+              '</div>'
+            : '<div style="background:#fef3c7;border:1.5px solid rgba(180,83,9,.3);' +
+              'border-radius:10px;padding:12px 14px;margin-bottom:14px;' +
+              'font-size:.78rem;color:#92400e;font-weight:700;">' +
+              '<i class="fas fa-check-circle"></i> <b>All paid!</b> No pending months.' +
+              '</div>'
+          ) +
 
           // Quick actions
           '<div style="font-size:.72rem;font-weight:900;color:#475569;' +
-                      'text-transform:uppercase;letter-spacing:1px;' +
-                      'margin-bottom:10px;">⚡ Quick Actions</div>' +
+                      'text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">' +
+            '⚡ Quick Actions</div>' +
           '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));' +
                       'gap:8px;margin-bottom:16px;">' +
             '<button type="button" onclick="FM_quickAction(\'allPending\')" ' +
                     'style="padding:11px;border-radius:12px;border:none;' +
                            'background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;' +
-                           'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+                           'font-family:inherit;font-weight:800;font-size:.74rem;cursor:pointer;' +
                            'display:flex;align-items:center;justify-content:center;gap:6px;' +
-                           'min-height:46px;">' +
-              '⏳ All Pending (' + info.pending + ')</button>' +
+                           'min-height:46px;">⏳ All Pending (' + info.pending + ')</button>' +
             '<button type="button" onclick="FM_quickAction(\'next3\')" ' +
                     'style="padding:11px;border-radius:12px;border:none;' +
                            'background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;' +
-                           'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+                           'font-family:inherit;font-weight:800;font-size:.74rem;cursor:pointer;' +
                            'display:flex;align-items:center;justify-content:center;gap:6px;' +
-                           'min-height:46px;">' +
-              '💎 3 Advance</button>' +
+                           'min-height:46px;">💎 Next 3</button>' +
             '<button type="button" onclick="FM_quickAction(\'next6\')" ' +
                     'style="padding:11px;border-radius:12px;border:none;' +
                            'background:linear-gradient(135deg,#0891b2,#22d3ee);color:#fff;' +
-                           'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+                           'font-family:inherit;font-weight:800;font-size:.74rem;cursor:pointer;' +
                            'display:flex;align-items:center;justify-content:center;gap:6px;' +
-                           'min-height:46px;">' +
-              '💠 6 Advance</button>' +
+                           'min-height:46px;">💠 Next 6</button>' +
             '<button type="button" onclick="FM_quickAction(\'clear\')" ' +
                     'style="padding:11px;border-radius:12px;border:1.5px solid rgba(100,116,139,.25);' +
                            'background:#f1f5f9;color:#475569;' +
-                           'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+                           'font-family:inherit;font-weight:800;font-size:.74rem;cursor:pointer;' +
                            'display:flex;align-items:center;justify-content:center;gap:6px;' +
-                           'min-height:46px;">' +
-              '🗑️ Clear All</button>' +
+                           'min-height:46px;">🗑️ Clear</button>' +
           '</div>' +
 
-          // Info
-          '<div style="background:#ecfeff;border:1px solid rgba(8,145,178,.3);' +
-                      'border-radius:10px;padding:10px 14px;margin-bottom:14px;' +
-                      'font-size:.74rem;color:#0891b2;font-weight:700;line-height:1.5;">' +
-            '<i class="fas fa-hand-pointer"></i> ' +
-            'Months tap ചെയ്ത് select/deselect ചെയ്യൂ. ' +
-            '<span style="color:#dc2626;">Pending</span> auto-selected. ' +
-            '<span style="color:#7c3aed;">Advance</span> optional.' +
-          '</div>' +
-          // Warn if no pending
-          (info.pending === 0
-            ? '<div style="background:#fef3c7;border:1.5px solid rgba(180,83,9,.3);' +
-              'border-radius:10px;padding:12px 14px;margin-bottom:14px;' +
-              'font-size:.78rem;color:#92400e;font-weight:700;line-height:1.5;">' +
-              '<i class="fas fa-info-circle"></i> ' +
-              '<b>⚠️ No pending months</b><br>' +
-              'Admin Settings → Fee Settings ൽ <b>Start Month</b> സെറ്റ് ചെയ്യണം. ' +
-              'അല്ലെങ്കിൽ pending months കണക്കാക്കാൻ പറ്റില്ല.' +
-              '</div>'
-            : '') +
-          // Month grid
+          // Month grid — ALL pending + 12 advance
           '<div style="font-size:.72rem;font-weight:900;color:#475569;' +
-                      'text-transform:uppercase;letter-spacing:1px;' +
-                      'margin-bottom:10px;">📅 Months (tap to select)</div>' +
+                      'text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">' +
+            '📅 Months (tap to toggle)</div>' +
           '<div id="fmPillsGrid" style="display:grid;' +
-               'grid-template-columns:repeat(auto-fill,minmax(100px,1fr));' +
+               'grid-template-columns:repeat(auto-fill,minmax(95px,1fr));' +
                'gap:8px;">' + monthPills + '</div>' +
 
           // Notes
           '<div style="margin-top:16px;">' +
             '<label style="display:block;font-size:.74rem;font-weight:800;' +
-                          'color:#475569;margin-bottom:6px;">' +
-              '📝 Notes (optional)' +
-            '</label>' +
+                          'color:#475569;margin-bottom:6px;">📝 Notes (optional)</label>' +
             '<input type="text" id="fmNotes" maxlength="150" ' +
                    'placeholder="e.g., ഒരുമിച്ച് അടച്ചു" ' +
                    'style="width:100%;padding:11px 14px;' +
@@ -44325,35 +44298,26 @@ document.addEventListener('touchend', function(e) {
           '</div>' +
         '</div>' +
 
-        // ─── STICKY FOOTER ───
+        // FOOTER
         '<div style="padding:14px 18px;background:#f8fafc;' +
                     'border-top:2px solid rgba(5,150,105,.2);flex-shrink:0;">' +
           '<div style="display:flex;justify-content:space-between;align-items:center;' +
                       'margin-bottom:10px;">' +
             '<div>' +
-              '<div style="font-size:.72rem;color:#64748b;font-weight:800;">' +
-                'Selected:' +
-              '</div>' +
-              '<div id="fmSelCount" style="font-size:.86rem;font-weight:900;color:#0f172a;">' +
-                '0 months' +
-              '</div>' +
+              '<div style="font-size:.72rem;color:#64748b;font-weight:800;">Selected:</div>' +
+              '<div id="fmSelCount" style="font-size:.86rem;font-weight:900;color:#0f172a;">0 months</div>' +
             '</div>' +
             '<div style="text-align:right;">' +
-              '<div style="font-size:.72rem;color:#64748b;font-weight:800;">' +
-                'Total:' +
-              '</div>' +
-              '<div id="fmTotal" style="font-size:1.5rem;font-weight:900;color:#059669;line-height:1;">' +
-                '₹0' +
-              '</div>' +
+              '<div style="font-size:.72rem;color:#64748b;font-weight:800;">Total:</div>' +
+              '<div id="fmTotal" style="font-size:1.5rem;font-weight:900;color:#059669;line-height:1;">₹0</div>' +
             '</div>' +
           '</div>' +
           '<div style="display:flex;gap:8px;">' +
             '<button type="button" onclick="FM_close()" ' +
                     'style="flex:.5;padding:13px;border-radius:14px;' +
                            'border:1.5px solid rgba(100,116,139,.2);' +
-                           'background:#fff;color:#475569;' +
-                           'font-family:inherit;font-weight:800;font-size:.84rem;' +
-                           'cursor:pointer;min-height:48px;">Cancel</button>' +
+                           'background:#fff;color:#475569;font-family:inherit;' +
+                           'font-weight:800;font-size:.84rem;cursor:pointer;min-height:48px;">Cancel</button>' +
             '<button type="button" id="fmSubmitBtn" onclick="FM_submit()" ' +
                     'style="flex:2;padding:13px;border-radius:14px;border:none;' +
                            'background:linear-gradient(100deg,#059669,#34d399);color:#fff;' +
@@ -44361,66 +44325,53 @@ document.addEventListener('touchend', function(e) {
                            'cursor:pointer;min-height:48px;' +
                            'display:inline-flex;align-items:center;justify-content:center;gap:8px;' +
                            'box-shadow:0 10px 25px -10px rgba(5,150,105,.7);">' +
-              '<i class="fas fa-check-circle"></i> Confirm & Save' +
-            '</button>' +
+              '<i class="fas fa-check-circle"></i> Confirm & Save</button>' +
           '</div>' +
         '</div>' +
       '</div>';
 
     document.body.appendChild(modal);
-
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) FM_close();
-    });
+    modal.addEventListener('click', function(e) { if (e.target === modal) FM_close(); });
 
     setTimeout(FM_updateUI, 80);
     if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
-  };
+  }
 
+  // ═══════════════════════════════════════════════════
+  // 🎛️ Toggle + Quick + Update
+  // ═══════════════════════════════════════════════════
   window.FM_close = function() {
     var m = document.getElementById('feeMgrModal');
     if (m) m.remove();
   };
 
-  // ═══════════════════════════════════════════════════
-  // 🎛️ Toggle a month pill
-  // ═══════════════════════════════════════════════════
   window.FM_toggleMonth = function(el) {
-    var sel = el.dataset.selected === 'true';
-    el.dataset.selected = sel ? 'false' : 'true';
+    el.dataset.selected = el.dataset.selected === 'true' ? 'false' : 'true';
     FM_updateUI();
     if (navigator.vibrate) try { navigator.vibrate(8); } catch(e) {}
   };
 
-  // ═══════════════════════════════════════════════════
-  // ⚡ Quick actions
-  // ═══════════════════════════════════════════════════
   window.FM_quickAction = function(action) {
     var pills = document.querySelectorAll('.fm-pill');
 
-    if (action === 'allPending') {
+    if (action === 'clear') {
+      pills.forEach(function(el) { el.dataset.selected = 'false'; });
+    } else if (action === 'allPending') {
       pills.forEach(function(el) {
         el.dataset.selected = el.dataset.status === 'pending' ? 'true' : 'false';
       });
-    } else if (action === 'clear') {
-      pills.forEach(function(el) { el.dataset.selected = 'false'; });
     } else if (action === 'next3' || action === 'next6') {
       var count = action === 'next3' ? 3 : 6;
-      var advancePills = [];
+      var adv = [];
       pills.forEach(function(el) {
-        if (el.dataset.status === 'advance') advancePills.push(el);
+        if (el.dataset.status === 'advance') adv.push(el);
       });
-      // Sort by key (chronological)
-      advancePills.sort(function(a, b) {
-        return a.dataset.key.localeCompare(b.dataset.key);
-      });
-      // Clear all first
+      adv.sort(function(a, b) { return a.dataset.key.localeCompare(b.dataset.key); });
       pills.forEach(function(el) {
         el.dataset.selected = el.dataset.status === 'pending' ? 'true' : 'false';
       });
-      // Add first N advance
-      for (var i = 0; i < Math.min(count, advancePills.length); i++) {
-        advancePills[i].dataset.selected = 'true';
+      for (var i = 0; i < Math.min(count, adv.length); i++) {
+        adv[i].dataset.selected = 'true';
       }
     }
 
@@ -44428,34 +44379,27 @@ document.addEventListener('touchend', function(e) {
     if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
   };
 
-  // ═══════════════════════════════════════════════════
-  // 🎨 Update UI state
-  // ═══════════════════════════════════════════════════
   window.FM_updateUI = function() {
     var pills = document.querySelectorAll('.fm-pill');
-    var count = 0;
-    var total = 0;
+    var count = 0, total = 0;
 
     pills.forEach(function(el) {
       var sel = el.dataset.selected === 'true';
       var amt = parseInt(el.dataset.amount) || 0;
-      var isPending = el.dataset.status === 'pending';
+      var isP = el.dataset.status === 'pending';
 
       if (sel) {
-        count++;
-        total += amt;
-        // Selected style
-        el.style.background = isPending
+        count++; total += amt;
+        el.style.background = isP
           ? 'linear-gradient(135deg,#fee2e2,#fecaca)'
           : 'linear-gradient(135deg,#ede9fe,#ddd6fe)';
-        el.style.borderColor = isPending ? '#dc2626' : '#7c3aed';
-        el.style.color = isPending ? '#991b1b' : '#5b21b6';
+        el.style.borderColor = isP ? '#dc2626' : '#7c3aed';
+        el.style.color = isP ? '#991b1b' : '#5b21b6';
         el.style.transform = 'scale(1.03)';
-        el.style.boxShadow = isPending
+        el.style.boxShadow = isP
           ? '0 4px 12px -4px rgba(220,38,38,.4)'
           : '0 4px 12px -4px rgba(139,92,246,.4)';
       } else {
-        // Unselected style
         el.style.background = '#f8fafc';
         el.style.borderColor = '#cbd5e1';
         el.style.color = '#64748b';
@@ -44464,18 +44408,15 @@ document.addEventListener('touchend', function(e) {
       }
     });
 
-    // Update counters
-    var cntEl = document.getElementById('fmSelCount');
-    if (cntEl) cntEl.textContent = count + ' month' + (count !== 1 ? 's' : '');
+    var c = document.getElementById('fmSelCount');
+    if (c) c.textContent = count + ' month' + (count !== 1 ? 's' : '');
+    var t = document.getElementById('fmTotal');
+    if (t) t.textContent = '₹' + total.toLocaleString('en-IN');
 
-    var totEl = document.getElementById('fmTotal');
-    if (totEl) totEl.textContent = '₹' + total.toLocaleString('en-IN');
-
-    // Disable submit if nothing selected
-    var submitBtn = document.getElementById('fmSubmitBtn');
-    if (submitBtn) {
-      submitBtn.disabled = count === 0;
-      submitBtn.style.opacity = count === 0 ? '0.5' : '1';
+    var sb = document.getElementById('fmSubmitBtn');
+    if (sb) {
+      sb.disabled = count === 0;
+      sb.style.opacity = count === 0 ? '0.5' : '1';
     }
   };
 
@@ -44484,10 +44425,7 @@ document.addEventListener('touchend', function(e) {
   // ═══════════════════════════════════════════════════
   window.FM_submit = async function() {
     var p = window._fmCurrentParent;
-    if (!p) {
-      showToast('❌ Parent missing', 'error');
-      return;
-    }
+    if (!p) { showToast('❌ Parent missing', 'error'); return; }
 
     var pills = document.querySelectorAll('.fm-pill');
     var selected = [];
@@ -44501,64 +44439,45 @@ document.addEventListener('touchend', function(e) {
       }
     });
 
-    if (selected.length === 0) {
-      showToast('⚠️ ഒരു month select ചെയ്യൂ', 'error');
-      return;
-    }
-
-    // Sort chronologically
+    if (!selected.length) { showToast('⚠️ ഒരു month select ചെയ്യൂ', 'error'); return; }
     selected.sort(function(a, b) { return a.key.localeCompare(b.key); });
 
     var totalAmount = selected.reduce(function(s, x) { return s + x.amount; }, 0);
     var pendingSel = selected.filter(function(x) { return x.status === 'pending'; });
     var advanceSel = selected.filter(function(x) { return x.status === 'advance'; });
-
     var notes = (document.getElementById('fmNotes').value || '').trim();
 
-    // Confirmation
     var confirmMsg = '💰 Confirm Payment\n\n' +
       '👤 ' + (p.parent_name || '') + '\n' +
       '📅 ' + selected.length + ' months\n' +
       (pendingSel.length ? '   ⏳ ' + pendingSel.length + ' pending\n' : '') +
       (advanceSel.length ? '   💎 ' + advanceSel.length + ' advance\n' : '') +
       '\n💵 Total: ₹' + totalAmount.toLocaleString('en-IN') +
-      (notes ? '\n📝 ' + notes : '') +
-      '\n\nProceed?';
+      (notes ? '\n📝 ' + notes : '') + '\n\nProceed?';
 
     if (!confirm(confirmMsg)) return;
 
     var btn = document.getElementById('fmSubmitBtn');
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-    }
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
 
     try {
-      // Prepare history
       var history = p.payment_history || [];
       if (typeof history === 'string') {
         try { history = JSON.parse(history); } catch(e) { history = []; }
       }
 
       var today = new Date().toISOString().split('T')[0];
-
-      // Add each selected month as separate entry
       selected.forEach(function(item) {
         history.push({
-          month: item.key,
-          amount: item.amount,
-          date: today,
-          paidBy: 'Admin',
-          notes: notes || null,
-          type: item.status,
-          isAdvance: item.status === 'advance'
+          month: item.key, amount: item.amount, date: today,
+          paidBy: 'Admin', notes: notes || null,
+          type: item.status, isAdvance: item.status === 'advance'
         });
       });
 
       var newPaidMonths = (Number(p.paid_months) || 0) + selected.length;
       var lastMonth = selected[selected.length - 1].key;
 
-      // Save
       var ur = await supabaseClient.from('fee_parents').update({
         last_paid_month: lastMonth,
         last_paid_date: today,
@@ -44572,39 +44491,26 @@ document.addEventListener('touchend', function(e) {
       // Notify students
       try {
         var sids = p.student_ids || [];
-        if (sids.length > 0) {
-          var advanceNote = advanceSel.length > 0
-            ? ' (+' + advanceSel.length + ' advance 💎)'
-            : '';
+        if (sids.length) {
+          var adv = advanceSel.length ? ' (+' + advanceSel.length + ' advance 💎)' : '';
           var notifs = sids.map(function(sid) {
             return {
               title: '✅ ഫീസ് ലഭിച്ചു',
-              message: '₹' + totalAmount.toLocaleString('en-IN') +
-                       ' — ' + selected.length + ' month' +
-                       (selected.length > 1 ? 's' : '') + advanceNote +
-                       '. ജസാക്കല്ലാഹു ഖൈർ 🤲',
-              type: 'important',
-              target_type: 'student',
-              target_student: sid,
-              link_url: null
+              message: '₹' + totalAmount.toLocaleString('en-IN') + ' — ' +
+                       selected.length + ' month' + (selected.length > 1 ? 's' : '') +
+                       adv + '. ജസാക്കല്ലാഹു ഖൈർ 🤲',
+              type: 'important', target_type: 'student',
+              target_student: sid, link_url: null
             };
           });
           await supabaseClient.from('notifications').insert(notifs);
         }
-      } catch(e) { /* silent */ }
+      } catch(e) {}
 
-      // Success
-      showToast(
-        '✅ ' + selected.length + ' month(s) — ₹' +
-        totalAmount.toLocaleString('en-IN'),
-        'success'
-      );
-
+      showToast('✅ ' + selected.length + ' month(s) — ₹' + totalAmount.toLocaleString('en-IN'), 'success');
       if (typeof confetti !== 'undefined') {
-        confetti({
-          particleCount: 90, spread: 80, origin: { y: .7 },
-          colors: ['#059669','#34d399','#7c3aed','#fbbf24']
-        });
+        confetti({ particleCount: 90, spread: 80, origin: { y: .7 },
+                   colors: ['#059669','#34d399','#7c3aed','#fbbf24'] });
       }
       if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
 
@@ -44615,31 +44521,22 @@ document.addEventListener('touchend', function(e) {
         if (typeof window.showFeeReceipt === 'function') {
           var label;
           if (selected.length === 1) {
-            label = mlMonth(selected[0].key) +
-                    (selected[0].status === 'advance' ? ' (Advance)' : '');
+            label = fmtMl(selected[0].key) + (selected[0].status === 'advance' ? ' (Advance)' : '');
           } else {
-            label = mlMonth(selected[0].key) + ' → ' +
-                    mlMonth(selected[selected.length - 1].key);
+            label = fmtMl(selected[0].key) + ' → ' + fmtMl(selected[selected.length - 1].key);
             var parts = [];
             if (pendingSel.length) parts.push(pendingSel.length + ' pending');
             if (advanceSel.length) parts.push(advanceSel.length + ' advance');
             if (parts.length) label += ' (' + parts.join(' + ') + ')';
           }
-
           window.showFeeReceipt({
-            parent: p.parent_name,
-            amount: totalAmount,
-            month: label,
-            date: today,
-            studentNames: p.student_names || '',
-            studentIds: p.student_ids || [],
-            mobile: p.mobile,
-            paidBy: 'Admin'
+            parent: p.parent_name, amount: totalAmount, month: label,
+            date: today, studentNames: p.student_names || '',
+            studentIds: p.student_ids || [], mobile: p.mobile, paidBy: 'Admin'
           });
         }
       }, 500);
 
-      // Reload admin
       if (typeof window.loadFeeParentsAdmin === 'function') {
         setTimeout(window.loadFeeParentsAdmin, 1500);
       }
@@ -44655,19 +44552,15 @@ document.addEventListener('touchend', function(e) {
   };
 
   // ═══════════════════════════════════════════════════
-  // 🔗 Override markFeePaid + old openMultiMonthFeeModal
+  // 🔗 Override markFeePaid
   // ═══════════════════════════════════════════════════
-  window.markFeePaid = function(id) {
-    window.openFeeManager(id);
-  };
-  window.openMultiMonthFeeModal = function(id) {
-    window.openFeeManager(id);
-  };
+  window.markFeePaid = function(id) { window.openFeeManager(id); };
+  window.openMultiMonthFeeModal = function(id) { window.openFeeManager(id); };
 
   // ═══════════════════════════════════════════════════
-  // 🎯 INJECT "💰" button into admin fee table
+  // 🎯 INJECT 💰 button into fee table
   // ═══════════════════════════════════════════════════
-  function injectFeeBtn() {
+  function injectBtn() {
     var wrap = document.getElementById('feeParentsWrap');
     if (!wrap) return;
 
@@ -44676,82 +44569,68 @@ document.addEventListener('touchend', function(e) {
       if (!cell) return;
       if (cell.querySelector('.btn-fee-mgr')) return;
 
-      // Find parent id from any existing button
-      var refBtn = cell.querySelector('[onclick*="markFeePaid"]')
-                || cell.querySelector('[onclick*="editFeeParent"]')
-                || cell.querySelector('[onclick*="showHistoryReceipt"]');
-      if (!refBtn) return;
+      var ref = cell.querySelector('[onclick*="markFeePaid"]')
+             || cell.querySelector('[onclick*="editFeeParent"]');
+      if (!ref) return;
 
-      var m = refBtn.getAttribute('onclick').match(/(\d+)/);
+      var m = ref.getAttribute('onclick').match(/(\d+)/);
       if (!m) return;
-      var pid = m[1];
 
-      // Add as FIRST button
       var btn = document.createElement('button');
       btn.className = 'btn-fee-mgr';
       btn.innerHTML = '💰';
-      btn.title = 'Manage Fee Payment';
-      btn.setAttribute('onclick', 'window.openFeeManager(' + pid + ')');
+      btn.title = 'Manage Fee';
+      btn.setAttribute('onclick', 'window.openFeeManager(' + m[1] + ')');
       btn.style.cssText =
-        'background:linear-gradient(100deg,#059669,#34d399);' +
-        'color:#fff;border:none;padding:6px 12px;border-radius:30px;' +
-        'font-size:.75rem;font-weight:800;cursor:pointer;' +
-        'margin-right:4px;min-width:42px;min-height:34px;';
-
+        'background:linear-gradient(100deg,#059669,#34d399);color:#fff;' +
+        'border:none;padding:6px 12px;border-radius:30px;font-size:.75rem;' +
+        'font-weight:800;cursor:pointer;margin-right:4px;min-width:42px;min-height:34px;';
       cell.insertBefore(btn, cell.firstChild);
     });
   }
 
-  // Hook into load
   var _origLoad = window.loadFeeParentsAdmin;
-  if (typeof _origLoad === 'function' && !_origLoad._v132) {
+  if (typeof _origLoad === 'function' && !_origLoad._v133) {
     window.loadFeeParentsAdmin = async function() {
       var r = await _origLoad.apply(this, arguments);
-      setTimeout(injectFeeBtn, 200);
-      setTimeout(injectFeeBtn, 800);
+      setTimeout(injectBtn, 200);
+      setTimeout(injectBtn, 800);
       return r;
     };
-    window.loadFeeParentsAdmin._v132 = true;
+    window.loadFeeParentsAdmin._v133 = true;
   }
 
-  // Watch table
   setTimeout(function() {
     var w = document.getElementById('feeParentsWrap');
     if (w) {
       new MutationObserver(function() {
-        clearTimeout(window._feeBtnTimer);
-        window._feeBtnTimer = setTimeout(injectFeeBtn, 150);
+        clearTimeout(window._feeBtnT);
+        window._feeBtnT = setTimeout(injectBtn, 150);
       }).observe(w, { childList: true, subtree: true });
     }
   }, 3500);
 
-  // Safety scan
-  setInterval(injectFeeBtn, 5000);
+  setInterval(injectBtn, 5000);
 
   // ═══════════════════════════════════════════════════
   // 🐛 DEBUG
   // ═══════════════════════════════════════════════════
-  window.FM_debug = function(parentId) {
-    var parents = window.feeParentsData
-      || (typeof feeParentsData !== 'undefined' ? feeParentsData : []);
-    var p = parents.find(function(x) { return x.id === parentId; });
-    if (!p) { console.log('❌ Parent not found:', parentId); return; }
-    var info = analyzeMonths(p);
-    console.log('=== FEE MANAGER DEBUG ===');
-    console.log('Parent:', p.parent_name);
-    console.log('Paid:', info.paid);
-    console.log('Pending:', info.pending);
-    console.log('Total elapsed:', info.total);
-    console.log('Monthly fee:', info.monthly);
-    console.log('Months list:');
-    info.list.forEach(function(m) {
-      console.log('  ' + (m.status === 'advance' ? '💎' : '⏳') + ' ' + m.key + ' — ' + m.status);
-    });
+  window.FM_debug = async function(parentId) {
+    if (!parentId) { console.log('Usage: FM_debug(1)'); return; }
+    var pr = await supabaseClient.from('fee_parents').select('*').eq('id', parentId).maybeSingle();
+    console.log('Parent:', pr.data);
+    if (pr.data) {
+      var info = analyze(pr.data);
+      console.log('Elapsed:', info.elapsed, '| Paid:', info.paid, '| Pending:', info.pending);
+      console.log('Monthly:', info.monthly);
+      console.log('Total pending amount:', info.pending * info.monthly);
+    }
   };
 
-  console.log('✅ Simple Fee Manager v132 ready');
-  console.log('   💡 Admin → Fee table → 💰 button');
-  console.log('   💡 FM_debug(parentId) — check state');
+  console.log('✅ Fee Manager v133 ready');
+  console.log('   ⭐ ALL pending months shown (no cap)');
+  console.log('   🚫 🧾 Receipt + 💬 WhatsApp buttons hidden');
+  console.log('   💡 FM_debug(parentId) — check');
 })();
 </script>
 </body>
