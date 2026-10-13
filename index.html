@@ -14362,104 +14362,6 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
 }
 
 /* ═══════════════════════════════════════════════════════ */
-/* 📿 TASBEEH COUNTER                                       */
-/* ═══════════════════════════════════════════════════════ */
-.tasbeeh-widget {
-  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-  border-radius: 22px;
-  padding: 20px;
-  margin-bottom: 16px;
-  text-align: center;
-  color: #fff;
-  box-shadow: 0 15px 35px -12px rgba(14,165,233,.7);
-  position: relative;
-  overflow: hidden;
-}
-.tasbeeh-widget::before {
-  content: '📿'; position: absolute;
-  top: -20px; right: -20px;
-  font-size: 6rem;
-  opacity: .12;
-}
-.tasbeeh-title {
-  font-size: .82rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  opacity: .9;
-  margin-bottom: 4px;
-  position: relative;
-  z-index: 2;
-}
-.tasbeeh-dhikr {
-  font-size: 1.1rem;
-  font-weight: 800;
-  margin: 0 0 12px;
-  position: relative;
-  z-index: 2;
-}
-.tasbeeh-count {
-  font-size: 4rem;
-  font-weight: 900;
-  line-height: 1;
-  margin: 8px 0 12px;
-  text-shadow: 0 4px 12px rgba(0,0,0,.2);
-  position: relative;
-  z-index: 2;
-  transition: transform .15s ease;
-}
-.tasbeeh-count.pop {
-  animation: tasbeehPop .3s ease;
-}
-@keyframes tasbeehPop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
-}
-.tasbeeh-tap-btn {
-  width: 90px; height: 90px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,.25);
-  backdrop-filter: blur(20px);
-  color: #fff;
-  font-size: 2rem;
-  cursor: pointer;
-  transition: all .15s ease;
-  box-shadow: 0 10px 30px -8px rgba(0,0,0,.3), inset 0 2px 4px rgba(255,255,255,.3);
-  position: relative;
-  z-index: 2;
-  -webkit-tap-highlight-color: transparent;
-}
-.tasbeeh-tap-btn:active {
-  transform: scale(.92);
-  background: rgba(255,255,255,.35);
-}
-.tasbeeh-row {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 14px;
-  position: relative;
-  z-index: 2;
-}
-.tasbeeh-mini-btn {
-  padding: 8px 14px;
-  border-radius: 20px;
-  border: 1.5px solid rgba(255,255,255,.4);
-  background: rgba(255,255,255,.15);
-  color: #fff;
-  font-family: inherit;
-  font-weight: 800;
-  font-size: .74rem;
-  cursor: pointer;
-  transition: .2s ease;
-}
-.tasbeeh-mini-btn:active {
-  background: rgba(255,255,255,.3);
-}
-
-/* ═══════════════════════════════════════════════════════ */
 /* 📊 PROGRESS RINGS                                        */
 /* ═══════════════════════════════════════════════════════ */
 .rings-grid {
@@ -15326,88 +15228,6 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
   }
 
   // ═══════════════════════════════════════════════════
-  // 📿 TASBEEH COUNTER
-  // ═══════════════════════════════════════════════════
-  const DHIKR_TYPES = {
-    subhanallah: 'سُبْحَانَ اللَّهِ',
-    alhamdulillah: 'الْحَمْدُ لِلَّهِ',
-    allahuakbar: 'اللَّهُ أَكْبَرُ',
-    lailaha: 'لَا إِلَٰهَ إِلَّا اللَّهُ',
-    astaghfirullah: 'أَسْتَغْفِرُ اللَّهَ'
-  };
-
-  window.tasbeehTap = async function() {
-    window.KIDS_STATE.tasbeehCount++;
-    const el = document.getElementById('tasbeehCount');
-    if (el) {
-      el.textContent = window.KIDS_STATE.tasbeehCount;
-      el.classList.remove('pop');
-      void el.offsetWidth;
-      el.classList.add('pop');
-    }
-    if (navigator.vibrate) navigator.vibrate(10);
-
-    // Save every 10 taps
-    if (window.KIDS_STATE.tasbeehCount % 10 === 0) {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        await supabaseClient.from('tasbeeh_log').upsert({
-          studentid: currentUser.studentId,
-          dhikr_type: window.KIDS_STATE.lastDhikr,
-          count: window.KIDS_STATE.tasbeehCount,
-          log_date: today
-        }, { onConflict: 'studentid,dhikr_type,log_date' });
-      } catch(e) {}
-    }
-
-    // Reward at 100
-    if (window.KIDS_STATE.tasbeehCount === 100) {
-      await awardXP(25, '100 Tasbeeh!');
-      if (typeof confetti !== 'undefined') {
-        confetti({ particleCount: 80, spread: 70, origin: { y: .6 } });
-      }
-    }
-  };
-
-  window.tasbeehReset = function() {
-    if (!confirm('Reset counter?')) return;
-    window.KIDS_STATE.tasbeehCount = 0;
-    const el = document.getElementById('tasbeehCount');
-    if (el) el.textContent = '0';
-  };
-
-  window.tasbeehChangeDhikr = function(type) {
-    window.KIDS_STATE.lastDhikr = type;
-    window.KIDS_STATE.tasbeehCount = 0;
-    const el = document.getElementById('tasbeehDhikr');
-    if (el) el.textContent = DHIKR_TYPES[type] || type;
-    const cEl = document.getElementById('tasbeehCount');
-    if (cEl) cEl.textContent = '0';
-  };
-
-  window.renderTasbeehWidget = function() {
-    let widget = document.getElementById('tasbeehWidget');
-    if (!widget) {
-      widget = document.createElement('div');
-      widget.id = 'tasbeehWidget';
-      widget.className = 'tasbeeh-widget';
-      injectWidgetToDashboard(widget, 4);
-    }
-    widget.innerHTML = `
-      <div class="tasbeeh-title">📿 Tasbeeh Counter</div>
-      <div class="tasbeeh-dhikr" id="tasbeehDhikr">${DHIKR_TYPES[window.KIDS_STATE.lastDhikr] || 'سُبْحَانَ اللَّهِ'}</div>
-      <div class="tasbeeh-count" id="tasbeehCount">${window.KIDS_STATE.tasbeehCount}</div>
-      <button class="tasbeeh-tap-btn" onclick="tasbeehTap()">📿</button>
-      <div class="tasbeeh-row">
-        <button class="tasbeeh-mini-btn" onclick="tasbeehChangeDhikr('subhanallah')">Subhan</button>
-        <button class="tasbeeh-mini-btn" onclick="tasbeehChangeDhikr('alhamdulillah')">Alhamd</button>
-        <button class="tasbeeh-mini-btn" onclick="tasbeehChangeDhikr('allahuakbar')">Akbar</button>
-        <button class="tasbeeh-mini-btn" onclick="tasbeehReset()">Reset</button>
-      </div>
-    `;
-  };
-
-  // ═══════════════════════════════════════════════════
   // 🎨 INJECT WIDGETS INTO DASHBOARD
   // ═══════════════════════════════════════════════════
   function injectWidgetToDashboard(widget, position) {
@@ -15457,7 +15277,6 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
     const newTiles = [
       { action: 'quiz', icon: '🎯', label: 'Quiz', color: 'linear-gradient(145deg,#667eea,#764ba2)', onclick: 'openQuizModal()' },
       { action: 'rewards', icon: '🎁', label: 'Rewards', color: 'linear-gradient(145deg,#fbbf24,#f59e0b)', onclick: 'openRewardsModal()' },
-      { action: 'tasbeeh', icon: '📿', label: 'Tasbeeh', color: 'linear-gradient(145deg,#0ea5e9,#38bdf8)', onclick: 'openTasbeehModal()' },
       { action: 'avatar', icon: '🎨', label: 'Avatar', color: 'linear-gradient(145deg,#ec4899,#f472b6)', onclick: 'openAvatarCustomizer()' }
     ];
 
@@ -15514,7 +15333,6 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
     await loadStudentXP();
     await loadAndUpdateStreak();
     await loadMissions();
-    renderTasbeehWidget();
     addQuickActionTiles();
     await checkAndUnlockStickers();
 
@@ -15549,7 +15367,6 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
     loadMissions, completeMission, renderMissionsWidget,
     openRewardsModal, closeRewardsModal, redeemReward,
     openQuizModal, closeQuizModal, answerQuiz,
-    tasbeehTap, tasbeehReset, tasbeehChangeDhikr, renderTasbeehWidget,
     checkAndUnlockStickers, initKidsPack,
     xpForLevel, levelFromTotalXP, xpProgressForLevel
   });
@@ -19711,7 +19528,6 @@ console.log('✅ Admin Management Extended — Quiz, Rewards, Missions, Survey, 
     exam_card: true,
     quiz_tile: true,
     rewards_tile: true,
-    tasbeeh_tile: false,        // ← Default OFF
     avatar_tile: true,
     chat_tile: true,
     xp_widget: true,
@@ -19731,7 +19547,6 @@ console.log('✅ Admin Management Extended — Quiz, Rewards, Missions, Survey, 
     { key: 'exam_card', label: 'Exam Countdown Card', icon: 'fa-hourglass-half' },
     { key: 'quiz_tile', label: 'Quiz Tile', icon: 'fa-question-circle' },
     { key: 'rewards_tile', label: 'Rewards Tile', icon: 'fa-gift' },
-    { key: 'tasbeeh_tile', label: 'Tasbeeh Tile', icon: 'fa-circle-notch' },
     { key: 'avatar_tile', label: 'Avatar Customizer', icon: 'fa-palette' },
     { key: 'chat_tile', label: 'Chat Tile', icon: 'fa-comment-dots' },
     { key: 'xp_widget', label: 'XP Widget', icon: 'fa-star' },
@@ -19839,7 +19654,6 @@ console.log('✅ Admin Management Extended — Quiz, Rewards, Missions, Survey, 
     var tileMap = {
       quiz_tile: 'quiz',
       rewards_tile: 'rewards',
-      tasbeeh_tile: 'tasbeeh',
       avatar_tile: 'avatar_custom',
       chat_tile: 'class_chat'
     };
@@ -24668,13 +24482,6 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
       tile.remove();
       console.log('🗑️ Removed duplicate Avatar tile');
     });
-
-    // ─── 2. Hide Tasbeeh tile (v36 intent) ───
-    var tasbeehTile = grid.querySelector('.action-tile[data-action="tasbeeh"]');
-    if (tasbeehTile) {
-      tasbeehTile.style.display = 'none';
-      console.log('🚫 Hidden Tasbeeh tile');
-    }
 
     // ─── 3. Verify no duplicates remain ───
     var actions = {};
