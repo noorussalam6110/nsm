@@ -43979,305 +43979,327 @@ document.addEventListener('touchend', function(e) {
   console.log('   💡 ADMIN_NAMZ_debug() — check state');
 })();  
 </script>
-<script id="multi-month-fee-v131">
+<script id="simple-fee-v132">
 (function(){
   'use strict';
-  console.log('💰 Multi-Month Fee v131 loading...');
+  console.log('💰 Simple Fee Manager v132 loading...');
 
   // ═══════════════════════════════════════════════════
-  // 🧮 HELPER: Get all pending months
+  // 🧮 HELPER — All months info for a parent
   // ═══════════════════════════════════════════════════
-  function getPendingMonths(parent) {
-    var settings = window.FEE_SETTINGS_CACHE || {};
-    var monthly = Number(settings.monthlyFee) || 200;
-    var startMonth = settings.startMonth || '';
-    var manualElapsed = (settings.monthsElapsed !== null && settings.monthsElapsed !== undefined)
-                        ? parseInt(settings.monthsElapsed) : null;
+  function analyzeMonths(parent) {
+    var s = window.FEE_SETTINGS_CACHE || {};
+    var monthly = Number(s.monthlyFee) || 200;
+    var startMonth = s.startMonth || '';
+    var manualElapsed = (s.monthsElapsed !== null && s.monthsElapsed !== undefined)
+                        ? parseInt(s.monthsElapsed) : null;
 
-    // ─── Total months elapsed till today ───
-    var totalMonths = 0;
+    // Total months elapsed till today
+    var elapsed = 0;
     if (manualElapsed !== null && !isNaN(manualElapsed) && manualElapsed >= 0) {
-      totalMonths = manualElapsed;
+      elapsed = manualElapsed;
     } else if (startMonth) {
       var p = String(startMonth).split('-');
       if (p.length === 2) {
         var sy = parseInt(p[0]), sm = parseInt(p[1]);
         var now = new Date();
-        totalMonths = (now.getFullYear() - sy) * 12 + (now.getMonth() + 1 - sm) + 1;
-        if (now.getDate() < 20) totalMonths = Math.max(0, totalMonths - 1);
+        elapsed = (now.getFullYear() - sy) * 12 + (now.getMonth() + 1 - sm) + 1;
+        if (now.getDate() < 20) elapsed = Math.max(0, elapsed - 1);
       }
     }
 
-    var paidMonths = Number(parent.paid_months) || 0;
+    var paid = Number(parent.paid_months) || 0;
+    var pending = Math.max(0, elapsed - paid);
 
-    // ─── Build ALL months (pending + advance) ───
-    var pendingMonths = [];
-    var advanceMonths = [];
+    // Build list: pending + next 6 advance
+    var list = [];
+    var baseY, baseM;
 
     if (startMonth) {
       var sp = startMonth.split('-');
-      var baseY = parseInt(sp[0]);
-      var baseM = parseInt(sp[1]);
-
-      // Last paid = paidMonths
-      // Pending = paidMonths to totalMonths
-      // Advance = totalMonths to totalMonths + 12
-
-      var pendingCount = Math.max(0, totalMonths - paidMonths);
-
-      // Pending months
-      var cy = baseY, cm = baseM;
-      cm += paidMonths;
-      while (cm > 12) { cm -= 12; cy++; }
-
-      for (var i = 0; i < pendingCount; i++) {
-        pendingMonths.push(cy + '-' + String(cm).padStart(2, '0'));
-        cm++;
-        if (cm > 12) { cm = 1; cy++; }
-      }
-
-      // Advance months (next 12 from current)
-      var ay = baseY, am = baseM;
-      am += totalMonths;
-      while (am > 12) { am -= 12; ay++; }
-
-      for (var j = 0; j < 12; j++) {
-        advanceMonths.push(ay + '-' + String(am).padStart(2, '0'));
-        am++;
-        if (am > 12) { am = 1; ay++; }
-      }
+      baseY = parseInt(sp[0]); baseM = parseInt(sp[1]);
     } else {
-      // No start month — use today as base
-      var today = new Date();
-      var currY = today.getFullYear();
-      var currM = today.getMonth() + 1;
+      var t = new Date();
+      baseY = t.getFullYear(); baseM = t.getMonth() + 1;
+      // Adjust: assume paid months started from beginning
+      var diff = pending + paid;
+      baseM = baseM - diff + 1;
+      while (baseM < 1) { baseM += 12; baseY--; }
+      while (baseM > 12) { baseM -= 12; baseY++; }
+    }
 
-      // Pending (if paid < current)
-      var pendingCount = Math.max(0, totalMonths - paidMonths);
-      for (var k = 0; k < pendingCount; k++) {
-        var d = new Date();
-        d.setMonth(d.getMonth() - (pendingCount - 1 - k));
-        pendingMonths.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
-      }
+    // Start from first unpaid month
+    var cy = baseY, cm = baseM;
+    cm += paid;
+    while (cm > 12) { cm -= 12; cy++; }
 
-      // Advance: next 12 months
-      for (var l = 1; l <= 12; l++) {
-        var d2 = new Date();
-        d2.setMonth(d2.getMonth() + l);
-        advanceMonths.push(d2.getFullYear() + '-' + String(d2.getMonth() + 1).padStart(2, '0'));
-      }
+    // Pending months
+    for (var i = 0; i < pending; i++) {
+      list.push({
+        key: cy + '-' + String(cm).padStart(2, '0'),
+        y: cy, m: cm,
+        status: 'pending'
+      });
+      cm++; if (cm > 12) { cm = 1; cy++; }
+    }
+
+    // 6 advance months
+    for (var j = 0; j < 6; j++) {
+      list.push({
+        key: cy + '-' + String(cm).padStart(2, '0'),
+        y: cy, m: cm,
+        status: 'advance'
+      });
+      cm++; if (cm > 12) { cm = 1; cy++; }
     }
 
     return {
       monthly: monthly,
-      pendingCount: pendingMonths.length,
-      advanceCount: advanceMonths.length,
-      months: pendingMonths,        // backwards compat
-      pendingMonths: pendingMonths,
-      advanceMonths: advanceMonths
+      paid: paid,
+      pending: pending,
+      total: elapsed,
+      list: list
     };
   }
 
   // ═══════════════════════════════════════════════════
-  // 🎨 OPEN MULTI-MONTH MODAL
+  // 📅 Malayalam month name
   // ═══════════════════════════════════════════════════
-  window.openMultiMonthFeeModal = async function(parentId) {
-    if (!currentUser && !window.isAdminMode) {
-      if (typeof showToast === 'function') showToast('❌ Admin access required', 'error');
-      return;
-    }
+  var ML_MONTHS = ['ജനുവരി','ഫെബ്രുവരി','മാർച്ച്','ഏപ്രിൽ','മേയ്','ജൂൺ',
+                   'ജൂലൈ','ഓഗസ്റ്റ്','സെപ്റ്റംബർ','ഒക്ടോബർ','നവംബർ','ഡിസംബർ'];
+  var ML_MONTHS_SHORT = ['ജനു','ഫെബ്രു','മാർ','ഏപ്രി','മേയ്','ജൂൺ',
+                         'ജൂലൈ','ഓഗ','സെപ്റ്റ','ഒക്ടോ','നവം','ഡിസം'];
 
+  function mlMonth(key, short) {
+    var p = String(key).split('-');
+    if (p.length !== 2) return key;
+    var mi = parseInt(p[1]) - 1;
+    var arr = short ? ML_MONTHS_SHORT : ML_MONTHS;
+    return (arr[mi] || p[1]) + ' ' + p[0];
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎨 MAIN MODAL
+  // ═══════════════════════════════════════════════════
+  window.openFeeManager = function(parentId) {
     var parents = window.feeParentsData
       || (typeof feeParentsData !== 'undefined' ? feeParentsData : [])
       || [];
     var p = parents.find(function(x) { return x.id === parentId; });
     if (!p) {
-      if (typeof showToast === 'function') showToast('❌ Parent not found', 'error');
+      showToast('❌ Parent not found', 'error');
       return;
     }
 
-    var info = getPendingMonths(p);
+    window._fmCurrentParent = p;
+    var info = analyzeMonths(p);
 
-    if (info.pendingCount === 0) {
-      if (typeof showToast === 'function') showToast('✅ ബാക്കി ഇല്ല! All paid', 'success');
-      return;
-    }
-
-    // Build modal
-    var old = document.getElementById('multiMonthFeeModal');
+    // Remove old
+    var old = document.getElementById('feeMgrModal');
     if (old) old.remove();
 
     var modal = document.createElement('div');
-    modal.id = 'multiMonthFeeModal';
+    modal.id = 'feeMgrModal';
     modal.style.cssText =
-      'position:fixed;inset:0;background:rgba(3,8,28,.9);backdrop-filter:blur(16px);' +
-      '-webkit-backdrop-filter:blur(16px);z-index:100650;display:flex;align-items:flex-start;' +
-      'justify-content:center;padding:16px;padding-top:max(20px,env(safe-area-inset-top,20px));' +
+      'position:fixed;inset:0;background:rgba(3,8,28,.92);' +
+      'backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);' +
+      'z-index:100700;display:flex;align-items:flex-start;justify-content:center;' +
+      'padding:16px;padding-top:max(16px,env(safe-area-inset-top,16px));' +
+      'padding-bottom:max(16px,env(safe-area-inset-bottom,16px));' +
       'overflow-y:auto;-webkit-overflow-scrolling:touch;';
 
-    function buildMonthItem(m, idx, isAdvance) {
-      var label = formatMonthMLHelper(m);
-      var amount = info.monthly;
-      var badge = isAdvance
-        ? '<span style="background:rgba(139,92,246,.15);color:#7c3aed;' +
-          'padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;' +
-          'margin-left:6px;">ADVANCE</span>'
-        : '<span style="background:rgba(220,38,38,.12);color:#dc2626;' +
-          'padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;' +
-          'margin-left:6px;">PENDING</span>';
-      return (
-        '<label style="display:flex;align-items:center;gap:12px;padding:12px 14px;' +
-              'background:#f8fafc;border:1.5px solid rgba(100,116,139,.15);' +
-              'border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.2s;" ' +
-              'class="mm-month-item">' +
-          '<input type="checkbox" class="mm-month-chk" value="' + m + '" ' +
-                 'data-amount="' + amount + '" data-type="' + (isAdvance ? 'advance' : 'pending') + '" ' +
-                 'checked style="width:20px;height:20px;accent-color:#059669;' +
-                 'flex-shrink:0;cursor:pointer;" onchange="MM_updateTotal()">' +
-          '<div style="flex:1;min-width:0;">' +
-            '<div style="font-weight:800;color:#0f172a;font-size:.9rem;">' +
-              label + badge +
-            '</div>' +
-            '<div style="font-size:.7rem;color:#64748b;margin-top:2px;">' +
-              (isAdvance ? 'Future month — advance' : 'Due month #' + (idx + 1)) +
-            '</div>' +
-          '</div>' +
-          '<div style="font-weight:900;color:' +
-            (isAdvance ? '#7c3aed' : '#059669') + ';font-size:.95rem;">₹' + amount + '</div>' +
-        '</label>'
-      );
-    }
-
-    var monthOptions = '';
-    if (info.pendingCount > 0) {
-      monthOptions += '<div style="font-size:.72rem;font-weight:900;color:#dc2626;' +
-                      'text-transform:uppercase;letter-spacing:1px;margin:6px 0 8px;">' +
-                      '⏳ Pending Months (' + info.pendingCount + ')</div>';
-      monthOptions += info.pendingMonths.map(function(m, i) {
-        return buildMonthItem(m, i, false);
-      }).join('');
-    }
-    if (info.advanceCount > 0) {
-      monthOptions += '<div style="font-size:.72rem;font-weight:900;color:#7c3aed;' +
-                      'text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">' +
-                      '💎 Advance Months (Next 12)</div>';
-      monthOptions += info.advanceMonths.map(function(m, i) {
-        return buildMonthItem(m, i, true);
-      }).join('');
-    }
+    // Build month pills
+    var monthPills = info.list.map(function(m) {
+      var isPending = m.status === 'pending';
+      var color = isPending ? '#dc2626' : '#7c3aed';
+      var label = isPending ? 'pending' : 'advance';
+      return '<button type="button" class="fm-pill" data-key="' + m.key + '" ' +
+             'data-status="' + m.status + '" ' +
+             'data-amount="' + info.monthly + '" ' +
+             'data-selected="' + (isPending ? 'true' : 'false') + '" ' +
+             'onclick="FM_toggleMonth(this)" ' +
+             'style="padding:10px 14px;border-radius:12px;border:2px solid #cbd5e1;' +
+                    'background:#fff;color:#475569;font-family:inherit;' +
+                    'font-weight:800;font-size:.82rem;cursor:pointer;' +
+                    'transition:.2s;text-align:center;' +
+                    'display:flex;flex-direction:column;align-items:center;gap:3px;' +
+                    'min-width:100px;">' +
+        '<span style="font-size:.9rem;">' + mlMonth(m.key, true) + '</span>' +
+        '<span style="font-size:.6rem;font-weight:800;letter-spacing:.5px;' +
+                     'text-transform:uppercase;color:' + color + ';">' +
+          label +
+        '</span>' +
+      '</button>';
+    }).join('');
 
     modal.innerHTML =
-      '<div style="background:#fff;border-radius:24px;max-width:500px;width:100%;' +
+      '<div style="background:#fff;border-radius:24px;max-width:560px;width:100%;' +
                   'margin:auto 0;box-shadow:0 40px 90px -30px rgba(0,0,0,.7);' +
-                  'max-height:calc(100dvh - 40px);display:flex;flex-direction:column;' +
-                  'overflow:hidden;">' +
+                  'max-height:calc(100dvh - 32px);' +
+                  'display:flex;flex-direction:column;overflow:hidden;">' +
 
-        // Header
-        '<div style="padding:18px 20px;background:linear-gradient(135deg,#059669,#10b981,#34d399);' +
+        // ─── HEADER ───
+        '<div style="padding:16px 20px;' +
+                    'background:linear-gradient(135deg,#059669,#10b981,#34d399);' +
                     'color:#fff;display:flex;align-items:center;justify-content:space-between;' +
                     'flex-shrink:0;">' +
           '<div style="display:flex;align-items:center;gap:12px;min-width:0;">' +
             '<div style="width:44px;height:44px;border-radius:14px;' +
-                        'background:rgba(255,255,255,.22);display:flex;align-items:center;' +
-                        'justify-content:center;font-size:1.4rem;flex-shrink:0;">💰</div>' +
+                        'background:rgba(255,255,255,.22);' +
+                        'display:flex;align-items:center;justify-content:center;' +
+                        'font-size:1.4rem;flex-shrink:0;">💰</div>' +
             '<div style="min-width:0;">' +
-              '<div style="font-weight:900;font-size:1.05rem;line-height:1.2;">Multi-Month Payment</div>' +
-              '<div style="font-size:.72rem;opacity:.92;margin-top:2px;font-weight:700;' +
-                          'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;' +
-                          'max-width:280px;">' + escapeHtml(p.parent_name || '') + '</div>' +
+              '<div style="font-weight:900;font-size:1rem;line-height:1.2;">' +
+                escapeHtml(p.parent_name || '') +
+              '</div>' +
+              '<div style="font-size:.7rem;opacity:.9;margin-top:2px;font-weight:700;">' +
+                '📱 ' + escapeHtml(p.mobile || '—') +
+              '</div>' +
             '</div>' +
           '</div>' +
-          '<button type="button" onclick="MM_closeModal()" ' +
+          '<button type="button" onclick="FM_close()" ' +
                   'style="background:rgba(255,255,255,.22);border:none;color:#fff;' +
-                         'width:38px;height:38px;border-radius:50%;font-size:1rem;cursor:pointer;' +
-                         'display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>' +
+                         'width:40px;height:40px;border-radius:50%;font-size:1.1rem;' +
+                         'cursor:pointer;display:flex;align-items:center;' +
+                         'justify-content:center;flex-shrink:0;">✕</button>' +
         '</div>' +
 
-        // Body
-        '<div style="padding:18px;overflow-y:auto;flex:1 1 auto;">' +
-
-          // Info banner
-          '<div style="background:#ecfdf5;border:1.5px solid rgba(5,150,105,.3);' +
-                      'border-radius:12px;padding:12px 14px;margin-bottom:14px;' +
-                      'font-size:.8rem;color:#065f46;font-weight:700;line-height:1.5;">' +
-            '<i class="fas fa-info-circle"></i> ' +
-            '<b>' + info.pendingCount + ' months pending</b> — അടയ്ക്കേണ്ട മാസങ്ങൾ select ചെയ്യുക.' +
-            ' ഓരോന്നും ₹' + info.monthly + ' വീതം.' +
-          '</div>' +
-
-          // Quick buttons
-          '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
-            '<button type="button" onclick="MM_selectAll(true)" ' +
-                    'style="flex:1;padding:9px 12px;border-radius:10px;border:1.5px solid rgba(5,150,105,.3);' +
-                           'background:#ecfdf5;color:#059669;font-family:inherit;font-weight:800;' +
-                           'font-size:.76rem;cursor:pointer;">' +
-              '<i class="fas fa-check-double"></i> Select All</button>' +
-            '<button type="button" onclick="MM_selectAll(false)" ' +
-                    'style="flex:1;padding:9px 12px;border-radius:10px;border:1.5px solid rgba(100,116,139,.2);' +
-                           'background:#f1f5f9;color:#475569;font-family:inherit;font-weight:800;' +
-                           'font-size:.76rem;cursor:pointer;">' +
-              '<i class="fas fa-times"></i> Clear</button>' +
-          '</div>' +
-
-          // Months list
-          '<div style="font-weight:800;color:#475569;font-size:.78rem;margin-bottom:8px;">' +
-            '📅 Select Months to Pay:' +
-          '</div>' +
-          '<div id="mmMonthsList">' + monthOptions + '</div>' +
-
-          // Custom amount override
-          '<div style="margin-top:16px;padding:14px;background:#fef3c7;border:1.5px solid rgba(180,83,9,.3);' +
-                      'border-radius:12px;">' +
-            '<label style="display:block;font-size:.76rem;font-weight:800;color:#92400e;margin-bottom:6px;">' +
-              '✏️ Custom Amount (optional)' +
-            '</label>' +
-            '<input type="number" id="mmCustomAmount" placeholder="Auto-calculated amount" ' +
-                   'min="0" step="1" ' +
-                   'style="width:100%;padding:11px 14px;border:1.5px solid rgba(100,116,139,.25);' +
-                          'border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;' +
-                          'color:#0f172a;background:#fff;outline:none;" ' +
-                   'oninput="MM_updateTotal()">' +
-            '<div style="font-size:.7rem;color:#78350f;margin-top:6px;font-weight:700;">' +
-              '💡 Blank ആയാൽ auto-select ചെയ്ത months-ന്റെ total വരും' +
+        // ─── STATS STRIP ───
+        '<div style="padding:14px 18px;background:#f0fdf4;border-bottom:1px solid rgba(100,116,139,.1);' +
+                    'display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;">' +
+          '<div style="flex:1;min-width:70px;text-align:center;">' +
+            '<div style="font-size:1.15rem;font-weight:900;color:#0f172a;">' +
+              info.paid +
             '</div>' +
+            '<div style="font-size:.6rem;color:#64748b;font-weight:800;' +
+                        'text-transform:uppercase;margin-top:2px;">Paid</div>' +
+          '</div>' +
+          '<div style="flex:1;min-width:70px;text-align:center;border-left:1px solid rgba(100,116,139,.15);' +
+                      'border-right:1px solid rgba(100,116,139,.15);">' +
+            '<div style="font-size:1.15rem;font-weight:900;color:#dc2626;">' +
+              info.pending +
+            '</div>' +
+            '<div style="font-size:.6rem;color:#64748b;font-weight:800;' +
+                        'text-transform:uppercase;margin-top:2px;">Pending</div>' +
+          '</div>' +
+          '<div style="flex:1;min-width:70px;text-align:center;">' +
+            '<div style="font-size:1.15rem;font-weight:900;color:#059669;">' +
+              '₹' + info.monthly +
+            '</div>' +
+            '<div style="font-size:.6rem;color:#64748b;font-weight:800;' +
+                        'text-transform:uppercase;margin-top:2px;">Per Month</div>' +
+          '</div>' +
+        '</div>' +
+
+        // ─── BODY ───
+        '<div style="padding:16px 18px;overflow-y:auto;flex:1 1 auto;">' +
+
+          // Quick actions
+          '<div style="font-size:.72rem;font-weight:900;color:#475569;' +
+                      'text-transform:uppercase;letter-spacing:1px;' +
+                      'margin-bottom:10px;">⚡ Quick Actions</div>' +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));' +
+                      'gap:8px;margin-bottom:16px;">' +
+            '<button type="button" onclick="FM_quickAction(\'allPending\')" ' +
+                    'style="padding:11px;border-radius:12px;border:none;' +
+                           'background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;' +
+                           'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+                           'display:flex;align-items:center;justify-content:center;gap:6px;' +
+                           'min-height:46px;">' +
+              '⏳ All Pending (' + info.pending + ')</button>' +
+            '<button type="button" onclick="FM_quickAction(\'next3\')" ' +
+                    'style="padding:11px;border-radius:12px;border:none;' +
+                           'background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;' +
+                           'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+                           'display:flex;align-items:center;justify-content:center;gap:6px;' +
+                           'min-height:46px;">' +
+              '💎 3 Advance</button>' +
+            '<button type="button" onclick="FM_quickAction(\'next6\')" ' +
+                    'style="padding:11px;border-radius:12px;border:none;' +
+                           'background:linear-gradient(135deg,#0891b2,#22d3ee);color:#fff;' +
+                           'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+                           'display:flex;align-items:center;justify-content:center;gap:6px;' +
+                           'min-height:46px;">' +
+              '💠 6 Advance</button>' +
+            '<button type="button" onclick="FM_quickAction(\'clear\')" ' +
+                    'style="padding:11px;border-radius:12px;border:1.5px solid rgba(100,116,139,.25);' +
+                           'background:#f1f5f9;color:#475569;' +
+                           'font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;' +
+                           'display:flex;align-items:center;justify-content:center;gap:6px;' +
+                           'min-height:46px;">' +
+              '🗑️ Clear All</button>' +
           '</div>' +
 
-          // Notes/Reason (optional)
-          '<div style="margin-top:12px;">' +
-            '<label style="display:block;font-size:.76rem;font-weight:800;color:#475569;margin-bottom:6px;">' +
+          // Info
+          '<div style="background:#ecfeff;border:1px solid rgba(8,145,178,.3);' +
+                      'border-radius:10px;padding:10px 14px;margin-bottom:14px;' +
+                      'font-size:.74rem;color:#0891b2;font-weight:700;line-height:1.5;">' +
+            '<i class="fas fa-hand-pointer"></i> ' +
+            'Months tap ചെയ്ത് select/deselect ചെയ്യൂ. ' +
+            '<span style="color:#dc2626;">Pending</span> auto-selected. ' +
+            '<span style="color:#7c3aed;">Advance</span> optional.' +
+          '</div>' +
+
+          // Month grid
+          '<div style="font-size:.72rem;font-weight:900;color:#475569;' +
+                      'text-transform:uppercase;letter-spacing:1px;' +
+                      'margin-bottom:10px;">📅 Months (tap to select)</div>' +
+          '<div id="fmPillsGrid" style="display:grid;' +
+               'grid-template-columns:repeat(auto-fill,minmax(100px,1fr));' +
+               'gap:8px;">' + monthPills + '</div>' +
+
+          // Notes
+          '<div style="margin-top:16px;">' +
+            '<label style="display:block;font-size:.74rem;font-weight:800;' +
+                          'color:#475569;margin-bottom:6px;">' +
               '📝 Notes (optional)' +
             '</label>' +
-            '<input type="text" id="mmNotes" maxlength="200" ' +
-                   'placeholder="e.g., ഫീസ് ഒരുമിച്ച് അടച്ചു" ' +
-                   'style="width:100%;padding:11px 14px;border:1.5px solid rgba(100,116,139,.25);' +
+            '<input type="text" id="fmNotes" maxlength="150" ' +
+                   'placeholder="e.g., ഒരുമിച്ച് അടച്ചു" ' +
+                   'style="width:100%;padding:11px 14px;' +
+                          'border:1.5px solid rgba(100,116,139,.25);' +
                           'border-radius:10px;font-family:inherit;font-size:16px;' +
-                          'color:#0f172a;background:#fff;outline:none;">' +
+                          'color:#0f172a;background:#f8fafc;outline:none;">' +
           '</div>' +
-
         '</div>' +
 
-        // Sticky total + submit
-        '<div style="padding:14px 18px;background:#f8fafc;border-top:2px solid rgba(5,150,105,.2);' +
-                    'flex-shrink:0;">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
-            '<span style="font-size:.82rem;color:#64748b;font-weight:800;">' +
-              'Total Amount:' +
-            '</span>' +
-            '<span id="mmTotalAmount" style="font-size:1.5rem;font-weight:900;color:#059669;">₹0</span>' +
+        // ─── STICKY FOOTER ───
+        '<div style="padding:14px 18px;background:#f8fafc;' +
+                    'border-top:2px solid rgba(5,150,105,.2);flex-shrink:0;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;' +
+                      'margin-bottom:10px;">' +
+            '<div>' +
+              '<div style="font-size:.72rem;color:#64748b;font-weight:800;">' +
+                'Selected:' +
+              '</div>' +
+              '<div id="fmSelCount" style="font-size:.86rem;font-weight:900;color:#0f172a;">' +
+                '0 months' +
+              '</div>' +
+            '</div>' +
+            '<div style="text-align:right;">' +
+              '<div style="font-size:.72rem;color:#64748b;font-weight:800;">' +
+                'Total:' +
+              '</div>' +
+              '<div id="fmTotal" style="font-size:1.5rem;font-weight:900;color:#059669;line-height:1;">' +
+                '₹0' +
+              '</div>' +
+            '</div>' +
           '</div>' +
-          '<div style="display:flex;gap:10px;">' +
-            '<button type="button" onclick="MM_closeModal()" ' +
-                    'style="flex:.6;padding:13px;border-radius:14px;border:1.5px solid rgba(100,116,139,.2);' +
-                           'background:#fff;color:#475569;font-family:inherit;font-weight:800;' +
-                           'font-size:.86rem;cursor:pointer;min-height:48px;">Cancel</button>' +
-            '<button type="button" id="mmSubmitBtn" onclick="MM_submit()" ' +
+          '<div style="display:flex;gap:8px;">' +
+            '<button type="button" onclick="FM_close()" ' +
+                    'style="flex:.5;padding:13px;border-radius:14px;' +
+                           'border:1.5px solid rgba(100,116,139,.2);' +
+                           'background:#fff;color:#475569;' +
+                           'font-family:inherit;font-weight:800;font-size:.84rem;' +
+                           'cursor:pointer;min-height:48px;">Cancel</button>' +
+            '<button type="button" id="fmSubmitBtn" onclick="FM_submit()" ' +
                     'style="flex:2;padding:13px;border-radius:14px;border:none;' +
                            'background:linear-gradient(100deg,#059669,#34d399);color:#fff;' +
-                           'font-family:inherit;font-weight:900;font-size:.88rem;cursor:pointer;' +
-                           'min-height:48px;display:inline-flex;align-items:center;' +
-                           'justify-content:center;gap:8px;' +
+                           'font-family:inherit;font-weight:900;font-size:.88rem;' +
+                           'cursor:pointer;min-height:48px;' +
+                           'display:inline-flex;align-items:center;justify-content:center;gap:8px;' +
                            'box-shadow:0 10px 25px -10px rgba(5,150,105,.7);">' +
-              '<i class="fas fa-check-circle"></i> Confirm Payment' +
+              '<i class="fas fa-check-circle"></i> Confirm & Save' +
             '</button>' +
           '</div>' +
         '</div>' +
@@ -44286,267 +44308,260 @@ document.addEventListener('touchend', function(e) {
     document.body.appendChild(modal);
 
     modal.addEventListener('click', function(e) {
-      if (e.target === modal) MM_closeModal();
+      if (e.target === modal) FM_close();
     });
 
-    // Uncheck advance months by default (only pending auto-checked)
-    setTimeout(function() {
-      document.querySelectorAll('.mm-month-chk[data-type="advance"]').forEach(function(c) {
-        c.checked = false;
-      });
-      MM_updateTotal();
-    }, 80);
-
-    // Initial total
-    setTimeout(MM_updateTotal, 100);
-
+    setTimeout(FM_updateUI, 80);
     if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
   };
 
-  // ═══════════════════════════════════════════════════
-  // 🎛️ MODAL CONTROLS
-  // ═══════════════════════════════════════════════════
-  window.MM_closeModal = function() {
-    var m = document.getElementById('multiMonthFeeModal');
+  window.FM_close = function() {
+    var m = document.getElementById('feeMgrModal');
     if (m) m.remove();
   };
 
-  window.MM_selectAll = function(state) {
-    document.querySelectorAll('.mm-month-chk').forEach(function(c) {
-      c.checked = state;
-    });
-    window.MM_updateTotal();
+  // ═══════════════════════════════════════════════════
+  // 🎛️ Toggle a month pill
+  // ═══════════════════════════════════════════════════
+  window.FM_toggleMonth = function(el) {
+    var sel = el.dataset.selected === 'true';
+    el.dataset.selected = sel ? 'false' : 'true';
+    FM_updateUI();
+    if (navigator.vibrate) try { navigator.vibrate(8); } catch(e) {}
   };
 
-  window.MM_updateTotal = function() {
-    var checked = document.querySelectorAll('.mm-month-chk:checked');
-    var autoTotal = 0;
-    checked.forEach(function(c) {
-      autoTotal += parseInt(c.dataset.amount) || 0;
-    });
+  // ═══════════════════════════════════════════════════
+  // ⚡ Quick actions
+  // ═══════════════════════════════════════════════════
+  window.FM_quickAction = function(action) {
+    var pills = document.querySelectorAll('.fm-pill');
 
-    var custom = document.getElementById('mmCustomAmount');
-    var total = (custom && custom.value && parseInt(custom.value) > 0)
-                ? parseInt(custom.value)
-                : autoTotal;
+    if (action === 'allPending') {
+      pills.forEach(function(el) {
+        el.dataset.selected = el.dataset.status === 'pending' ? 'true' : 'false';
+      });
+    } else if (action === 'clear') {
+      pills.forEach(function(el) { el.dataset.selected = 'false'; });
+    } else if (action === 'next3' || action === 'next6') {
+      var count = action === 'next3' ? 3 : 6;
+      var advancePills = [];
+      pills.forEach(function(el) {
+        if (el.dataset.status === 'advance') advancePills.push(el);
+      });
+      // Sort by key (chronological)
+      advancePills.sort(function(a, b) {
+        return a.dataset.key.localeCompare(b.dataset.key);
+      });
+      // Clear all first
+      pills.forEach(function(el) {
+        el.dataset.selected = el.dataset.status === 'pending' ? 'true' : 'false';
+      });
+      // Add first N advance
+      for (var i = 0; i < Math.min(count, advancePills.length); i++) {
+        advancePills[i].dataset.selected = 'true';
+      }
+    }
 
-    var el = document.getElementById('mmTotalAmount');
-    if (el) el.textContent = '₹' + total.toLocaleString('en-IN');
+    FM_updateUI();
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch(e) {}
+  };
 
-    // Highlight selected months visually
-    document.querySelectorAll('.mm-month-item').forEach(function(item) {
-      var chk = item.querySelector('.mm-month-chk');
-      if (chk && chk.checked) {
-        item.style.background = '#f0fdf4';
-        item.style.borderColor = 'rgba(5,150,105,.5)';
+  // ═══════════════════════════════════════════════════
+  // 🎨 Update UI state
+  // ═══════════════════════════════════════════════════
+  window.FM_updateUI = function() {
+    var pills = document.querySelectorAll('.fm-pill');
+    var count = 0;
+    var total = 0;
+
+    pills.forEach(function(el) {
+      var sel = el.dataset.selected === 'true';
+      var amt = parseInt(el.dataset.amount) || 0;
+      var isPending = el.dataset.status === 'pending';
+
+      if (sel) {
+        count++;
+        total += amt;
+        // Selected style
+        el.style.background = isPending
+          ? 'linear-gradient(135deg,#fee2e2,#fecaca)'
+          : 'linear-gradient(135deg,#ede9fe,#ddd6fe)';
+        el.style.borderColor = isPending ? '#dc2626' : '#7c3aed';
+        el.style.color = isPending ? '#991b1b' : '#5b21b6';
+        el.style.transform = 'scale(1.03)';
+        el.style.boxShadow = isPending
+          ? '0 4px 12px -4px rgba(220,38,38,.4)'
+          : '0 4px 12px -4px rgba(139,92,246,.4)';
       } else {
-        item.style.background = '#f8fafc';
-        item.style.borderColor = 'rgba(100,116,139,.15)';
+        // Unselected style
+        el.style.background = '#f8fafc';
+        el.style.borderColor = '#cbd5e1';
+        el.style.color = '#64748b';
+        el.style.transform = 'scale(1)';
+        el.style.boxShadow = 'none';
       }
     });
+
+    // Update counters
+    var cntEl = document.getElementById('fmSelCount');
+    if (cntEl) cntEl.textContent = count + ' month' + (count !== 1 ? 's' : '');
+
+    var totEl = document.getElementById('fmTotal');
+    if (totEl) totEl.textContent = '₹' + total.toLocaleString('en-IN');
+
+    // Disable submit if nothing selected
+    var submitBtn = document.getElementById('fmSubmitBtn');
+    if (submitBtn) {
+      submitBtn.disabled = count === 0;
+      submitBtn.style.opacity = count === 0 ? '0.5' : '1';
+    }
   };
 
   // ═══════════════════════════════════════════════════
-  // 💾 SUBMIT MULTI-MONTH PAYMENT
+  // 💾 SUBMIT
   // ═══════════════════════════════════════════════════
-  window.MM_submit = async function() {
-    var checked = document.querySelectorAll('.mm-month-chk:checked');
-    if (checked.length === 0) {
-      if (typeof showToast === 'function') showToast('⚠️ കുറഞ്ഞത് ഒരു month select ചെയ്യൂ', 'error');
-      return;
-    }
-
-    var modal = document.getElementById('multiMonthFeeModal');
-    if (!modal) return;
-
-    // Extract parent ID from stored context
-    var parentId = window._mmCurrentParentId;
-    if (!parentId) {
-      if (typeof showToast === 'function') showToast('❌ Parent missing', 'error');
-      return;
-    }
-
-    var parents = window.feeParentsData
-      || (typeof feeParentsData !== 'undefined' ? feeParentsData : [])
-      || [];
-    var p = parents.find(function(x) { return x.id === parentId; });
+  window.FM_submit = async function() {
+    var p = window._fmCurrentParent;
     if (!p) {
-      if (typeof showToast === 'function') showToast('❌ Parent not found', 'error');
+      showToast('❌ Parent missing', 'error');
       return;
     }
 
-    // Collect selected months + amount
-    var selectedMonths = [];
-    var autoTotal = 0;
-    checked.forEach(function(c) {
-      selectedMonths.push(c.value);
-      autoTotal += parseInt(c.dataset.amount) || 0;
+    var pills = document.querySelectorAll('.fm-pill');
+    var selected = [];
+    pills.forEach(function(el) {
+      if (el.dataset.selected === 'true') {
+        selected.push({
+          key: el.dataset.key,
+          status: el.dataset.status,
+          amount: parseInt(el.dataset.amount) || 0
+        });
+      }
     });
 
-    var customInput = document.getElementById('mmCustomAmount');
-    var customVal = customInput && customInput.value ? parseInt(customInput.value) : 0;
-    var totalAmount = customVal > 0 ? customVal : autoTotal;
-    var notes = (document.getElementById('mmNotes').value || '').trim();
-
-    if (totalAmount <= 0) {
-      if (typeof showToast === 'function') showToast('⚠️ Amount 0 ആകരുത്', 'error');
+    if (selected.length === 0) {
+      showToast('⚠️ ഒരു month select ചെയ്യൂ', 'error');
       return;
     }
+
+    // Sort chronologically
+    selected.sort(function(a, b) { return a.key.localeCompare(b.key); });
+
+    var totalAmount = selected.reduce(function(s, x) { return s + x.amount; }, 0);
+    var pendingSel = selected.filter(function(x) { return x.status === 'pending'; });
+    var advanceSel = selected.filter(function(x) { return x.status === 'advance'; });
+
+    var notes = (document.getElementById('fmNotes').value || '').trim();
 
     // Confirmation
-    var pendingCnt = 0, advanceCnt = 0;
-    var lines = selectedMonths.map(function(m) {
-      var isAdv = checked.length && Array.prototype.slice.call(checked).some(function(c) {
-        return c.value === m && c.dataset.type === 'advance';
-      });
-      if (isAdv) advanceCnt++; else pendingCnt++;
-      return '  ' + (isAdv ? '💎' : '⏳') + ' ' + formatMonthMLHelper(m);
-    });
-
-    var confirmMsg = '💰 Multi-Month Payment Confirm\n\n' +
+    var confirmMsg = '💰 Confirm Payment\n\n' +
       '👤 ' + (p.parent_name || '') + '\n' +
-      '📅 ' + selectedMonths.length + ' month(s)  ' +
-      '(' + pendingCnt + ' pending, ' + advanceCnt + ' advance)\n' +
-      lines.join('\n') + '\n' +
-      '💵 Total: ₹' + totalAmount.toLocaleString('en-IN') +
+      '📅 ' + selected.length + ' months\n' +
+      (pendingSel.length ? '   ⏳ ' + pendingSel.length + ' pending\n' : '') +
+      (advanceSel.length ? '   💎 ' + advanceSel.length + ' advance\n' : '') +
+      '\n💵 Total: ₹' + totalAmount.toLocaleString('en-IN') +
       (notes ? '\n📝 ' + notes : '') +
-      '\n\nConfirm?';
+      '\n\nProceed?';
 
     if (!confirm(confirmMsg)) return;
 
-    var btn = document.getElementById('mmSubmitBtn');
+    var btn = document.getElementById('fmSubmitBtn');
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     }
 
     try {
-      // Build history entries — split amount equally, or distribute
+      // Prepare history
       var history = p.payment_history || [];
       if (typeof history === 'string') {
         try { history = JSON.parse(history); } catch(e) { history = []; }
       }
 
       var today = new Date().toISOString().split('T')[0];
-      var perMonth = Math.floor(totalAmount / selectedMonths.length);
-      var remainder = totalAmount - (perMonth * selectedMonths.length);
 
-      var newEntries = [];
-      selectedMonths.forEach(function(m, i) {
-        var amt = perMonth + (i === 0 ? remainder : 0);
-        var isAdv = advanceSelected.indexOf(m) > -1;
-        var entry = {
-          month: m,
-          amount: amt,
+      // Add each selected month as separate entry
+      selected.forEach(function(item) {
+        history.push({
+          month: item.key,
+          amount: item.amount,
           date: today,
           paidBy: 'Admin',
           notes: notes || null,
-          multiMonth: selectedMonths.length > 1,
-          isAdvance: isAdv || false,
-          type: isAdv ? 'advance' : 'regular'
-        };
-        history.push(entry);
-        newEntries.push(entry);
+          type: item.status,
+          isAdvance: item.status === 'advance'
+        });
       });
 
-      // Separate pending vs advance
-      var pendingSelected = [];
-      var advanceSelected = [];
-      checked.forEach(function(c) {
-        if (c.dataset.type === 'advance') advanceSelected.push(c.value);
-        else pendingSelected.push(c.value);
-      });
+      var newPaidMonths = (Number(p.paid_months) || 0) + selected.length;
+      var lastMonth = selected[selected.length - 1].key;
 
-      // Sort all selected months chronologically
-      var allSorted = selectedMonths.slice().sort();
-      var lastMonth = allSorted[allSorted.length - 1];
-      var firstMonth = allSorted[0];
-
-      // paid_months update: count ALL selected (pending + advance)
-      var newPaidMonths = (Number(p.paid_months) || 0) + selectedMonths.length;
-
-      // Flags
-      var hasAdvance = advanceSelected.length > 0;
-      var hasPending = pendingSelected.length > 0;
-
+      // Save
       var ur = await supabaseClient.from('fee_parents').update({
         last_paid_month: lastMonth,
         last_paid_date: today,
         paid_months: newPaidMonths,
         payment_history: history,
         updated_at: new Date().toISOString()
-      }).eq('id', parentId);
+      }).eq('id', p.id);
 
       if (ur.error) throw ur.error;
 
-      // Notify student(s)
+      // Notify students
       try {
-        var studentIds = p.student_ids || [];
-        var advanceNote = hasAdvance
-          ? ' (ഇതിൽ ' + advanceSelected.length + ' advance month ഉൾപ്പെടുന്നു 💎)'
-          : '';
-        var notifs = studentIds.map(function(sid) {
-          return {
-            title: '✅ ഫീസ് ലഭിച്ചു' + (hasAdvance ? ' (Advance)' : ''),
-            message: '₹' + totalAmount.toLocaleString('en-IN') + ' — ' +
-                     selectedMonths.length + ' month(s) paid' + advanceNote +
-                     '. ജസാക്കല്ലാഹു ഖൈർ 🤲',
-            type: 'important',
-            target_type: 'student',
-            target_student: sid,
-            link_url: null
-          };
-        });
-        if (notifs.length > 0) {
+        var sids = p.student_ids || [];
+        if (sids.length > 0) {
+          var advanceNote = advanceSel.length > 0
+            ? ' (+' + advanceSel.length + ' advance 💎)'
+            : '';
+          var notifs = sids.map(function(sid) {
+            return {
+              title: '✅ ഫീസ് ലഭിച്ചു',
+              message: '₹' + totalAmount.toLocaleString('en-IN') +
+                       ' — ' + selected.length + ' month' +
+                       (selected.length > 1 ? 's' : '') + advanceNote +
+                       '. ജസാക്കല്ലാഹു ഖൈർ 🤲',
+              type: 'important',
+              target_type: 'student',
+              target_student: sid,
+              link_url: null
+            };
+          });
           await supabaseClient.from('notifications').insert(notifs);
         }
-      } catch(e) { /* ignore */ }
+      } catch(e) { /* silent */ }
 
       // Success
-      if (typeof showToast === 'function') {
-        var parts = [];
-        if (hasPending) parts.push(pendingSelected.length + ' pending');
-        if (hasAdvance) parts.push(advanceSelected.length + ' advance 💎');
-        showToast(
-          '✅ ' + selectedMonths.length + ' month(s) paid — ₹' +
-          totalAmount.toLocaleString('en-IN') +
-          (parts.length ? ' (' + parts.join(' + ') + ')' : ''),
-          'success'
-        );
-      }
+      showToast(
+        '✅ ' + selected.length + ' month(s) — ₹' +
+        totalAmount.toLocaleString('en-IN'),
+        'success'
+      );
 
       if (typeof confetti !== 'undefined') {
         confetti({
-          particleCount: 100, spread: 80, origin: { y: .7 },
-          colors: ['#059669','#34d399','#10b981','#fbbf24']
+          particleCount: 90, spread: 80, origin: { y: .7 },
+          colors: ['#059669','#34d399','#7c3aed','#fbbf24']
         });
       }
-
       if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
 
-      // Close modal
-      MM_closeModal();
+      FM_close();
 
-      // Show receipt (single combined receipt for full amount)
+      // Receipt
       setTimeout(function() {
         if (typeof window.showFeeReceipt === 'function') {
-          var allSorted2 = selectedMonths.slice().sort();
-          var firstM = allSorted2[0];
-          var lastM = allSorted2[allSorted2.length - 1];
-
           var label;
-          if (selectedMonths.length === 1) {
-            label = formatMonthMLHelper(lastM) +
-                    (hasAdvance ? ' (Advance)' : '');
+          if (selected.length === 1) {
+            label = mlMonth(selected[0].key) +
+                    (selected[0].status === 'advance' ? ' (Advance)' : '');
           } else {
-            label = formatMonthMLHelper(firstM) + ' → ' +
-                    formatMonthMLHelper(lastM);
-            if (hasAdvance && hasPending) {
-              label += ' (Mixed: ' + pendingSelected.length + ' pending + ' +
-                       advanceSelected.length + ' advance)';
-            } else if (hasAdvance) {
-              label += ' (Advance)';
-            }
+            label = mlMonth(selected[0].key) + ' → ' +
+                    mlMonth(selected[selected.length - 1].key);
+            var parts = [];
+            if (pendingSel.length) parts.push(pendingSel.length + ' pending');
+            if (advanceSel.length) parts.push(advanceSel.length + ' advance');
+            if (parts.length) label += ' (' + parts.join(' + ') + ')';
           }
 
           window.showFeeReceipt({
@@ -44562,132 +44577,119 @@ document.addEventListener('touchend', function(e) {
         }
       }, 500);
 
-      // Reload admin table
+      // Reload admin
       if (typeof window.loadFeeParentsAdmin === 'function') {
         setTimeout(window.loadFeeParentsAdmin, 1500);
       }
 
     } catch(e) {
-      console.error('MM_submit error:', e);
-      if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error');
+      console.error('FM_submit:', e);
+      showToast('❌ ' + e.message, 'error');
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Payment';
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm & Save';
       }
     }
   };
 
   // ═══════════════════════════════════════════════════
-  // 📅 HELPER: Format month to Malayalam
+  // 🔗 Override markFeePaid + old openMultiMonthFeeModal
   // ═══════════════════════════════════════════════════
-  function formatMonthMLHelper(m) {
-    if (typeof formatMonthML === 'function') return formatMonthML(m);
-    // Fallback
-    var ML = ['ജനുവരി','ഫെബ്രുവരി','മാർച്ച്','ഏപ്രിൽ','മേയ്','ജൂൺ',
-              'ജൂലൈ','ഓഗസ്റ്റ്','സെപ്റ്റംബർ','ഒക്ടോബർ','നവംബർ','ഡിസംബർ'];
-    var p = String(m).split('-');
-    if (p.length === 2) {
-      var mi = parseInt(p[1]) - 1;
-      if (mi >= 0 && mi <= 11) return ML[mi] + ' ' + p[0];
-    }
-    return m;
-  }
+  window.markFeePaid = function(id) {
+    window.openFeeManager(id);
+  };
+  window.openMultiMonthFeeModal = function(id) {
+    window.openFeeManager(id);
+  };
 
   // ═══════════════════════════════════════════════════
-  // 🎯 OVERRIDE markFeePaid — use new multi-month modal
+  // 🎯 INJECT "💰" button into admin fee table
   // ═══════════════════════════════════════════════════
-  var _origMarkPaid = window.markFeePaid;
-  if (typeof _origMarkPaid === 'function') {
-    window.markFeePaid = function(id) {
-      window._mmCurrentParentId = id;
-      window.openMultiMonthFeeModal(id);
-    };
-    console.log('✅ markFeePaid → multi-month modal');
-  }
-
-  // ═══════════════════════════════════════════════════
-  // 🎨 INJECT "Multi-Month" button in admin table
-  // ═══════════════════════════════════════════════════
-  function injectMultiMonthBtn() {
+  function injectFeeBtn() {
     var wrap = document.getElementById('feeParentsWrap');
     if (!wrap) return;
 
     wrap.querySelectorAll('tr').forEach(function(row) {
       var cell = row.querySelector('td:last-child');
       if (!cell) return;
-      if (cell.querySelector('.btn-multi-month')) return;
+      if (cell.querySelector('.btn-fee-mgr')) return;
 
-      // Find any existing button to get parent ID
-      var anyBtn = cell.querySelector('[onclick*="markFeePaid"]')
-                || cell.querySelector('[onclick*="editFeeParent"]');
-      if (!anyBtn) return;
+      // Find parent id from any existing button
+      var refBtn = cell.querySelector('[onclick*="markFeePaid"]')
+                || cell.querySelector('[onclick*="editFeeParent"]')
+                || cell.querySelector('[onclick*="showHistoryReceipt"]');
+      if (!refBtn) return;
 
-      var m = anyBtn.getAttribute('onclick').match(/(\d+)/);
+      var m = refBtn.getAttribute('onclick').match(/(\d+)/);
       if (!m) return;
       var pid = m[1];
 
-      // Insert multi-month button as the FIRST action
+      // Add as FIRST button
       var btn = document.createElement('button');
-      btn.className = 'btn-multi-month';
-      btn.innerHTML = '💰+';
-      btn.title = 'Multi-Month Payment';
-      btn.setAttribute('onclick', 'window.openMultiMonthFeeModal(' + pid + ')');
+      btn.className = 'btn-fee-mgr';
+      btn.innerHTML = '💰';
+      btn.title = 'Manage Fee Payment';
+      btn.setAttribute('onclick', 'window.openFeeManager(' + pid + ')');
       btn.style.cssText =
-        'background:linear-gradient(100deg,#7c3aed,#a78bfa);color:#fff;border:none;' +
-        'padding:5px 10px;border-radius:30px;font-size:.7rem;font-weight:800;' +
-        'cursor:pointer;margin-right:4px;min-width:42px;';
+        'background:linear-gradient(100deg,#059669,#34d399);' +
+        'color:#fff;border:none;padding:6px 12px;border-radius:30px;' +
+        'font-size:.75rem;font-weight:800;cursor:pointer;' +
+        'margin-right:4px;min-width:42px;min-height:34px;';
 
       cell.insertBefore(btn, cell.firstChild);
     });
   }
 
-  // Hook into loadFeeParentsAdmin
+  // Hook into load
   var _origLoad = window.loadFeeParentsAdmin;
-  if (typeof _origLoad === 'function' && !_origLoad._v131) {
+  if (typeof _origLoad === 'function' && !_origLoad._v132) {
     window.loadFeeParentsAdmin = async function() {
       var r = await _origLoad.apply(this, arguments);
-      setTimeout(injectMultiMonthBtn, 300);
-      setTimeout(injectMultiMonthBtn, 900);
+      setTimeout(injectFeeBtn, 200);
+      setTimeout(injectFeeBtn, 800);
       return r;
     };
-    window.loadFeeParentsAdmin._v131 = true;
+    window.loadFeeParentsAdmin._v132 = true;
   }
 
-  // Watch table for changes
-  var _mo = new MutationObserver(function() {
-    clearTimeout(window._mmBtnTimer);
-    window._mmBtnTimer = setTimeout(injectMultiMonthBtn, 150);
-  });
+  // Watch table
   setTimeout(function() {
     var w = document.getElementById('feeParentsWrap');
-    if (w) _mo.observe(w, { childList: true, subtree: true });
+    if (w) {
+      new MutationObserver(function() {
+        clearTimeout(window._feeBtnTimer);
+        window._feeBtnTimer = setTimeout(injectFeeBtn, 150);
+      }).observe(w, { childList: true, subtree: true });
+    }
   }, 3500);
 
-  // Safety scan every 5s
-  setInterval(injectMultiMonthBtn, 5000);
+  // Safety scan
+  setInterval(injectFeeBtn, 5000);
 
   // ═══════════════════════════════════════════════════
   // 🐛 DEBUG
   // ═══════════════════════════════════════════════════
-  window.MM_debug = function(parentId) {
+  window.FM_debug = function(parentId) {
     var parents = window.feeParentsData
       || (typeof feeParentsData !== 'undefined' ? feeParentsData : []);
     var p = parents.find(function(x) { return x.id === parentId; });
     if (!p) { console.log('❌ Parent not found:', parentId); return; }
-    console.log('=== MULTI-MONTH DEBUG ===');
+    var info = analyzeMonths(p);
+    console.log('=== FEE MANAGER DEBUG ===');
     console.log('Parent:', p.parent_name);
-    console.log('Paid months:', p.paid_months);
-    console.log('Settings:', window.FEE_SETTINGS_CACHE);
-    var info = getPendingMonths(p);
-    console.log('Pending:', info.pendingCount, 'months');
-    console.log('Months list:', info.months);
-    console.log('Total due:', info.pendingCount * info.monthly);
+    console.log('Paid:', info.paid);
+    console.log('Pending:', info.pending);
+    console.log('Total elapsed:', info.total);
+    console.log('Monthly fee:', info.monthly);
+    console.log('Months list:');
+    info.list.forEach(function(m) {
+      console.log('  ' + (m.status === 'advance' ? '💎' : '⏳') + ' ' + m.key + ' — ' + m.status);
+    });
   };
 
-  console.log('✅ Multi-Month Fee v131 ready');
-  console.log('   💡 Admin → Fee table → "💰+" button');
-  console.log('   💡 markFeePaid() → auto opens new modal');
-  console.log('   💡 MM_debug(parentId) — test');
+  console.log('✅ Simple Fee Manager v132 ready');
+  console.log('   💡 Admin → Fee table → 💰 button');
+  console.log('   💡 FM_debug(parentId) — check state');
 })();
 </script>
 </body>
