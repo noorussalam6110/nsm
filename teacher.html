@@ -3277,5 +3277,38 @@ window.closeTeacherLogin = closeTeacherLogin;
   }, 1000);
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🛡️ EMERGENCY TEACHER ID PROMPT — Runs even if v60 fails -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="emergency-teacher-prompt">
+(function(){
+  'use strict';
+
+  // Wait 3 seconds — if v60 didn't show ID prompt, show ours
+  setTimeout(function() {
+    // Already showing?
+    if (document.getElementById('teacherIdPromptModal')) return;
+    // Teacher login modal open?
+    if (document.getElementById('teacherLoginV60')?.classList.contains('open')) return;
+    // Teacher dashboard open?
+    if (document.getElementById('teacherDashboardV60')?.classList.contains('open')) return;
+    // Has session?
+    try {
+      if (localStorage.getItem('noor_teacher_session')) return;
+    } catch(e) {}
+
+    // v60 must have failed — do a minimal fallback
+    console.warn('⚠️ v60 script failed to show teacher ID prompt — emergency mode');
+
+    // Redirect to main login (safest fallback)
+    if (typeof showToast === 'function') {
+      showToast('⚠️ Teacher portal loading failed. Redirecting...', 'error');
+    }
+    setTimeout(function() {
+      window.location.href = 'login.html';
+    }, 2000);
+  }, 3000);
+})();
+</script>
 </body>
 </html>
