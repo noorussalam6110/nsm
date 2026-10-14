@@ -4531,6 +4531,417 @@ console.log('✅ Teacher Portal base loaded');
   console.log('   💡 NOTIFY_debug() — check status');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📮 COMPLAINTS — Teacher Side v1.0                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="complaints-teacher-js">
+(function(){
+  'use strict';
+  console.log('📮 Complaints Teacher v1.0 loading...');
+
+  var TST = {
+    all: [],
+    filter: 'pending',
+    currentId: null
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🎛️ ADD TAB BUTTON
+  // ═══════════════════════════════════════════════════
+  function addTab(){
+    var tabsInner = document.getElementById('td60TabsInner');
+    if (!tabsInner) return;
+    if (tabsInner.querySelector('[data-tab="complaints"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'td60-tab';
+    btn.dataset.tab = 'complaints';
+    btn.innerHTML = '<i class="fas fa-envelope-open-text"></i> പരാതികൾ <span id="tstBadge" style="display:none;background:#dc2626;color:#fff;border-radius:50%;min-width:18px;height:18px;font-size:.6rem;font-weight:900;align-items:center;justify-content:center;margin-left:5px;padding:0 5px;"></span>';
+    btn.onclick = function(){
+      tabsInner.querySelectorAll('.td60-tab').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      window.TV60.activeTab = 'complaints';
+      openComplaintsPanel();
+    };
+    tabsInner.appendChild(btn);
+
+    console.log('✅ Complaints tab added');
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 📊 OPEN PANEL
+  // ═══════════════════════════════════════════════════
+  async function openComplaintsPanel(){
+    var panel = document.getElementById('td60Panel');
+    if (!panel) return;
+    panel.innerHTML = '<div style="text-align:center;padding:30px;"><div class="td60-spinner"></div></div>';
+
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    if (!teacher) {
+      panel.innerHTML = '<div class="td60-empty">Teacher session missing</div>';
+      return;
+    }
+
+    try {
+      // Fetch complaints where target is this teacher
+      var r = await supabaseClient.from('complaints')
+        .select('*')
+        .eq('target_id', teacher.teacher_id)
+        .order('created_at', { ascending: false })
+        .limit(200);
+      TST.all = r.data || [];
+
+      renderPanel(panel);
+    } catch(e) {
+      console.error('complaints load:', e);
+      panel.innerHTML = '<div class="td60-empty">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  }
+
+  function renderPanel(panel){
+    var pending = TST.all.filter(function(c){ return c.status === 'pending'; }).length;
+    var seen = TST.all.filter(function(c){ return c.status === 'seen'; }).length;
+    var progress = TST.all.filter(function(c){ return c.status === 'in_progress'; }).length;
+    var resolved = TST.all.filter(function(c){ return c.status === 'resolved' || c.status === 'closed'; }).length;
+
+    var filtered = TST.all;
+    if (TST.filter === 'pending') filtered = TST.all.filter(function(c){ return c.status === 'pending'; });
+    else if (TST.filter === 'seen') filtered = TST.all.filter(function(c){ return c.status === 'seen'; });
+    else if (TST.filter === 'in_progress') filtered = TST.all.filter(function(c){ return c.status === 'in_progress'; });
+    else if (TST.filter === 'resolved') filtered = TST.all.filter(function(c){ return c.status === 'resolved' || c.status === 'closed'; });
+
+    var h = '';
+
+    // Stats
+    h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px;">';
+    h += statBox('📮 Total', TST.all.length, '#8b5cf6');
+    h += statBox('🆕 Pending', pending, '#dc2626');
+    h += statBox('👁️ Seen', seen, '#0891b2');
+    h += statBox('⏳ Progress', progress, '#f59e0b');
+    h += statBox('✅ Resolved', resolved, '#059669');
+    h += '</div>';
+
+    // Filter chips
+    h += '<div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;">';
+    [['pending','🆕 Pending'],['seen','👁️ Seen'],['in_progress','⏳ Progress'],['resolved','✅ Resolved'],['all','📋 All']].forEach(function(f){
+      var active = TST.filter === f[0] ? 'active' : '';
+      var style = active ?
+        'background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;border-color:transparent;' :
+        'background:#fff;color:#475569;border:1.5px solid rgba(100,116,139,.2);';
+      h += '<button onclick="TST_FILTER(\'' + f[0] + '\')" style="' + style + 'padding:8px 14px;border-radius:20px;font-family:inherit;font-weight:800;font-size:.72rem;cursor:pointer;white-space:nowrap;min-height:36px;">' + f[1] + '</button>';
+    });
+    h += '</div>';
+
+    // Privacy note
+    h += '<div style="background:#ecfeff;border:1px solid rgba(8,145,178,.3);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.74rem;color:#0891b2;font-weight:700;line-height:1.55;">' +
+      '<i class="fas fa-shield-alt"></i> ' +
+      '<b>Confidential:</b> ഈ പരാതികൾ നിങ്ങൾക്കും Super Admin-നും മാത്രം. Other teachers-നു കാണില്ല. നിങ്ങൾ <b>Seen</b> അടിച്ചാൽ student-നു "Seen" badge കാണാം.' +
+    '</div>';
+
+    // List
+    if (!filtered.length) {
+      h += '<div class="td60-empty"><i class="fas fa-inbox"></i><div>ഈ filter-ൽ പരാതികൾ ഇല്ല</div></div>';
+    } else {
+      h += '<div style="display:flex;flex-direction:column;gap:10px;">';
+      filtered.forEach(function(c){
+        var typeIcon = c.type === 'suggestion' ? '💡' : '😟';
+        var typeLabel = c.type === 'suggestion' ? 'Suggestion' : 'Complaint';
+        var typeColor = c.type === 'suggestion' ? '#0891b2' : '#dc2626';
+        var statusBadge = {
+          pending: '<span style="background:rgba(220,38,38,.15);color:#dc2626;padding:3px 10px;border-radius:20px;font-size:.6rem;font-weight:900;text-transform:uppercase;">🆕 New</span>',
+          seen: '<span style="background:rgba(8,145,178,.15);color:#0891b2;padding:3px 10px;border-radius:20px;font-size:.6rem;font-weight:900;">👁️ Seen</span>',
+          in_progress: '<span style="background:rgba(245,158,11,.15);color:#b45309;padding:3px 10px;border-radius:20px;font-size:.6rem;font-weight:900;">⏳ Progress</span>',
+          resolved: '<span style="background:rgba(5,150,105,.15);color:#059669;padding:3px 10px;border-radius:20px;font-size:.6rem;font-weight:900;">✅ Resolved</span>',
+          closed: '<span style="background:rgba(100,116,139,.15);color:#64748b;padding:3px 10px;border-radius:20px;font-size:.6rem;font-weight:900;">🔒 Closed</span>'
+        }[c.status] || '';
+
+        h += '<div onclick="TST_OPEN(' + c.id + ')" style="background:#fff;border:1.5px solid rgba(180,200,230,.5);border-left:4px solid ' + (c.status === 'pending' ? '#dc2626' : c.status === 'seen' ? '#0891b2' : c.status === 'in_progress' ? '#f59e0b' : '#059669') + ';border-radius:14px;padding:14px 16px;cursor:pointer;transition:all .2s;">' +
+          '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;">' +
+            '<div style="font-weight:900;color:#0f172a;font-size:.9rem;flex:1;word-break:break-word;">' + typeIcon + ' ' + escapeHtml(c.subject) + '</div>' +
+            statusBadge +
+          '</div>' +
+          '<div style="display:flex;gap:10px;font-size:.7rem;color:#64748b;font-weight:700;flex-wrap:wrap;">' +
+            '<span><i class="fas fa-user"></i> ' + escapeHtml(c.is_anonymous ? '🕵️ Anonymous' : (c.student_name || '—')) + '</span>' +
+            '<span><i class="fas fa-graduation-cap"></i> Class ' + escapeHtml(c.student_class || '—') + '</span>' +
+            '<span><i class="far fa-clock"></i> ' + timeAgo(c.created_at) + '</span>' +
+            '<span style="color:' + typeColor + ';background:' + typeColor + '15;padding:2px 8px;border-radius:20px;font-size:.62rem;">' + typeLabel + '</span>' +
+          '</div>' +
+          '<div style="font-size:.8rem;color:#475569;line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid rgba(100,116,139,.08);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' + escapeHtml(c.message) + '</div>' +
+        '</div>';
+      });
+      h += '</div>';
+    }
+
+    panel.innerHTML = h;
+    updateBadge();
+  }
+
+  function statBox(label, num, color){
+    return '<div style="background:' + color + '10;border:1.5px solid ' + color + '40;border-radius:14px;padding:12px;text-align:center;">' +
+      '<div style="font-size:1.5rem;font-weight:900;color:' + color + ';line-height:1;">' + num + '</div>' +
+      '<div style="font-size:.64rem;color:#475569;margin-top:5px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;">' + label + '</div>' +
+    '</div>';
+  }
+
+  function updateBadge(){
+    var cnt = TST.all.filter(function(c){ return c.status === 'pending'; }).length;
+    var badge = document.getElementById('tstBadge');
+    if (badge) {
+      if (cnt > 0) {
+        badge.textContent = cnt;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  }
+
+  window.TST_FILTER = function(f){
+    TST.filter = f;
+    var panel = document.getElementById('td60Panel');
+    if (panel) renderPanel(panel);
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 📂 OPEN DETAIL MODAL
+  // ═══════════════════════════════════════════════════
+  window.TST_OPEN = async function(id){
+    TST.currentId = id;
+    var c = TST.all.find(function(x){ return x.id === id; });
+    if (!c) return;
+
+    // Auto-mark as seen if pending
+    if (c.status === 'pending') {
+      await markSeen(c);
+    }
+
+    var modal = document.getElementById('globalModal');
+    var titleEl = document.getElementById('modalTitle');
+    var bodyEl = document.getElementById('modalContentBody');
+    if (!modal || !bodyEl) return;
+
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    if (titleEl) titleEl.innerText = '📮 ' + (c.type === 'suggestion' ? 'Suggestion' : 'Complaint') + ' — ' + c.subject;
+
+    bodyEl.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    modal.style.display = 'flex';
+
+    try {
+      var rr = await supabaseClient.from('complaint_replies')
+        .select('*').eq('complaint_id', id)
+        .order('created_at', { ascending: true });
+      var replies = rr.data || [];
+
+      var typeIcon = c.type === 'suggestion' ? '💡' : '😟';
+      var typeLabel = c.type === 'suggestion' ? 'Suggestion' : 'Complaint';
+      var typeColor = c.type === 'suggestion' ? '#0891b2' : '#dc2626';
+
+      var html = '';
+      // Header
+      html += '<div style="background:linear-gradient(135deg,#ede9fe,#fce7f3);padding:16px;border-radius:16px;margin-bottom:16px;border:1.5px solid rgba(139,92,246,.3);">';
+      html += '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;">';
+      html += '<h3 style="font-weight:900;color:#0f172a;font-size:1.1rem;margin:0;line-height:1.3;">' + typeIcon + ' ' + escapeHtml(c.subject) + '</h3>';
+      html += '<span style="background:' + typeColor + '20;color:' + typeColor + ';padding:3px 10px;border-radius:20px;font-size:.62rem;font-weight:900;text-transform:uppercase;">' + typeLabel + '</span>';
+      html += '</div>';
+      html += '<div style="display:flex;gap:12px;font-size:.75rem;color:#64748b;font-weight:800;flex-wrap:wrap;">';
+      html += '<span>👤 ' + escapeHtml(c.is_anonymous ? '🕵️ Anonymous' : (c.student_name || '—')) + '</span>';
+      html += '<span>📚 Class ' + escapeHtml(c.student_class || '—') + '</span>';
+      html += '<span>🕐 ' + formatDate(c.created_at) + '</span>';
+      html += '</div>';
+      html += '</div>';
+
+      // Anonymous warning
+      if (c.is_anonymous) {
+        html += '<div style="background:#fef3c7;border:1.5px solid rgba(180,83,9,.35);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.76rem;color:#78350f;font-weight:700;">' +
+          '<i class="fas fa-mask"></i> <b>Anonymous:</b> Student-ന്റെ പേര് hide ചെയ്തിരിക്കുന്നു. Actual ID Super Admin-നു മാത്രം കാണാം.' +
+        '</div>';
+      }
+
+      // Message
+      html += '<div style="background:#f8fafc;border-radius:14px;padding:16px;font-size:.9rem;line-height:1.7;color:#0f172a;white-space:pre-wrap;word-break:break-word;margin-bottom:16px;border:1px solid rgba(100,116,139,.12);">' + escapeHtml(c.message) + '</div>';
+
+      // Status actions
+      html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">';
+      if (c.status !== 'in_progress' && c.status !== 'resolved' && c.status !== 'closed') {
+        html += '<button onclick="TST_SETSTATUS(' + c.id + ',\'in_progress\')" style="padding:9px 14px;border-radius:10px;border:none;background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#03132e;font-family:inherit;font-weight:800;font-size:.74rem;cursor:pointer;">⏳ In Progress</button>';
+      }
+      if (c.status !== 'resolved') {
+        html += '<button onclick="TST_SETSTATUS(' + c.id + ',\'resolved\')" style="padding:9px 14px;border-radius:10px;border:none;background:linear-gradient(100deg,#059669,#34d399);color:#fff;font-family:inherit;font-weight:800;font-size:.74rem;cursor:pointer;">✅ Resolve</button>';
+      }
+      html += '</div>';
+
+      // Replies
+      html += '<div style="margin-top:16px;">';
+      html += '<div style="font-weight:900;color:#0f172a;margin-bottom:12px;font-size:.9rem;"><i class="fas fa-comments" style="color:#8b5cf6;"></i> Replies (' + replies.length + ')</div>';
+
+      if (!replies.length) {
+        html += '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:.82rem;font-style:italic;">No replies yet</div>';
+      } else {
+        replies.forEach(function(rep){
+          var rc = rep.author_role === 'teacher' ? 'teacher' : rep.author_role === 'admin' ? 'admin' : 'student';
+          var rl = rep.author_role === 'teacher' ? '👨‍🏫 Teacher' : rep.author_role === 'admin' ? '👑 Admin' : '👤 Student';
+          var bgColors = { teacher:'#ecfeff', admin:'#fef2f2', student:'#f5f3ff' };
+          var borderColors = { teacher:'#0891b2', admin:'#dc2626', student:'#8b5cf6' };
+          html += '<div style="background:' + bgColors[rc] + ';border:1px solid rgba(100,116,139,.12);border-left:3px solid ' + borderColors[rc] + ';border-radius:12px;padding:12px 14px;margin-bottom:10px;">' +
+            '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
+              '<div style="font-weight:900;color:#0f172a;font-size:.82rem;">' + escapeHtml(rep.author_name || '—') + ' <span style="font-size:.6rem;color:#64748b;font-weight:800;">' + rl + '</span></div>' +
+              '<div style="font-size:.66rem;color:#94a3b8;font-weight:700;">' + timeAgo(rep.created_at) + '</div>' +
+            '</div>' +
+            '<div style="font-size:.84rem;color:#475569;line-height:1.55;white-space:pre-wrap;word-break:break-word;">' + escapeHtml(rep.reply_text) + '</div>' +
+          '</div>';
+        });
+      }
+
+      // Reply input
+      if (c.status !== 'closed') {
+        html += '<div style="display:flex;gap:8px;align-items:center;background:#f1f5f9;border:1.5px solid rgba(100,116,139,.2);border-radius:30px;padding:5px 5px 5px 16px;margin-top:12px;">' +
+          '<input type="text" id="tstReplyInput" placeholder="മറുപടി എഴുതുക..." maxlength="500" style="flex:1;background:transparent;border:none;outline:none;font-family:inherit;font-size:16px;color:#0f172a;padding:8px 0;min-width:0;">' +
+          '<button onclick="TST_SENDREPLY()" style="width:42px;height:42px;border-radius:50%;border:none;background:linear-gradient(140deg,#8b5cf6,#a855f7);color:#fff;font-size:.95rem;cursor:pointer;flex-shrink:0;"><i class="fas fa-paper-plane"></i></button>' +
+        '</div>';
+      }
+      html += '</div>';
+
+      bodyEl.innerHTML = html;
+    } catch(e) {
+      bodyEl.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 👁️ MARK SEEN
+  // ═══════════════════════════════════════════════════
+  async function markSeen(c){
+    if (c.status !== 'pending') return;
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    if (!teacher) return;
+    try {
+      await supabaseClient.from('complaints').update({
+        status: 'seen',
+        seen_at: new Date().toISOString(),
+        seen_by: teacher.teacher_id,
+        seen_by_name: teacher.name,
+        updated_at: new Date().toISOString()
+      }).eq('id', c.id);
+      c.status = 'seen';
+      c.seen_by_name = teacher.name;
+      c.seen_at = new Date().toISOString();
+      // Update badge
+      updateBadge();
+      var panel = document.getElementById('td60Panel');
+      if (panel && window.TV60 && TV60.activeTab === 'complaints') renderPanel(panel);
+      console.log('✅ Marked seen:', c.id);
+    } catch(e) { console.warn('markSeen:', e); }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔄 SET STATUS
+  // ═══════════════════════════════════════════════════
+  window.TST_SETSTATUS = async function(id, status){
+    if (!confirm('Status change to ' + status + '?')) return;
+    try {
+      var upd = { status: status, updated_at: new Date().toISOString() };
+      if (status === 'resolved') {
+        var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+        upd.resolved_at = new Date().toISOString();
+        upd.resolved_by = teacher ? teacher.teacher_id : 'teacher';
+      }
+      await supabaseClient.from('complaints').update(upd).eq('id', id);
+      showToast('✅ Status updated', 'success');
+      if (typeof confetti !== 'undefined' && status === 'resolved') {
+        confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
+      }
+      await openComplaintsPanel();
+      closeModal('globalModal');
+    } catch(e) { showToast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 💬 SEND REPLY
+  // ═══════════════════════════════════════════════════
+  window.TST_SENDREPLY = async function(){
+    if (!TST.currentId) return;
+    var inp = document.getElementById('tstReplyInput');
+    var text = (inp && inp.value || '').trim();
+    if (!text) return;
+
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    if (!teacher) { showToast('❌ Session missing', 'error'); return; }
+
+    inp.value = '';
+    try {
+      await supabaseClient.from('complaint_replies').insert({
+        complaint_id: TST.currentId,
+        author_id: teacher.teacher_id,
+        author_name: teacher.name,
+        author_role: 'teacher',
+        reply_text: text
+      });
+
+      // Notify student
+      try {
+        var c = TST.all.find(function(x){ return x.id === TST.currentId; });
+        if (c && c.studentid) {
+          await supabaseClient.from('notifications').insert({
+            title: '💬 പരാതിക്ക് മറുപടി',
+            message: 'നിങ്ങളുടെ "' + (c.subject || '') + '" എന്ന പരാതിക്ക് ' + teacher.name + ' മറുപടി നൽകി.',
+            type: 'important',
+            target_type: 'student',
+            target_student: c.studentid,
+            link_url: null
+          });
+        }
+      } catch(e) {}
+
+      showToast('✅ Reply sent', 'success');
+      TST_OPEN(TST.currentId);
+    } catch(e) { showToast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  function init(){ addTab(); }
+
+  var td = document.getElementById('teacherDashboardV60');
+  if (td) {
+    new MutationObserver(function(){
+      if (td.classList.contains('open')) {
+        setTimeout(init, 800);
+        setTimeout(init, 2500);
+      }
+    }).observe(td, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // Hook enterTeacherDashboard
+  var _orig = window.enterTeacherDashboard;
+  if (typeof _orig === 'function' && !_orig._cmp) {
+    window.enterTeacherDashboard = async function(t){
+      var r = await _orig.apply(this, arguments);
+      setTimeout(init, 2000);
+      // Preload for badge
+      setTimeout(function(){
+        if (window.TV60 && TV60.teacher) {
+          supabaseClient.from('complaints').select('id', { count: 'exact', head: true })
+            .eq('target_id', TV60.teacher.teacher_id).eq('status', 'pending')
+            .then(function(res){
+              var badge = document.getElementById('tstBadge');
+              if (badge && res.count > 0) {
+                badge.textContent = res.count;
+                badge.style.display = 'inline-flex';
+              }
+            });
+        }
+      }, 3000);
+      return r;
+    };
+    window.enterTeacherDashboard._cmp = true;
+  }
+
+  setTimeout(init, 2500);
+
+  console.log('✅ Complaints Teacher v1.0 ready');
+})();
+</script>
 </body>
 </html>
 
