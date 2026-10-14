@@ -648,15 +648,15 @@ body {
       <button type="submit" class="tv60-btn-primary" id="tv60Submit">
         <i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>
       </button>
-      <div class="tv60-secondary-row">
-        <button type="button" class="tv60-btn-secondary" 
-                 onclick="window.location.href='login.html'">
-          <i class="fas fa-arrow-left"></i><span>തിരികെ</span>
-        </button>
-        <button type="button" class="tv60-btn-secondary" id="tv60Forgot">
-          <i class="fas fa-question-circle"></i><span>മറന്നോ?</span>
-        </button>
-      </div>
+<div class="tv60-secondary-row">
+  <button type="button" class="tv60-btn-secondary" id="tv60Cancel" 
+           onclick="window.GO_TO_LOGIN && window.GO_TO_LOGIN(); return false;">
+    <i class="fas fa-arrow-left"></i><span>തിരികെ</span>
+  </button>
+  <button type="button" class="tv60-btn-secondary" id="tv60Forgot">
+    <i class="fas fa-question-circle"></i><span>മറന്നോ?</span>
+  </button>
+</div>
     </form>
     <div class="tv60-footer">
       <i class="fas fa-shield-alt"></i> Noorussalam Madrasa • Teacher Portal
@@ -1082,11 +1082,19 @@ window.closeTeacherLogin = closeTeacherLogin;
     this.className = inp.type === 'password' ? 'fas fa-eye tv60-eye' : 'fas fa-eye-slash tv60-eye';
   });
 
+  // 🔙 ROBUST CANCEL — null-safe + fallback filenames
 var _cancelBtn = $id('tv60Cancel');
 if (_cancelBtn) {
-  _cancelBtn.addEventListener('click', function() {
-    window.location.href = 'login.html';
+  _cancelBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.GO_TO_LOGIN === 'function') {
+      window.GO_TO_LOGIN();
+    } else {
+      window.location.href = 'login.html';
+    }
   });
+}
 }
   $id('tv60Forgot').addEventListener('click', function() {
     var t = TV60.teacher || {};
@@ -3211,6 +3219,63 @@ if (_cancelBtn) {
   console.log('✅ Teacher Settings Loader ready');
   console.log('   💡 TEACHER_SETTINGS_debug() — check');
   console.log('   💡 TEACHER_SETTINGS_reload() — force reload');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔙 GO_TO_LOGIN — Robust redirect with fallbacks          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="go-to-login-helper">
+(function(){
+  'use strict';
+
+  // ═══ Change this if your main portal file has a different name ═══
+  var LOGIN_FILE = 'login.html';
+
+  // Fallback filenames to try (browser won't actually test, but keeps it flexible)
+  var FALLBACKS = ['login.html', 'index.html', 'student-login.html', 'student.html'];
+
+  window.GO_TO_LOGIN = function() {
+    console.log('🔙 GO_TO_LOGIN called → ' + LOGIN_FILE);
+
+    // Show a brief feedback (optional)
+    if (typeof showToast === 'function') {
+      showToast('🔙 ലോഗിൻ പേജിലേക്ക് പോകുന്നു...', 'info');
+    }
+
+    // Small delay so toast is visible
+    setTimeout(function() {
+      try {
+        window.location.href = LOGIN_FILE;
+      } catch(e) {
+        console.warn('Primary redirect failed:', e);
+        window.location.href = FALLBACKS[0];
+      }
+    }, 250);
+  };
+
+  // ═══ Debug helper ═══
+  window.TEST_LOGIN_REDIRECT = function() {
+    console.log('=== LOGIN REDIRECT DEBUG ===');
+    console.log('Target file:', LOGIN_FILE);
+    console.log('Current URL:', window.location.href);
+    console.log('Current path:', window.location.pathname);
+    console.log('Origin:', window.location.origin);
+    console.log('Computed target:', window.location.origin + '/' + LOGIN_FILE.replace(/^\/+/, ''));
+    console.log('');
+    console.log('⚠️ IMPORTANT: Verify the file "' + LOGIN_FILE + '" exists in the same folder as this teacher.html file!');
+    console.log('');
+    console.log('To test manually, run this in console:');
+    console.log('   window.location.href = \'' + LOGIN_FILE + '\';');
+    if (typeof showToast === 'function') showToast('🔍 Check console for details', 'info');
+  };
+
+  // ═══ Auto-check on load: warn if login.html likely missing ═══
+  setTimeout(function() {
+    console.log('%c🔙 Login Redirect Helper ready', 'color:#22d3ee;font-weight:bold;');
+    console.log('   Main portal file target: ' + LOGIN_FILE);
+    console.log('   💡 TEST_LOGIN_REDIRECT() — debug');
+    console.log('   💡 If clicking Cancel doesn\'t work, verify "' + LOGIN_FILE + '" exists!');
+  }, 1000);
 })();
 </script>
 </body>
