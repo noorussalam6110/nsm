@@ -3538,7 +3538,7 @@ console.log('✅ Teacher Portal base loaded');
 
       // Actions
       html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
-      html += '<button onclick="td60GenerateStudentReport(\'' + sid + '\')" style="flex:1;padding:12px;' +
+      html += '<button onclick="TD200_studentReportPDF(\'' + sid + '\')" style="flex:1;padding:12px;' +
               'border-radius:12px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);' +
               'color:#fff;font-weight:800;font-size:.82rem;cursor:pointer;min-height:44px;">📄 PDF Report</button>';
       html += '<button onclick="td60CallParent(\'' + esc(s.phone||'') + '\',\'' + esc(s.name||'') + '\')" style="flex:1;padding:12px;' +
@@ -3995,7 +3995,7 @@ console.log('✅ Teacher Portal base loaded');
       '<input type="text" placeholder="🔍 Search name / roll / ID..." ' +
              'oninput="td60SearchStudents(this.value)" ' +
              'style="flex:1;min-width:160px;padding:10px 14px;border:1.5px solid rgba(100,116,139,.25);border-radius:10px;font-family:inherit;font-size:15px;outline:none;">' +
-      '<button onclick="td60DownloadStudentListPDF()" style="padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;font-weight:800;font-size:.78rem;cursor:pointer;min-height:40px;">📄 PDF</button>' +
+      '<button onclick="TD200_studentListPDF()" style="padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;font-weight:800;font-size:.78rem;cursor:pointer;min-height:40px;">📄 PDF</button>' +
       '<span id="td60SearchCount" style="color:#64748b;font-size:.74rem;font-weight:800;"></span>';
     table.parentNode.insertBefore(toolbar, table);
 
@@ -4024,7 +4024,7 @@ console.log('✅ Teacher Portal base loaded');
       '<button onclick="td60BulkAttendance(\'present\')" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#059669,#34d399);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">✅ All Present</button>' +
       '<button onclick="td60BulkAttendance(\'absent\')" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">❌ All Absent</button>' +
       '<button onclick="td60BulkAttendance(\'copy\')" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">📋 Copy Last Month</button>' +
-      '<button onclick="td60DownloadAttendancePDF()" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">📄 PDF</button>';
+      '<button onclick="TD200_attendancePDF()" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">📄 PDF</button>';
     toolbar.appendChild(btns);
   }
 
@@ -4036,7 +4036,7 @@ console.log('✅ Teacher Portal base loaded');
     var btn = document.createElement('button');
     btn.style.cssText = 'margin-left:auto;padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;font-weight:800;font-size:.78rem;cursor:pointer;min-height:42px;';
     btn.innerHTML = '📄 PDF';
-    btn.onclick = window.td60DownloadMarksPDF;
+    btn.onclick = window.TD200_marksPDF;
     toolbar.appendChild(btn);
   }
 
@@ -4940,6 +4940,2158 @@ console.log('✅ Teacher Portal base loaded');
   setTimeout(init, 2500);
 
   console.log('✅ Complaints Teacher v1.0 ready');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🚀 TEACHER ENHANCEMENT PATCH v200                       -->
+<!-- Edit/Delete HW+Notice + PDF Fix + Admin Features        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="teacher-enhance-v200-css">
+/* ═══════════════════════════════════════════════════════ */
+/* 📖 HOMEWORK & NOTICE ACTION BUTTONS                      */
+/* ═══════════════════════════════════════════════════════ */
+.td60-hw-card,
+.td60-nt-card {
+  position: relative;
+}
+.td60-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(100,116,139,.15);
+}
+.td60-card-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .72rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 36px;
+  transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.td60-card-btn:active { transform: scale(.96); }
+.td60-card-btn.edit {
+  background: linear-gradient(100deg, #8b5cf6, #a78bfa);
+  color: #fff;
+}
+.td60-card-btn.delete {
+  background: linear-gradient(100deg, #dc2626, #ef4444);
+  color: #fff;
+  flex: 0.6;
+}
+.td60-card-btn.save {
+  background: linear-gradient(100deg, #059669, #34d399);
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📊 STATS MINI BAR IN HOMEWORK/NOTICE                     */
+/* ═══════════════════════════════════════════════════════ */
+.td60-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.td60-mini-stat {
+  background: #f8fafc;
+  border: 1.5px solid rgba(180,200,230,.5);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+}
+.td60-mini-stat .n {
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.td60-mini-stat .l {
+  font-size: .62rem;
+  color: #64748b;
+  font-weight: 800;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* ⚡ BULK ACTION TOOLBAR                                   */
+/* ═══════════════════════════════════════════════════════ */
+.td60-bulk-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1.5px solid rgba(59,130,246,.3);
+  border-radius: 14px;
+  align-items: center;
+}
+.td60-bulk-bar .label {
+  font-size: .72rem;
+  font-weight: 900;
+  color: #1e40af;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-right: 6px;
+}
+.td60-bulk-btn {
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(100,116,139,.2);
+  background: #fff;
+  color: #475569;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .72rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all .2s;
+  min-height: 34px;
+}
+.td60-bulk-btn:hover {
+  border-color: rgba(8,145,178,.5);
+  color: #0891b2;
+  background: #ecfeff;
+}
+.td60-bulk-btn.primary {
+  background: linear-gradient(100deg, #0891b2, #22d3ee);
+  color: #fff;
+  border-color: transparent;
+}
+.td60-bulk-btn.danger {
+  background: linear-gradient(100deg, #dc2626, #ef4444);
+  color: #fff;
+  border-color: transparent;
+}
+.td60-bulk-btn.success {
+  background: linear-gradient(100deg, #059669, #34d399);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📄 EXPORT DROPDOWN                                       */
+/* ═══════════════════════════════════════════════════════ */
+.td60-export-wrap {
+  position: relative;
+  display: inline-block;
+}
+.td60-export-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px -15px rgba(0,0,0,.25);
+  border: 1px solid rgba(100,116,139,.15);
+  min-width: 200px;
+  padding: 6px;
+  z-index: 100;
+  display: none;
+}
+.td60-export-menu.show { display: block; animation: td60MenuIn .2s ease; }
+@keyframes td60MenuIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.td60-export-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: .82rem;
+  color: #0f172a;
+  cursor: pointer;
+  text-align: left;
+  transition: background .15s;
+}
+.td60-export-item:hover { background: #f1f5f9; }
+.td60-export-item i {
+  width: 20px;
+  color: #0891b2;
+  font-size: .9rem;
+}
+</style>
+
+<script id="teacher-enhance-v200-js">
+(function(){
+  'use strict';
+  console.log('🚀 Teacher Enhancement v200 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🛠️ SHARED HELPERS
+  // ═══════════════════════════════════════════════════════
+  function $id(id){ return document.getElementById(id); }
+  function esc(s){
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"']/g, function(m){
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m];
+    });
+  }
+  function toast(m,t){ if (typeof showToast === 'function') showToast(m,t); }
+  function getTeacher(){
+    return window.currentTeacher || (window.TV60 && window.TV60.teacher) || null;
+  }
+  function getActiveClass(){
+    return (window.TV60 && window.TV60.activeClass) || null;
+  }
+  function fmtDate(d){
+    if (!d) return '—';
+    try { return new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }); }
+    catch(e) { return d; }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📖 HOMEWORK — Full Panel with Edit/Delete
+  // ═══════════════════════════════════════════════════════
+  window.TD200_renderHomework = async function(cls){
+    var panel = $id('td60Panel');
+    if (!panel) return;
+    panel.innerHTML = '<div style="text-align:center;padding:30px;"><div class="td60-spinner"></div></div>';
+
+    try {
+      var r = await supabaseClient.from('homework')
+        .select('*').eq('class', cls)
+        .order('due_date', { ascending: false })
+        .limit(100);
+      var list = r.data || [];
+
+      // Stats
+      var today = new Date().toISOString().split('T')[0];
+      var overdue = list.filter(function(h){ return h.due_date && h.due_date < today; }).length;
+      var upcoming = list.filter(function(h){ return h.due_date && h.due_date >= today; }).length;
+
+      var h = '';
+
+      // Bulk action bar
+      h += '<div class="td60-bulk-bar">' +
+        '<span class="label"><i class="fas fa-bolt"></i> Actions</span>' +
+        '<button class="td60-bulk-btn primary" onclick="TD200_openHwForm(null, \'' + cls + '\')">' +
+          '<i class="fas fa-plus"></i> പുതിയ Homework</button>' +
+        '<button class="td60-bulk-btn" onclick="TD200_renderHomework(\'' + cls + '\')">' +
+          '<i class="fas fa-sync-alt"></i> Refresh</button>' +
+        '<div style="flex:1;"></div>' +
+        '<button class="td60-bulk-btn danger" onclick="TD200_deleteAllOverdue(\'' + cls + '\')" title="Delete overdue">' +
+          '<i class="fas fa-broom"></i> Clear Overdue</button>' +
+      '</div>';
+
+      // Mini stats
+      h += '<div class="td60-mini-stats">' +
+        '<div class="td60-mini-stat"><div class="n" style="color:#0891b2;">' + list.length + '</div><div class="l">Total</div></div>' +
+        '<div class="td60-mini-stat"><div class="n" style="color:#b45309;">' + upcoming + '</div><div class="l">Upcoming</div></div>' +
+        '<div class="td60-mini-stat"><div class="n" style="color:#dc2626;">' + overdue + '</div><div class="l">Overdue</div></div>' +
+      '</div>';
+
+      if (!list.length) {
+        h += '<div class="td60-empty"><i class="fas fa-book"></i>No homework yet</div>';
+      } else {
+        list.forEach(function(hw){
+          var isOverdue = hw.due_date && hw.due_date < today;
+          var accent = isOverdue ? '#dc2626' : '#0891b2';
+          h += '<div class="td60-hw-card" style="background:#f8fafc;border-left:4px solid ' + accent + ';border-radius:12px;padding:12px 14px;margin-bottom:8px;">' +
+            '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">' +
+              '<strong style="color:#0f172a;">' + esc(hw.subject || '') + ' — ' + esc(hw.title) + '</strong>' +
+              '<small style="color:#64748b;"><i class="far fa-calendar"></i> ' + fmtDate(hw.due_date) + (isOverdue ? ' ⚠️ Overdue' : '') + '</small>' +
+            '</div>' +
+            (hw.description ? '<div style="margin-top:6px;color:#475569;font-size:.82rem;line-height:1.5;">' + esc(hw.description) + '</div>' : '') +
+            '<div class="td60-card-actions">' +
+              '<button class="td60-card-btn edit" onclick="TD200_openHwForm(' + hw.id + ', \'' + cls + '\')">' +
+                '<i class="fas fa-pen"></i> Edit</button>' +
+              '<button class="td60-card-btn delete" onclick="TD200_deleteHw(' + hw.id + ', \'' + cls + '\')">' +
+                '<i class="fas fa-trash"></i> Delete</button>' +
+            '</div>' +
+          '</div>';
+        });
+      }
+
+      panel.innerHTML = h;
+    } catch(e) {
+      console.error('renderHomework error:', e);
+      panel.innerHTML = '<div class="td60-empty">Error: ' + esc(e.message || 'unknown') + '</div>';
+    }
+  };
+
+  window.TD200_openHwForm = async function(id, cls){
+    var hw = {};
+    if (id) {
+      try {
+        var r = await supabaseClient.from('homework').select('*').eq('id', id).single();
+        if (r.data) hw = r.data;
+      } catch(e) { toast('❌ Load failed', 'error'); return; }
+    }
+
+    var subjects = (typeof getSubjectsForClass === 'function')
+      ? getSubjectsForClass(cls) : ['Arabic','Malayalam','English','Maths','Science'];
+    var isEdit = !!id;
+
+    if (typeof modalTitleSpan !== 'undefined')
+      modalTitleSpan.innerText = isEdit ? '✏️ Edit Homework' : '📖 Add Homework';
+    if (typeof modalBodyDiv !== 'undefined')
+      modalBodyDiv.innerHTML =
+        '<form id="td200HwForm">' +
+          '<div style="margin-bottom:12px;">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Subject *</label>' +
+            '<select id="td200HwSub" class="modal-form-input">' +
+              subjects.map(function(s){ return '<option value="' + esc(s) + '" ' + (hw.subject === s ? 'selected' : '') + '>' + esc(s) + '</option>'; }).join('') +
+            '</select>' +
+          '</div>' +
+          '<div style="margin-bottom:12px;">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Title *</label>' +
+            '<input type="text" id="td200HwTitle" required maxlength="200" class="modal-form-input" value="' + esc(hw.title || '') + '">' +
+          '</div>' +
+          '<div style="margin-bottom:12px;">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Description</label>' +
+            '<textarea id="td200HwDesc" class="modal-form-input" style="min-height:100px;" maxlength="800">' + esc(hw.description || '') + '</textarea>' +
+          '</div>' +
+          '<div style="margin-bottom:16px;">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Due Date</label>' +
+            '<input type="date" id="td200HwDue" class="modal-form-input" value="' + (hw.due_date || '') + '">' +
+          '</div>' +
+          '<div style="display:flex;gap:10px;">' +
+            '<button type="submit" class="btn-update" style="flex:1;">' +
+              '<i class="fas fa-save"></i> ' + (isEdit ? 'Update' : 'Add') +
+            '</button>' +
+            '<button type="button" onclick="closeModal(\'globalModal\')" class="btn-cancel">Cancel</button>' +
+          '</div>' +
+        '</form>';
+
+    if (typeof modal !== 'undefined') modal.style.display = 'flex';
+
+    setTimeout(function(){
+      var form = $id('td200HwForm');
+      if (!form) return;
+      form.onsubmit = async function(ev){
+        ev.preventDefault();
+        var obj = {
+          class: cls,
+          subject: $id('td200HwSub').value,
+          title: $id('td200HwTitle').value.trim(),
+          description: $id('td200HwDesc').value.trim() || null,
+          due_date: $id('td200HwDue').value || null
+        };
+        if (!obj.title) { toast('Title required', 'error'); return; }
+
+        try {
+          if (isEdit) {
+            await supabaseClient.from('homework').update(obj).eq('id', id);
+            toast('✅ Updated', 'success');
+          } else {
+            await supabaseClient.from('homework').insert(obj);
+            toast('✅ Added', 'success');
+          }
+          if (typeof closeModal === 'function') closeModal('globalModal');
+          if (typeof confetti !== 'undefined') confetti({ particleCount: 60, spread: 60, origin: { y: .7 } });
+          TD200_renderHomework(cls);
+        } catch(e) { toast('❌ ' + e.message, 'error'); }
+      };
+    }, 100);
+  };
+
+  window.TD200_deleteHw = async function(id, cls){
+    if (!confirm('🗑️ ഈ homework ഡിലീറ്റ് ചെയ്യണോ?')) return;
+    try {
+      await supabaseClient.from('homework').delete().eq('id', id);
+      toast('🗑️ Deleted', 'success');
+      TD200_renderHomework(cls);
+    } catch(e) { toast('❌ ' + e.message, 'error'); }
+  };
+
+  window.TD200_deleteAllOverdue = async function(cls){
+    if (!confirm('🗑️ Class ' + cls + '-ലെ എല്ലാ overdue homework-ഉം ഡിലീറ്റ് ചെയ്യണോ?')) return;
+    var today = new Date().toISOString().split('T')[0];
+    try {
+      var r = await supabaseClient.from('homework')
+        .delete().eq('class', cls).lt('due_date', today);
+      toast('✅ Cleared overdue', 'success');
+      TD200_renderHomework(cls);
+    } catch(e) { toast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📌 NOTICE — Full Panel with Edit/Delete
+  // ═══════════════════════════════════════════════════════
+  window.TD200_renderNotice = async function(cls){
+    var panel = $id('td60Panel');
+    if (!panel) return;
+    panel.innerHTML = '<div style="text-align:center;padding:30px;"><div class="td60-spinner"></div></div>';
+
+    try {
+      var r = await supabaseClient.from('notice_board')
+        .select('*')
+        .or('target_class.eq.all,target_class.eq.' + cls)
+        .order('pinned', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(100);
+      var list = r.data || [];
+
+      var total = list.length;
+      var pinned = list.filter(function(n){ return n.pinned; }).length;
+      var urgent = list.filter(function(n){ return n.priority === 'urgent'; }).length;
+
+      var h = '';
+
+      // Bulk action bar
+      h += '<div class="td60-bulk-bar">' +
+        '<span class="label"><i class="fas fa-bolt"></i> Actions</span>' +
+        '<button class="td60-bulk-btn primary" onclick="TD200_openNoticeForm(null, \'' + cls + '\')">' +
+          '<i class="fas fa-plus"></i> പുതിയ Notice</button>' +
+        '<button class="td60-bulk-btn" onclick="TD200_renderNotice(\'' + cls + '\')">' +
+          '<i class="fas fa-sync-alt"></i> Refresh</button>' +
+      '</div>';
+
+      // Mini stats
+      h += '<div class="td60-mini-stats">' +
+        '<div class="td60-mini-stat"><div class="n" style="color:#8b5cf6;">' + total + '</div><div class="l">Total</div></div>' +
+        '<div class="td60-mini-stat"><div class="n" style="color:#a855f7;">' + pinned + '</div><div class="l">📌 Pinned</div></div>' +
+        '<div class="td60-mini-stat"><div class="n" style="color:#dc2626;">' + urgent + '</div><div class="l">🚨 Urgent</div></div>' +
+      '</div>';
+
+      if (!list.length) {
+        h += '<div class="td60-empty"><i class="fas fa-bullhorn"></i>No notices</div>';
+      } else {
+        list.forEach(function(n){
+          var priority = n.priority === 'urgent' ? '#dc2626' : n.priority === 'high' ? '#b45309' : '#a855f7';
+          var priBadge = n.priority === 'urgent' ? '<span style="background:rgba(220,38,38,.15);color:#dc2626;padding:2px 8px;border-radius:20px;font-size:.58rem;font-weight:800;">🚨 URGENT</span>' :
+                         n.priority === 'high' ? '<span style="background:rgba(180,83,9,.15);color:#b45309;padding:2px 8px;border-radius:20px;font-size:.58rem;font-weight:800;">⚡ IMPORTANT</span>' : '';
+          var pinBadge = n.pinned ? '<span style="background:rgba(168,85,247,.15);color:#9333ea;padding:2px 8px;border-radius:20px;font-size:.58rem;font-weight:800;">📌 PINNED</span>' : '';
+          var targetBadge = n.target_class === 'all'
+            ? '<span style="background:#ecfeff;color:#0891b2;padding:2px 8px;border-radius:20px;font-size:.58rem;font-weight:800;">🌟 All</span>'
+            : '<span style="background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:20px;font-size:.58rem;font-weight:800;">📚 Class ' + esc(n.target_class) + '</span>';
+
+          h += '<div class="td60-nt-card" style="background:#f8fafc;border-left:4px solid ' + priority + ';border-radius:12px;padding:12px 14px;margin-bottom:8px;">' +
+            '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px;">' +
+              '<strong style="color:#0f172a;flex:1;word-break:break-word;">' + esc(n.title) + '</strong>' +
+              '<small style="color:#64748b;">' + fmtDate(n.created_at) + '</small>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">' + pinBadge + priBadge + targetBadge + '</div>' +
+            (n.content ? '<div style="color:#475569;font-size:.82rem;line-height:1.55;white-space:pre-wrap;word-break:break-word;">' + esc(n.content) + '</div>' : '') +
+            '<div class="td60-card-actions">' +
+              '<button class="td60-card-btn edit" onclick="TD200_openNoticeForm(' + n.id + ', \'' + cls + '\')">' +
+                '<i class="fas fa-pen"></i> Edit</button>' +
+              '<button class="td60-card-btn delete" onclick="TD200_togglePin(' + n.id + ', ' + (!n.pinned) + ', \'' + cls + '\')" title="Pin">' +
+                '<i class="fas fa-thumbtack"></i> ' + (n.pinned ? 'Unpin' : 'Pin') + '</button>' +
+              '<button class="td60-card-btn delete" onclick="TD200_deleteNotice(' + n.id + ', \'' + cls + '\')">' +
+                '<i class="fas fa-trash"></i> Delete</button>' +
+            '</div>' +
+          '</div>';
+        });
+      }
+
+      panel.innerHTML = h;
+    } catch(e) {
+      console.error('renderNotice error:', e);
+      panel.innerHTML = '<div class="td60-empty">Error: ' + esc(e.message || 'unknown') + '</div>';
+    }
+  };
+
+  window.TD200_openNoticeForm = async function(id, cls){
+    var nt = {};
+    if (id) {
+      try {
+        var r = await supabaseClient.from('notice_board').select('*').eq('id', id).single();
+        if (r.data) nt = r.data;
+      } catch(e) { toast('❌ Load failed', 'error'); return; }
+    }
+    var isEdit = !!id;
+    if (typeof modalTitleSpan !== 'undefined')
+      modalTitleSpan.innerText = isEdit ? '✏️ Edit Notice' : '📌 Add Notice';
+    if (typeof modalBodyDiv !== 'undefined')
+      modalBodyDiv.innerHTML =
+        '<form id="td200NtForm">' +
+          '<div style="margin-bottom:12px;">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Title *</label>' +
+            '<input type="text" id="td200NtTitle" required maxlength="120" class="modal-form-input" value="' + esc(nt.title || '') + '">' +
+          '</div>' +
+          '<div style="margin-bottom:12px;">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Content</label>' +
+            '<textarea id="td200NtContent" class="modal-form-input" style="min-height:120px;" maxlength="1500">' + esc(nt.content || '') + '</textarea>' +
+          '</div>' +
+          '<div class="row g-2" style="margin-bottom:12px;">' +
+            '<div class="col-md-6">' +
+              '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Target</label>' +
+              '<select id="td200NtTarget" class="modal-form-input">' +
+                '<option value="' + esc(cls) + '" ' + (nt.target_class === String(cls) ? 'selected' : '') + '>Class ' + cls + ' only</option>' +
+                '<option value="all" ' + (nt.target_class === 'all' ? 'selected' : '') + '>🌟 All Classes</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="col-md-6">' +
+              '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Priority</label>' +
+              '<select id="td200NtPriority" class="modal-form-input">' +
+                '<option value="normal" ' + (nt.priority === 'normal' || !nt.priority ? 'selected' : '') + '>Normal</option>' +
+                '<option value="high" ' + (nt.priority === 'high' ? 'selected' : '') + '>⚡ High</option>' +
+                '<option value="urgent" ' + (nt.priority === 'urgent' ? 'selected' : '') + '>🚨 Urgent</option>' +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+          '<div style="margin-bottom:16px;">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:4px;">Pin</label>' +
+            '<select id="td200NtPinned" class="modal-form-input">' +
+              '<option value="false" ' + (!nt.pinned ? 'selected' : '') + '>No</option>' +
+              '<option value="true" ' + (nt.pinned ? 'selected' : '') + '>Yes 📌</option>' +
+            '</select>' +
+          '</div>' +
+          '<div style="display:flex;gap:10px;">' +
+            '<button type="submit" class="btn-update" style="flex:1;">' +
+              '<i class="fas fa-save"></i> ' + (isEdit ? 'Update' : 'Post') +
+            '</button>' +
+            '<button type="button" onclick="closeModal(\'globalModal\')" class="btn-cancel">Cancel</button>' +
+          '</div>' +
+        '</form>';
+
+    if (typeof modal !== 'undefined') modal.style.display = 'flex';
+
+    setTimeout(function(){
+      var form = $id('td200NtForm');
+      if (!form) return;
+      form.onsubmit = async function(ev){
+        ev.preventDefault();
+        var obj = {
+          title: $id('td200NtTitle').value.trim(),
+          content: $id('td200NtContent').value.trim() || null,
+          target_class: $id('td200NtTarget').value,
+          priority: $id('td200NtPriority').value,
+          pinned: $id('td200NtPinned').value === 'true'
+        };
+        if (!obj.title) { toast('Title required', 'error'); return; }
+
+        try {
+          if (isEdit) {
+            await supabaseClient.from('notice_board').update(obj).eq('id', id);
+            toast('✅ Updated', 'success');
+          } else {
+            await supabaseClient.from('notice_board').insert(obj);
+            toast('✅ Posted', 'success');
+            // Notify students of the class
+            try {
+              await supabaseClient.from('notifications').insert({
+                title: '📌 ' + obj.title,
+                message: (obj.content || '').substring(0, 200),
+                type: obj.priority === 'urgent' ? 'urgent' : obj.priority === 'high' ? 'important' : 'general',
+                target_type: obj.target_class === 'all' ? 'all' : 'class',
+                target_class: obj.target_class === 'all' ? 'all' : obj.target_class
+              });
+            } catch(e) {}
+          }
+          if (typeof closeModal === 'function') closeModal('globalModal');
+          if (typeof confetti !== 'undefined') confetti({ particleCount: 60, spread: 60, origin: { y: .7 } });
+          TD200_renderNotice(cls);
+        } catch(e) { toast('❌ ' + e.message, 'error'); }
+      };
+    }, 100);
+  };
+
+  window.TD200_deleteNotice = async function(id, cls){
+    if (!confirm('🗑️ ഈ notice ഡിലീറ്റ് ചെയ്യണോ?')) return;
+    try {
+      await supabaseClient.from('notice_board').delete().eq('id', id);
+      toast('🗑️ Deleted', 'success');
+      TD200_renderNotice(cls);
+    } catch(e) { toast('❌ ' + e.message, 'error'); }
+  };
+
+  window.TD200_togglePin = async function(id, pinned, cls){
+    try {
+      await supabaseClient.from('notice_board').update({ pinned: pinned }).eq('id', id);
+      toast(pinned ? '📌 Pinned' : 'Unpinned', 'success');
+      TD200_renderNotice(cls);
+    } catch(e) { toast('❌ ' + e.message, 'error'); }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 HOOK openPanel — replace homework/notice with new
+  // ═══════════════════════════════════════════════════════
+  function hookOpenPanel(){
+    // Try to hook — but openPanel is inside IIFE, not exposed.
+    // Instead, watch the panel for old content and replace it.
+  }
+
+  // Watch for panel tab clicks
+  document.addEventListener('click', function(e){
+    var tab = e.target.closest('.td60-tab');
+    if (!tab) return;
+    var key = tab.dataset.tab;
+    if (!key) return;
+    var cls = getActiveClass();
+    if (!cls) return;
+
+    // After default render, replace with our version
+    if (key === 'homework' || key === 'notice') {
+      setTimeout(function(){
+        if (key === 'homework') TD200_renderHomework(cls);
+        else TD200_renderNotice(cls);
+      }, 200);
+    }
+  }, true);
+
+  // ═══════════════════════════════════════════════════════
+  // 📄 PDF FUNCTIONS — FIXED + Enhanced
+  // ═══════════════════════════════════════════════════════
+
+  // Check if PDF libs loaded
+  function checkPDFLibs(){
+    if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
+      toast('❌ PDF library loading... try again', 'error');
+      return false;
+    }
+    return true;
+  }
+
+  // ─── Attendance PDF (with class-teacher signature) ───
+  window.TD200_attendancePDF = async function(){
+    var cls = getActiveClass();
+    if (!cls) { toast('❌ Class select ചെയ്യൂ', 'error'); return; }
+    if (!checkPDFLibs()) return;
+
+    var month = ($id('td60AttMonth') || {}).value;
+    if (!month) { toast('❌ Month select ചെയ്യൂ', 'error'); return; }
+
+    if (typeof showLoading === 'function') showLoading(true);
+    try {
+      var sr = await supabaseClient.from('students')
+        .select('studentid, name, roll').eq('class', cls).order('roll');
+      var students = sr.data || [];
+      if (!students.length) { toast('❌ No students', 'error'); showLoading(false); return; }
+
+      var ids = students.map(function(s){ return s.studentid; });
+      var ar = await supabaseClient.from('attendance_records')
+        .select('*').eq('month_year', month).in('studentid', ids);
+      var amap = {};
+      (ar.data || []).forEach(function(a){ amap[a.studentid] = a; });
+
+      var totalDays = parseInt(($id('td60AttTotal') || {}).value) || 22;
+      var teacher = getTeacher();
+
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+      var ph = doc.internal.pageSize.getHeight();
+
+      // Header
+      doc.setFillColor(8, 145, 178);
+      doc.rect(0, 0, pw, 90, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text('NOORUSSALAM MADRASA', pw / 2, 35, { align: 'center' });
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text('Attendance Report — Class ' + cls, pw / 2, 55, { align: 'center' });
+      doc.text('Month: ' + month + '  |  Total Days: ' + totalDays, pw / 2, 72, { align: 'center' });
+
+      // Info
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(9);
+      var infoY = 115;
+      doc.setFont(undefined, 'bold');
+      doc.text('Teacher:', 40, infoY);
+      doc.setFont(undefined, 'normal');
+      doc.text(String(teacher ? teacher.name : '—'), 100, infoY);
+      doc.setFont(undefined, 'bold');
+      doc.text('Generated:', pw - 200, infoY);
+      doc.setFont(undefined, 'normal');
+      doc.text(new Date().toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }), pw - 145, infoY);
+
+      // Table
+      var rows = students.map(function(s, i) {
+        var rec = amap[s.studentid];
+        var p = rec ? (rec.present_days || 0) : 0;
+        var pct = totalDays > 0 ? Math.round(p / totalDays * 100) : 0;
+        return [i + 1, s.roll || '—', s.name || '', p, totalDays, pct + '%'];
+      });
+
+      doc.autoTable({
+        startY: 135,
+        head: [['#', 'Roll', 'Name', 'Present', 'Total', '%']],
+        body: rows,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 5 },
+        headStyles: { fillColor: [8, 145, 178], textColor: 255, fontStyle: 'bold' },
+        columnStyles: {
+          0: { cellWidth: 30, halign: 'center' },
+          1: { cellWidth: 45, halign: 'center', fontStyle: 'bold', textColor: [8, 145, 178] },
+          2: { cellWidth: 'auto' },
+          3: { cellWidth: 55, halign: 'center', fontStyle: 'bold' },
+          4: { cellWidth: 50, halign: 'center' },
+          5: { cellWidth: 50, halign: 'center', fontStyle: 'bold' }
+        }
+      });
+
+      // Footer
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text('Computer-generated report', pw / 2, ph - 20, { align: 'center' });
+
+      var filename = 'Attendance_Class' + cls + '_' + month + '.pdf';
+      doc.save(filename);
+      toast('✅ PDF downloaded', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+    } catch(e) {
+      console.error('Attendance PDF:', e);
+      toast('❌ ' + (e.message || 'PDF error'), 'error');
+    }
+    if (typeof showLoading === 'function') showLoading(false);
+  };
+
+  // ─── Marks PDF (exam-wise) ───
+  window.TD200_marksPDF = async function(){
+    var cls = getActiveClass();
+    if (!cls) { toast('❌ Class select ചെയ്യൂ', 'error'); return; }
+    if (!checkPDFLibs()) return;
+
+    var exam = ($id('td60MarksExam') || {}).value;
+    if (!exam) { toast('❌ Exam select ചെയ്യൂ', 'error'); return; }
+
+    if (typeof showLoading === 'function') showLoading(true);
+    try {
+      var subjects = (typeof getSubjectsForClass === 'function')
+        ? getSubjectsForClass(cls, exam) : ['Arabic','Malayalam','English','Maths','Science'];
+
+      var sr = await supabaseClient.from('students')
+        .select('studentid, name, roll').eq('class', cls).order('roll');
+      var students = sr.data || [];
+
+      var mr = await supabaseClient.from('exam_marks')
+        .select('*').eq('exam_name', exam);
+      var mmap = {};
+      (mr.data || []).forEach(function(m){
+        if (!mmap[m.studentid]) mmap[m.studentid] = {};
+        mmap[m.studentid][m.subject] = m.obtained_marks;
+      });
+
+      var teacher = getTeacher();
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+      var ph = doc.internal.pageSize.getHeight();
+
+      // Header
+      doc.setFillColor(8, 145, 178);
+      doc.rect(0, 0, pw, 80, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text('NOORUSSALAM MADRASA', pw / 2, 32, { align: 'center' });
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'normal');
+      doc.text('Marks Report — Class ' + cls + ' — ' + exam, pw / 2, 55, { align: 'center' });
+
+      // Info line
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'bold');
+      doc.text('Teacher:', 40, 105);
+      doc.setFont(undefined, 'normal');
+      doc.text(String(teacher ? teacher.name : '—'), 95, 105);
+      doc.setFont(undefined, 'bold');
+      doc.text('Generated:', pw - 220, 105);
+      doc.setFont(undefined, 'normal');
+      doc.text(new Date().toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), pw - 165, 105);
+
+      // Table
+      var head = [['#', 'Roll', 'Name']].concat(subjects).concat([['Total']]);
+      var rows = students.map(function(s, i){
+        var row = [i + 1, s.roll || '—', s.name || ''];
+        var tot = 0, maxTot = 0;
+        subjects.forEach(function(sub){
+          var v = (mmap[s.studentid] || {})[sub];
+          row.push(v != null ? v : '—');
+          if (v != null) { tot += Number(v); maxTot += 50; }
+        });
+        row.push(maxTot > 0 ? tot + '/' + maxTot : '—');
+        return row;
+      });
+
+      doc.autoTable({
+        startY: 125,
+        head: head,
+        body: rows,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 4 },
+        headStyles: { fillColor: [8, 145, 178], textColor: 255, fontStyle: 'bold', halign: 'center' },
+        columnStyles: {
+          0: { cellWidth: 28, halign: 'center' },
+          1: { cellWidth: 40, halign: 'center', fontStyle: 'bold', textColor: [8, 145, 178] },
+          2: { cellWidth: 130 },
+          [head[0].length - 1]: { halign: 'center', fontStyle: 'bold', textColor: [5, 150, 105] }
+        }
+      });
+
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text('Computer-generated report', pw / 2, ph - 18, { align: 'center' });
+
+      var safeExam = exam.replace(/\s+/g, '_');
+      doc.save('Marks_Class' + cls + '_' + safeExam + '.pdf');
+      toast('✅ PDF downloaded', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+    } catch(e) {
+      console.error('Marks PDF:', e);
+      toast('❌ ' + (e.message || 'PDF error'), 'error');
+    }
+    if (typeof showLoading === 'function') showLoading(false);
+  };
+
+  // ─── Student List PDF ───
+  window.TD200_studentListPDF = async function(){
+    var cls = getActiveClass();
+    if (!cls) { toast('❌ Class select ചെയ്യൂ', 'error'); return; }
+    if (!checkPDFLibs()) return;
+
+    if (typeof showLoading === 'function') showLoading(true);
+    try {
+      var sr = await supabaseClient.from('students')
+        .select('studentid, name, roll, fathername, phone, bloodgroup, dob')
+        .eq('class', cls).order('roll');
+      var students = sr.data || [];
+
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+      var ph = doc.internal.pageSize.getHeight();
+
+      doc.setFillColor(8, 145, 178);
+      doc.rect(0, 0, pw, 70, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.text('NOORUSSALAM MADRASA', pw / 2, 30, { align: 'center' });
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text('Student List — Class ' + cls + ' (' + students.length + ' students)', pw / 2, 50, { align: 'center' });
+
+      doc.setTextColor(0, 0, 0);
+      var rows = students.map(function(s, i){
+        return [i + 1, s.roll || '—', s.studentid || '', s.name || '', s.fathername || '', s.phone || ''];
+      });
+
+      doc.autoTable({
+        startY: 90,
+        head: [['#', 'Roll', 'ID', 'Name', "Father's Name", 'Phone']],
+        body: rows,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 5 },
+        headStyles: { fillColor: [8, 145, 178], textColor: 255, fontStyle: 'bold' },
+        columnStyles: {
+          0: { cellWidth: 28, halign: 'center' },
+          1: { cellWidth: 45, halign: 'center', fontStyle: 'bold', textColor: [8, 145, 178] },
+          2: { cellWidth: 80, halign: 'center' },
+          3: { cellWidth: 'auto' },
+          4: { cellWidth: 130 },
+          5: { cellWidth: 90, halign: 'center' }
+        }
+      });
+
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text('Computer-generated report', pw / 2, ph - 18, { align: 'center' });
+
+      doc.save('Students_Class' + cls + '.pdf');
+      toast('✅ Downloaded', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 80, spread: 70, origin: { y: .7 } });
+    } catch(e) {
+      console.error('Student List PDF:', e);
+      toast('❌ ' + (e.message || 'PDF error'), 'error');
+    }
+    if (typeof showLoading === 'function') showLoading(false);
+  };
+
+  // ─── Individual Student Report PDF ───
+  window.TD200_studentReportPDF = async function(sid){
+    if (!sid) { toast('❌ Student ID missing', 'error'); return; }
+    if (!checkPDFLibs()) return;
+
+    if (typeof showLoading === 'function') showLoading(true);
+    try {
+      var sr = await supabaseClient.from('students').select('*').eq('studentid', sid).maybeSingle();
+      var s = sr.data;
+      if (!s) throw new Error('Student not found');
+
+      var mr = await supabaseClient.from('exam_marks').select('*').eq('studentid', sid);
+      var ar = await supabaseClient.from('attendance_records').select('*').eq('studentid', sid);
+      var marks = mr.data || [];
+      var atts = ar.data || [];
+
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+      var ph = doc.internal.pageSize.getHeight();
+
+      // Header
+      doc.setFillColor(139, 92, 246);
+      doc.rect(0, 0, pw, 70, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.text('Student Report', pw / 2, 35, { align: 'center' });
+
+      // Student info
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text(String(s.name || '—'), 40, 105);
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      doc.text('Class ' + (s.class || '—') + ' • Roll ' + (s.roll || '—') + ' • ID: ' + (s.studentid || ''), 40, 122);
+
+      // Stats
+      var totalMarks = 0, totalMax = 0;
+      marks.forEach(function(m){
+        if (Number(m.max_marks) > 0) {
+          totalMarks += Number(m.obtained_marks) || 0;
+          totalMax += Number(m.max_marks) || 0;
+        }
+      });
+      var pct = totalMax > 0 ? Math.round(totalMarks / totalMax * 100) : 0;
+
+      var totalPres = 0, totalDays = 0;
+      atts.forEach(function(a){
+        totalPres += Number(a.present_days) || 0;
+        totalDays += Number(a.total_days) || 0;
+      });
+      var attPct = totalDays > 0 ? Math.round(totalPres / totalDays * 100) : 0;
+
+      // Summary box
+      doc.setFillColor(240, 245, 255);
+      doc.rect(40, 140, pw - 80, 60, 'F');
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'bold');
+      doc.text('Academic Score:', 55, 165);
+      doc.setFont(undefined, 'normal');
+      doc.text(pct + '%  (' + totalMarks + '/' + totalMax + ')', 180, 165);
+      doc.setFont(undefined, 'bold');
+      doc.text('Attendance:', 55, 185);
+      doc.setFont(undefined, 'normal');
+      doc.text(attPct + '%  (' + totalPres + '/' + totalDays + ')', 180, 185);
+
+      // Marks table
+      if (marks.length > 0) {
+        var rows = marks.map(function(m){
+          var mx = Number(m.max_marks) || 0;
+          var ob = Number(m.obtained_marks) || 0;
+          var g = 'D';
+          if (mx > 0) {
+            var score = (ob / mx) * 50;
+            if (score >= 45) g = 'A+'; else if (score >= 40) g = 'A';
+            else if (score >= 35) g = 'B+'; else if (score >= 30) g = 'B';
+            else if (score >= 25) g = 'C+'; else if (score >= 20) g = 'C';
+            else if (score >= 18) g = 'D+';
+          }
+          return [m.exam_name || '', m.subject || '', ob + '/' + mx, g];
+        });
+
+        doc.autoTable({
+          startY: 220,
+          head: [['Exam', 'Subject', 'Marks', 'Grade']],
+          body: rows,
+          theme: 'grid',
+          styles: { fontSize: 9, cellPadding: 5 },
+          headStyles: { fillColor: [139, 92, 246], textColor: 255, fontStyle: 'bold' },
+          columnStyles: {
+            0: { cellWidth: 140 },
+            1: { cellWidth: 'auto' },
+            2: { cellWidth: 80, halign: 'center', fontStyle: 'bold' },
+            3: { cellWidth: 60, halign: 'center', fontStyle: 'bold' }
+          }
+        });
+      }
+
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text('Computer-generated report', pw / 2, ph - 18, { align: 'center' });
+
+      var safeName = String(s.name || 'report').replace(/\s+/g, '_');
+      doc.save('Student_' + safeName + '_' + s.studentid + '.pdf');
+      toast('✅ Report downloaded', 'success');
+      if (typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 80, origin: { y: .7 } });
+    } catch(e) {
+      console.error('Student Report PDF:', e);
+      toast('❌ ' + (e.message || 'PDF error'), 'error');
+    }
+    if (typeof showLoading === 'function') showLoading(false);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 LIVE DATA SYNC — Auto-refresh on admin changes
+  // ═══════════════════════════════════════════════════════
+  var _liveChannel = null;
+  var _liveDebounce = null;
+  var LIVE_TABLES = ['homework', 'notice_board', 'exam_marks', 'attendance_records', 'timetable', 'namaz_log'];
+  var REFRESH_TABS = ['homework', 'notice', 'students', 'timetable', 'namaz'];
+
+  function attachLiveSync(){
+    var teacher = getTeacher();
+    var cls = getActiveClass();
+    if (!teacher || !cls) return;
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+
+    if (_liveChannel) {
+      try { supabaseClient.removeChannel(_liveChannel); } catch(e) {}
+      _liveChannel = null;
+    }
+
+    try {
+      _liveChannel = supabaseClient.channel('teacher_live_' + teacher.teacher_id);
+      LIVE_TABLES.forEach(function(tbl){
+        _liveChannel = _liveChannel.on('postgres_changes',
+          { event: '*', schema: 'public', table: tbl },
+          function(){ scheduleRefresh(); });
+      });
+      _liveChannel.subscribe();
+      console.log('✅ Live sync attached');
+    } catch(e) { console.warn('Live sync error:', e); }
+  }
+
+  function scheduleRefresh(){
+    if (_liveDebounce) clearTimeout(_liveDebounce);
+    _liveDebounce = setTimeout(function(){
+      _liveDebounce = null;
+      var tab = window.TV60 && window.TV60.activeTab;
+      if (!tab) return;
+      // Skip if user is typing
+      var active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+
+      if (tab === 'homework') TD200_renderHomework(getActiveClass());
+      else if (tab === 'notice') TD200_renderNotice(getActiveClass());
+      else if (REFRESH_TABS.indexOf(tab) > -1) {
+        var tabBtn = document.querySelector('.td60-tab[data-tab="' + tab + '"]');
+        if (tabBtn && !tabBtn._dontRefresh) tabBtn.click();
+      }
+    }, 2500);
+  }
+
+  // Attach on class change
+  var _origOpenClass = window.openClass;
+  // openClass is not exposed, so watch the panel
+
+  // ═══════════════════════════════════════════════════════
+  // 📤 EXPORT DROPDOWN
+  // ═══════════════════════════════════════════════════════
+  window.TD200_toggleExportMenu = function(btn){
+    var menu = btn.parentNode.querySelector('.td60-export-menu');
+    if (!menu) return;
+    var isOpen = menu.classList.contains('show');
+    document.querySelectorAll('.td60-export-menu.show').forEach(function(m){ m.classList.remove('show'); });
+    if (!isOpen) menu.classList.add('show');
+  };
+
+  // Close on outside click
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.td60-export-wrap')) return;
+    document.querySelectorAll('.td60-export-menu.show').forEach(function(m){ m.classList.remove('show'); });
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════════
+  window.TD200_debug = function(){
+    console.log('=== TEACHER ENHANCE v200 DEBUG ===');
+    console.log('Teacher:', getTeacher());
+    console.log('Active class:', getActiveClass());
+    console.log('Active tab:', window.TV60 && window.TV60.activeTab);
+    console.log('Live channel:', _liveChannel ? 'attached' : 'none');
+    console.log('PDF libs:', typeof window.jspdf !== 'undefined');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init(){
+    // Attach live sync when teacher enters
+    if (getTeacher()) {
+      setTimeout(attachLiveSync, 2000);
+    }
+  }
+
+  // Hook enterTeacherDashboard
+  var _origEnter = window.enterTeacherDashboard;
+  if (typeof _origEnter === 'function' && !_origEnter._v200) {
+    window.enterTeacherDashboard = async function(t){
+      var r = await _origEnter.apply(this, arguments);
+      setTimeout(attachLiveSync, 2500);
+      return r;
+    };
+    window.enterTeacherDashboard._v200 = true;
+  }
+
+  // Watch for teacher dashboard opening
+  var td = $id('teacherDashboardV60');
+  if (td) {
+    new MutationObserver(function(){
+      if (td.classList.contains('open')) {
+        setTimeout(attachLiveSync, 2000);
+      }
+    }).observe(td, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  setTimeout(init, 3000);
+  setTimeout(init, 6000);
+
+  console.log('✅ Teacher Enhancement v200 ready');
+  console.log('   💡 TD200_debug() — check status');
+  console.log('   💡 TD200_attendancePDF() — download');
+  console.log('   💡 TD200_marksPDF() — download');
+  console.log('   💡 TD200_studentListPDF() — download');
+  console.log('   💡 TD200_studentReportPDF(sid) — single student');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🎁 XP REWARD — Teacher Panel v1.0                       -->
+<!-- Give XP to students / View levels / History             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<style id="teacher-xp-reward-css">
+/* ═══════════════════════════════════════════════════════ */
+/* 🎁 XP REWARD PANEL                                       */
+/* ═══════════════════════════════════════════════════════ */
+.txp-panel {
+  background: linear-gradient(135deg, #ecfdf5, #fef3c7, #fce7f3);
+  border: 2px solid rgba(5,150,105,.35);
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.txp-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.02rem; font-weight: 900; color: #059669;
+  margin-bottom: 4px;
+}
+.txp-title i { color: #f59e0b; font-size: 1.15rem; }
+.txp-sub {
+  font-size: .76rem; color: #64748b; margin-bottom: 14px;
+  font-weight: 700; line-height: 1.55;
+}
+
+/* Stats Bar */
+.txp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.txp-stat {
+  background: #fff;
+  border: 1.5px solid rgba(180,200,230,.5);
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.txp-stat .n {
+  font-size: 1.5rem; font-weight: 900; line-height: 1;
+}
+.txp-stat .l {
+  font-size: .62rem; color: #64748b; margin-top: 5px;
+  font-weight: 800; text-transform: uppercase; letter-spacing: .4px;
+}
+
+/* Preset Buttons */
+.txp-presets {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+@media (max-width: 500px) {
+  .txp-presets { grid-template-columns: repeat(3, 1fr); }
+}
+.txp-preset {
+  padding: 10px 4px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: #fff;
+  color: #0f172a;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all .2s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 58px;
+  justify-content: center;
+  box-shadow: 0 2px 6px -2px rgba(0,0,0,.1);
+  -webkit-tap-highlight-color: transparent;
+}
+.txp-preset:hover { transform: translateY(-2px); }
+.txp-preset:active { transform: scale(.94); }
+.txp-preset.active {
+  background: linear-gradient(140deg, #059669, #34d399);
+  color: #fff;
+  border-color: #059669;
+  box-shadow: 0 6px 16px -6px rgba(5,150,105,.6);
+}
+.txp-preset .ico { font-size: 1.1rem; line-height: 1; }
+.txp-preset .num { font-size: .72rem; font-weight: 800; opacity: .9; }
+
+/* Custom + Reason */
+.txp-form {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+  border: 1.5px solid rgba(180,200,230,.5);
+}
+.txp-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.txp-field { flex: 1; min-width: 140px; }
+.txp-field label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 800;
+  color: #475569;
+  margin-bottom: 5px;
+}
+.txp-field input,
+.txp-field textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid rgba(100,116,139,.25);
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  background: #f8fafc;
+  outline: none;
+  transition: all .2s;
+}
+.txp-field input:focus,
+.txp-field textarea:focus {
+  border-color: #059669;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(5,150,105,.12);
+}
+.txp-field textarea {
+  min-height: 60px;
+  resize: vertical;
+  font-size: 14px;
+}
+
+/* Selection Info */
+.txp-sel-info {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1.5px solid rgba(59,130,246,.3);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: .78rem;
+  font-weight: 800;
+  color: #1e40af;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.txp-sel-info strong {
+  color: #059669;
+  font-size: 1rem;
+}
+
+/* Actions */
+.txp-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.txp-btn {
+  padding: 13px 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .84rem;
+  cursor: pointer;
+  transition: all .25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.txp-btn:active { transform: scale(.96); }
+.txp-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.txp-btn:disabled { opacity: .5; cursor: not-allowed; }
+.txp-btn.success {
+  background: linear-gradient(100deg, #059669, #34d399);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(5,150,105,.7);
+}
+.txp-btn.warn {
+  background: linear-gradient(100deg, #f59e0b, #fbbf24);
+  color: #03132e;
+  box-shadow: 0 8px 20px -8px rgba(251,191,36,.7);
+}
+.txp-btn.info {
+  background: linear-gradient(100deg, #3b82f6, #60a5fa);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(59,130,246,.7);
+}
+
+/* Student Table */
+.txp-table-wrap {
+  overflow-x: auto;
+  border: 1.5px solid rgba(180,200,230,.5);
+  border-radius: 14px;
+  background: #fff;
+  -webkit-overflow-scrolling: touch;
+}
+.txp-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+  font-size: .82rem;
+}
+.txp-table thead {
+  background: linear-gradient(180deg, #eff6ff, #dbeafe);
+  position: sticky; top: 0; z-index: 2;
+}
+.txp-table th {
+  padding: 11px 10px;
+  text-align: left;
+  font-size: .62rem;
+  font-weight: 900;
+  color: #1e40af;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+.txp-table td {
+  padding: 10px 10px;
+  border-top: 1px solid rgba(59,130,246,.1);
+  color: #0f172a;
+  vertical-align: middle;
+}
+.txp-table tr:hover td { background: #f0f6ff; }
+.txp-table tr.selected td { background: #ecfdf5; }
+
+.txp-check {
+  width: 20px; height: 20px;
+  cursor: pointer;
+  accent-color: #059669;
+}
+
+.txp-lvl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 900;
+  font-size: .72rem;
+  background: linear-gradient(100deg, #8b5cf6, #a78bfa);
+  color: #fff;
+  white-space: nowrap;
+}
+.txp-xp-num {
+  font-weight: 900;
+  color: #f59e0b;
+  font-size: .88rem;
+}
+
+/* Recent Awards */
+.txp-recent {
+  margin-top: 16px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  border: 1.5px solid rgba(180,200,230,.5);
+}
+.txp-recent-title {
+  font-size: .88rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.txp-recent-title i { color: #8b5cf6; }
+.txp-award-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  border-left: 3px solid #059669;
+}
+.txp-award-item .avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #0891b2, #22d3ee);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: .82rem;
+  flex-shrink: 0;
+}
+.txp-award-item .info { flex: 1; min-width: 0; }
+.txp-award-item .name {
+  font-weight: 800;
+  color: #0f172a;
+  font-size: .84rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.txp-award-item .reason {
+  font-size: .7rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+.txp-award-item .amount {
+  font-weight: 900;
+  color: #059669;
+  font-size: .9rem;
+  white-space: nowrap;
+}
+
+/* Empty */
+.txp-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+}
+.txp-empty i {
+  font-size: 3rem;
+  opacity: .35;
+  display: block;
+  margin-bottom: 12px;
+  color: #059669;
+}
+
+/* Toast */
+.txp-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120%);
+  background: linear-gradient(135deg, #059669, #34d399);
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: .88rem;
+  z-index: 100900;
+  box-shadow: 0 20px 50px -12px rgba(5,150,105,.85);
+  transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 92vw;
+}
+.txp-toast.show { transform: translateX(-50%) translateY(0); }
+.txp-toast .icon { font-size: 1.2rem; }
+</style>
+
+<script id="teacher-xp-reward-js">
+(function(){
+  'use strict';
+  console.log('🎁 Teacher XP Reward v1.0 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🌐 STATE
+  // ═══════════════════════════════════════════════════════
+  var TXP = {
+    students: [],           // Student list with XP
+    xpMap: {},              // studentid → { xp, level, total_earned }
+    selected: new Set(),    // Selected student IDs
+    amount: 0,              // Selected XP amount
+    reason: '',
+    class_: null,
+    recent: []              // Recent awards (this session)
+  };
+  window.TXP_STATE = TXP;
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 LEVEL MATH (matches v28/v126 XP system)
+  // ═══════════════════════════════════════════════════════
+  function totalXPForLevel(n){ return (n * (n + 1) / 2) * 100; }
+  function levelFromTotalXP(t){
+    var lvl = 1;
+    while (totalXPForLevel(lvl + 1) <= t) lvl++;
+    return lvl;
+  }
+  function progressForTotal(total){
+    var lvl = levelFromTotalXP(total);
+    var start = totalXPForLevel(lvl);
+    var end = totalXPForLevel(lvl + 1);
+    return {
+      level: lvl,
+      xp: total - start,
+      needed: end - start,
+      percent: Math.min(100, Math.round((total - start) / (end - start) * 100))
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 TOAST
+  // ═══════════════════════════════════════════════════════
+  function txpToast(msg, type){
+    var old = document.querySelector('.txp-toast');
+    if (old) old.remove();
+    var t = document.createElement('div');
+    t.className = 'txp-toast';
+    var icon = type === 'error' ? '❌' : type === 'info' ? 'ℹ️' : '✅';
+    t.innerHTML = '<span class="icon">' + icon + '</span><span>' + msg + '</span>';
+    if (type === 'error') t.style.background = 'linear-gradient(135deg, #dc2626, #ef4444)';
+    document.body.appendChild(t);
+    setTimeout(function(){ t.classList.add('show'); }, 30);
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 500);
+    }, 3200);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎛️ ADD TAB BUTTON
+  // ═══════════════════════════════════════════════════════
+  function addXpTabButton(){
+    var tabsInner = document.getElementById('td60TabsInner');
+    if (!tabsInner) return false;
+    if (tabsInner.querySelector('[data-tab="xpreward"]')) return true;
+
+    var btn = document.createElement('button');
+    btn.className = 'td60-tab';
+    btn.dataset.tab = 'xpreward';
+    btn.innerHTML = '<i class="fas fa-gift"></i> XP Reward';
+    btn.onclick = function(){
+      tabsInner.querySelectorAll('.td60-tab').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      if (window.TV60) window.TV60.activeTab = 'xpreward';
+      openXpPanel();
+    };
+    tabsInner.appendChild(btn);
+    console.log('✅ XP Reward tab added');
+    return true;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📊 OPEN PANEL
+  // ═══════════════════════════════════════════════════════
+  async function openXpPanel(){
+    var panel = document.getElementById('td60Panel');
+    if (!panel) return;
+    var cls = window.TV60 && window.TV60.activeClass;
+    if (!cls) {
+      panel.innerHTML = '<div class="td60-empty">Class select ചെയ്യൂ</div>';
+      return;
+    }
+    TXP.class_ = cls;
+    panel.innerHTML = '<div style="text-align:center;padding:30px;"><div class="td60-spinner"></div></div>';
+
+    try {
+      // Fetch students
+      var sr = await supabaseClient.from('students')
+        .select('studentid, name, roll, class')
+        .eq('class', cls)
+        .order('roll');
+
+      var students = sr.data || [];
+      if (!students.length) {
+        panel.innerHTML = '<div class="td60-empty"><i class="fas fa-users"></i>No students</div>';
+        return;
+      }
+      TXP.students = students;
+
+      // Fetch XP for all
+      var ids = students.map(function(s){ return s.studentid; });
+      var xr = await supabaseClient.from('student_xp')
+        .select('*').in('studentid', ids);
+      TXP.xpMap = {};
+      (xr.data || []).forEach(function(x){
+        TXP.xpMap[x.studentid] = {
+          xp: x.xp || 0,
+          level: x.level || 1,
+          total_earned: x.total_earned || 0
+        };
+      });
+
+      // Ensure all students have entry
+      students.forEach(function(s){
+        if (!TXP.xpMap[s.studentid]) {
+          TXP.xpMap[s.studentid] = { xp: 0, level: 1, total_earned: 0 };
+        }
+      });
+
+      TXP.selected = new Set();
+      renderPanel(panel);
+    } catch(e) {
+      console.error('XP panel error:', e);
+      panel.innerHTML = '<div class="td60-empty">Error: ' + (e.message || 'unknown') + '</div>';
+    }
+  }
+  window.TXP_OPEN = openXpPanel;
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER PANEL
+  // ═══════════════════════════════════════════════════════
+  function renderPanel(panel){
+    var students = TXP.students;
+    var xpMap = TXP.xpMap;
+
+    // Summary
+    var totalXP = 0, maxXP = 0, topName = '—';
+    var avgXP = 0;
+    students.forEach(function(s){
+      var x = xpMap[s.studentid] || { total_earned: 0 };
+      totalXP += x.total_earned || 0;
+      if ((x.total_earned || 0) > maxXP) {
+        maxXP = x.total_earned;
+        topName = s.name;
+      }
+    });
+    avgXP = students.length > 0 ? Math.round(totalXP / students.length) : 0;
+
+    var h = '';
+
+    // ─── XP Panel ───
+    h += '<div class="txp-panel">';
+    h += '<div class="txp-title"><i class="fas fa-gift"></i> XP Reward — Class ' + esc(String(TXP.class_)) + '</div>';
+    h += '<div class="txp-sub">' +
+      'Students-നു XP bonus നൽകാം. Preset click ചെയ്യൂ അല്ലെങ്കിൽ custom amount type ചെയ്യൂ. ' +
+      'Students-നു <b>notification</b> auto-pോകും. 🌟' +
+    '</div>';
+
+    // Stats
+    h += '<div class="txp-stats">' +
+      '<div class="txp-stat"><div class="n" style="color:#2563eb;">' + students.length + '</div><div class="l">Students</div></div>' +
+      '<div class="txp-stat"><div class="n" style="color:#f59e0b;">' + totalXP.toLocaleString() + '</div><div class="l">Total XP</div></div>' +
+      '<div class="txp-stat"><div class="n" style="color:#059669;">' + avgXP + '</div><div class="l">Avg XP</div></div>' +
+      '<div class="txp-stat"><div class="n" style="color:#8b5cf6;font-size:.8rem;">' + esc((topName || '').split(' ')[0]) + '</div><div class="l">Top (' + maxXP + ')</div></div>' +
+    '</div>';
+
+    // Presets
+    h += '<div class="txp-presets" id="txpPresets">' +
+      presetBtn(5, '⭐', 'Small') +
+      presetBtn(10, '🌟', 'Good') +
+      presetBtn(25, '✨', 'Great') +
+      presetBtn(50, '💫', 'Excellent') +
+      presetBtn(100, '🏆', 'Best') +
+      presetBtn(200, '👑', 'Legendary') +
+    '</div>';
+
+    // Custom + Reason
+    h += '<div class="txp-form">' +
+      '<div class="txp-row">' +
+        '<div class="txp-field">' +
+          '<label><i class="fas fa-edit" style="color:#f59e0b;"></i> Custom XP Amount</label>' +
+          '<input type="number" id="txpCustom" min="1" max="10000" placeholder="e.g., 75" oninput="TXP_setCustom(this.value)">' +
+        '</div>' +
+      '</div>' +
+      '<div class="txp-field">' +
+        '<label><i class="fas fa-comment" style="color:#0891b2;"></i> Reason (Optional — student-നു കാണിക്കും)</label>' +
+        '<textarea id="txpReason" maxlength="200" placeholder="e.g., മികച്ച പെരുമാറ്റത്തിന് 🏆"></textarea>' +
+      '</div>' +
+    '</div>';
+
+    // Selection Info
+    h += '<div class="txp-sel-info" id="txpSelInfo">' +
+      '<i class="fas fa-info-circle"></i>' +
+      '<span>Students select ചെയ്തിട്ടില്ല — table-ൽ checkbox ✅</span>' +
+    '</div>';
+
+    // Actions
+    h += '<div class="txp-actions">' +
+      '<button class="txp-btn info" onclick="TXP_loadData()"><i class="fas fa-sync-alt"></i> Refresh</button>' +
+      '<button class="txp-btn success" id="txpGiveSelectedBtn" onclick="TXP_applySelected()" disabled><i class="fas fa-user-plus"></i> Give to Selected</button>' +
+      '<button class="txp-btn warn" onclick="TXP_applyClass()"><i class="fas fa-users"></i> Give to Entire Class</button>' +
+    '</div>';
+
+    // Info note
+    h += '<div style="background:#fff;border-radius:12px;padding:12px 14px;border-left:4px solid #059669;font-size:.74rem;color:#475569;line-height:1.6;margin-bottom:14px;">' +
+      '<strong style="color:#059669;">💡 എങ്ങനെ ഉപയോഗിക്കാം:</strong><br>' +
+      '1️⃣ Students-നെ table-ൽ നിന്ന് select ചെയ്യൂ<br>' +
+      '2️⃣ Preset button or custom amount type ചെയ്യൂ<br>' +
+      '3️⃣ Reason (optional) എഴുതൂ<br>' +
+      '4️⃣ <b>Give to Selected</b> അമർത്തൂ → XP + notification! 🎉' +
+    '</div>';
+
+    h += '</div>'; // end panel
+
+    // ─── Student Table ───
+    h += '<div style="margin:16px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
+      '<div style="font-weight:900;color:#0f172a;font-size:.92rem;">' +
+        '<i class="fas fa-users" style="color:#0891b2;"></i> Student XP Status' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;">' +
+        '<button onclick="TXP_selectAll(true)" style="padding:6px 12px;border-radius:20px;border:1.5px solid rgba(100,116,139,.2);background:#fff;color:#475569;font-family:inherit;font-weight:800;font-size:.7rem;cursor:pointer;">✓ All</button>' +
+        '<button onclick="TXP_selectAll(false)" style="padding:6px 12px;border-radius:20px;border:1.5px solid rgba(100,116,139,.2);background:#fff;color:#475569;font-family:inherit;font-weight:800;font-size:.7rem;cursor:pointer;">✕ Clear</button>' +
+      '</div>' +
+    '</div>';
+
+    h += '<div class="txp-table-wrap"><table class="txp-table">' +
+      '<thead><tr>' +
+        '<th style="width:40px;text-align:center;">✓</th>' +
+        '<th style="width:60px;">Roll</th>' +
+        '<th>Name</th>' +
+        '<th style="text-align:center;">Level</th>' +
+        '<th style="text-align:center;">XP</th>' +
+        '<th style="text-align:center;">Total</th>' +
+      '</tr></thead><tbody>';
+
+    students.forEach(function(s){
+      var x = xpMap[s.studentid] || { xp: 0, level: 1, total_earned: 0 };
+      var lvl = x.level || 1;
+      var total = x.total_earned || 0;
+      var prog = progressForTotal(total);
+      var medal = lvl >= 50 ? '👑' : lvl >= 30 ? '🏆' : lvl >= 20 ? '⭐' : lvl >= 10 ? '🌟' : '✨';
+
+      h += '<tr data-sid="' + esc(s.studentid) + '" class="' + (TXP.selected.has(s.studentid) ? 'selected' : '') + '">' +
+        '<td style="text-align:center;">' +
+          '<input type="checkbox" class="txp-check" ' +
+                 (TXP.selected.has(s.studentid) ? 'checked' : '') +
+                 ' onchange="TXP_toggle(\'' + esc(s.studentid) + '\', this.checked)">' +
+        '</td>' +
+        '<td style="font-weight:800;color:#0891b2;">' + esc(s.roll || '—') + '</td>' +
+        '<td><strong>' + esc(s.name) + '</strong></td>' +
+        '<td style="text-align:center;">' +
+          '<span class="txp-lvl-badge">' + medal + ' Lv ' + lvl + '</span>' +
+        '</td>' +
+        '<td style="text-align:center;color:#0891b2;font-weight:800;font-size:.78rem;">' + prog.xp + '/' + prog.needed + '</td>' +
+        '<td style="text-align:center;" class="txp-xp-num">' + total + '</td>' +
+      '</tr>';
+    });
+
+    h += '</tbody></table></div>';
+
+    // Recent awards
+    if (TXP.recent.length > 0) {
+      h += '<div class="txp-recent">' +
+        '<div class="txp-recent-title"><i class="fas fa-history"></i> Recent Awards (this session)</div>';
+      TXP.recent.slice(0, 10).forEach(function(r){
+        var ini = (r.name || 'S').charAt(0).toUpperCase();
+        h += '<div class="txp-award-item">' +
+          '<div class="avatar">' + ini + '</div>' +
+          '<div class="info">' +
+            '<div class="name">' + esc(r.name) + '</div>' +
+            '<div class="reason">' + esc(r.reason || 'No reason') + ' • ' + r.time + '</div>' +
+          '</div>' +
+          '<div class="amount">+' + r.amount + ' XP</div>' +
+        '</div>';
+      });
+      h += '</div>';
+    }
+
+    panel.innerHTML = h;
+    updateSelInfo();
+    bindCustomInput();
+  }
+
+  function presetBtn(amount, ico, label){
+    var active = TXP.amount === amount ? ' active' : '';
+    return '<button type="button" class="txp-preset' + active + '" ' +
+      'data-amount="' + amount + '" onclick="TXP_pickPreset(' + amount + ')">' +
+      '<span class="ico">' + ico + '</span>' +
+      '<span class="num">+' + amount + '</span>' +
+    '</button>';
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 INTERACTIONS
+  // ═══════════════════════════════════════════════════════
+  window.TXP_pickPreset = function(amount){
+    TXP.amount = amount;
+    var customInp = document.getElementById('txpCustom');
+    if (customInp) customInp.value = '';
+    // Update preset active class
+    document.querySelectorAll('.txp-preset').forEach(function(el){
+      el.classList.toggle('active', parseInt(el.dataset.amount) === amount);
+    });
+    updateSelInfo();
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch(e) {}
+  };
+
+  window.TXP_setCustom = function(val){
+    var v = parseInt(val) || 0;
+    v = Math.max(0, Math.min(10000, v));
+    TXP.amount = v;
+    document.querySelectorAll('.txp-preset').forEach(function(el){
+      el.classList.remove('active');
+    });
+    updateSelInfo();
+  };
+
+  window.TXP_toggle = function(sid, checked){
+    if (checked) TXP.selected.add(sid);
+    else TXP.selected.delete(sid);
+    // Update row highlight
+    var row = document.querySelector('.txp-table tr[data-sid="' + sid + '"]');
+    if (row) row.classList.toggle('selected', checked);
+    updateSelInfo();
+  };
+
+  window.TXP_selectAll = function(select){
+    TXP.selected = new Set();
+    TXP.students.forEach(function(s){
+      if (select) TXP.selected.add(s.studentid);
+    });
+    document.querySelectorAll('.txp-check').forEach(function(cb){
+      var tr = cb.closest('tr');
+      var sid = tr ? tr.dataset.sid : null;
+      cb.checked = select;
+      if (tr) tr.classList.toggle('selected', select);
+    });
+    updateSelInfo();
+    if (navigator.vibrate) try { navigator.vibrate(8); } catch(e) {}
+  };
+
+  function updateSelInfo(){
+    var info = document.getElementById('txpSelInfo');
+    if (!info) return;
+    var cnt = TXP.selected.size;
+    var amt = TXP.amount || 0;
+
+    if (cnt === 0) {
+      info.innerHTML = '<i class="fas fa-info-circle"></i><span>Students select ചെയ്തിട്ടില്ല — table-ൽ checkbox ✅</span>';
+    } else if (amt === 0) {
+      info.innerHTML = '<i class="fas fa-users" style="color:#2563eb;"></i><span><b>' + cnt + '</b> students selected — XP amount select ചെയ്യൂ</span>';
+    } else {
+      info.innerHTML = '<i class="fas fa-gift" style="color:#059669;"></i><span><b>' + cnt + '</b> students × <b>+' + amt + ' XP</b> = <b>' + (cnt * amt) + ' XP total</b></span>';
+    }
+    var btn = document.getElementById('txpGiveSelectedBtn');
+    if (btn) btn.disabled = (cnt === 0 || amt <= 0);
+  }
+
+  function bindCustomInput(){
+    var inp = document.getElementById('txpCustom');
+    if (!inp || inp._bound) return;
+    inp._bound = true;
+    inp.addEventListener('input', function(){
+      var v = parseInt(this.value) || 0;
+      if (v > 10000) { v = 10000; this.value = 10000; }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 APPLY XP
+  // ═══════════════════════════════════════════════════════
+  window.TXP_applySelected = async function(){
+    var ids = Array.from(TXP.selected);
+    if (ids.length === 0) { txpToast('Students select ചെയ്യൂ', 'error'); return; }
+    var amount = TXP.amount || 0;
+    if (amount <= 0) { txpToast('XP amount select ചെയ്യൂ', 'error'); return; }
+
+    var reason = (document.getElementById('txpReason').value || '').trim();
+
+    var msg = '🎁 XP Bonus Confirm\n\n' +
+      '👥 Students: ' + ids.length + '\n' +
+      '⭐ XP per student: +' + amount + '\n' +
+      '📊 Total XP: ' + (ids.length * amount) + '\n' +
+      (reason ? '📝 Reason: ' + reason + '\n' : '') +
+      '\nApply ചെയ്യണോ?';
+    if (!confirm(msg)) return;
+
+    await applyXPBonus(ids, amount, reason, 'selected');
+  };
+
+  window.TXP_applyClass = async function(){
+    if (!TXP.students.length) { txpToast('No students', 'error'); return; }
+    var amount = TXP.amount || 0;
+    if (amount <= 0) { txpToast('XP amount select ചെയ്യൂ', 'error'); return; }
+
+    var reason = (document.getElementById('txpReason').value || '').trim();
+    var ids = TXP.students.map(function(s){ return s.studentid; });
+
+    var msg = '🎁 XP Bonus to Class ' + TXP.class_ + '\n\n' +
+      '👥 Students: ' + ids.length + '\n' +
+      '⭐ XP per student: +' + amount + '\n' +
+      '📊 Total XP: ' + (ids.length * amount) + '\n' +
+      (reason ? '📝 Reason: ' + reason + '\n' : '') +
+      '\nApply ചെയ്യണോ?';
+    if (!confirm(msg)) return;
+
+    await applyXPBonus(ids, amount, reason, 'class');
+  };
+
+  async function applyXPBonus(ids, amount, reason, type){
+    if (!ids || !ids.length) return;
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+      txpToast('DB unavailable', 'error');
+      return;
+    }
+
+    // Show loading on the button
+    var btn = type === 'selected'
+      ? document.getElementById('txpGiveSelectedBtn')
+      : null;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+
+    var success = 0, failed = 0;
+
+    try {
+      // Fetch existing XP records
+      var xr = await supabaseClient.from('student_xp')
+        .select('*').in('studentid', ids);
+      var existing = {};
+      (xr.data || []).forEach(function(x){ existing[x.studentid] = x; });
+
+      // Build upsert payload
+      var upserts = [];
+      ids.forEach(function(sid){
+        var old = existing[sid] || { xp: 0, level: 1, total_earned: 0 };
+        var oldTotal = old.total_earned || 0;
+        var newTotal = oldTotal + amount;
+        var prog = progressForTotal(newTotal);
+        upserts.push({
+          studentid: sid,
+          xp: prog.xp,
+          level: prog.level,
+          total_earned: newTotal,
+          last_earned_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+      });
+
+      // Upsert in batches
+      for (var i = 0; i < upserts.length; i += 50) {
+        var batch = upserts.slice(i, i + 50);
+        try {
+          var r = await supabaseClient.from('student_xp')
+            .upsert(batch, { onConflict: 'studentid' });
+          if (r.error) throw r.error;
+          success += batch.length;
+        } catch(e) {
+          console.error('Batch failed:', e);
+          failed += batch.length;
+        }
+      }
+
+      // Send notifications to students
+      if (success > 0) {
+        try {
+          var teacher = window.currentTeacher || (window.TV60 && window.TV60.teacher);
+          var teacherName = teacher ? teacher.name : 'Teacher';
+          var notifs = ids.slice(0, success).map(function(sid){
+            return {
+              title: '🎁 +' + amount + ' XP Reward!',
+              message: reason || (teacherName + ' നിങ്ങൾക്ക് +' + amount + ' XP bonus നൽകി! 🌟'),
+              type: 'important',
+              target_type: 'student',
+              target_student: sid,
+              link_url: null
+            };
+          });
+          for (var j = 0; j < notifs.length; j += 100) {
+            try {
+              await supabaseClient.from('notifications').insert(notifs.slice(j, j + 100));
+            } catch(e) { console.warn('Notify batch fail:', e); }
+          }
+        } catch(e) {
+          console.warn('Notify error:', e);
+        }
+
+        // Audit log (optional, if table exists)
+        try {
+          await supabaseClient.from('audit_logs').insert({
+            user_id: (window.currentTeacher && window.currentTeacher.teacher_id) || 'TEACHER',
+            user_type: 'teacher',
+            action: 'XP_REWARD_' + type.toUpperCase(),
+            table_name: 'student_xp',
+            record_id: ids.length + '_students',
+            new_data: {
+              amount: amount,
+              count: ids.length,
+              reason: reason,
+              class: TXP.class_,
+              students: ids.slice(0, 20)
+            },
+            user_agent: navigator.userAgent.substring(0, 200)
+          });
+        } catch(e) { /* audit_logs may not exist */ }
+      }
+
+      // Show result
+      if (failed > 0) {
+        txpToast('⚠️ ' + success + ' XP added, ' + failed + ' failed', 'error');
+      } else {
+        // Flash success popup
+        showXpSuccessFlash(amount, success);
+        txpToast('✅ ' + success + ' students-നു +' + amount + ' XP നൽകി!', 'success');
+        if (typeof confetti !== 'undefined') {
+          confetti({
+            particleCount: 150, spread: 100, origin: { y: .5 },
+            colors: ['#059669','#34d399','#fbbf24','#fcd34d','#22d3ee']
+          });
+        }
+        if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch(e) {}
+      }
+
+      // Add to recent list
+      var now = new Date();
+      var timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+      ids.slice(0, 10).forEach(function(sid){
+        var st = TXP.students.find(function(x){ return x.studentid === sid; });
+        if (st) {
+          TXP.recent.unshift({
+            name: st.name,
+            amount: amount,
+            reason: reason,
+            time: timeStr
+          });
+        }
+      });
+      TXP.recent = TXP.recent.slice(0, 20);
+
+      // Reset form + reload
+      TXP.selected = new Set();
+      TXP.amount = 0;
+      var reasonInp = document.getElementById('txpReason');
+      if (reasonInp) reasonInp.value = '';
+      var customInp = document.getElementById('txpCustom');
+      if (customInp) customInp.value = '';
+
+      setTimeout(function(){
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Give to Selected'; }
+        openXpPanel();  // Reload
+      }, 1200);
+
+    } catch(e) {
+      console.error('applyXPBonus:', e);
+      txpToast('❌ ' + (e.message || 'Error'), 'error');
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Give to Selected'; }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ✨ SUCCESS FLASH
+  // ═══════════════════════════════════════════════════════
+  function showXpSuccessFlash(amount, count){
+    var flash = document.createElement('div');
+    flash.style.cssText =
+      'position:fixed;top:50%;left:50%;' +
+      'transform:translate(-50%,-50%) scale(0);' +
+      'background:linear-gradient(135deg,#059669,#34d399);' +
+      'color:#fff;padding:30px 50px;border-radius:24px;' +
+      'font-weight:900;font-size:1.4rem;text-align:center;' +
+      'box-shadow:0 30px 80px -20px rgba(5,150,105,.9);' +
+      'z-index:100950;transition:transform .5s cubic-bezier(.34,1.56,.64,1);' +
+      'pointer-events:none;font-family:\'Anek Malayalam\',sans-serif;';
+    flash.innerHTML =
+      '<div style="font-size:3rem;margin-bottom:8px;">🎁</div>' +
+      '<div style="font-size:1.6rem;font-weight:900;">+' + amount + ' XP</div>' +
+      '<div style="font-size:.8rem;opacity:.9;margin-top:6px;font-weight:700;">' + count + ' students-നു നൽകി!</div>';
+    document.body.appendChild(flash);
+
+    setTimeout(function(){ flash.style.transform = 'translate(-50%,-50%) scale(1)'; }, 50);
+    setTimeout(function(){
+      flash.style.transform = 'translate(-50%,-50%) scale(0)';
+      setTimeout(function(){ flash.remove(); }, 500);
+    }, 1800);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 REFRESH
+  // ═══════════════════════════════════════════════════════
+  window.TXP_loadData = function(){
+    openXpPanel();
+    txpToast('🔄 Refreshed', 'success');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 HOOK: Watch for tab clicks on other tabs → remove active
+  // ═══════════════════════════════════════════════════════
+  document.addEventListener('click', function(e){
+    var tab = e.target.closest('.td60-tab');
+    if (!tab) return;
+    if (tab.dataset.tab === 'xpreward') return;  // handled
+    // Deactivate XP tab styling when another tab clicked
+    var xpTab = document.querySelector('.td60-tab[data-tab="xpreward"]');
+    if (xpTab && tab !== xpTab) xpTab.classList.remove('active');
+  }, true);
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 HOOK: Auto-add tab when teacher enters class
+  // ═══════════════════════════════════════════════════════
+  function watchForTabs(){
+    var tabsInner = document.getElementById('td60TabsInner');
+    if (!tabsInner) return;
+    if (tabsInner.querySelector('[data-tab="xpreward"]')) return;
+    if (tabsInner.querySelector('.td60-tab')) {
+      addXpTabButton();
+    }
+  }
+
+  // Hook into class open (watch tab rendering)
+  var _tabObserver = new MutationObserver(function(){
+    setTimeout(watchForTabs, 100);
+  });
+
+  setTimeout(function(){
+    var tabsInner = document.getElementById('td60TabsInner');
+    if (tabsInner) _tabObserver.observe(tabsInner, { childList: true });
+  }, 3000);
+
+  // Also hook enterTeacherDashboard
+  var _origEnter = window.enterTeacherDashboard;
+  if (typeof _origEnter === 'function' && !_origEnter._txp) {
+    window.enterTeacherDashboard = async function(t){
+      var r = await _origEnter.apply(this, arguments);
+      setTimeout(watchForTabs, 2000);
+      return r;
+    };
+    window.enterTeacherDashboard._txp = true;
+  }
+
+  // Init attempts
+  setTimeout(watchForTabs, 2500);
+  setTimeout(watchForTabs, 5000);
+  setTimeout(watchForTabs, 8000);
+
+  // ═══════════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════════
+  window.TXP_debug = function(){
+    console.log('=== XP REWARD DEBUG ===');
+    console.log('Tab exists?', !!document.querySelector('[data-tab="xpreward"]'));
+    console.log('Students loaded:', TXP.students.length);
+    console.log('Selected:', TXP.selected.size);
+    console.log('Amount:', TXP.amount);
+    console.log('Class:', TXP.class_);
+    console.log('XP map size:', Object.keys(TXP.xpMap).length);
+    if (typeof showToast === 'function') showToast('🎁 Check console', 'info');
+  };
+
+  window.TXP_quickTest = async function(studentId, amount){
+    if (!studentId) {
+      studentId = window.currentTeacher && window.currentTeacher.teacher_id;
+      console.log('Testing with teacher ID (self):', studentId);
+    }
+    await applyXPBonus([studentId], amount || 10, 'Test from TXP', 'test');
+  };
+
+  console.log('✅ Teacher XP Reward v1.0 ready');
+  console.log('   💡 TXP_OPEN() — manual open');
+  console.log('   💡 TXP_debug() — check state');
 })();
 </script>
 </body>
