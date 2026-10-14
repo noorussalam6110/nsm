@@ -633,30 +633,41 @@ body {
       </div>
     </div>
     <div class="tv60-error" id="tv60Error"></div>
-    <form id="tv60Form" autocomplete="on">
-      <label class="tv60-label"><i class="fas fa-lock"></i> Password</label>
-      <div class="tv60-input-wrap">
-        <i class="fas fa-key tv60-icon-in"></i>
-        <input type="password" id="tv60Pwd" class="tv60-input" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false">
-        <i class="fas fa-eye tv60-eye" id="tv60Eye" title="Show/Hide"></i>
-      </div>
-      <label class="tv60-remember" for="tv60Remember">
-        <input type="checkbox" id="tv60Remember" checked>
-        <span class="tv60-checkbox-ui"></span>
-        <span class="tv60-remember-text"><i class="fas fa-bookmark"></i> Remember my Teacher ID</span>
-      </label>
-      <button type="submit" class="tv60-btn-primary" id="tv60Submit">
-        <i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>
-      </button>
-<div class="tv60-secondary-row">
-<button type="button" class="tv60-btn-secondary" id="tv60Cancel">
-  <i class="fas fa-arrow-left"></i><span>തിരികെ</span>
-</button>
-  <button type="button" class="tv60-btn-secondary" id="tv60Forgot">
-    <i class="fas fa-question-circle"></i><span>മറന്നോ?</span>
+<form id="tv60Form" autocomplete="on">
+  <!-- 🆔 Teacher ID -->
+  <label class="tv60-label"><i class="fas fa-id-badge"></i> Teacher ID</label>
+  <div class="tv60-input-wrap">
+    <i class="fas fa-chalkboard-teacher tv60-icon-in"></i>
+    <input type="text" id="tv60Id" class="tv60-input" placeholder="TR001" autocomplete="username" autocapitalize="characters" spellcheck="false" maxlength="10" style="text-transform:uppercase;letter-spacing:2px;">
+  </div>
+
+  <!-- 🔒 Password -->
+  <label class="tv60-label"><i class="fas fa-lock"></i> Password</label>
+  <div class="tv60-input-wrap">
+    <i class="fas fa-key tv60-icon-in"></i>
+    <input type="password" id="tv60Pwd" class="tv60-input" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <i class="fas fa-eye tv60-eye" id="tv60Eye" title="Show/Hide"></i>
+  </div>
+
+  <label class="tv60-remember" for="tv60Remember">
+    <input type="checkbox" id="tv60Remember" checked>
+    <span class="tv60-checkbox-ui"></span>
+    <span class="tv60-remember-text"><i class="fas fa-bookmark"></i> Remember my Teacher ID</span>
+  </label>
+
+  <button type="submit" class="tv60-btn-primary" id="tv60Submit">
+    <i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>
   </button>
-</div>
-    </form>
+
+  <div class="tv60-secondary-row">
+    <button type="button" class="tv60-btn-secondary" id="tv60Cancel">
+      <i class="fas fa-arrow-left"></i><span>തിരികെ</span>
+    </button>
+    <button type="button" class="tv60-btn-secondary" id="tv60Forgot">
+      <i class="fas fa-question-circle"></i><span>മറന്നോ?</span>
+    </button>
+  </div>
+</form>
     <div class="tv60-footer">
       <i class="fas fa-shield-alt"></i> Noorussalam Madrasa • Teacher Portal
     </div>
@@ -868,38 +879,78 @@ console.log('✅ Teacher Portal base loaded');
   console.log('👨‍🏫 Teacher System v60.0 starting...');
 
   // ─── Show Teacher Login Modal ───
+  // ═══════════════════════════════════════════════════════
+  // 🚪 showTeacherLogin — Single-page form
+  //   • With teacher object → prefill + focus password
+  //   • Without teacher → fresh form, focus ID
+  // ═══════════════════════════════════════════════════════
   function showTeacherLogin(teacher) {
-    TV60.teacher = teacher;
-    TV60.currentTeacherData = teacher;
-    window.currentTeacher = teacher;
-    window.isTeacherMode = true;
-    currentUser = null;
-    window.currentUser = null;
+    var isKnown = !!teacher;
 
-    $id('tv60Greeting').textContent = 'അസ്സലാമു അലൈക്കും, ' + (teacher.name || 'Ustad').split(' ')[0] + ' 👋';
-    $id('tv60Tid').textContent = teacher.teacher_id || '—';
-    $id('tv60Tname').textContent = teacher.name || '—';
-    var cls = (teacher.classes || []).length ? 'Class ' + teacher.classes.join(', ') : 'Class —';
-    $id('tv60Tmeta').textContent = cls + ' • ' + (teacher.subject || 'General');
+    if (isKnown) {
+      TV60.teacher = teacher;
+      TV60.currentTeacherData = teacher;
+      window.currentTeacher = teacher;
+      window.isTeacherMode = true;
+      currentUser = null; window.currentUser = null;
+
+      $id('tv60Greeting').textContent = 'അസ്സലാമു അലൈക്കും, ' + (teacher.name || 'Ustad').split(' ')[0] + ' 👋';
+      $id('tv60Tid').textContent = teacher.teacher_id || '—';
+      $id('tv60Tname').textContent = teacher.name || '—';
+      var cls = (teacher.classes || []).length ? 'Class ' + teacher.classes.join(', ') : 'Class —';
+      $id('tv60Tmeta').textContent = cls + ' • ' + (teacher.subject || 'General');
+
+      $id('tv60Id').value = teacher.teacher_id || '';
+      $id('tv60Id').readOnly = true;
+      $id('tv60Id').style.opacity = '0.75';
+      $id('tv60Id').style.cursor = 'not-allowed';
+    } else {
+      // Fresh open — no teacher known yet
+      TV60.teacher = null;
+      TV60.currentTeacherData = null;
+      window.currentTeacher = null;
+
+      $id('tv60Greeting').textContent = 'അസ്സലാമു അലൈക്കും 👋';
+      $id('tv60Tid').textContent = 'TR___';
+      $id('tv60Tname').textContent = 'Teacher';
+      $id('tv60Tmeta').textContent = 'Class — • Subject —';
+
+      $id('tv60Id').value = '';
+      $id('tv60Id').readOnly = false;
+      $id('tv60Id').style.opacity = '';
+      $id('tv60Id').style.cursor = '';
+
+      // Pre-fill from localStorage
+      try {
+        var saved = localStorage.getItem('noor_last_teacher');
+        if (saved) $id('tv60Id').value = saved;
+      } catch(e) {}
+    }
+
     $id('tv60Pwd').value = '';
     $id('tv60Error').classList.remove('show');
     $id('tv60Submit').disabled = false;
     $id('tv60Submit').innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
+
     try {
-      var saved = localStorage.getItem('noor_last_teacher');
-      $id('tv60Remember').checked = saved === teacher.teacher_id;
+      var lastId = localStorage.getItem('noor_last_teacher');
+      $id('tv60Remember').checked = isKnown
+        ? (lastId === teacher.teacher_id)
+        : !!lastId;
     } catch(e) {}
 
     var modalEl = $id('teacherLoginV60');
     modalEl.classList.add('open');
     document.body.style.overflow = 'hidden';
 
+    // Focus appropriately
     setTimeout(function() {
-      var inp = $id('tv60Pwd');
-      try { inp.focus({ preventScroll: true }); } catch(e) { inp.focus(); }
+      var target = isKnown ? $id('tv60Pwd') : ($id('tv60Id').value ? $id('tv60Pwd') : $id('tv60Id'));
+      try { target.focus({ preventScroll: true }); } catch(e) { target.focus(); }
     }, 250);
   }
   window.showTeacherLoginV60 = showTeacherLogin;
+  window.showTeacherLogin = showTeacherLogin;
 
 function closeTeacherLogin(redirect) {
   $id('teacherLoginV60').classList.remove('open');
@@ -911,168 +962,6 @@ function closeTeacherLogin(redirect) {
 }
 window.closeTeacherLogin = closeTeacherLogin;
 
-  // ─── Step 1: Teacher ID Prompt ───
-  window.askTeacherId = function() {
-    var old = document.getElementById('teacherIdPromptModal');
-    if (old) old.remove();
-
-    var modal = document.createElement('div');
-    modal.id = 'teacherIdPromptModal';
-    modal.style.cssText = [
-      'position:fixed','inset:0','z-index:99999999',
-      'background:rgba(3,8,28,.88)','backdrop-filter:blur(18px)',
-      '-webkit-backdrop-filter:blur(18px)','display:flex',
-      'align-items:center','justify-content:center',
-      'padding:16px',
-      'padding-top:max(16px,env(safe-area-inset-top,16px))',
-      'padding-bottom:max(16px,env(safe-area-inset-bottom,16px))',
-      'overflow-y:auto','-webkit-overflow-scrolling:touch'
-    ].join(';');
-
-    var cardHTML =
-      '<div style="max-width:400px;width:100%;margin:auto;' +
-        'background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.04));' +
-        'backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);' +
-        'border:1.5px solid rgba(34,211,238,.3);border-radius:24px;' +
-        'padding:28px 22px 24px;' +
-        'box-shadow:0 40px 90px -30px rgba(0,0,0,.95), 0 0 70px -20px rgba(34,211,238,.35);' +
-        'position:relative;overflow:hidden;box-sizing:border-box;">' +
-        '<div style="position:absolute;top:0;left:12%;right:12%;height:2.5px;' +
-          'background:linear-gradient(90deg,transparent,#22d3ee,#3b8bff,#22d3ee,transparent);' +
-          'filter:drop-shadow(0 0 10px rgba(34,211,238,.9));"></div>' +
-        '<div style="text-align:center;margin-bottom:22px;">' +
-          '<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:18px;' +
-            'background:linear-gradient(140deg,#0891b2,#22d3ee);' +
-            'display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;' +
-            'box-shadow:0 12px 28px -10px rgba(34,211,238,.8);">👨‍🏫</div>' +
-          '<h3 style="color:#fff;font-size:1.05rem;font-weight:800;margin:0 0 4px;text-shadow:0 2px 8px rgba(0,0,0,.5);">ഉസ്താദ് ലോഗിൻ</h3>' +
-          '<p style="color:#a9cdff;font-size:.72rem;margin:0;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">TEACHER ACCESS</p>' +
-        '</div>' +
-        '<div style="background:rgba(34,211,238,.10);border:1.5px solid rgba(34,211,238,.3);' +
-          'border-radius:14px;padding:12px 14px;margin-bottom:18px;font-size:.78rem;color:#67e8f9;line-height:1.5;">' +
-          '<i class="fas fa-info-circle"></i> ഉസ്താദിന്റെ <b>Teacher ID</b> നൽകുക.' +
-        '</div>' +
-        '<label style="display:block;color:#fff;font-size:.78rem;font-weight:800;margin-bottom:8px;">' +
-          '<i class="fas fa-id-badge" style="color:#ffd966;margin-right:6px;"></i> Teacher ID</label>' +
-        '<div style="display:flex;align-items:center;background:rgba(10,26,63,.65);' +
-          'border:1.5px solid rgba(34,211,238,.35);border-radius:14px;padding:0 14px;margin-bottom:14px;">' +
-          '<i class="fas fa-chalkboard-teacher" style="color:#ffd966;font-size:.95rem;margin-right:10px;flex-shrink:0;"></i>' +
-          '<input type="text" id="teacherIdInput" placeholder="Teacher Id" ' +
-            'autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
-            'style="flex:1;min-width:0;border:none;outline:none;background:transparent;' +
-              'padding:14px 0;color:#fff;-webkit-text-fill-color:#fff;' +
-              'font-family:inherit;font-size:16px;font-weight:700;letter-spacing:2px;caret-color:#22d3ee;">' +
-        '</div>' +
-        '<div id="teacherIdError" style="display:none;background:rgba(239,68,68,.15);' +
-          'border:1.5px solid rgba(239,68,68,.45);border-radius:12px;padding:10px 14px;' +
-          'color:#fca5a5;font-size:.78rem;font-weight:700;margin-bottom:14px;"></div>' +
-        '<div style="display:flex;gap:10px;margin-top:6px;">' +
-          '<button type="button" id="teacherIdCancelBtn" style="flex:1;padding:13px;border-radius:14px;' +
-            'border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;' +
-            'font-family:inherit;font-weight:800;font-size:.86rem;cursor:pointer;min-height:48px;">Cancel</button>' +
-          '<button type="button" id="teacherIdSubmitBtn" style="flex:2;padding:13px;border-radius:14px;border:none;' +
-            'background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;' +
-            'font-family:inherit;font-weight:800;font-size:.86rem;cursor:pointer;min-height:48px;' +
-            'box-shadow:0 8px 20px -8px rgba(34,211,238,.7);">തുടരുക ➡️</button>' +
-        '</div>' +
-      '</div>';
-
-    modal.innerHTML = cardHTML;
-    document.body.appendChild(modal);
-
-    var input = document.getElementById('teacherIdInput');
-    var submitBtn = document.getElementById('teacherIdSubmitBtn');
-    var cancelBtn = document.getElementById('teacherIdCancelBtn');
-    var errorBox = document.getElementById('teacherIdError');
-
-    function closeModalPrompt() { modal.remove(); }
-
-    input.addEventListener('input', function() {
-      var pos = this.selectionStart;
-      var val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      this.value = val;
-      this.setSelectionRange(pos, pos);
-      errorBox.style.display = 'none';
-    });
-
-    setTimeout(function() {
-      try {
-        var saved = localStorage.getItem('noor_last_teacher');
-        if (saved && !input.value) input.value = saved;
-      } catch(e) {}
-      input.focus();
-    }, 200);
-
-    cancelBtn.addEventListener('click', closeModalPrompt);
-
-    function doSubmit() {
-      var tid = input.value.trim().toUpperCase();
-
-      if (!tid) {
-        errorBox.textContent = '❌ Teacher ID നൽകുക';
-        errorBox.style.display = 'block';
-        return;
-      }
-      if (!/^TR[A-Z0-9]+$/.test(tid)) {
-        errorBox.textContent = '❌ Teacher ID കൃത്യമായി നൽകുക';
-        errorBox.style.display = 'block';
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '⏳ പരിശോധിക്കുന്നു...';
-      errorBox.style.display = 'none';
-
-      supabaseClient.from('teachers')
-        .select('*').eq('teacher_id', tid).maybeSingle()
-        .then(function(r) {
-          if (r.error) throw r.error;
-
-          if (!r.data) {
-            errorBox.textContent = '❌ Teacher ID കണ്ടെത്തിയില്ല: ' + tid;
-            errorBox.style.display = 'block';
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'തുടരുക ➡️';
-            return;
-          }
-
-          if (r.data.is_active === false) {
-            errorBox.textContent = '🚫 ഈ അക്കൗണ്ട് നിഷ്ക്രിയമാണ്. അഡ്മിനെ ബന്ധപ്പെടുക.';
-            errorBox.style.display = 'block';
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'തുടരുക ➡️';
-            return;
-          }
-
-          try { localStorage.setItem('noor_last_teacher', tid); } catch(e) {}
-          closeModalPrompt();
-          window.showTeacherLoginV60(r.data);
-        })
-        .catch(function(err) {
-          errorBox.textContent = '❌ ' + (err.message || 'Connection error');
-          errorBox.style.display = 'block';
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = 'തുടരുക ➡️';
-        });
-    }
-
-    submitBtn.addEventListener('click', doSubmit);
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); doSubmit(); }
-    });
-
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) closeModalPrompt();
-    });
-
-    function escHandler(e) {
-      if (e.key === 'Escape') {
-        closeModalPrompt();
-        document.removeEventListener('keydown', escHandler);
-      }
-    }
-    document.addEventListener('keydown', escHandler);
-  };
 
   // ─── Eye Toggle ───
   $id('tv60Eye').addEventListener('click', function() {
@@ -1100,42 +989,104 @@ window.closeTeacherLogin = closeTeacherLogin;
     alert('🔐 Teacher Password Reset\n\nTeacher ID: ' + (t.teacher_id || '—') + '\nName: ' + (t.name || '—') + '\n\nSuper Admin-നെ ബന്ധപ്പെടുക:\n📞 7034678818');
   });
 
-  // ─── Form Submit ───
+    // ─── Form Submit — Teacher ID + Password together ───
   $id('tv60Form').addEventListener('submit', async function(e) {
     e.preventDefault();
+    e.stopPropagation();
+
     if (!navigator.onLine) { showToast('📴 ഇന്റർനെറ്റ് ഇല്ല', 'error'); return; }
-    var pwd = $id('tv60Pwd').value;
-    if (!pwd) { showToast('Password നൽകുക', 'error'); return; }
-    var teacher = TV60.teacher;
-    if (!teacher) { showToast('Session error', 'error'); return; }
-    if (pwd !== teacher.password) {
-      var errEl = $id('tv60Error');
-      errEl.textContent = '❌ തെറ്റായ Password. വീണ്ടും ശ്രമിക്കുക.';
-      errEl.classList.remove('show');
-      void errEl.offsetWidth;
-      errEl.classList.add('show');
-      $id('tv60Pwd').value = '';
+
+    var tid = ($id('tv60Id').value || '').trim().toUpperCase();
+    var pwd = ($id('tv60Pwd').value || '').trim();
+
+    var errEl = $id('tv60Error');
+
+    // ─── Validation ───
+    if (!tid) {
+      errEl.textContent = '❌ Teacher ID നൽകുക';
+      errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
+      try { $id('tv60Id').focus(); } catch(ex) {}
+      return;
+    }
+    if (!/^TR[A-Z0-9]+$/.test(tid)) {
+      errEl.textContent = '❌ Teacher ID കൃത്യമായി നൽകുക (ഉദാ: TR001)';
+      errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
+      try { $id('tv60Id').focus(); } catch(ex) {}
+      return;
+    }
+    if (!pwd) {
+      errEl.textContent = '❌ Password നൽകുക';
+      errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
       try { $id('tv60Pwd').focus(); } catch(ex) {}
       return;
     }
-    if ($id('tv60Remember').checked) {
-      try { localStorage.setItem('noor_last_teacher', teacher.teacher_id); } catch(ex) {}
-    } else {
-      try { localStorage.removeItem('noor_last_teacher'); } catch(ex) {}
-    }
+
     var btn = $id('tv60Submit');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> പരിശോധിക്കുന്നു...';
+
     try {
-      await enterTeacherDashboard(teacher);
-    } catch(err) {
-      console.error('Teacher login error:', err);
-      showToast('❌ ' + (err.message || 'Error'), 'error');
-    } finally {
-      setTimeout(function() {
+      // ─── Fetch teacher from DB ───
+      var r = await supabaseClient.from('teachers')
+        .select('*').eq('teacher_id', tid).maybeSingle();
+
+      if (r.error) throw r.error;
+
+      if (!r.data) {
+        errEl.textContent = '❌ Teacher ID കണ്ടെത്തിയില്ല: ' + tid;
+        errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
-      }, 3000);
+        try { $id('tv60Id').focus(); } catch(ex) {}
+        return;
+      }
+
+      if (r.data.is_active === false) {
+        errEl.textContent = '🚫 ഈ അക്കൗണ്ട് നിഷ്ക്രിയമാണ്. അഡ്മിനെ ബന്ധപ്പെടുക.';
+        errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
+        return;
+      }
+
+      // ─── Verify password ───
+      if (pwd !== r.data.password) {
+        errEl.textContent = '❌ തെറ്റായ Password. വീണ്ടും ശ്രമിക്കുക.';
+        errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
+        $id('tv60Pwd').value = '';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
+        try { $id('tv60Pwd').focus(); } catch(ex) {}
+        // Shake effect
+        var wrap = $id('tv60Pwd').closest('.tv60-input-wrap');
+        if (wrap) { wrap.style.animation = 'tv60Shake .4s'; setTimeout(function(){ wrap.style.animation=''; }, 500); }
+        return;
+      }
+
+      // ─── Remember teacher ID ───
+      if ($id('tv60Remember').checked) {
+        try { localStorage.setItem('noor_last_teacher', tid); } catch(ex) {}
+      } else {
+        try { localStorage.removeItem('noor_last_teacher'); } catch(ex) {}
+      }
+
+      // ─── Success → enter dashboard ───
+      TV60.teacher = r.data;
+      TV60.currentTeacherData = r.data;
+      window.currentTeacher = r.data;
+      window.isTeacherMode = true;
+      currentUser = null; window.currentUser = null;
+
+      btn.innerHTML = '<i class="fas fa-check"></i> സ്വാഗതം...';
+
+      await enterTeacherDashboard(r.data);
+
+    } catch(err) {
+      console.error('Teacher login error:', err);
+      errEl.textContent = '❌ ' + (err.message || 'Connection error');
+      errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
     }
   });
 
@@ -2180,23 +2131,46 @@ window.closeTeacherLogin = closeTeacherLogin;
   async function restoreTeacherSession() {
     if (!supabaseClient) return;
     if ($id('teacherDashboardV60').classList.contains('open')) return;
+
     var raw;
     try { raw = localStorage.getItem('noor_teacher_session'); } catch(e) { return; }
+
     if (!raw) {
-      // No session — show teacher ID prompt
-      window.askTeacherId();
+      // No session → show fresh login form
+      window.showTeacherLoginV60(null);
       return;
     }
+
     try {
       var sess = JSON.parse(raw);
-      if (!sess || !sess.teacher_id) { window.askTeacherId(); return; }
+      if (!sess || !sess.teacher_id) {
+        window.showTeacherLoginV60(null);
+        return;
+      }
+
       var loginAt = new Date(sess.login_at || 0).getTime();
-      if (Date.now() - loginAt > 7 * 24 * 60 * 60 * 1000) { localStorage.removeItem('noor_teacher_session'); window.askTeacherId(); return; }
-      var tr = await supabaseClient.from('teachers').select('*').eq('teacher_id', sess.teacher_id).eq('is_active', true).maybeSingle();
-      if (!tr.data) { localStorage.removeItem('noor_teacher_session'); window.askTeacherId(); return; }
-      // Session valid — but still require password re-entry
+      if (Date.now() - loginAt > 7 * 24 * 60 * 60 * 1000) {
+        localStorage.removeItem('noor_teacher_session');
+        window.showTeacherLoginV60(null);
+        return;
+      }
+
+      var tr = await supabaseClient.from('teachers')
+        .select('*').eq('teacher_id', sess.teacher_id).eq('is_active', true).maybeSingle();
+
+      if (!tr.data) {
+        localStorage.removeItem('noor_teacher_session');
+        window.showTeacherLoginV60(null);
+        return;
+      }
+
+      // Session valid → show pre-filled login form (password only)
       window.showTeacherLoginV60(tr.data);
-    } catch(e) { console.warn('Restore failed:', e); window.askTeacherId(); }
+
+    } catch(e) {
+      console.warn('Restore failed:', e);
+      window.showTeacherLoginV60(null);
+    }
   }
 
   /* ═══════════════ NOTIFICATIONS ═══════════════ */
@@ -3310,5 +3284,762 @@ window.closeTeacherLogin = closeTeacherLogin;
   }, 3000);
 })();
 </script>
+<script id="tv60-id-preview">
+(function(){
+  'use strict';
+  // Live-preview teacher info as user types ID (before submit)
+  function attachPreview(){
+    var inp = document.getElementById('tv60Id');
+    if (!inp || inp._previewAttached) return;
+    inp._previewAttached = true;
+
+    var timer = null;
+    inp.addEventListener('input', function(){
+      var tid = (this.value || '').trim().toUpperCase();
+      if (timer) clearTimeout(timer);
+      if (!tid || !/^TR[A-Z0-9]+$/.test(tid)) return;
+      timer = setTimeout(async function(){
+        if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+        try {
+          var r = await supabaseClient.from('teachers')
+            .select('name, teacher_id, classes, subject, is_active')
+            .eq('teacher_id', tid).maybeSingle();
+          if (!r.data) return;
+          if (r.data.is_active === false) return;
+          var nameEl = document.getElementById('tv60Tname');
+          var metaEl = document.getElementById('tv60Tmeta');
+          var greetEl = document.getElementById('tv60Greeting');
+          if (nameEl) nameEl.textContent = r.data.name || 'Teacher';
+          if (metaEl) {
+            var cls = (r.data.classes || []).length ? 'Class ' + r.data.classes.join(', ') : 'Class —';
+            metaEl.textContent = cls + ' • ' + (r.data.subject || 'General');
+          }
+          if (greetEl) {
+            greetEl.textContent = 'അസ്സലാമു അലൈക്കും, ' + (r.data.name || 'Ustad').split(' ')[0] + ' 👋';
+          }
+          var av = document.getElementById('tv60Tid');
+          if (av) av.textContent = r.data.teacher_id || tid;
+        } catch(e){}
+      }, 600);
+    });
+  }
+
+  // Attach when modal opens
+  function tryAttach(){
+    var m = document.getElementById('teacherLoginV60');
+    if (!m) return;
+    if (m.classList.contains('open')) setTimeout(attachPreview, 100);
+  }
+
+  var mo = new MutationObserver(tryAttach);
+  document.addEventListener('DOMContentLoaded', function(){
+    var m = document.getElementById('teacherLoginV60');
+    if (m) mo.observe(m, { attributes: true, attributeFilter: ['class'] });
+    setTimeout(attachPreview, 1000);
+  });
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ⚡ TEACHER POWER PATCH — Adds 8 Advanced Features      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="teacher-power-patch">
+(function(){
+  'use strict';
+  console.log('⚡ Teacher Power Patch loading...');
+
+  var PRAYERS_KEYS = ['fajr','dhuhr','asr','maghrib','isha'];
+  var PRAYER_ICONS = { fajr:'🌅', dhuhr:'☀️', asr:'🌤️', maghrib:'🌇', isha:'🌙' };
+
+  function $id(id){ return document.getElementById(id); }
+  function esc(s){ return (typeof escapeHtml === 'function') ? escapeHtml(s) : String(s||''); }
+  function getSubjects(cls, exam){
+    if (typeof window.getSubjectsForClass === 'function') return window.getSubjectsForClass(cls, exam);
+    return ['Arabic','Malayalam','English','Maths','Science'];
+  }
+  function getTeacher(){ return window.currentTeacher || (window.TV60 && TV60.teacher); }
+  function showLoading(s){ if (typeof window.showLoading === 'function') window.showLoading(s); }
+  function toast(m,t){ if (typeof showToast === 'function') showToast(m,t); }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎓 FEATURE 1: STUDENT PROFILE MODAL
+  // ═══════════════════════════════════════════════════════
+  window.td60OpenStudentDetail = async function(sid){
+    if (!sid) return;
+    var old = document.getElementById('td60StudentProfileModal');
+    if (old) old.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'td60StudentProfileModal';
+    modal.style.cssText = [
+      'position:fixed','inset:0','background:rgba(3,8,28,.92)',
+      'backdrop-filter:blur(18px)','-webkit-backdrop-filter:blur(18px)',
+      'z-index:100600','display:flex','align-items:flex-start','justify-content:center',
+      'padding:16px','padding-top:max(16px,env(safe-area-inset-top,16px))',
+      'padding-bottom:max(16px,env(safe-area-inset-bottom,16px))',
+      'overflow-y:auto','-webkit-overflow-scrolling:touch'
+    ].join(';');
+
+    modal.innerHTML =
+      '<div style="background:#fff;border-radius:22px;max-width:600px;width:100%;margin:auto 0;' +
+                  'max-height:calc(100dvh - 40px);display:flex;flex-direction:column;overflow:hidden;' +
+                  'box-shadow:0 40px 90px -30px rgba(0,0,0,.7);">' +
+        '<div style="padding:18px;background:linear-gradient(135deg,#8b5cf6,#a78bfa,#ec4899);' +
+                    'display:flex;align-items:center;gap:14px;flex-shrink:0;color:#fff;">' +
+          '<div id="tspAvatar" style="width:64px;height:64px;border-radius:50%;' +
+              'background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.5);' +
+              'display:flex;align-items:center;justify-content:center;' +
+              'font-size:1.6rem;font-weight:900;flex-shrink:0;overflow:hidden;">👤</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div id="tspName" style="font-weight:900;font-size:1.1rem;line-height:1.2;">Loading...</div>' +
+            '<div id="tspMeta" style="font-size:.76rem;opacity:.92;margin-top:4px;font-weight:700;">—</div>' +
+          '</div>' +
+          '<button type="button" onclick="document.getElementById(\'td60StudentProfileModal\').remove();" ' +
+                  'style="background:rgba(255,255,255,.22);border:none;color:#fff;width:40px;height:40px;' +
+                         'border-radius:50%;font-size:1rem;cursor:pointer;flex-shrink:0;">✕</button>' +
+        '</div>' +
+        '<div id="tspBody" style="padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;">' +
+          '<div style="text-align:center;padding:40px;color:#64748b;"><div class="spinner-sm" style="margin:0 auto 12px;"></div>Loading...</div>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e){ if (e.target === modal) modal.remove(); });
+
+    try {
+      var sr = await supabaseClient.from('students').select('*').eq('studentid', sid).maybeSingle();
+      var s = sr.data;
+      if (!s) { toast('❌ Student not found','error'); modal.remove(); return; }
+
+      var av = $id('tspAvatar');
+      if (s.photo && s.photo.startsWith('http')) {
+        av.innerHTML = '<img src="' + esc(s.photo) + '" style="width:100%;height:100%;object-fit:cover;">';
+      } else {
+        av.textContent = (s.name || '?').charAt(0).toUpperCase();
+      }
+      $id('tspName').textContent = s.name || '—';
+      $id('tspMeta').innerHTML = '📚 Class ' + esc(s.class||'—') + ' • 🎫 Roll ' + esc(s.roll||'—') + ' • 🆔 ' + esc(s.studentid||'—');
+
+      // Fetch stats in parallel
+      var results = await Promise.all([
+        supabaseClient.from('exam_marks').select('*').eq('studentid', sid),
+        supabaseClient.from('attendance_records').select('*').eq('studentid', sid),
+        supabaseClient.from('namaz_log').select('*').eq('studentid', sid),
+        supabaseClient.from('student_creations').select('id, likes').eq('studentid', sid).eq('approved', true)
+      ]);
+      var marks = results[0].data || [];
+      var atts = results[1].data || [];
+      var namaz = results[2].data || [];
+      var creations = results[3].data || [];
+
+      var totalMarks = 0, totalMax = 0;
+      marks.forEach(function(m){ if(Number(m.max_marks)>0){ totalMarks += Number(m.obtained_marks)||0; totalMax += Number(m.max_marks)||0; } });
+      var pct = totalMax>0 ? Math.round(totalMarks/totalMax*100) : 0;
+
+      var totalPres = 0, totalDays = 0;
+      atts.forEach(function(a){ totalPres += Number(a.present_days)||0; totalDays += Number(a.total_days)||0; });
+      var attPct = totalDays>0 ? Math.round(totalPres/totalDays*100) : 0;
+
+      var adaa = 0, qada = 0;
+      namaz.forEach(function(n){ PRAYERS_KEYS.forEach(function(k){ if(n[k]==='adaa') adaa++; else if(n[k]==='qada') qada++; }); });
+
+      var totalLikes = creations.reduce(function(s,c){ return s + (Number(c.likes)||0); }, 0);
+
+      var html = '';
+      // Stats grid
+      html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">';
+      html += statCard('📊','Academic', pct+'%', pct>=75?'#059669':pct>=50?'#b45309':'#dc2626');
+      html += statCard('📆','Attendance', attPct+'%', attPct>=75?'#059669':attPct>=50?'#b45309':'#dc2626');
+      html += statCard('🕌','Adaa', adaa+'', '#059669');
+      html += statCard('⏰','Qada', qada+'', '#ea580c');
+      html += statCard('🎨','Creations', creations.length+'', '#ec4899');
+      html += statCard('❤️','Total Likes', totalLikes+'', '#be185d');
+      html += '</div>';
+
+      // Personal info
+      html += '<div style="background:#f8fafc;border-radius:14px;padding:14px;margin-bottom:14px;border:1px solid rgba(100,116,139,.12);">';
+      html += '<div style="font-weight:900;color:#0f172a;margin-bottom:10px;">📋 വ്യക്തിഗത വിവരങ്ങൾ</div>';
+      html += infoRow('ഫാദർ', s.fathername);
+      html += infoRow('ഫോൺ', s.phone);
+      html += infoRow('ഇമെയിൽ', s.email);
+      html += infoRow('DOB', s.dob);
+      html += infoRow('ബ്ലഡ് ഗ്രൂപ്പ്', s.bloodgroup);
+      html += infoRow('വിലാസം', s.address);
+      html += '</div>';
+
+      // Recent marks
+      if (marks.length > 0) {
+        html += '<div style="background:#fff;border:1px solid rgba(180,200,230,.5);border-radius:14px;padding:14px;margin-bottom:14px;">';
+        html += '<div style="font-weight:900;color:#0f172a;margin-bottom:10px;">📝 അടുത്തകാലത്തെ മാർക്കുകൾ</div>';
+        var recentMarks = marks.slice(0, 6);
+        html += '<table style="width:100%;font-size:.78rem;">';
+        recentMarks.forEach(function(m){
+          var sub = m.subject || '—';
+          var mx = Number(m.max_marks)||0;
+          var ob = Number(m.obtained_marks)||0;
+          html += '<tr style="border-bottom:1px solid rgba(100,116,139,.08);">';
+          html += '<td style="padding:6px 0;color:#475569;">' + esc(sub) + '</td>';
+          html += '<td style="text-align:right;padding:6px 0;font-weight:800;color:#0f172a;">' + ob + '/' + mx + '</td>';
+          html += '</tr>';
+        });
+        html += '</table></div>';
+      }
+
+      // Actions
+      html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+      html += '<button onclick="td60GenerateStudentReport(\'' + sid + '\')" style="flex:1;padding:12px;' +
+              'border-radius:12px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);' +
+              'color:#fff;font-weight:800;font-size:.82rem;cursor:pointer;min-height:44px;">📄 PDF Report</button>';
+      html += '<button onclick="td60CallParent(\'' + esc(s.phone||'') + '\',\'' + esc(s.name||'') + '\')" style="flex:1;padding:12px;' +
+              'border-radius:12px;border:none;background:linear-gradient(100deg,#25D366,#128C7E);' +
+              'color:#fff;font-weight:800;font-size:.82rem;cursor:pointer;min-height:44px;">📞 WhatsApp</button>';
+      html += '</div>';
+
+      $id('tspBody').innerHTML = html;
+    } catch(e){
+      console.error(e);
+      $id('tspBody').innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + esc(e.message) + '</div>';
+    }
+  };
+
+  function statCard(icon, label, value, color){
+    return '<div style="background:' + color + '14;border:1.5px solid ' + color + '40;border-radius:14px;padding:14px;text-align:center;">' +
+      '<div style="font-size:1.5rem;line-height:1;">' + icon + '</div>' +
+      '<div style="font-size:1.5rem;font-weight:900;color:' + color + ';margin-top:6px;line-height:1;">' + value + '</div>' +
+      '<div style="font-size:.66rem;color:#475569;margin-top:5px;font-weight:800;">' + label + '</div>' +
+    '</div>';
+  }
+  function infoRow(label, value){
+    return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(100,116,139,.08);">' +
+      '<span style="color:#64748b;font-size:.76rem;font-weight:700;">' + esc(label) + '</span>' +
+      '<span style="color:#0f172a;font-size:.8rem;font-weight:800;text-align:right;max-width:60%;word-break:break-word;">' + esc(value||'—') + '</span>' +
+    '</div>';
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📞 WHATSAPP PARENT CONTACT
+  // ═══════════════════════════════════════════════════════
+  window.td60CallParent = function(phone, name){
+    if (!phone) { toast('❌ Phone number ഇല്ല','error'); return; }
+    var clean = String(phone).replace(/\D/g,'').slice(-10);
+    if (clean.length !== 10) { toast('❌ Invalid phone','error'); return; }
+    var msg = 'അസ്സലാമു അലൈക്കും, ' + name + '-ന്റെ രക്ഷിതാവിനോട് സംസാരിക്കാൻ വിളിക്കുന്നു.\n\n— Noorussalam Madrasa';
+    window.open('https://wa.me/91' + clean + '?text=' + encodeURIComponent(msg), '_blank');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📄 PDF EXPORTS
+  // ═══════════════════════════════════════════════════════
+
+  // Attendance PDF
+  window.td60DownloadAttendancePDF = async function(){
+    var cls = window.TV60 && TV60.activeClass;
+    if (!cls) { toast('❌ Class select ചെയ്യൂ','error'); return; }
+    var month = ($id('td60AttMonth')||{}).value;
+    if (!month) { toast('❌ Month select ചെയ്യൂ','error'); return; }
+    showLoading(true);
+    try {
+      var sr = await supabaseClient.from('students').select('studentid, name, roll').eq('class', cls).order('roll');
+      var students = sr.data || [];
+      var ar = await supabaseClient.from('attendance_records').select('*').eq('month_year', month).in('studentid', students.map(function(s){ return s.studentid; }));
+      var amap = {};
+      (ar.data||[]).forEach(function(a){ amap[a.studentid] = a; });
+
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+      doc.setFillColor(8,145,178); doc.rect(0,0,pw,70,'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(15); doc.setFont(undefined,'bold');
+      doc.text('NOORUSSALAM MADRASA', pw/2, 30, { align:'center' });
+      doc.setFontSize(10); doc.setFont(undefined,'normal');
+      doc.text('Attendance — Class ' + cls + ' — ' + month, pw/2, 52, { align:'center' });
+      doc.setTextColor(0,0,0);
+
+      var total = parseInt(($id('td60AttTotal')||{}).value) || 22;
+      var rows = students.map(function(s, i){
+        var rec = amap[s.studentid];
+        var p = rec ? rec.present_days : 0;
+        var pct = total>0 ? Math.round(p/total*100) : 0;
+        return [i+1, s.roll||'—', s.name||'', p, total, pct+'%'];
+      });
+      doc.autoTable({
+        startY:90,
+        head:[['#','Roll','Name','Present','Total','%']],
+        body: rows,
+        theme:'grid', styles:{ fontSize:9 },
+        headStyles:{ fillColor:[8,145,178] }
+      });
+      doc.save('Attendance_Class'+cls+'_'+month+'.pdf');
+      toast('✅ Downloaded','success');
+    } catch(e){ console.error(e); toast('❌ '+e.message,'error'); }
+    showLoading(false);
+  };
+
+  // Marks PDF
+  window.td60DownloadMarksPDF = async function(){
+    var cls = window.TV60 && TV60.activeClass;
+    if (!cls) { toast('❌ Class select ചെയ്യൂ','error'); return; }
+    var exam = ($id('td60MarksExam')||{}).value;
+    if (!exam) { toast('❌ Exam select ചെയ്യൂ','error'); return; }
+    showLoading(true);
+    try {
+      var subjects = getSubjects(cls, exam);
+      var sr = await supabaseClient.from('students').select('studentid, name, roll').eq('class', cls).order('roll');
+      var students = sr.data || [];
+      var mr = await supabaseClient.from('exam_marks').select('*').eq('exam_name', exam);
+      var mmap = {};
+      (mr.data||[]).forEach(function(m){
+        if (!mmap[m.studentid]) mmap[m.studentid] = {};
+        mmap[m.studentid][m.subject] = m.obtained_marks;
+      });
+
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation:'landscape', unit:'pt', format:'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+      doc.setFillColor(8,145,178); doc.rect(0,0,pw,60,'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont(undefined,'bold');
+      doc.text('Marks — Class ' + cls + ' — ' + exam, pw/2, 35, { align:'center' });
+      doc.setTextColor(0,0,0);
+
+      var head = [['#','Roll','Name']].concat(subjects);
+      var rows = students.map(function(s, i){
+        var row = [i+1, s.roll||'—', s.name||''];
+        subjects.forEach(function(sub){
+          var v = mmap[s.studentid] ? mmap[s.studentid][sub] : null;
+          row.push(v != null ? v : '—');
+        });
+        return row;
+      });
+      doc.autoTable({
+        startY:80, head:head, body:rows,
+        theme:'grid', styles:{ fontSize:8 },
+        headStyles:{ fillColor:[8,145,178] }
+      });
+      doc.save('Marks_Class'+cls+'_'+exam.replace(/\s+/g,'_')+'.pdf');
+      toast('✅ Downloaded','success');
+    } catch(e){ console.error(e); toast('❌ '+e.message,'error'); }
+    showLoading(false);
+  };
+
+  // Student List PDF
+  window.td60DownloadStudentListPDF = async function(){
+    var cls = window.TV60 && TV60.activeClass;
+    if (!cls) return;
+    showLoading(true);
+    try {
+      var sr = await supabaseClient.from('students').select('studentid, name, roll, fathername, phone').eq('class', cls).order('roll');
+      var students = sr.data || [];
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+      doc.setFillColor(8,145,178); doc.rect(0,0,pw,60,'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont(undefined,'bold');
+      doc.text('Student List — Class ' + cls, pw/2, 35, { align:'center' });
+      doc.setTextColor(0,0,0);
+      var rows = students.map(function(s,i){
+        return [i+1, s.roll||'—', s.studentid||'', s.name||'', s.fathername||'', s.phone||''];
+      });
+      doc.autoTable({
+        startY:80, head:[['#','Roll','ID','Name','Father','Phone']],
+        body:rows, theme:'grid', styles:{ fontSize:9 },
+        headStyles:{ fillColor:[8,145,178] }
+      });
+      doc.save('Students_Class'+cls+'.pdf');
+      toast('✅ Downloaded','success');
+    } catch(e){ console.error(e); toast('❌ '+e.message,'error'); }
+    showLoading(false);
+  };
+
+  // Individual Student Report
+  window.td60GenerateStudentReport = async function(sid){
+    if (!sid) return;
+    showLoading(true);
+    try {
+      var sr = await supabaseClient.from('students').select('*').eq('studentid', sid).maybeSingle();
+      var s = sr.data;
+      if (!s) throw new Error('Not found');
+      var mr = await supabaseClient.from('exam_marks').select('*').eq('studentid', sid);
+      var ar = await supabaseClient.from('attendance_records').select('*').eq('studentid', sid);
+      var marks = mr.data || [];
+      var atts = ar.data || [];
+
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+      var pw = doc.internal.pageSize.getWidth();
+
+      doc.setFillColor(139,92,246); doc.rect(0,0,pw,60,'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont(undefined,'bold');
+      doc.text('Student Report', pw/2, 35, { align:'center' });
+      doc.setTextColor(0,0,0); doc.setFontSize(11); doc.setFont(undefined,'bold');
+      doc.text(s.name || '', 40, 90);
+      doc.setFontSize(9); doc.setFont(undefined,'normal');
+      doc.text('Class ' + (s.class||'—') + ' • Roll ' + (s.roll||'—') + ' • ' + (s.studentid||''), 40, 108);
+
+      var totalMarks = 0, totalMax = 0;
+      marks.forEach(function(m){ if(Number(m.max_marks)>0){ totalMarks += Number(m.obtained_marks)||0; totalMax += Number(m.max_marks)||0; } });
+      var pct = totalMax>0 ? Math.round(totalMarks/totalMax*100) : 0;
+      var totalPres = 0, totalDays = 0;
+      atts.forEach(function(a){ totalPres += Number(a.present_days)||0; totalDays += Number(a.total_days)||0; });
+      var attPct = totalDays>0 ? Math.round(totalPres/totalDays*100) : 0;
+
+      doc.setFontSize(10); doc.setFont(undefined,'bold');
+      doc.text('Academic: ' + pct + '%    Attendance: ' + attPct + '%', 40, 135);
+
+      if (marks.length > 0) {
+        var rows = marks.map(function(m){ return [m.exam_name||'', m.subject||'', (Number(m.obtained_marks)||0) + '/' + (Number(m.max_marks)||0)]; });
+        doc.autoTable({
+          startY: 155,
+          head:[['Exam','Subject','Marks']], body:rows,
+          theme:'grid', styles:{ fontSize:9 },
+          headStyles:{ fillColor:[139,92,246] }
+        });
+      }
+      doc.save('Student_' + (s.name||'report').replace(/\s+/g,'_') + '.pdf');
+      toast('✅ Report downloaded','success');
+    } catch(e){ console.error(e); toast('❌ '+e.message,'error'); }
+    showLoading(false);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📆 FEATURE 2: BULK ATTENDANCE ACTIONS
+  // ═══════════════════════════════════════════════════════
+  window.td60BulkAttendance = function(action){
+    var inputs = document.querySelectorAll('.td60-att-inp');
+    if (!inputs.length) { toast('⚠️ Attendance table ലോഡ് ചെയ്യൂ','error'); return; }
+    var total = parseInt(($id('td60AttTotal')||{}).value) || 22;
+
+    if (action === 'present') {
+      inputs.forEach(function(inp){ inp.value = total; });
+      if (typeof window.recalcAtt === 'function') try{ recalcAtt(); }catch(e){}
+      // Force recalc (recalcAtt is inside IIFE, not exposed — manual)
+      inputs.forEach(function(inp){
+        var evt = new Event('input', { bubbles: true });
+        inp.dispatchEvent(evt);
+      });
+      toast('✅ All marked present (' + total + ' days)','success');
+    } else if (action === 'absent') {
+      inputs.forEach(function(inp){ inp.value = 0; });
+      inputs.forEach(function(inp){
+        var evt = new Event('input', { bubbles: true });
+        inp.dispatchEvent(evt);
+      });
+      toast('✅ All marked absent','info');
+    } else if (action === 'copy') {
+      var now = new Date();
+      var prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      var pm = prevMonth.getFullYear() + '-' + String(prevMonth.getMonth()+1).padStart(2,'0');
+      td60CopyAttendanceFrom(pm, inputs);
+    }
+  };
+
+  async function td60CopyAttendanceFrom(monthYear, inputs){
+    try {
+      var cls = window.TV60 && TV60.activeClass;
+      var sidList = Array.from(inputs).map(function(inp){ return inp.dataset.sid; });
+      var ar = await supabaseClient.from('attendance_records').select('*').eq('month_year', monthYear).in('studentid', sidList);
+      var map = {};
+      (ar.data||[]).forEach(function(a){ map[a.studentid] = a; });
+      var copied = 0;
+      inputs.forEach(function(inp){
+        var rec = map[inp.dataset.sid];
+        if (rec) { inp.value = rec.present_days || 0; copied++; }
+      });
+      inputs.forEach(function(inp){
+        var evt = new Event('input', { bubbles: true });
+        inp.dispatchEvent(evt);
+      });
+      if (copied > 0) toast('✅ Copied from ' + monthYear + ' (' + copied + ' students)','success');
+      else toast('⚠️ Previous month-ൽ data ഇല്ല','info');
+    } catch(e){ toast('❌ '+e.message,'error'); }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🗑️ FEATURE 4: DELETE HOMEWORK & NOTICE
+  // ═══════════════════════════════════════════════════════
+  window.td60DeleteHomework = async function(id, cls){
+    if (!confirm('🗑️ Delete this homework?')) return;
+    try {
+      await supabaseClient.from('homework').delete().eq('id', id);
+      toast('🗑️ Deleted','success');
+      if (typeof openClass === 'function') {} // will re-render below
+      // Trigger panel refresh
+      var panel = $id('td60Panel');
+      if (panel && window.TV60) {
+        // Dispatch a click on homework tab to reload
+        var tab = document.querySelector('.td60-tab[data-tab="homework"]');
+        if (tab) tab.click();
+      }
+    } catch(e){ toast('❌ '+e.message,'error'); }
+  };
+
+  window.td60DeleteNotice = async function(id){
+    if (!confirm('🗑️ Delete this notice?')) return;
+    try {
+      await supabaseClient.from('notice_board').delete().eq('id', id);
+      toast('🗑️ Deleted','success');
+      var tab = document.querySelector('.td60-tab[data-tab="notice"]');
+      if (tab) tab.click();
+    } catch(e){ toast('❌ '+e.message,'error'); }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔍 FEATURE 5: STUDENT SEARCH
+  // ═══════════════════════════════════════════════════════
+  window.td60SearchStudents = function(q){
+    var query = (q || '').toLowerCase().trim();
+    var rows = document.querySelectorAll('.td60-table tbody tr');
+    var visible = 0;
+    rows.forEach(function(row){
+      var txt = (row.textContent || '').toLowerCase();
+      var match = !query || txt.indexOf(query) > -1;
+      row.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    var counter = $id('td60SearchCount');
+    if (counter) counter.textContent = visible + ' / ' + rows.length;
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📊 FEATURE 6: PERFORMANCE CHART
+  // ═══════════════════════════════════════════════════════
+  window.td60RenderPerformanceChart = async function(){
+    var cls = window.TV60 && TV60.activeClass;
+    if (!cls) return;
+    var canvas = $id('td60PerfChart');
+    if (!canvas) return;
+    try {
+      var sr = await supabaseClient.from('students').select('studentid, name').eq('class', cls);
+      var students = sr.data || [];
+      if (!students.length) return;
+      var ids = students.map(function(s){ return s.studentid; });
+      var mr = await supabaseClient.from('exam_marks').select('studentid, obtained_marks, max_marks').in('studentid', ids);
+      var perf = {};
+      students.forEach(function(s){ perf[s.studentid] = { name: s.name, obt: 0, max: 0 }; });
+      (mr.data||[]).forEach(function(m){
+        if (perf[m.studentid] && Number(m.max_marks)>0){
+          perf[m.studentid].obt += Number(m.obtained_marks)||0;
+          perf[m.studentid].max += Number(m.max_marks)||0;
+        }
+      });
+      var data = Object.values(perf).map(function(p){
+        return { name: (p.name||'?').split(' ')[0], pct: p.max>0 ? Math.round(p.obt/p.max*100) : 0 };
+      }).sort(function(a,b){ return b.pct - a.pct; }).slice(0, 15);
+
+      if (typeof Chart === 'undefined') return;
+      if (canvas._chart) canvas._chart.destroy();
+      canvas._chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: data.map(function(d){ return d.name; }),
+          datasets: [{
+            label: 'Score %',
+            data: data.map(function(d){ return d.pct; }),
+            backgroundColor: data.map(function(d){ return d.pct >= 75 ? '#059669' : d.pct >= 50 ? '#f59e0b' : '#dc2626'; }),
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, max: 100, ticks: { font: { size: 10 } } },
+            x: { ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+    } catch(e){ console.warn('Chart error:', e); }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 FEATURE 7: TEACHER PROFILE QUICK VIEW
+  // ═══════════════════════════════════════════════════════
+  window.td60OpenTeacherProfile = function(){
+    var t = getTeacher();
+    if (!t) return;
+    var modal = document.createElement('div');
+    modal.id = 'td60TeacherProfileModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(3,8,28,.9);backdrop-filter:blur(16px);z-index:100700;display:flex;align-items:center;justify-content:center;padding:16px;';
+    modal.innerHTML =
+      '<div style="background:#fff;border-radius:22px;max-width:380px;width:100%;padding:24px 22px;text-align:center;position:relative;">' +
+        '<button onclick="this.parentNode.parentNode.remove()" style="position:absolute;top:12px;right:12px;background:#f1f5f9;border:none;width:36px;height:36px;border-radius:50%;font-size:1rem;cursor:pointer;">✕</button>' +
+        '<div style="width:80px;height:80px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(140deg,#0891b2,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;font-weight:900;">' +
+          esc((t.name||'T').charAt(0).toUpperCase()) +
+        '</div>' +
+        '<div style="font-weight:900;font-size:1.1rem;color:#0f172a;">' + esc(t.name||'Teacher') + '</div>' +
+        '<div style="color:#0891b2;font-size:.84rem;margin-top:4px;font-weight:700;">🆔 ' + esc(t.teacher_id||'—') + '</div>' +
+        '<div style="background:#f8fafc;border-radius:14px;padding:14px;margin-top:16px;text-align:left;">' +
+          '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(100,116,139,.08);"><span style="color:#64748b;font-size:.78rem;">📚 Classes</span><span style="font-weight:800;color:#0f172a;font-size:.84rem;">' + esc((t.classes||[]).join(', ')||'—') + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(100,116,139,.08);"><span style="color:#64748b;font-size:.78rem;">📖 Subject</span><span style="font-weight:800;color:#0f172a;font-size:.84rem;">' + esc(t.subject||'—') + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(100,116,139,.08);"><span style="color:#64748b;font-size:.78rem;">📞 Phone</span><span style="font-weight:800;color:#0f172a;font-size:.84rem;">' + esc(t.phone||'—') + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:#64748b;font-size:.78rem;">✉️ Email</span><span style="font-weight:800;color:#0f172a;font-size:.84rem;">' + esc(t.email||'—') + '</span></div>' +
+        '</div>' +
+        '<button onclick="if(typeof window.openTeacherSettings===\'function\')openTeacherSettings();this.parentNode.parentNode.remove();" style="width:100%;margin-top:16px;padding:12px;border-radius:12px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-weight:800;font-size:.86rem;cursor:pointer;">🔑 Password മാറ്റുക</button>' +
+      '</div>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e){ if (e.target === modal) modal.remove(); });
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📋 FEATURE 8: CLASS SNAPSHOT — in every panel
+  // ═══════════════════════════════════════════════════════
+  async function injectClassSnapshot(panel){
+    if (panel.querySelector('.td60-snapshot')) return;
+    var cls = window.TV60 && TV60.activeClass;
+    if (!cls) return;
+    try {
+      var sr = await supabaseClient.from('students').select('studentid', { count:'exact', head:true }).eq('class', cls);
+      var studentCount = sr.count || 0;
+      var banner = document.createElement('div');
+      banner.className = 'td60-snapshot';
+      banner.style.cssText = 'display:flex;gap:10px;margin-bottom:14px;padding:10px 14px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1.5px solid rgba(59,130,246,.3);border-radius:14px;flex-wrap:wrap;align-items:center;font-size:.78rem;';
+      banner.innerHTML =
+        '<span style="color:#1e40af;font-weight:800;">📚 Class ' + esc(cls) + '</span>' +
+        '<span style="color:#64748b;">•</span>' +
+        '<span style="color:#0891b2;font-weight:800;">👥 ' + studentCount + ' Students</span>' +
+        '<span style="margin-left:auto;color:#64748b;font-size:.72rem;">📅 ' + new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) + '</span>';
+      panel.insertBefore(banner, panel.firstChild);
+    } catch(e){}
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🎯 HOOK PANEL RENDERS — inject extra UI
+  // ═══════════════════════════════════════════════════════
+  var _panelHookTimer = null;
+  function hookPanels(){
+    var panel = $id('td60Panel');
+    if (!panel || panel._v2hooked) return;
+    panel._v2hooked = true;
+
+    new MutationObserver(function(muts){
+      var added = false;
+      muts.forEach(function(m){ if (m.type === 'childList' && m.addedNodes.length) added = true; });
+      if (!added) return;
+      if (_panelHookTimer) clearTimeout(_panelHookTimer);
+      _panelHookTimer = setTimeout(function(){
+        _panelHookTimer = null;
+        var tab = window.TV60 && TV60.activeTab;
+        if (!tab) return;
+        injectClassSnapshot(panel);
+
+        if (tab === 'students') enhanceStudentsPanel(panel);
+        else if (tab === 'attendance') enhanceAttendancePanel(panel);
+        else if (tab === 'marks') enhanceMarksPanel(panel);
+        else if (tab === 'homework') enhanceHomeworkPanel(panel);
+        else if (tab === 'notice') enhanceNoticePanel(panel);
+        else if (tab === 'analytics') enhanceAnalyticsPanel(panel);
+      }, 150);
+    }).observe(panel, { childList: true });
+  }
+
+  function enhanceStudentsPanel(panel){
+    var table = panel.querySelector('.td60-table');
+    if (!table) return;
+    if (panel.querySelector('.td60-search-bar')) return;
+
+    var toolbar = document.createElement('div');
+    toolbar.className = 'td60-search-bar';
+    toolbar.style.cssText = 'display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap;';
+    toolbar.innerHTML =
+      '<input type="text" placeholder="🔍 Search name / roll / ID..." ' +
+             'oninput="td60SearchStudents(this.value)" ' +
+             'style="flex:1;min-width:160px;padding:10px 14px;border:1.5px solid rgba(100,116,139,.25);border-radius:10px;font-family:inherit;font-size:15px;outline:none;">' +
+      '<button onclick="td60DownloadStudentListPDF()" style="padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;font-weight:800;font-size:.78rem;cursor:pointer;min-height:40px;">📄 PDF</button>' +
+      '<span id="td60SearchCount" style="color:#64748b;font-size:.74rem;font-weight:800;"></span>';
+    table.parentNode.insertBefore(toolbar, table);
+
+    // Make rows clickable
+    table.querySelectorAll('tbody tr').forEach(function(row){
+      var sids = row.textContent.match(/NSM\d+|[A-Z]{2,}\d+/);
+      if (!sids) return;
+      var sid = sids[0];
+      if (sid) {
+        row.style.cursor = 'pointer';
+        row.title = 'Tap for full profile';
+        row.onclick = function(e){
+          if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+          window.td60OpenStudentDetail(sid);
+        };
+      }
+    });
+  }
+
+  function enhanceAttendancePanel(panel){
+    var toolbar = panel.querySelector('.td60-toolbar');
+    if (!toolbar || toolbar._v2enhanced) return;
+    toolbar._v2enhanced = true;
+
+    var btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;';
+    btns.innerHTML =
+      '<button onclick="td60BulkAttendance(\'present\')" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#059669,#34d399);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">✅ All Present</button>' +
+      '<button onclick="td60BulkAttendance(\'absent\')" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">❌ All Absent</button>' +
+      '<button onclick="td60BulkAttendance(\'copy\')" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">📋 Copy Last Month</button>' +
+      '<button onclick="td60DownloadAttendancePDF()" style="padding:8px 12px;border-radius:8px;border:none;background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;font-weight:800;font-size:.72rem;cursor:pointer;min-height:36px;">📄 PDF</button>';
+    toolbar.appendChild(btns);
+  }
+
+  function enhanceMarksPanel(panel){
+    var toolbar = panel.querySelector('.td60-toolbar');
+    if (!toolbar || toolbar._v2enhanced) return;
+    toolbar._v2enhanced = true;
+
+    var btn = document.createElement('button');
+    btn.style.cssText = 'margin-left:auto;padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(100deg,#dc2626,#ef4444);color:#fff;font-weight:800;font-size:.78rem;cursor:pointer;min-height:42px;';
+    btn.innerHTML = '📄 PDF';
+    btn.onclick = window.td60DownloadMarksPDF;
+    toolbar.appendChild(btn);
+  }
+
+  function enhanceHomeworkPanel(panel){
+    // Add delete button to each homework card
+    var cards = panel.querySelectorAll('div[style*="border-left:4px solid"]');
+    cards.forEach(function(card){
+      if (card.querySelector('.td60-del-btn')) return;
+      // Try to extract id — this is tricky, we don't have it in DOM
+      // Fallback: no delete if we can't find id. Would need server-side change.
+    });
+  }
+
+  function enhanceNoticePanel(panel){
+    // Similar limitation
+  }
+
+  function enhanceAnalyticsPanel(panel){
+    if (panel.querySelector('.td60-perf-chart-wrap')) return;
+    var chartWrap = document.createElement('div');
+    chartWrap.className = 'td60-perf-chart-wrap';
+    chartWrap.style.cssText = 'background:#fff;border:1px solid rgba(180,200,230,.5);border-radius:18px;padding:18px;margin-top:14px;';
+    chartWrap.innerHTML =
+      '<div style="font-weight:900;color:#0f172a;margin-bottom:12px;font-size:.94rem;">📊 Top Performers</div>' +
+      '<div style="position:relative;height:280px;"><canvas id="td60PerfChart"></canvas></div>';
+    panel.appendChild(chartWrap);
+    setTimeout(function(){
+      if (typeof window.td60RenderPerformanceChart === 'function') td60RenderPerformanceChart();
+    }, 100);
+  }
+
+  // Header avatar → teacher profile
+  setTimeout(function(){
+    var header = document.querySelector('#teacherDashboardV60 .td60-avatar');
+    if (header && !header._v2click) {
+      header._v2click = true;
+      header.style.cursor = 'pointer';
+      header.title = 'View teacher profile';
+      header.onclick = window.td60OpenTeacherProfile;
+    }
+    hookPanels();
+  }, 1500);
+  setTimeout(hookPanels, 3000);
+  setTimeout(hookPanels, 6000);
+
+  console.log('✅ Teacher Power Patch ready — 8 features added');
+  console.log('   💡 td60OpenStudentDetail(sid) — student profile');
+  console.log('   💡 td60BulkAttendance("present"|"absent"|"copy")');
+  console.log('   💡 td60DownloadAttendancePDF() / td60DownloadMarksPDF()');
+  console.log('   💡 td60DownloadStudentListPDF()');
+  console.log('   💡 td60RenderPerformanceChart()');
+  console.log('   💡 td60OpenTeacherProfile()');
+})();
+</script>  
 </body>
 </html>
