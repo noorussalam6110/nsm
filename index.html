@@ -5000,10 +5000,21 @@ async function openNotificationsModal(){
   try{
     var cls=(currentUser.class&&currentUser.class!=='N/A')?String(currentUser.class):'__none__';
     var sid=currentUser.studentId;
-    var r=await supabaseClient.from('notifications')
-      .select('*')
-      .or('target_type.eq.all,target_student.eq.'+sid+',and(target_type.eq.class,target_class.eq.'+cls+')')
-      .order('created_at',{ascending:false}).limit(30);
+var isAdm = (typeof isAdminMode !== 'undefined' && isAdminMode) || window.isAdminMode === true;
+var r;
+if (isAdm) {
+  // Admin-നു admin + all notifications
+  r = await supabaseClient.from('notifications')
+    .select('*')
+    .in('target_type', ['all', 'admin'])
+    .order('created_at',{ascending:false}).limit(30);
+} else {
+  // Student-നു normal filter
+  r = await supabaseClient.from('notifications')
+    .select('*')
+    .or('target_type.eq.all,target_student.eq.'+sid+',and(target_type.eq.class,target_class.eq.'+cls+')')
+    .order('created_at',{ascending:false}).limit(30);
+}
     if(!r.data||r.data.length===0){
       list.innerHTML='<div class="text-center py-4" style="color:#64748b;">🔕 No notifications</div>';
       return;
@@ -11416,7 +11427,15 @@ async function askNotificationPermission(){
 async function checkUnreadNotifications(){
   if(!supabaseClient)return 0;
   try{
-    var r=await supabaseClient.from('notifications').select('id, created_at').in('target_type',['all','admin']).order('created_at',{ascending:false}).limit(50);
+    // 👇 Admin-നു admin notifications കൂടി കാണണം
+    var isAdmin = (typeof isAdminMode !== 'undefined' && isAdminMode) || window.isAdminMode === true;
+    var q = supabaseClient.from('notifications').select('id, created_at');
+    if (isAdmin) {
+      q = q.in('target_type', ['all', 'admin']);
+    } else {
+      q = q.eq('target_type', 'all');
+    }
+    var r = await q.order('created_at',{ascending:false}).limit(50);
     if(r.error)return 0;
     var lastRead=parseInt(localStorage.getItem('lastReadNotifTime')||'0');
     var unread=(r.data||[]).filter(function(n){return new Date(n.created_at).getTime()>lastRead;});
@@ -41755,6 +41774,796 @@ document.addEventListener('touchend', function(e) {
 
   console.log('✅ Chat FAB Fix v141 ready');
   console.log('   💡 CHAT_FAB_DEBUG() — diagnose');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 👨‍🏫 TEACHERS MANAGEMENT TAB v2.0 (Super Admin Panel)    -->
+<!-- Add / Edit / Delete / Reset Password / Notify Teacher   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="teachers-admin-tab-v2">
+(function(){
+  'use strict';
+  console.log('👨‍🏫 Teachers Admin Tab v2.0 loading...');
+
+  // ═══════════════════════════════════════════════════════
+  // 🎛️ 1. ADD TAB BUTTON
+  // ═══════════════════════════════════════════════════════
+  function addTeachersTabButton() {
+    var tabs = document.getElementById('adminTabs');
+    if (!tabs) return;
+    if (tabs.querySelector('[data-tab="teachers"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'admin-tab';
+    btn.dataset.tab = 'teachers';
+    btn.innerHTML = '👨‍🏫 Teachers';
+    btn.onclick = function() { window.switchAdminTab('teachers'); };
+
+    // Insert after 'students' tab
+    var studentsTab = tabs.querySelector('[data-tab="students"]');
+    if (studentsTab && studentsTab.parentNode) {
+      studentsTab.parentNode.insertBefore(btn, studentsTab.nextSibling);
+    } else {
+      tabs.appendChild(btn);
+    }
+    console.log('✅ Teachers tab button added');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📄 2. ADD TAB CONTENT
+  // ═══════════════════════════════════════════════════════
+  function addTeachersTabContent() {
+    var container = document.getElementById('adminMainContent');
+    if (!container) return;
+    if (document.getElementById('adminTeachersTab')) return;
+
+    var div = document.createElement('div');
+    div.id = 'adminTeachersTab';
+    div.className = 'admin-tab-content';
+    div.style.display = 'none';
+    div.innerHTML =
+      '<div class="admin-toolbar">' +
+        '<button class="btn-load" onclick="TEACHERS_load()">' +
+          '<i class="fas fa-sync-alt"></i> Refresh' +
+        '</button>' +
+        '<button class="btn-update" onclick="TEACHERS_openForm()">' +
+          '<i class="fas fa-plus"></i> Add Teacher' +
+        '</button>' +
+        '<input type="text" id="teacherSearchInput" ' +
+               'placeholder="🔍 Search name / ID / class" ' +
+               'oninput="TEACHERS_filter()">' +
+        '<select id="teacherStatusFilter" class="modal-form-input" ' +
+                'style="width:auto;padding:9px 15px;" ' +
+                'onchange="TEACHERS_filter()">' +
+          '<option value="all">All Teachers</option>' +
+          '<option value="active">✅ Active Only</option>' +
+          '<option value="inactive">🚫 Inactive Only</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="admin-summary" id="teachersSummary"></div>' +
+      '<div class="admin-table-wrap" id="teachersAdminWrap"></div>';
+
+    container.appendChild(div);
+    console.log('✅ Teachers tab content added');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📥 3. LOAD TEACHERS
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_load = async function() {
+    var wrap = document.getElementById('teachersAdminWrap');
+    if (!wrap) return;
+    wrap.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+
+    try {
+      var r = await supabaseClient
+        .from('teachers')
+        .select('*')
+        .order('teacher_id');
+
+      if (r.error) {
+        if (/does not exist|relation/i.test(r.error.message || '')) {
+          wrap.innerHTML =
+            '<div style="padding:30px;text-align:center;color:#b45309;">' +
+              '<i class="fas fa-database" style="font-size:3rem;opacity:.4;display:block;margin-bottom:14px;"></i>' +
+              '<div style="font-weight:800;font-size:1rem;margin-bottom:8px;">teachers table Supabase-ൽ ഇല്ല</div>' +
+              '<div style="font-size:.82rem;color:#64748b;">Supabase SQL Editor-ൽ <b>teachers</b> table create ചെയ്യൂ. SQL setup details console-ൽ കാണാം.</div>' +
+            '</div>';
+          console.warn('⚠️ teachers table missing. Run this SQL in Supabase:');
+          console.log(`
+CREATE TABLE IF NOT EXISTS teachers (
+  id BIGSERIAL PRIMARY KEY,
+  teacher_id TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  phone TEXT,
+  email TEXT,
+  subject TEXT,
+  classes JSONB DEFAULT '[]'::jsonb,
+  role TEXT DEFAULT 'teacher',
+  password TEXT NOT NULL DEFAULT 'ustad123',
+  must_change_password BOOLEAN DEFAULT true,
+  password_changed_at TIMESTAMPTZ,
+  is_active BOOLEAN DEFAULT true,
+  last_login TIMESTAMPTZ,
+  created_by TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_teachers" ON teachers;
+CREATE POLICY "allow_all_teachers" ON teachers FOR ALL USING (true) WITH CHECK (true);
+          `);
+          return;
+        }
+        throw r.error;
+      }
+
+      window._teachersList = r.data || [];
+      renderTeachersSummary();
+      renderTeachersTable(window._teachersList);
+      console.log('✅ Loaded', window._teachersList.length, 'teachers');
+    } catch(e) {
+      wrap.innerHTML = '<div style="padding:20px;color:#dc2626;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📊 4. SUMMARY
+  // ═══════════════════════════════════════════════════════
+  function renderTeachersSummary() {
+    var sum = document.getElementById('teachersSummary');
+    if (!sum) return;
+    var list = window._teachersList || [];
+    var active = list.filter(function(t) { return t.is_active !== false; }).length;
+    var inactive = list.length - active;
+    var pwdChanged = list.filter(function(t) { return t.password_changed_at; }).length;
+    var pendingPwd = list.filter(function(t) { return t.must_change_password === true; }).length;
+
+    sum.innerHTML =
+      '<div class="stat"><div class="num">' + list.length + '</div><div class="label">Total</div></div>' +
+      '<div class="stat"><div class="num green">' + active + '</div><div class="label">Active</div></div>' +
+      '<div class="stat"><div class="num orange">' + inactive + '</div><div class="label">Inactive</div></div>' +
+      '<div class="stat"><div class="num" style="color:#7c3aed;">' + pwdChanged + '</div><div class="label">Pwd Changed</div></div>' +
+      '<div class="stat"><div class="num" style="color:#dc2626;">' + pendingPwd + '</div><div class="label">Default Pwd</div></div>';
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔍 5. FILTER
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_filter = function() {
+    var q = (document.getElementById('teacherSearchInput')?.value || '').toLowerCase().trim();
+    var status = (document.getElementById('teacherStatusFilter')?.value) || 'all';
+
+    var list = (window._teachersList || []).filter(function(t) {
+      if (status === 'active' && t.is_active === false) return false;
+      if (status === 'inactive' && t.is_active !== false) return false;
+      if (!q) return true;
+      var hay = ((t.name || '') + ' ' + (t.teacher_id || '') + ' ' +
+                 (t.subject || '') + ' ' +
+                 ((t.classes || []).join(',')) + ' ' +
+                 (t.phone || '')).toLowerCase();
+      return hay.indexOf(q) > -1;
+    });
+    renderTeachersTable(list);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎨 6. RENDER TABLE
+  // ═══════════════════════════════════════════════════════
+  function renderTeachersTable(list) {
+    var wrap = document.getElementById('teachersAdminWrap');
+    if (!wrap) return;
+    if (!list.length) {
+      wrap.innerHTML =
+        '<div style="text-align:center;padding:50px 20px;color:#64748b;">' +
+          '<i class="fas fa-chalkboard-teacher" style="font-size:3rem;opacity:.3;display:block;margin-bottom:12px;color:#0891b2;"></i>' +
+          '<div style="font-weight:800;color:#0f172a;margin-bottom:6px;">No teachers found</div>' +
+          '<div style="font-size:.82rem;">"Add Teacher" click ചെയ്ത് തുടങ്ങൂ</div>' +
+        '</div>';
+      return;
+    }
+
+    var h = '<table><thead><tr>';
+    h += '<th>#</th><th>Photo</th><th>ID</th><th>Name</th>';
+    h += '<th>Classes</th><th>Subject</th><th>Phone</th>';
+    h += '<th>Password</th><th>Last Login</th><th>Status</th><th>Actions</th>';
+    h += '</tr></thead><tbody>';
+
+    list.forEach(function(t, i) {
+      var classes = (t.classes || []).length
+        ? (t.classes || []).map(function(c) { return 'C' + c; }).join(', ')
+        : '<span style="color:#94a3b8;">—</span>';
+
+      var lastLogin = t.last_login
+        ? timeAgo(t.last_login)
+        : '<span style="color:#94a3b8;">Never</span>';
+
+      var pwdBadge = t.password_changed_at
+        ? '<span style="background:rgba(5,150,105,.15);color:#059669;padding:3px 10px;border-radius:20px;font-size:.62rem;font-weight:800;">✅ Changed</span>'
+        : '<span style="background:rgba(180,83,9,.15);color:#b45309;padding:3px 10px;border-radius:20px;font-size:.62rem;font-weight:800;">⚠️ Default</span>';
+
+      var statusBadge = t.is_active !== false
+        ? '<span style="color:#059669;font-weight:800;font-size:.74rem;">✅ Active</span>'
+        : '<span style="color:#dc2626;font-weight:800;font-size:.74rem;">🚫 Inactive</span>';
+
+      var av = (t.name || 'T').charAt(0).toUpperCase();
+
+      h += '<tr>';
+      h += '<td>' + (i + 1) + '</td>';
+      h += '<td><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.85rem;">' + av + '</div></td>';
+      h += '<td><strong style="color:#0891b2;">' + escapeHtml(t.teacher_id || '—') + '</strong></td>';
+      h += '<td><strong>' + escapeHtml(t.name || '—') + '</strong>';
+      if (t.role === 'head_teacher') h += ' <span style="background:linear-gradient(100deg,#fbbf24,#f59e0b);color:#03132e;padding:2px 8px;border-radius:20px;font-size:.58rem;font-weight:800;margin-left:4px;">👑 Head</span>';
+      h += '</td>';
+      h += '<td>' + classes + '</td>';
+      h += '<td>' + escapeHtml(t.subject || '—') + '</td>';
+      h += '<td>' + escapeHtml(t.phone || '—') + '</td>';
+      h += '<td>' + pwdBadge + '</td>';
+      h += '<td style="font-size:.72rem;color:#64748b;">' + lastLogin + '</td>';
+      h += '<td>' + statusBadge + '</td>';
+      h += '<td><div class="admin-actions">';
+      h += '<button class="btn-sm approve" onclick="TEACHERS_edit(\'' + escapeHtml(t.teacher_id) + '\')" title="Edit">✏️</button>';
+      h += '<button class="btn-sm" style="background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#fff;" onclick="TEACHERS_resetPwd(\'' + escapeHtml(t.teacher_id) + '\')" title="Reset Password">🔑</button>';
+      h += '<button class="btn-sm" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;" onclick="TEACHERS_toggleActive(\'' + escapeHtml(t.teacher_id) + '\')" title="Toggle Active">' + (t.is_active !== false ? '🚫' : '✅') + '</button>';
+      h += '<button class="btn-sm" style="background:linear-gradient(100deg,#0891b2,#22d3ee);color:#fff;" onclick="TEACHERS_viewLogins(\'' + escapeHtml(t.teacher_id) + '\')" title="Login History">📊</button>';
+      h += '<button class="btn-sm reject" onclick="TEACHERS_delete(\'' + escapeHtml(t.teacher_id) + '\')" title="Delete">🗑️</button>';
+      h += '</div></td>';
+      h += '</tr>';
+    });
+
+    h += '</tbody></table>';
+    wrap.innerHTML = h;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ➕ 7. ADD / EDIT FORM
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_openForm = async function(teacherId) {
+    var isEdit = !!teacherId;
+    var t = isEdit ? (window._teachersList || []).find(function(x) { return x.teacher_id === teacherId; }) : {};
+
+    // Auto-generate next ID for new
+    var nextId = 'TR001';
+    if (!isEdit) {
+      try {
+        var r = await supabaseClient.from('teachers')
+          .select('teacher_id').order('teacher_id', { ascending: false }).limit(1);
+        if (r.data && r.data.length > 0) {
+          var lastNum = parseInt((r.data[0].teacher_id || 'TR000').replace('TR', '')) || 0;
+          nextId = 'TR' + String(lastNum + 1).padStart(3, '0');
+        }
+      } catch(e) {}
+    }
+
+    var currentClasses = isEdit ? (t.classes || []).map(String) : [];
+
+    var classesCheckboxes = '';
+    for (var c = 1; c <= 10; c++) {
+      var checked = currentClasses.indexOf(String(c)) > -1 ? 'checked' : '';
+      classesCheckboxes +=
+        '<label style="display:flex;align-items:center;gap:6px;padding:8px 14px;' +
+               'background:#fff;border:1.5px solid rgba(100,116,139,.2);' +
+               'border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;">' +
+          '<input type="checkbox" class="tf-class-chk" value="' + c + '" ' + checked + ' ' +
+                 'style="width:18px;height:18px;accent-color:#0891b2;"> Class ' + c +
+        '</label>';
+    }
+
+    modalTitleSpan.innerText = isEdit ? '✏️ Edit Teacher' : '➕ Add New Teacher';
+    modalBodyDiv.innerHTML =
+      '<form id="tfTeacherForm">' +
+        '<div class="row g-3">' +
+
+          '<div class="col-md-4">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:5px;">Teacher ID *</label>' +
+            '<input type="text" id="tf_id" class="modal-form-input" ' +
+                   'value="' + escapeHtml(t.teacher_id || nextId) + '" ' +
+                   'required ' + (isEdit ? 'readonly' : '') + ' ' +
+                   'style="text-transform:uppercase;letter-spacing:1px;font-weight:800;">' +
+          '</div>' +
+
+          '<div class="col-md-8">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:5px;">Full Name *</label>' +
+            '<input type="text" id="tf_name" class="modal-form-input" ' +
+                   'value="' + escapeHtml(t.name || '') + '" required maxlength="80">' +
+          '</div>' +
+
+          '<div class="col-md-6">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:5px;">📱 Phone</label>' +
+            '<input type="tel" id="tf_phone" class="modal-form-input" ' +
+                   'value="' + escapeHtml(t.phone || '') + '" maxlength="15">' +
+          '</div>' +
+
+          '<div class="col-md-6">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:5px;">✉️ Email</label>' +
+            '<input type="email" id="tf_email" class="modal-form-input" ' +
+                   'value="' + escapeHtml(t.email || '') + '">' +
+          '</div>' +
+
+          '<div class="col-md-6">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:5px;">📖 Subject</label>' +
+            '<input type="text" id="tf_subject" class="modal-form-input" ' +
+                   'value="' + escapeHtml(t.subject || '') + '" placeholder="e.g., Arabic" maxlength="60">' +
+          '</div>' +
+
+          '<div class="col-md-6">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:5px;">🎯 Role</label>' +
+            '<select id="tf_role" class="modal-form-input">' +
+              '<option value="teacher"' + (t.role === 'teacher' || !t.role ? ' selected' : '') + '>Teacher</option>' +
+              '<option value="head_teacher"' + (t.role === 'head_teacher' ? ' selected' : '') + '>Head Teacher</option>' +
+            '</select>' +
+          '</div>' +
+
+          '<div class="col-12">' +
+            '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:5px;">🎓 Assigned Classes * <span style="color:#94a3b8;font-weight:600;">(ഒരെണ്ണമെങ്കിലും തിരഞ്ഞെടുക്കുക)</span></label>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px;' +
+                        'background:#f8fafc;border-radius:12px;' +
+                        'border:1px solid rgba(100,116,139,.2);">' +
+              classesCheckboxes +
+            '</div>' +
+          '</div>' +
+
+          (isEdit ? '' :
+            '<div class="col-12">' +
+              '<label style="color:#475569;font-size:.78rem;font-weight:800;display:block;margin-bottom:5px;">🔑 Initial Password *</label>' +
+              '<input type="text" id="tf_pwd" class="modal-form-input" ' +
+                     'value="ustad123" required ' +
+                     'style="font-family:monospace;font-weight:700;letter-spacing:1px;">' +
+              '<small style="color:#64748b;font-size:.7rem;display:block;margin-top:5px;">' +
+                '<i class="fas fa-info-circle" style="color:#0891b2;"></i> ' +
+                'Teacher-നു നൽകാൻ ഈ password. Teacher-നു ആദ്യ login-ൽ പിന്നീട് മാറ്റാം.' +
+              '</small>' +
+            '</div>'
+          ) +
+
+        '</div>' +
+
+        '<div style="display:flex;gap:10px;margin-top:20px;">' +
+          '<button type="button" class="btn-cancel" ' +
+                  'onclick="closeModal(\'globalModal\')" style="flex:.6;">Cancel</button>' +
+          '<button type="submit" class="btn-update" style="flex:1.4;">' +
+            '<i class="fas fa-save"></i> ' + (isEdit ? 'Update' : 'Add Teacher') +
+          '</button>' +
+        '</div>' +
+      '</form>';
+
+    modal.style.display = 'flex';
+
+    // Attach submit handler after DOM ready
+    setTimeout(function() {
+      var form = document.getElementById('tfTeacherForm');
+      if (!form) return;
+      form.onsubmit = function(e) {
+        e.preventDefault();
+        TEACHERS_save(isEdit ? teacherId : null);
+      };
+      // Auto-uppercase ID input
+      var idInput = document.getElementById('tf_id');
+      if (idInput && !isEdit) {
+        idInput.addEventListener('input', function() {
+          var p = this.selectionStart;
+          var v = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+          if (this.value !== v) { this.value = v; this.setSelectionRange(p, p); }
+        });
+      }
+    }, 100);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 💾 8. SAVE TEACHER
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_save = async function(editId) {
+    var classes = Array.from(document.querySelectorAll('.tf-class-chk:checked'))
+                  .map(function(cb) { return cb.value; });
+
+    if (classes.length === 0) {
+      showToast('⚠️ കുറഞ്ഞത് ഒരു class തിരഞ്ഞെടുക്കൂ', 'error');
+      return;
+    }
+
+    var obj = {
+      teacher_id: (document.getElementById('tf_id').value || '').trim().toUpperCase(),
+      name: (document.getElementById('tf_name').value || '').trim(),
+      phone: (document.getElementById('tf_phone').value || '').trim() || null,
+      email: (document.getElementById('tf_email').value || '').trim() || null,
+      subject: (document.getElementById('tf_subject').value || '').trim() || null,
+      classes: classes,
+      role: document.getElementById('tf_role').value || 'teacher',
+      is_active: true,
+      updated_at: new Date().toISOString()
+    };
+
+    if (!obj.teacher_id || !obj.name) {
+      showToast('❌ ID & Name required', 'error');
+      return;
+    }
+
+    var submitBtn = document.querySelector('#tfTeacherForm button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    }
+
+    try {
+      if (editId) {
+        // UPDATE
+        var r = await supabaseClient.from('teachers')
+          .update(obj).eq('teacher_id', editId);
+        if (r.error) throw r.error;
+        showToast('✅ Teacher updated', 'success');
+
+        // Notify teacher about changes
+        try {
+          await supabaseClient.from('notifications').insert({
+            title: '👨‍🏫 Profile Updated',
+            message: 'നിങ്ങളുടെ teacher profile admin update ചെയ്തു. ' +
+                     'Classes: ' + classes.join(', ') + '. ' +
+                     'വീണ്ടും login ചെയ്ത് confirm ചെയ്യുക.',
+            type: 'general',
+            target_type: 'student',
+            target_student: editId,
+            link_url: null
+          });
+        } catch(e) {}
+      } else {
+        // INSERT
+        obj.password = (document.getElementById('tf_pwd').value || 'ustad123').trim();
+        obj.must_change_password = true;
+        obj.created_by = 'ADMIN';
+        obj.created_at = new Date().toISOString();
+
+        var r2 = await supabaseClient.from('teachers').insert(obj);
+        if (r2.error) {
+          if (r2.error.code === '23505') {
+            showToast('❌ Teacher ID already exists: ' + obj.teacher_id, 'error');
+            throw new Error('Duplicate ID');
+          }
+          throw r2.error;
+        }
+        showToast('✅ Teacher added: ' + obj.teacher_id, 'success');
+
+        // Notify Admin (self log)
+        try {
+          await supabaseClient.from('notifications').insert({
+            title: '✅ New Teacher Created',
+            message: '👨‍🏫 ' + obj.name + ' (' + obj.teacher_id + ')\n' +
+                     '📚 Classes: ' + classes.join(', ') + '\n' +
+                     '📖 Subject: ' + (obj.subject || '—'),
+            type: 'important',
+            target_type: 'admin',
+            link_url: null
+          });
+        } catch(e) {}
+      }
+
+      if (typeof confetti !== 'undefined') {
+        confetti({ particleCount: 80, spread: 70, origin: { y: .7 },
+                   colors: ['#0891b2','#22d3ee','#34d399','#fbbf24'] });
+      }
+
+      closeModal('globalModal');
+      TEACHERS_load();
+    } catch(e) {
+      console.error('TEACHERS_save:', e);
+      showToast('❌ ' + e.message, 'error');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> ' +
+                              (editId ? 'Update' : 'Add Teacher');
+      }
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // ✏️ 9. EDIT
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_edit = function(id) {
+    TEACHERS_openForm(id);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔑 10. RESET PASSWORD — notify teacher + admin
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_resetPwd = async function(teacherId) {
+    var t = (window._teachersList || []).find(function(x) { return x.teacher_id === teacherId; });
+    if (!t) { showToast('❌ Teacher not found', 'error'); return; }
+
+    var newPwd = prompt(
+      '🔑 Reset Password for ' + (t.name || teacherId) + '\n\n' +
+      'New password (min 4 chars):',
+      'ustad123'
+    );
+    if (newPwd === null) return;
+    newPwd = newPwd.trim();
+    if (!newPwd || newPwd.length < 4) {
+      showToast('❌ Password min 4 chars', 'error');
+      return;
+    }
+
+    if (!confirm('🔑 Reset password to "' + newPwd + '" for ' + (t.name || teacherId) + '?\n\n' +
+                 'Teacher-നു notification പോകും.')) return;
+
+    showLoading(true);
+    try {
+      var r = await supabaseClient.from('teachers').update({
+        password: newPwd,
+        must_change_password: true,
+        password_changed_at: null,
+        updated_at: new Date().toISOString()
+      }).eq('teacher_id', teacherId);
+
+      if (r.error) throw r.error;
+
+      // Notify teacher
+      try {
+        await supabaseClient.from('notifications').insert({
+          title: '🔑 Password Reset',
+          message: 'നിങ്ങളുടെ password admin reset ചെയ്തിരിക്കുന്നു.\n\n' +
+                   'പുതിയ password: ' + newPwd + '\n\n' +
+                   'Login ചെയ്ത് ഉടൻ മാറ്റുക.',
+          type: 'urgent',
+          target_type: 'student',
+          target_student: teacherId,
+          link_url: null
+        });
+      } catch(e) {}
+
+      // Notify admin (self log)
+      try {
+        await supabaseClient.from('notifications').insert({
+          title: '🔑 Teacher Password Reset',
+          message: '👨‍🏫 ' + (t.name || teacherId) + ' (' + teacherId + ')\n' +
+                   '📅 ' + new Date().toLocaleString('en-IN', {
+                     day: '2-digit', month: 'short',
+                     hour: '2-digit', minute: '2-digit'
+                   }),
+          type: 'general',
+          target_type: 'admin',
+          link_url: null
+        });
+      } catch(e) {}
+
+      showToast('✅ Password reset + notified', 'success');
+      if (typeof confetti !== 'undefined') {
+        confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
+      }
+      TEACHERS_load();
+    } catch(e) {
+      console.error('resetPwd:', e);
+      showToast('❌ ' + e.message, 'error');
+    }
+    showLoading(false);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🚫 11. TOGGLE ACTIVE
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_toggleActive = async function(teacherId) {
+    var t = (window._teachersList || []).find(function(x) { return x.teacher_id === teacherId; });
+    if (!t) return;
+
+    var willActivate = t.is_active === false;
+    var action = willActivate ? 'activate' : 'deactivate';
+    if (!confirm('🚫 ' + (willActivate ? 'Activate' : 'Deactivate') + ' ' + (t.name || teacherId) + '?')) return;
+
+    try {
+      var r = await supabaseClient.from('teachers')
+        .update({ is_active: willActivate, updated_at: new Date().toISOString() })
+        .eq('teacher_id', teacherId);
+      if (r.error) throw r.error;
+
+      // Notify admin
+      try {
+        await supabaseClient.from('notifications').insert({
+          title: willActivate ? '✅ Teacher Activated' : '🚫 Teacher Deactivated',
+          message: '👨‍🏫 ' + (t.name || teacherId) + ' (' + teacherId + ')',
+          type: 'general',
+          target_type: 'admin',
+          link_url: null
+        });
+      } catch(e) {}
+
+      showToast(willActivate ? '✅ Activated' : '🚫 Deactivated', 'success');
+      TEACHERS_load();
+    } catch(e) {
+      showToast('❌ ' + e.message, 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 📊 12. VIEW LOGIN HISTORY
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_viewLogins = async function(teacherId) {
+    var t = (window._teachersList || []).find(function(x) { return x.teacher_id === teacherId; });
+    modalTitleSpan.innerText = '📊 ' + (t ? t.name : teacherId) + ' — Login History';
+    modalBodyDiv.innerHTML = '<div style="text-align:center;padding:30px;"><div class="spinner-sm" style="margin:0 auto;"></div></div>';
+    modal.style.display = 'flex';
+
+    try {
+      var r = await supabaseClient.from('teacher_login_logs')
+        .select('*').eq('teacher_id', teacherId)
+        .order('login_at', { ascending: false }).limit(50);
+      var logs = r.data || [];
+
+      if (!logs.length) {
+        modalBodyDiv.innerHTML =
+          '<div style="text-align:center;padding:40px 20px;color:#64748b;">' +
+            '<i class="fas fa-clock" style="font-size:3rem;opacity:.3;display:block;margin-bottom:12px;"></i>' +
+            '<div style="font-weight:800;">No login records yet</div>' +
+          '</div>';
+        return;
+      }
+
+      var h = '<div style="margin-bottom:14px;background:#ecfeff;border:1px solid rgba(8,145,178,.3);border-radius:12px;padding:12px 16px;">' +
+                '<div style="font-weight:800;color:#0891b2;font-size:.86rem;">' +
+                  '👨‍🏫 ' + escapeHtml(t ? t.name : teacherId) + '</div>' +
+                '<div style="font-size:.72rem;color:#475569;margin-top:4px;">' +
+                  '🆔 ' + escapeHtml(teacherId) + ' • ' + logs.length + ' logins' +
+                '</div>' +
+              '</div>';
+
+      h += logs.map(function(log) {
+        var date = new Date(log.login_at);
+        var dateStr = date.toLocaleString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+        var device = log.device || 'Web';
+        var icon = /Android/i.test(device) ? '📱' :
+                   /iOS/i.test(device) ? '📱' : '💻';
+        return '<div style="background:#f8fafc;border:1px solid rgba(100,116,139,.15);' +
+               'border-radius:12px;padding:12px 14px;margin-bottom:8px;' +
+               'display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">' +
+          '<div>' +
+            '<div style="font-weight:800;color:#0f172a;font-size:.86rem;">' +
+              icon + ' ' + escapeHtml(device) + '</div>' +
+            '<div style="font-size:.72rem;color:#64748b;margin-top:3px;">' +
+              '📅 ' + dateStr + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      modalBodyDiv.innerHTML = h;
+    } catch(e) {
+      modalBodyDiv.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🗑️ 13. DELETE TEACHER
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_delete = async function(teacherId) {
+    var t = (window._teachersList || []).find(function(x) { return x.teacher_id === teacherId; });
+    if (!t) return;
+
+    if (!confirm('🗑️ Delete teacher ' + (t.name || teacherId) + '?\n\n' +
+                 'ഈ action undo ചെയ്യാൻ പറ്റില്ല.')) return;
+
+    // Double-confirm for safety
+    var typed = prompt(
+      '⚠️ FINAL CONFIRMATION\n\n' +
+      'Delete ചെയ്യാൻ "DELETE" എന്ന് type ചെയ്യുക:'
+    );
+    if (typed !== 'DELETE') {
+      showToast('❌ Delete cancelled', 'info');
+      return;
+    }
+
+    showLoading(true);
+    try {
+      await supabaseClient.from('teachers').delete().eq('teacher_id', teacherId);
+
+      // Also delete login logs
+      try {
+        await supabaseClient.from('teacher_login_logs').delete().eq('teacher_id', teacherId);
+      } catch(e) {}
+
+      // Notify admin
+      try {
+        await supabaseClient.from('notifications').insert({
+          title: '🗑️ Teacher Deleted',
+          message: '👨‍🏫 ' + (t.name || teacherId) + ' (' + teacherId + ') deleted permanently.',
+          type: 'important',
+          target_type: 'admin',
+          link_url: null
+        });
+      } catch(e) {}
+
+      showToast('🗑️ Teacher deleted', 'success');
+      TEACHERS_load();
+    } catch(e) {
+      console.error('delete:', e);
+      showToast('❌ ' + e.message, 'error');
+    }
+    showLoading(false);
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🎛️ 14. HOOK switchAdminTab
+  // ═══════════════════════════════════════════════════════
+  function hookSwitchTab() {
+    var _orig = window.switchAdminTab;
+    if (typeof _orig !== 'function' || _orig._v2hooked) return false;
+
+    window.switchAdminTab = function(tab) {
+      if (tab === 'teachers') {
+        document.querySelectorAll('.admin-tab-content').forEach(function(c) {
+          c.style.display = 'none';
+        });
+        document.querySelectorAll('.admin-tab').forEach(function(t) {
+          t.classList.remove('active');
+        });
+        var btn = document.querySelector('.admin-tab[data-tab="teachers"]');
+        if (btn) btn.classList.add('active');
+        var el = document.getElementById('adminTeachersTab');
+        if (el) el.style.display = 'block';
+        window.TEACHERS_load();
+        return;
+      }
+      return _orig.apply(this, arguments);
+    };
+    window.switchAdminTab._v2hooked = true;
+    console.log('✅ switchAdminTab hooked');
+    return true;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 15. INIT
+  // ═══════════════════════════════════════════════════════
+  function init() {
+    addTeachersTabButton();
+    addTeachersTabContent();
+    if (!hookSwitchTab()) {
+      // Retry if switchAdminTab not ready
+      setTimeout(hookSwitchTab, 1500);
+      setTimeout(hookSwitchTab, 3500);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 2200);
+      setTimeout(init, 4500);
+    });
+  } else {
+    setTimeout(init, 2200);
+    setTimeout(init, 4500);
+  }
+
+  // Watch for admin panel opening
+  var adminEl = document.getElementById('adminSection');
+  if (adminEl) {
+    new MutationObserver(function() {
+      if (adminEl.style.display === 'block') {
+        setTimeout(init, 500);
+      }
+    }).observe(adminEl, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // Periodic safety
+  setInterval(function() {
+    var admin = document.getElementById('adminSection');
+    if (admin && admin.style.display === 'block') {
+      addTeachersTabButton();
+      addTeachersTabContent();
+    }
+  }, 5000);
+
+  // ═══════════════════════════════════════════════════════
+  // 🐛 DEBUG HELPERS
+  // ═══════════════════════════════════════════════════════
+  window.TEACHERS_debug = function() {
+    console.log('=== TEACHERS DEBUG v2.0 ===');
+    console.log('Tab button exists?', !!document.querySelector('[data-tab="teachers"]'));
+    console.log('Tab content exists?', !!document.getElementById('adminTeachersTab'));
+    console.log('Teachers loaded:', (window._teachersList || []).length);
+    console.log('switchAdminTab hooked?', !!(window.switchAdminTab && window.switchAdminTab._v2hooked));
+    if (typeof showToast === 'function') showToast('👨‍🏫 Check console', 'info');
+  };
+
+  console.log('✅ Teachers Admin Tab v2.0 ready');
+  console.log('   💡 TEACHERS_debug() — check status');
+  console.log('   💡 TEACHERS_load() — manual reload');
 })();
 </script>
 </body>
