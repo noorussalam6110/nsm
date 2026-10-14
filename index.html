@@ -12441,7 +12441,20 @@ window.completeLogin = async function(student) {
   else init();
 
   function updateModalState(){
-    var ids = ['globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal','topperModal','topperCropModal','uploadCreationModal','notesModal','noticeBoardModal','forgotModal','findStudentIdModal','helpModal','passwordSetupModal','pwdResetModal'];
+    var ids = [
+      'globalModal','passbookModal','studentWithdrawalModal','notificationsModal',
+      'editProfileModal','topperModal','topperCropModal','uploadCreationModal',
+      'notesModal','noticeBoardModal','forgotModal','findStudentIdModal',
+      'helpModal','passwordSetupModal','pwdResetModal',
+      'quizModal','rewardsModal','addFriendModal','avatarCustomizerModal',
+      'reportModal','posterPopupV102','receiptModalV79','waBotPanelV80',
+      'pwdMgrModalV82','tsModalV81','teacherLoginV60','multiMonthFeeModal',
+      'feeMgrModal','deleteConfirmOverlay','chatImageLightbox','imgPreviewOverlay',
+      'photoPickerSheet','nv112Picker','nv112HistoryModal',
+      'td60NamazHistoryModal','td60StudentDetailModal','teacherIdPromptModal',
+      'rejectCreationModal','creationsOverlay','publicFeedOverlay',
+      'studentFeesOverlay','helpModal'
+    ];
     var anyOpen = false;
     ids.forEach(function(id){
       var el = document.getElementById(id);
@@ -12468,10 +12481,29 @@ window.completeLogin = async function(student) {
     else document.body.classList.remove('modal-open');
   }
 
+  // ⭐ v141: Fast periodic check (setTimeout — bypasses setInterval throttle)
+  (function fastCheck(){
+    updateModalState();
+    setTimeout(fastCheck, 250);
+  })();
+
   window.updateModalState = updateModalState;
 
   document.addEventListener('DOMContentLoaded', function(){
-    var watchIds = ['globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal','topperModal','topperCropModal','uploadCreationModal','notesModal','noticeBoardModal','forgotModal','findStudentIdModal','helpModal','creationLightbox','creationsOverlay','posterPreviewOverlay','publicFeedOverlay','studentFeesOverlay','passwordSetupModal','pwdResetModal'];
+    var watchIds = [
+      'globalModal','passbookModal','studentWithdrawalModal','notificationsModal',
+      'editProfileModal','topperModal','topperCropModal','uploadCreationModal',
+      'notesModal','noticeBoardModal','forgotModal','findStudentIdModal',
+      'helpModal','creationLightbox','creationsOverlay','posterPreviewOverlay',
+      'publicFeedOverlay','studentFeesOverlay','passwordSetupModal','pwdResetModal',
+      'quizModal','rewardsModal','addFriendModal','avatarCustomizerModal',
+      'reportModal','posterPopupV102','receiptModalV79','waBotPanelV80',
+      'pwdMgrModalV82','tsModalV81','teacherLoginV60','multiMonthFeeModal',
+      'feeMgrModal','deleteConfirmOverlay','chatImageLightbox','imgPreviewOverlay',
+      'photoPickerSheet','nv112Picker','nv112HistoryModal',
+      'td60NamazHistoryModal','td60StudentDetailModal','teacherIdPromptModal',
+      'rejectCreationModal','aiPanel'
+    ];
     var mo = new MutationObserver(updateModalState);
     watchIds.forEach(function(id){
       var el = document.getElementById(id);
@@ -15854,8 +15886,15 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
     font-size: 1.5rem;
   }
 }
-body.ai-panel-open .chat-fab { display: none !important; }
-body.modal-open .chat-fab { display: none !important; }
+body.ai-panel-open .chat-fab,
+body.modal-open .chat-fab,
+body.chat-panel-open .chat-fab,
+body.has-modal .chat-fab { display: none !important; }
+
+body.ai-panel-open .ai-fab,
+body.modal-open .ai-fab,
+body.chat-panel-open .ai-fab,
+body.has-modal .ai-fab { display: none !important; }
 
 /* Chat Panel */
 .chat-panel {
@@ -45967,6 +46006,7 @@ document.addEventListener('touchend', function(e) {
   var MODAL_IDS = [
     'globalModal', 'passbookModal', 'studentWithdrawalModal',
     'notificationsModal', 'editProfileModal', 'topperModal',
+    'yourCustomModalId',
     'topperCropModal', 'uploadCreationModal', 'notesModal',
     'noticeBoardModal', 'findStudentIdModal', 'helpModal',
     'creationLightbox', 'quizModal', 'rewardsModal',
