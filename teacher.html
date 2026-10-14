@@ -1082,10 +1082,12 @@ window.closeTeacherLogin = closeTeacherLogin;
     this.className = inp.type === 'password' ? 'fas fa-eye tv60-eye' : 'fas fa-eye-slash tv60-eye';
   });
 
-$id('tv60Cancel').addEventListener('click', function() {
-  // Redirect to main login page
-  window.location.href = 'login.html';
-});
+var _cancelBtn = $id('tv60Cancel');
+if (_cancelBtn) {
+  _cancelBtn.addEventListener('click', function() {
+    window.location.href = 'login.html';
+  });
+}
   $id('tv60Forgot').addEventListener('click', function() {
     var t = TV60.teacher || {};
     alert('🔐 Teacher Password Reset\n\nTeacher ID: ' + (t.teacher_id || '—') + '\nName: ' + (t.name || '—') + '\n\nSuper Admin-നെ ബന്ധപ്പെടുക:\n📞 Office: 7034678818');
