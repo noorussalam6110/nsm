@@ -649,7 +649,8 @@ body {
         <i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>
       </button>
       <div class="tv60-secondary-row">
-        <button type="button" class="tv60-btn-secondary" id="tv60Cancel">
+        <button type="button" class="tv60-btn-secondary" 
+                 onclick="window.location.href='login.html'">
           <i class="fas fa-arrow-left"></i><span>തിരികെ</span>
         </button>
         <button type="button" class="tv60-btn-secondary" id="tv60Forgot">
@@ -901,15 +902,15 @@ console.log('✅ Teacher Portal base loaded');
   }
   window.showTeacherLoginV60 = showTeacherLogin;
 
-  function closeTeacherLogin(clearInput) {
-    $id('teacherLoginV60').classList.remove('open');
-    document.body.style.overflow = '';
-    if (clearInput !== false) {
-      var s = $id('studentId');
-      if (s) { s.value = ''; }
-    }
+function closeTeacherLogin(redirect) {
+  $id('teacherLoginV60').classList.remove('open');
+  document.body.style.overflow = '';
+  // If redirect flag is true, go to login.html
+  if (redirect === true) {
+    window.location.href = 'login.html';
   }
-  window.closeTeacherLogin = closeTeacherLogin;
+}
+window.closeTeacherLogin = closeTeacherLogin;
 
   // ─── Step 1: Teacher ID Prompt ───
   window.askTeacherId = function() {
@@ -1081,8 +1082,10 @@ console.log('✅ Teacher Portal base loaded');
     this.className = inp.type === 'password' ? 'fas fa-eye tv60-eye' : 'fas fa-eye-slash tv60-eye';
   });
 
-  $id('tv60Cancel').addEventListener('click', function() { closeTeacherLogin(); });
-
+$id('tv60Cancel').addEventListener('click', function() {
+  // Redirect to main login page
+  window.location.href = 'login.html';
+});
   $id('tv60Forgot').addEventListener('click', function() {
     var t = TV60.teacher || {};
     alert('🔐 Teacher Password Reset\n\nTeacher ID: ' + (t.teacher_id || '—') + '\nName: ' + (t.name || '—') + '\n\nSuper Admin-നെ ബന്ധപ്പെടുക:\n📞 Office: 7034678818');
@@ -2158,7 +2161,7 @@ console.log('✅ Teacher Portal base loaded');
     showToast('Logged out', 'info');
     // Redirect to main portal
     setTimeout(function() {
-      window.location.href = 'student-login.html'; // main login file
+      window.location.href = 'login.html'; // main login file
     }, 800);
   }
   window.teacherLogoutV60 = teacherLogout;
