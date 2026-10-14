@@ -25324,6 +25324,7 @@ else if (tab === 'chat') await panelChat(panel, cls);
 
   async function loadAttendance(cls) {
     var body = $id('td60AttBody');
+    var status = $id('td60AttStatus');
     body.innerHTML = '<div style="text-align:center;padding:20px;"><div class="td60-spinner"></div></div>';
     var month = $id('td60AttMonth').value;
     var sr = await supabaseClient.from('students').select('studentid, name, roll').eq('class', cls).order('roll');
@@ -25332,19 +25333,65 @@ else if (tab === 'chat') await panelChat(panel, cls);
     var map = {};
     (ar.data || []).forEach(function(a) { map[a.studentid] = a; });
     var total = parseInt($id('td60AttTotal').value) || 22;
+
+    // Count saved vs empty
+    var savedCount = 0;
+    students.forEach(function(s) { if (map[s.studentid]) savedCount++; });
+    var savedPercent = students.length > 0 ? Math.round(savedCount / students.length * 100) : 0;
+
+    // Status banner
+    if (status) {
+      if (savedCount === 0) {
+        status.innerHTML =
+          '<div style="background:#fef3c7;border:1.5px solid rgba(180,83,9,.3);' +
+                      'border-radius:12px;padding:10px 14px;font-size:.8rem;' +
+                      'color:#92400e;font-weight:700;display:flex;align-items:center;gap:8px;">' +
+            '<i class="fas fa-plus-circle" style="font-size:1rem;"></i>' +
+            '<div><b>New Entry</b> — ' + students.length + ' students-ന്റെ attendance enter ചെയ്യുക</div>' +
+          '</div>';
+      } else if (savedCount === students.length) {
+        status.innerHTML =
+          '<div style="background:#ecfdf5;border:1.5px solid rgba(5,150,105,.3);' +
+                      'border-radius:12px;padding:10px 14px;font-size:.8rem;' +
+                      'color:#065f46;font-weight:700;display:flex;align-items:center;' +
+                      'justify-content:space-between;gap:8px;flex-wrap:wrap;">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<i class="fas fa-check-circle" style="font-size:1rem;"></i>' +
+              '<div><b>Edit Mode</b> — ' + month + ' നു എല്ലാ students-ന്റെയും data saved ആണ്</div>' +
+            '</div>' +
+            '<span style="background:#059669;color:#fff;padding:3px 10px;' +
+                         'border-radius:20px;font-size:.66rem;font-weight:800;">' +
+              '✏️ EDITABLE</span>' +
+          '</div>';
+      } else {
+        status.innerHTML =
+          '<div style="background:#dbeafe;border:1.5px solid rgba(59,130,246,.35);' +
+                      'border-radius:12px;padding:10px 14px;font-size:.8rem;' +
+                      'color:#1e40af;font-weight:700;display:flex;align-items:center;gap:8px;">' +
+            '<i class="fas fa-info-circle" style="font-size:1rem;"></i>' +
+            '<div><b>Partial</b> — ' + savedCount + ' of ' + students.length +
+            ' students-നു data ഉണ്ട് (' + savedPercent + '%). ബാക്കിയുള്ളവ enter ചെയ്യുക.</div>' +
+          '</div>';
+      }
+    }
+
     var h = '<div class="td60-table-wrap"><table class="td60-table">';
-    h += '<thead><tr><th>#</th><th>Roll</th><th>Name</th><th style="text-align:center;">Present</th><th style="text-align:center;">%</th></tr></thead><tbody>';
+    h += '<thead><tr><th>#</th><th>Roll</th><th>Name</th><th style="text-align:center;">Present</th><th style="text-align:center;">%</th><th style="text-align:center;">Status</th></tr></thead><tbody>';
     students.forEach(function(s, i) {
       var rec = map[s.studentid];
       var present = rec ? rec.present_days : 0;
       var pct = total > 0 ? Math.round(present / total * 100) : 0;
       var color = pct >= 75 ? '#059669' : pct >= 50 ? '#b45309' : '#dc2626';
       var cid = s.studentid.replace(/[^a-zA-Z0-9]/g, '');
+      var savedBadge = rec
+        ? '<span style="background:#dcfce7;color:#059669;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;">✅ Saved</span>'
+        : '<span style="background:#fef3c7;color:#b45309;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;">⚠️ New</span>';
       h += '<tr><td>' + (i + 1) + '</td>' +
         '<td style="font-weight:800;color:#0891b2;">' + esc(s.roll || '—') + '</td>' +
         '<td><strong>' + esc(s.name) + '</strong></td>' +
         '<td style="text-align:center;"><input type="number" class="td60-att-inp" data-sid="' + esc(s.studentid) + '" value="' + present + '" min="0" max="' + total + '" style="width:70px;padding:6px;border:1.5px solid rgba(100,116,139,.25);border-radius:8px;text-align:center;font-weight:700;font-family:inherit;font-size:16px;outline:none;"></td>' +
-        '<td style="text-align:center;font-weight:900;color:' + color + ';" id="td60AttPct-' + cid + '">' + pct + '%</td></tr>';
+        '<td style="text-align:center;font-weight:900;color:' + color + ';" id="td60AttPct-' + cid + '">' + pct + '%</td>' +
+        '<td style="text-align:center;">' + savedBadge + '</td></tr>';
     });
     h += '</tbody></table></div>';
     body.innerHTML = h;
@@ -25374,13 +25421,18 @@ else if (tab === 'chat') await panelChat(panel, cls);
       rows.push({ studentid: inp.dataset.sid, month_year: month, present_days: p, total_days: total, percentage: total > 0 ? Math.round(p / total * 100) : 0 });
     });
     if (!rows.length) { toast('No data', 'error'); return; }
+    var btn = $id('td60AttSave');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
     try {
       var ids = rows.map(function(r) { return r.studentid; });
       await supabaseClient.from('attendance_records').delete().eq('month_year', month).in('studentid', ids);
       await supabaseClient.from('attendance_records').insert(rows);
-      toast('✅ Attendance saved (' + rows.length + ' students)', 'success');
+      toast('✅ Saved / Updated (' + rows.length + ' students)', 'success');
       if (typeof confetti !== 'undefined') confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
+      // Auto-reload to show "Saved" badges
+      setTimeout(function() { loadAttendance(cls); }, 600);
     } catch(e) { toast('❌ ' + e.message, 'error'); }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save'; }
   }
 
   async function panelMarks(panel, cls) {
@@ -25392,7 +25444,9 @@ else if (tab === 'chat') await panelChat(panel, cls);
         '<label>Exam:</label><select id="td60MarksExam">' + exams.map(function(e){ return '<option value="' + esc(e) + '">' + esc(e) + '</option>'; }).join('') + '</select>' +
         '<button class="td60-btn primary" id="td60MarksLoad"><i class="fas fa-sync-alt"></i> Load</button>' +
         '<button class="td60-btn success" id="td60MarksSave"><i class="fas fa-save"></i> Save</button>' +
-      '</div><div id="td60MarksBody"></div>';
+      '</div>' +
+      '<div id="td60MarksStatus" style="margin-bottom:10px;"></div>' +
+      '<div id="td60MarksBody"></div>';
     $id('td60MarksLoad').addEventListener('click', function() { loadMarks(cls); });
     $id('td60MarksSave').addEventListener('click', function() { saveMarks(cls); });
     loadMarks(cls);
@@ -25400,6 +25454,7 @@ else if (tab === 'chat') await panelChat(panel, cls);
 
   async function loadMarks(cls) {
     var body = $id('td60MarksBody');
+    var status = $id('td60MarksStatus');
     body.innerHTML = '<div style="text-align:center;padding:20px;"><div class="td60-spinner"></div></div>';
     var exam = $id('td60MarksExam').value;
     var subjects;
@@ -25413,17 +25468,66 @@ else if (tab === 'chat') await panelChat(panel, cls);
       if (!map[m.studentid]) map[m.studentid] = {};
       map[m.studentid][m.subject] = m.obtained_marks;
     });
+
+    // Count saved students (all subjects filled)
+    var savedCount = 0;
+    students.forEach(function(s) {
+      if (map[s.studentid]) {
+        var filled = subjects.filter(function(sub) { return map[s.studentid][sub] != null; }).length;
+        if (filled === subjects.length) savedCount++;
+      }
+    });
+
+    if (status) {
+      if (savedCount === 0) {
+        status.innerHTML =
+          '<div style="background:#fef3c7;border:1.5px solid rgba(180,83,9,.3);' +
+                      'border-radius:12px;padding:10px 14px;font-size:.8rem;' +
+                      'color:#92400e;font-weight:700;display:flex;align-items:center;gap:8px;">' +
+            '<i class="fas fa-plus-circle"></i>' +
+            '<div><b>New Entry</b> — ' + exam + ' marks enter ചെയ്യുക</div></div>';
+      } else if (savedCount === students.length) {
+        status.innerHTML =
+          '<div style="background:#ecfdf5;border:1.5px solid rgba(5,150,105,.3);' +
+                      'border-radius:12px;padding:10px 14px;font-size:.8rem;' +
+                      'color:#065f46;font-weight:700;display:flex;align-items:center;' +
+                      'justify-content:space-between;gap:8px;flex-wrap:wrap;">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<i class="fas fa-check-circle"></i>' +
+              '<div><b>Edit Mode</b> — ' + exam + ' marks പൂർണ്ണമായി saved</div>' +
+            '</div>' +
+            '<span style="background:#059669;color:#fff;padding:3px 10px;' +
+                         'border-radius:20px;font-size:.66rem;font-weight:800;">✏️ EDITABLE</span>' +
+          '</div>';
+      } else {
+        status.innerHTML =
+          '<div style="background:#dbeafe;border:1.5px solid rgba(59,130,246,.35);' +
+                      'border-radius:12px;padding:10px 14px;font-size:.8rem;' +
+                      'color:#1e40af;font-weight:700;display:flex;align-items:center;gap:8px;">' +
+            '<i class="fas fa-info-circle"></i>' +
+            '<div><b>Partial</b> — ' + savedCount + ' of ' + students.length +
+            ' students-ന്റെ marks പൂർണ്ണം. ബാക്കിയുള്ളവ enter ചെയ്യുക.</div></div>';
+      }
+    }
+
     var h = '<div class="td60-table-wrap"><table class="td60-table" style="min-width:' + (200 + subjects.length * 80) + 'px;">';
     h += '<thead><tr><th>Roll</th><th>Name</th>';
     subjects.forEach(function(s) { h += '<th style="text-align:center;">' + esc(s) + '</th>'; });
-    h += '</tr></thead><tbody>';
+    h += '<th style="text-align:center;">Status</th></tr></thead><tbody>';
     students.forEach(function(s) {
+      var rec = map[s.studentid] || {};
+      var filled = subjects.filter(function(sub) { return rec[sub] != null; }).length;
+      var badge = filled === subjects.length
+        ? '<span style="background:#dcfce7;color:#059669;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;">✅ Saved</span>'
+        : filled > 0
+        ? '<span style="background:#fef3c7;color:#b45309;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;">⚠️ Partial</span>'
+        : '<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:800;">➕ New</span>';
       h += '<tr><td style="font-weight:800;color:#0891b2;">' + esc(s.roll || '—') + '</td><td><strong>' + esc(s.name) + '</strong></td>';
       subjects.forEach(function(sub) {
-        var val = (map[s.studentid] && map[s.studentid][sub] != null) ? map[s.studentid][sub] : '';
+        var val = (rec[sub] != null) ? rec[sub] : '';
         h += '<td style="text-align:center;"><input type="number" class="td60-mark-inp" data-sid="' + esc(s.studentid) + '" data-sub="' + esc(sub) + '" value="' + esc(val) + '" min="0" max="50" style="width:60px;padding:6px;border:1.5px solid rgba(100,116,139,.25);border-radius:8px;text-align:center;font-weight:700;font-family:inherit;font-size:16px;outline:none;"></td>';
       });
-      h += '</tr>';
+      h += '<td style="text-align:center;">' + badge + '</td></tr>';
     });
     h += '</tbody></table></div>';
     body.innerHTML = h;
@@ -25440,14 +25544,19 @@ else if (tab === 'chat') await panelChat(panel, cls);
       rows.push({ studentid: inp.dataset.sid, exam_name: exam, subject: inp.dataset.sub, max_marks: 50, obtained_marks: parseFloat(v) || 0 });
     });
     if (!rows.length) { toast('No marks entered', 'error'); return; }
+    var btn = $id('td60MarksSave');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
     try {
       await supabaseClient.from('exam_marks').delete().eq('exam_name', exam).in('studentid', Array.from(sids));
       for (var i = 0; i < rows.length; i += 200) {
         await supabaseClient.from('exam_marks').insert(rows.slice(i, i + 200));
       }
-      toast('✅ Marks saved (' + rows.length + ' entries)', 'success');
+      toast('✅ Saved / Updated (' + rows.length + ' entries)', 'success');
       if (typeof confetti !== 'undefined') confetti({ particleCount: 60, spread: 70, origin: { y: .7 } });
+      // Auto-reload to show "Saved" badges
+      setTimeout(function() { loadMarks(cls); }, 600);
     } catch(e) { toast('❌ ' + e.message, 'error'); }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save'; }
   }
   // ═══════════════════════════════════════════════════════
 // 🕐 TEACHER PANEL — TIMETABLE (View + Bulk Edit)
@@ -41065,12 +41174,14 @@ document.addEventListener('touchend', function(e) {
 <script>
 (function(){
   var LINE = 24, MULT = 1.15;
+
   function toPx(e) {
     var d = e.deltaY, m = e.deltaMode;
     if (m === 1) return d * LINE;
     if (m === 2) return d * window.innerHeight;
     return d;
   }
+
   function findScrollable(el, dy) {
     var root = document.scrollingElement || document.documentElement;
     while (el && el !== root && el.nodeType === 1) {
@@ -41084,20 +41195,108 @@ document.addEventListener('touchend', function(e) {
     }
     return null;
   }
+
+  // ⭐ Desktop-only: release stuck body locks
+  function releaseStuckScroll() {
+    // Only if no modal open
+    var modalOpen =
+      document.body.classList.contains('modal-open') ||
+      document.body.classList.contains('ai-panel-open') ||
+      document.body.classList.contains('teacher-login-open');
+
+    var hasVisibleModal = false;
+    var ids = ['globalModal','passbookModal','notificationsModal','editProfileModal',
+               'uploadCreationModal','quizModal','multiMonthFeeModal','feeMgrModal'];
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      if (el && (el.style.display === 'flex' || el.style.display === 'block')) {
+        hasVisibleModal = true;
+        break;
+      }
+    }
+
+    if (modalOpen || hasVisibleModal) return;
+
+    var html = document.documentElement;
+    var body = document.body;
+
+    // Release stuck position:fixed
+    if (body.style.position === 'fixed') {
+      var y = parseInt(body.style.top || '0') * -1;
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      body.style.height = '';
+      window.scrollTo(0, Math.abs(y));
+    }
+
+    // Release stuck overflow:hidden
+    if (body.style.overflow === 'hidden') body.style.overflow = '';
+    if (body.style.overflowY === 'hidden') body.style.overflowY = '';
+    if (html.style.overflow === 'hidden') html.style.overflow = '';
+    if (html.style.overflowY === 'hidden') html.style.overflowY = '';
+
+    // Force scrollable if not scrollable
+    if (getComputedStyle(body).overflowY === 'hidden') {
+      body.style.setProperty('overflow-y', 'auto', 'important');
+    }
+    if (getComputedStyle(html).overflowY === 'hidden') {
+      html.style.setProperty('overflow-y', 'auto', 'important');
+    }
+  }
+
+  // ⭐ Desktop wheel handler
   document.addEventListener('wheel', function(e) {
     if (e.ctrlKey || e.metaKey) return;
     if (e.defaultPrevented) return;
+
+    // Release stuck lock first
+    releaseStuckScroll();
+
     var px = toPx(e) * MULT;
     var inner = findScrollable(e.target, px);
     if (inner) return;
+
     var root = document.scrollingElement || document.documentElement;
     var canDown = window.scrollY + window.innerHeight < root.scrollHeight - 1;
     var canUp = window.scrollY > 0;
+
     if ((px > 0 && canDown) || (px < 0 && canUp)) {
       e.preventDefault();
       window.scrollBy({ top: px, left: 0, behavior: 'auto' });
     }
   }, { passive: false });
+
+  // ⭐ Desktop only: periodic lock release (every 2s)
+  if (!/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+    setInterval(releaseStuckScroll, 2000);
+
+    // On visibility change
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) setTimeout(releaseStuckScroll, 100);
+    });
+
+    // On ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') setTimeout(releaseStuckScroll, 200);
+    });
+
+    // Debug
+    window.SCROLL_DEBUG = function() {
+      var b = document.body, h = document.documentElement;
+      console.log('=== DESKTOP SCROLL DEBUG ===');
+      console.log('Body position:', b.style.position || '(none)');
+      console.log('Body overflow:', b.style.overflow || '(none)');
+      console.log('HTML overflow:', h.style.overflow || '(none)');
+      console.log('Body computed overflowY:', getComputedStyle(b).overflowY);
+      console.log('HTML computed overflowY:', getComputedStyle(h).overflowY);
+      console.log('scrollHeight:', h.scrollHeight, '| innerHeight:', window.innerHeight);
+      console.log('Can scroll?', h.scrollHeight > window.innerHeight);
+      if (typeof showToast === 'function') showToast('🖱️ Scroll debug in console', 'info');
+    };
+  }
 })();
 </script>
 <!-- ═══════════════════════════════════════════════════════ -->
