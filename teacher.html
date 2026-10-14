@@ -4199,7 +4199,338 @@ console.log('✅ Teacher Portal base loaded');
   setTimeout(attachAdminSync, 2500);
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📢 TEACHER → ADMIN NOTIFICATION SYSTEM v140             -->
+<!-- Password change, Login, Data saves → Super Admin alert  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="teacher-admin-notify-v140">
+(function(){
+  'use strict';
+  console.log('📢 Teacher→Admin Notify v140 loading...');
+
+  // ─── Helpers ───
+  function getDevice(){
+    var ua = navigator.userAgent || '';
+    if (/Android/i.test(ua)) return 'Android';
+    if (/iPhone|iPad|iPod/i.test(ua)) return 'iOS';
+    if (/Windows/i.test(ua)) return 'Windows';
+    if (/Mac/i.test(ua)) return 'Mac';
+    return 'Web';
+  }
+  function getTeacher(){
+    return window.currentTeacher || (window.TV60 && window.TV60.teacher) || null;
+  }
+  function getClasses(){
+    var t = getTeacher();
+    return t ? ((t.classes || []).join(', ') || '—') : '—';
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🔔 CORE: notifyAdmin()
+  // Inserts into notifications table with target_type='admin'
+  // Students won't see these — only Super Admin
+  // ═══════════════════════════════════════════════════════
+  window.notifyAdmin = async function(opts){
+    if (!opts || !opts.title) return false;
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return false;
+
+    var t = getTeacher();
+    var payload = {
+      title: opts.title,
+      message: opts.message || '',
+      type: opts.type || 'general',
+      target_type: 'admin',           // ← Special marker for admin only
+      target_class: null,
+      target_student: null,
+      link_url: opts.link || null
+    };
+
+    try {
+      var r = await supabaseClient.from('notifications').insert(payload);
+      if (r.error) throw r.error;
+      console.log('✅ Admin notified:', opts.title, '| action:', opts.action || '-');
+      return true;
+    } catch(e) {
+      console.warn('notifyAdmin failed:', e.message);
+      return false;
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🔑 MAIN: PASSWORD CHANGE → notify admin
+  // Uses MutationObserver on the success box (reliable)
+  // ═══════════════════════════════════════════════════════
+  function hookPasswordChange(){
+    var sucBox = document.getElementById('tsSuccessBox');
+    if (!sucBox) { setTimeout(hookPasswordChange, 1500); return; }
+    if (sucBox._v140watched) return;
+    sucBox._v140watched = true;
+
+    new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        if (m.type === 'attributes' && m.attributeName === 'class') {
+          if (sucBox.classList.contains('show')) {
+            var t = getTeacher();
+            if (!t) return;
+
+            // Prevent duplicate notify (5s window)
+            var key = 'pwd_notified_' + t.teacher_id + '_' + Math.floor(Date.now() / 5000);
+            try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, '1'); } catch(e) {}
+
+            setTimeout(function(){
+              notifyAdmin({
+                title: '🔑 Teacher Password Changed',
+                message:
+                  '👨‍🏫 ' + t.name + '\n' +
+                  '🆔 ID: ' + t.teacher_id + '\n' +
+                  '📚 Class: ' + getClasses() + '\n' +
+                  '📖 Subject: ' + (t.subject || '—') + '\n' +
+                  '📱 Device: ' + getDevice() + '\n' +
+                  '📅 ' + new Date().toLocaleString('en-IN', {
+                    day: '2-digit', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                  }),
+                type: 'important',
+                action: 'password_change'
+              });
+
+              // Extra safety: log to teacher_login_logs as backup
+              try {
+                supabaseClient.from('teacher_login_logs').insert({
+                  teacher_id: t.teacher_id,
+                  name: t.name,
+                  device: getDevice() + ' • Password Change',
+                  user_agent: navigator.userAgent.substring(0, 200)
+                });
+              } catch(e) {}
+            }, 300);
+          }
+        }
+      });
+    }).observe(sucBox, { attributes: true, attributeFilter: ['class'] });
+
+    console.log('✅ Password change watcher ready');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🟢 HOOK: Login → notify admin
+  // ═══════════════════════════════════════════════════════
+  var _origEnter = window.enterTeacherDashboard;
+  if (typeof _origEnter === 'function' && !_origEnter._v140) {
+    window.enterTeacherDashboard = async function(teacher){
+      var r = await _origEnter.apply(this, arguments);
+      if (teacher) {
+        setTimeout(function(){
+          notifyAdmin({
+            title: '🟢 Teacher Login',
+            message:
+              '👨‍🏫 ' + teacher.name + '\n' +
+              '🆔 ' + teacher.teacher_id + '\n' +
+              '📚 Class: ' + ((teacher.classes || []).join(', ') || '—') + '\n' +
+              '📱 ' + getDevice() + '\n' +
+              '📅 ' + new Date().toLocaleString('en-IN', {
+                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+              }),
+            type: 'general',
+            action: 'login'
+          });
+        }, 1500);
+      }
+      return r;
+    };
+    window.enterTeacherDashboard._v140 = true;
+    console.log('✅ Login hook active');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🕐 HOOK: Timetable save
+  // ═══════════════════════════════════════════════════════
+  var _origTT = window.teacherTTSave;
+  if (typeof _origTT === 'function' && !_origTT._v140) {
+    window.teacherTTSave = async function(cls){
+      var r = await _origTT.apply(this, arguments);
+      var t = getTeacher();
+      if (t) {
+        setTimeout(function(){
+          notifyAdmin({
+            title: '🕐 Timetable Updated',
+            message: '👨‍🏫 ' + t.name + ' (ID: ' + t.teacher_id + ') updated Class ' + cls + ' timetable',
+            type: 'general',
+            action: 'timetable_save'
+          });
+        }, 1800);
+      }
+      return r;
+    };
+    window.teacherTTSave._v140 = true;
+    console.log('✅ Timetable save hook active');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📅 HOOK: Attendance Save
+  // ═══════════════════════════════════════════════════════
+  function hookAttendanceSave(){
+    var panel = document.getElementById('td60Panel');
+    if (!panel || panel._v140att) return;
+    panel._v140att = true;
+
+    panel.addEventListener('click', function(e){
+      var btn = e.target.closest('#td60AttSave');
+      if (!btn) return;
+      var t = getTeacher();
+      if (!t) return;
+
+      setTimeout(function(){
+        var month = document.getElementById('td60AttMonth');
+        var monthVal = month ? month.value : '?';
+        notifyAdmin({
+          title: '📆 Attendance Saved',
+          message:
+            '👨‍🏫 ' + t.name + '\n' +
+            '📚 Class: ' + (window.TV60 && TV60.activeClass || '?') + '\n' +
+            '📅 Month: ' + monthVal,
+          type: 'general',
+          action: 'attendance_save'
+        });
+      }, 2500);
+    }, true);
+
+    console.log('✅ Attendance save hook active');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📝 HOOK: Marks Save
+  // ═══════════════════════════════════════════════════════
+  function hookMarksSave(){
+    var panel = document.getElementById('td60Panel');
+    if (!panel || panel._v140marks) return;
+    panel._v140marks = true;
+
+    panel.addEventListener('click', function(e){
+      var btn = e.target.closest('#td60MarksSave');
+      if (!btn) return;
+      var t = getTeacher();
+      if (!t) return;
+
+      setTimeout(function(){
+        var exam = document.getElementById('td60MarksExam');
+        var examVal = exam ? exam.value : '?';
+        notifyAdmin({
+          title: '📝 Marks Saved',
+          message:
+            '👨‍🏫 ' + t.name + '\n' +
+            '📚 Class: ' + (window.TV60 && TV60.activeClass || '?') + '\n' +
+            '📝 Exam: ' + examVal,
+          type: 'general',
+          action: 'marks_save'
+        });
+      }, 2500);
+    }, true);
+
+    console.log('✅ Marks save hook active');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 📖 HOOK: Homework/Notice form submissions (via modal)
+  // ═══════════════════════════════════════════════════════
+  function watchModalForms(){
+    var modalBody = document.getElementById('modalContentBody');
+    if (!modalBody || modalBody._v140forms) return;
+    modalBody._v140forms = true;
+
+    new MutationObserver(function(){
+      modalBody.querySelectorAll('form').forEach(function(form){
+        if (form._v140formHooked) return;
+        form._v140formHooked = true;
+
+        form.addEventListener('submit', function(){
+          var modal = document.getElementById('globalModal');
+          var titleEl = document.getElementById('modalTitle');
+          var titleText = titleEl ? titleEl.textContent.trim() : '';
+
+          setTimeout(function(){
+            if (modal && modal.style.display === 'none') {
+              var t = getTeacher();
+              if (!t) return;
+              if (titleText.indexOf('Homework') > -1) {
+                notifyAdmin({
+                  title: '📖 Homework Added',
+                  message: '👨‍🏫 ' + t.name + ' added homework in Class ' +
+                           (window.TV60 && TV60.activeClass || '?'),
+                  type: 'general',
+                  action: 'homework_add'
+                });
+              } else if (titleText.indexOf('Notice') > -1) {
+                notifyAdmin({
+                  title: '📌 Notice Posted',
+                  message: '👨‍🏫 ' + t.name + ' posted a notice in Class ' +
+                           (window.TV60 && TV60.activeClass || '?'),
+                  type: 'important',
+                  action: 'notice_add'
+                });
+              }
+            }
+          }, 1200);
+        });
+      });
+    }).observe(modalBody, { childList: true });
+
+    console.log('✅ Modal form watcher ready');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 🧪 DEBUG helpers
+  // ═══════════════════════════════════════════════════════
+  window.NOTIFY_admin = async function(title, message, type, action){
+    var r = await notifyAdmin({
+      title: title || '🧪 Test from Teacher',
+      message: message || 'Test notification',
+      type: type || 'general',
+      action: action || 'test'
+    });
+    if (typeof showToast === 'function') {
+      showToast(r ? '✅ Sent to admin' : '❌ Failed', r ? 'success' : 'error');
+    }
+    return r;
+  };
+
+  window.NOTIFY_debug = function(){
+    console.log('=== NOTIFY DEBUG v140 ===');
+    console.log('Current teacher:', getTeacher());
+    console.log('notifyAdmin ready:', typeof window.notifyAdmin === 'function');
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════════
+  function init(){
+    hookPasswordChange();
+    watchModalForms();
+    hookAttendanceSave();
+    hookMarksSave();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(init, 1500);
+      setTimeout(init, 3500);
+    });
+  } else {
+    setTimeout(init, 1500);
+    setTimeout(init, 3500);
+  }
+
+  // Safety net — re-hook periodic
+  setInterval(hookPasswordChange, 5000);
+  setInterval(watchModalForms, 5000);
+  setInterval(hookAttendanceSave, 5000);
+  setInterval(hookMarksSave, 5000);
+
+  console.log('✅ Teacher→Admin Notify v140 ready');
+  console.log('   💡 NOTIFY_admin("title","message") — manual test');
+  console.log('   💡 NOTIFY_debug() — check status');
+})();
+</script>
 </body>
 </html>
-</body>
-</html>
+
