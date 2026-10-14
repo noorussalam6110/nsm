@@ -2964,6 +2964,249 @@ console.log('✅ Teacher Portal base loaded');
   console.log('✅ Autofill Killer ready');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 📚 SETTINGS LOADER — Loads classSubjectsList from Supabase -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="teacher-settings-loader">
+(function(){
+  'use strict';
+  console.log('📚 Teacher Settings Loader starting...');
 
+  // ═══ Replace the placeholder getSubjectsForClass ═══
+  window.SETTINGS_CACHE = {};
+  window.CLASS_EXAM_SUBJECTS = {};
+  window.CLASS_SUBJECTS = {};
+  window.SUBJECTS_LIST = ['Arabic', 'Malayalam', 'English', 'Maths', 'Science'];
+  window.EXAMS_LIST = ['First Term', 'Second Term', 'Annual'];
+  window.TRAITS_LIST = ['Discipline', 'Respect', 'Honesty', 'Punctuality', 'Cleanliness'];
+  window.CLASS_TRAITS = {};
+  window.CLASS_TEACHERS = {};
+  window.SWADAR_MUALLIM_NAME = 'Swadar Muallim';
+
+  // ─── Parse class-exam subjects from string ───
+  window.parseClassExamSubjects = function(str) {
+    var r = {};
+    if (!str) return r;
+    str.split('\n').forEach(function(l) {
+      l = l.trim();
+      if (!l || l.indexOf(':') < 0) return;
+      var i = l.indexOf(':');
+      var key = l.substring(0, i).trim();
+      var subs = l.substring(i + 1).split(',').map(function(x) { return x.trim(); }).filter(Boolean);
+      if (!key || subs.length === 0) return;
+      var cls, exam;
+      if (key.indexOf('|') > -1) {
+        var parts = key.split('|');
+        cls = parts[0].trim();
+        exam = parts.slice(1).join('|').trim();
+      } else {
+        cls = key;
+        exam = '__default__';
+      }
+      if (!r[cls]) r[cls] = {};
+      r[cls][exam] = subs;
+    });
+    return r;
+  };
+
+  // ─── Sync legacy class subjects ───
+  window.syncLegacyClassSubjects = function() {
+    window.CLASS_SUBJECTS = {};
+    Object.keys(window.CLASS_EXAM_SUBJECTS).forEach(function(cls) {
+      if (window.CLASS_EXAM_SUBJECTS[cls]['__default__']) {
+        window.CLASS_SUBJECTS[cls] = window.CLASS_EXAM_SUBJECTS[cls]['__default__'];
+      }
+    });
+  };
+
+  // ─── MAIN: get subjects for a class+exam ───
+  window.getSubjectsForClass = function(cls, exam) {
+    var cs = String(cls || '');
+    var cd = window.CLASS_EXAM_SUBJECTS[cs];
+
+    if (cd) {
+      // Try exact exam match
+      if (exam && cd[exam] && cd[exam].length > 0) return cd[exam].slice();
+      // Try default
+      if (cd['__default__'] && cd['__default__'].length > 0) return cd['__default__'].slice();
+    }
+    // Try legacy class subjects
+    if (window.CLASS_SUBJECTS[cs] && window.CLASS_SUBJECTS[cs].length > 0) {
+      return window.CLASS_SUBJECTS[cs].slice();
+    }
+    // Last resort: default list
+    return window.SUBJECTS_LIST.slice();
+  };
+
+  // ─── Load all settings from Supabase ───
+  window.loadAllTeacherSettings = async function() {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+      console.warn('⚠️ Supabase not ready');
+      return false;
+    }
+    try {
+      console.log('📥 Fetching settings from Supabase...');
+      var r = await supabaseClient.from('settings').select('*');
+
+      if (r.error) throw r.error;
+
+      window.SETTINGS_CACHE = {};
+      (r.data || []).forEach(function(s) {
+        window.SETTINGS_CACHE[s.key] = s.value;
+      });
+
+      console.log('✅ Loaded ' + Object.keys(window.SETTINGS_CACHE).length + ' settings keys');
+
+      // ─── Exams list ───
+      if (window.SETTINGS_CACHE.examsList) {
+        window.EXAMS_LIST = window.SETTINGS_CACHE.examsList.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+        console.log('📝 Exams loaded:', window.EXAMS_LIST);
+      }
+
+      // ─── Subjects per class+exam ───
+      if (window.SETTINGS_CACHE.classSubjectsList) {
+        window.CLASS_EXAM_SUBJECTS = window.parseClassExamSubjects(window.SETTINGS_CACHE.classSubjectsList);
+        window.syncLegacyClassSubjects();
+        console.log('📚 Class-exam subjects loaded for classes:', Object.keys(window.CLASS_EXAM_SUBJECTS));
+        // Debug: log Class 5 subjects as example
+        if (window.CLASS_EXAM_SUBJECTS['5']) {
+          console.log('   Example — Class 5:', window.CLASS_EXAM_SUBJECTS['5']);
+        }
+      } else {
+        console.warn('⚠️ No classSubjectsList found in settings table');
+        console.warn('   → Super Admin must save subjects from Settings → Class + Exam-wise Subjects');
+      }
+
+      // ─── Traits ───
+      if (window.SETTINGS_CACHE.traitsList) {
+        window.TRAITS_LIST = window.SETTINGS_CACHE.traitsList.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+      }
+      if (window.SETTINGS_CACHE.classTraitsList) {
+        try {
+          var ct = window.SETTINGS_CACHE.classTraitsList;
+          var parsed = {};
+          ct.split('\n').forEach(function(l) {
+            l = l.trim();
+            if (!l || l.indexOf(':') < 0) return;
+            var i = l.indexOf(':');
+            var c = l.substring(0, i).trim();
+            var s = l.substring(i + 1).split(',').map(function(x) { return x.trim(); }).filter(Boolean);
+            if (c && s.length > 0) parsed[c] = s;
+          });
+          window.CLASS_TRAITS = parsed;
+        } catch(e) {}
+      }
+
+      // ─── Class teachers ───
+      if (window.SETTINGS_CACHE.classTeachers) {
+        var ct2 = window.SETTINGS_CACHE.classTeachers;
+        var parsed2 = {};
+        ct2.split('\n').forEach(function(l) {
+          l = l.trim();
+          if (!l || l.indexOf(':') < 0) return;
+          var i = l.indexOf(':');
+          var c = l.substring(0, i).trim();
+          var t = l.substring(i + 1).trim();
+          if (c && t) parsed2[c] = t;
+        });
+        window.CLASS_TEACHERS = parsed2;
+      }
+
+      // ─── Swadar name ───
+      if (window.SETTINGS_CACHE.swadarMuallimName) {
+        window.SWADAR_MUALLIM_NAME = window.SETTINGS_CACHE.swadarMuallimName;
+      }
+
+      // ─── Global EXAMS_LIST (local scope in v60) ───
+      // Since v60 script had `var EXAMS_LIST = [...]` in its scope,
+      // update global window.EXAMS_LIST and re-assign via reference.
+      if (typeof EXAMS_LIST !== 'undefined') {
+        try { EXAMS_LIST = window.EXAMS_LIST; } catch(e) {}
+      }
+
+      console.log('✅ All teacher settings loaded');
+      return true;
+    } catch(e) {
+      console.error('❌ Settings load failed:', e);
+      if (typeof showToast === 'function') {
+        showToast('⚠️ Settings load failed: ' + e.message, 'error');
+      }
+      return false;
+    }
+  };
+
+  // ─── Refresh marks panel with correct subjects ───
+  window.refreshMarksPanel = async function(cls) {
+    if (!cls) return;
+    var panel = document.getElementById('td60Panel');
+    if (!panel) return;
+    // Re-run marks panel
+    if (typeof openPanel === 'function') {
+      try { openPanel('marks', cls); } catch(e) {}
+    }
+  };
+
+  // ═══ HOOK into enterTeacherDashboard — load settings first ═══
+  var _origEnter = window.enterTeacherDashboard;
+  if (typeof _origEnter === 'function' && !_origEnter._settingsHooked) {
+    window.enterTeacherDashboard = async function(teacher) {
+      // Load settings FIRST before rendering dashboard
+      await window.loadAllTeacherSettings();
+      var r = await _origEnter.apply(this, arguments);
+      return r;
+    };
+    window.enterTeacherDashboard._settingsHooked = true;
+    console.log('✅ enterTeacherDashboard hooked');
+  } else if (typeof _origEnter !== 'function') {
+    // Wait for v60 script to load first
+    var waitCount = 0;
+    var waitTimer = setInterval(function() {
+      waitCount++;
+      var fn = window.enterTeacherDashboard;
+      if (typeof fn === 'function' && !fn._settingsHooked) {
+        var _o = fn;
+        window.enterTeacherDashboard = async function(teacher) {
+          await window.loadAllTeacherSettings();
+          return _o.apply(this, arguments);
+        };
+        window.enterTeacherDashboard._settingsHooked = true;
+        console.log('✅ enterTeacherDashboard hooked (delayed)');
+        clearInterval(waitTimer);
+      }
+      if (waitCount > 40) clearInterval(waitTimer);
+    }, 250);
+  }
+
+  // ═══ Auto-load on page ready (in case session restore) ═══
+  setTimeout(function() {
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+      window.loadAllTeacherSettings();
+    }
+  }, 1500);
+
+  // ═══ DEBUG helper ═══
+  window.TEACHER_SETTINGS_debug = function() {
+    console.log('=== TEACHER SETTINGS DEBUG ===');
+    console.log('Settings cache keys:', Object.keys(window.SETTINGS_CACHE));
+    console.log('Exams:', window.EXAMS_LIST);
+    console.log('Classes with subjects:', Object.keys(window.CLASS_EXAM_SUBJECTS));
+    if (window.currentTeacher && window.currentTeacher.classes) {
+      window.currentTeacher.classes.forEach(function(cls) {
+        console.log('Class ' + cls + ':', window.CLASS_EXAM_SUBJECTS[String(cls)] || '(none)');
+      });
+    }
+    if (typeof showToast === 'function') showToast('📚 Check console', 'info');
+  };
+
+  window.TEACHER_SETTINGS_reload = async function() {
+    await window.loadAllTeacherSettings();
+    if (typeof showToast === 'function') showToast('✅ Settings reloaded', 'success');
+  };
+
+  console.log('✅ Teacher Settings Loader ready');
+  console.log('   💡 TEACHER_SETTINGS_debug() — check');
+  console.log('   💡 TEACHER_SETTINGS_reload() — force reload');
+})();
+</script>
 </body>
 </html>
