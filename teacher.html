@@ -597,6 +597,36 @@ body {
 .spinner-sm{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.2);border-top-color:#22d3ee;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ═══ Two-step login extras ═══ */
+#teacherLoginV60 .tv60-id-badge-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: rgba(34,211,238,.10);
+  border: 1.5px solid rgba(34,211,238,.32);
+  border-radius: 14px; padding: 10px 12px; margin-bottom: 16px;
+}
+#teacherLoginV60 .tv60-id-badge {
+  display: flex; align-items: center; gap: 8px;
+  color: #fff; font-weight: 800; font-size: .88rem; letter-spacing: 1.5px;
+}
+#teacherLoginV60 .tv60-id-badge i { color: #67e8f9; font-size: .95rem; }
+#teacherLoginV60 .tv60-id-badge span { color: #67e8f9; }
+#teacherLoginV60 .tv60-change-id-btn {
+  background: rgba(255,255,255,.12);
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: #fff; padding: 7px 13px; border-radius: 10px;
+  font-family: inherit; font-weight: 800; font-size: .72rem;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+  transition: all .2s; min-height: 34px;
+}
+#teacherLoginV60 .tv60-change-id-btn:active { transform: scale(.95); }
+#teacherLoginV60 .tv60-change-id-btn i { color: #ffd966; font-size: .72rem; }
+@keyframes tv60StepIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#teacherLoginV60 #tv60Step1,
+#teacherLoginV60 #tv60Step2 { animation: tv60StepIn .35s ease; }
+
 /* 🔒 Autofill killer (Chrome/Safari) */
 #tv60Pwd:-webkit-autofill,
 #tv60Pwd:-webkit-autofill:focus {
@@ -604,6 +634,37 @@ body {
   -webkit-box-shadow: 0 0 0 1000px rgba(5,14,43,.5) inset !important;
   transition: background-color 9999s ease-in-out 0s;
 }
+/* ═══ Two-step login extras ═══ */
+#teacherLoginV60 .tv60-id-badge-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: rgba(34,211,238,.10);
+  border: 1.5px solid rgba(34,211,238,.32);
+  border-radius: 14px; padding: 10px 12px; margin-bottom: 16px;
+  animation: tv60StepIn .35s ease;
+}
+#teacherLoginV60 .tv60-id-badge {
+  display: flex; align-items: center; gap: 8px;
+  color: #fff; font-weight: 800; font-size: .88rem; letter-spacing: 1.5px;
+}
+#teacherLoginV60 .tv60-id-badge i { color: #67e8f9; font-size: .95rem; }
+#teacherLoginV60 .tv60-id-badge span { color: #67e8f9; }
+#teacherLoginV60 .tv60-change-id-btn {
+  background: rgba(255,255,255,.12);
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: #fff; padding: 7px 13px; border-radius: 10px;
+  font-family: inherit; font-weight: 800; font-size: .72rem;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+  transition: all .2s; -webkit-tap-highlight-color: transparent; min-height: 34px;
+}
+#teacherLoginV60 .tv60-change-id-btn:hover { background: rgba(255,255,255,.2); }
+#teacherLoginV60 .tv60-change-id-btn:active { transform: scale(.95); }
+#teacherLoginV60 .tv60-change-id-btn i { color: #ffd966; font-size: .72rem; }
+@keyframes tv60StepIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#teacherLoginV60 #tv60Step1,
+#teacherLoginV60 #tv60Step2 { animation: tv60StepIn .35s ease; }
 </style>
 </head>
 <body>
@@ -634,30 +695,47 @@ body {
     </div>
     <div class="tv60-error" id="tv60Error"></div>
 <form id="tv60Form" autocomplete="on">
-  <!-- 🆔 Teacher ID -->
-  <label class="tv60-label"><i class="fas fa-id-badge"></i> Teacher ID</label>
-  <div class="tv60-input-wrap">
-    <i class="fas fa-chalkboard-teacher tv60-icon-in"></i>
-    <input type="text" id="tv60Id" class="tv60-input" placeholder="Enter Your ID" autocomplete="username" autocapitalize="characters" spellcheck="false" maxlength="10" style="text-transform:uppercase;letter-spacing:2px;">
+  <!-- ═══ STEP 1: Teacher ID ═══ -->
+  <div id="tv60Step1">
+    <label class="tv60-label"><i class="fas fa-id-badge"></i> Teacher ID</label>
+    <div class="tv60-input-wrap">
+      <i class="fas fa-chalkboard-teacher tv60-icon-in"></i>
+      <input type="text" id="tv60Id" class="tv60-input" placeholder="Enter Your ID" autocomplete="username" autocapitalize="characters" spellcheck="false" maxlength="10" style="text-transform:uppercase;letter-spacing:2px;">
+    </div>
+    <button type="button" class="tv60-btn-primary" id="tv60Continue" style="margin-top:4px;">
+      <i class="fas fa-arrow-right"></i><span>തുടരുക</span>
+    </button>
   </div>
 
-  <!-- 🔒 Password -->
-  <label class="tv60-label"><i class="fas fa-lock"></i> Password</label>
-  <div class="tv60-input-wrap">
-    <i class="fas fa-key tv60-icon-in"></i>
-    <input type="password" id="tv60Pwd" class="tv60-input" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false">
-    <i class="fas fa-eye tv60-eye" id="tv60Eye" title="Show/Hide"></i>
+  <!-- ═══ STEP 2: Password ═══ -->
+  <div id="tv60Step2" style="display:none;">
+    <div class="tv60-id-badge-row">
+      <div class="tv60-id-badge">
+        <i class="fas fa-id-badge"></i>
+        <span id="tv60IdBadge">TR___</span>
+      </div>
+      <button type="button" class="tv60-change-id-btn" id="tv60ChangeId">
+        <i class="fas fa-pen"></i> മാറ്റുക
+      </button>
+    </div>
+
+    <label class="tv60-label"><i class="fas fa-lock"></i> Password</label>
+    <div class="tv60-input-wrap">
+      <i class="fas fa-key tv60-icon-in"></i>
+      <input type="password" id="tv60Pwd" class="tv60-input" placeholder="നിങ്ങളുടെ password" autocomplete="current-password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <i class="fas fa-eye tv60-eye" id="tv60Eye" title="Show/Hide"></i>
+    </div>
+
+    <label class="tv60-remember" for="tv60Remember">
+      <input type="checkbox" id="tv60Remember" checked>
+      <span class="tv60-checkbox-ui"></span>
+      <span class="tv60-remember-text"><i class="fas fa-bookmark"></i> Remember my Teacher ID</span>
+    </label>
+
+    <button type="submit" class="tv60-btn-primary" id="tv60Submit">
+      <i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>
+    </button>
   </div>
-
-  <label class="tv60-remember" for="tv60Remember">
-    <input type="checkbox" id="tv60Remember" checked>
-    <span class="tv60-checkbox-ui"></span>
-    <span class="tv60-remember-text"><i class="fas fa-bookmark"></i> Remember my Teacher ID</span>
-  </label>
-
-  <button type="submit" class="tv60-btn-primary" id="tv60Submit">
-    <i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>
-  </button>
 
   <div class="tv60-secondary-row">
     <button type="button" class="tv60-btn-secondary" id="tv60Cancel">
@@ -751,7 +829,7 @@ try {
 /* ═══════════════════════════════════════════════════════ */
 /* 🌐 GLOBAL STATE                                          */
 /* ═══════════════════════════════════════════════════════ */
-window.TV60 = { teacher: null, activeClass: null, activeTab: 'students', chatChannel: null, currentTeacherData: null };
+window.TV60 = { teacher: null, activeClass: null, activeTab: 'students', chatChannel: null, currentTeacherData: null, loginStep: 1, pendingTeacher: null };
 window.currentTeacher = null;
 window.isTeacherMode = false;
 window.currentUser = null;
@@ -878,90 +956,109 @@ console.log('✅ Teacher Portal base loaded');
   'use strict';
   console.log('👨‍🏫 Teacher System v60.0 starting...');
 
-  // ─── Show Teacher Login Modal ───
   // ═══════════════════════════════════════════════════════
-  // 🚪 showTeacherLogin — Single-page form
-  //   • With teacher object → prefill + focus password
-  //   • Without teacher → fresh form, focus ID
+  // 🚪 showTeacherLogin — Two-step form
   // ═══════════════════════════════════════════════════════
-  function showTeacherLogin(teacher) {
-    var isKnown = !!teacher;
+  function updateTeacherInfoBox(teacher) {
+    $id('tv60Greeting').textContent = 'അസ്സലാമു അലൈക്കും, ' + (teacher.name || 'Ustad').split(' ')[0] + ' 👋';
+    $id('tv60Tid').textContent = teacher.teacher_id || '—';
+    $id('tv60Tname').textContent = teacher.name || '—';
+    var cls = (teacher.classes || []).length ? 'Class ' + teacher.classes.join(', ') : 'Class —';
+    $id('tv60Tmeta').textContent = cls + ' • ' + (teacher.subject || 'General');
+  }
 
-    if (isKnown) {
-      TV60.teacher = teacher;
-      TV60.currentTeacherData = teacher;
-      window.currentTeacher = teacher;
-      window.isTeacherMode = true;
-      currentUser = null; window.currentUser = null;
+  function resetTeacherInfoBox() {
+    $id('tv60Greeting').textContent = 'അസ്സലാമു അലൈക്കും 👋';
+    $id('tv60Tid').textContent = 'TR___';
+    $id('tv60Tname').textContent = 'Teacher';
+    $id('tv60Tmeta').textContent = 'Class — • Subject —';
+  }
 
-      $id('tv60Greeting').textContent = 'അസ്സലാമു അലൈക്കും, ' + (teacher.name || 'Ustad').split(' ')[0] + ' 👋';
-      $id('tv60Tid').textContent = teacher.teacher_id || '—';
-      $id('tv60Tname').textContent = teacher.name || '—';
-      var cls = (teacher.classes || []).length ? 'Class ' + teacher.classes.join(', ') : 'Class —';
-      $id('tv60Tmeta').textContent = cls + ' • ' + (teacher.subject || 'General');
-
-      $id('tv60Id').value = teacher.teacher_id || '';
-      $id('tv60Id').readOnly = true;
-      $id('tv60Id').style.opacity = '0.75';
-      $id('tv60Id').style.cursor = 'not-allowed';
+  function _tv60ShowStep(step) {
+    TV60.loginStep = step;
+    var s1 = $id('tv60Step1'), s2 = $id('tv60Step2');
+    if (!s1 || !s2) return;
+    if (step === 1) {
+      s1.style.display = 'block'; s2.style.display = 'none';
+      setTimeout(function() { var t = $id('tv60Id'); if (t) { try { t.focus({ preventScroll: true }); } catch(e) { t.focus(); } } }, 220);
     } else {
-      // Fresh open — no teacher known yet
-      TV60.teacher = null;
-      TV60.currentTeacherData = null;
-      window.currentTeacher = null;
-
-      $id('tv60Greeting').textContent = 'അസ്സലാമു അലൈക്കും 👋';
-      $id('tv60Tid').textContent = 'TR___';
-      $id('tv60Tname').textContent = 'Teacher';
-      $id('tv60Tmeta').textContent = 'Class — • Subject —';
-
-      $id('tv60Id').value = '';
-      $id('tv60Id').readOnly = false;
-      $id('tv60Id').style.opacity = '';
-      $id('tv60Id').style.cursor = '';
-
-      // Pre-fill from localStorage
-      try {
-        var saved = localStorage.getItem('noor_last_teacher');
-        if (saved) $id('tv60Id').value = saved;
-      } catch(e) {}
+      s1.style.display = 'none'; s2.style.display = 'block';
+      var tid = ($id('tv60Id').value || '').trim().toUpperCase();
+      $id('tv60IdBadge').textContent = tid || 'TR___';
+      setTimeout(function() { var t = $id('tv60Pwd'); if (t) { try { t.focus({ preventScroll: true }); } catch(e) { t.focus(); } } }, 220);
     }
+  }
 
-    $id('tv60Pwd').value = '';
-    $id('tv60Error').classList.remove('show');
-    $id('tv60Submit').disabled = false;
-    $id('tv60Submit').innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
+  async function tv60ContinueWithId() {
+    if (!navigator.onLine) { showToast('📴 ഇന്റർനെറ്റ് ഇല്ല', 'error'); return; }
+    var tid = ($id('tv60Id').value || '').trim().toUpperCase();
+    var errEl = $id('tv60Error');
+    errEl.classList.remove('show');
+
+    if (!tid) { errEl.textContent = '❌ Teacher ID നൽകുക'; void errEl.offsetWidth; errEl.classList.add('show'); try { $id('tv60Id').focus(); } catch(ex) {} return; }
+    if (!/^TR[A-Z0-9]+$/.test(tid)) { errEl.textContent = '❌ Teacher ID കൃത്യമായി നൽകുക (ഉദാ: TR001)'; void errEl.offsetWidth; errEl.classList.add('show'); try { $id('tv60Id').focus(); } catch(ex) {} return; }
+
+    var btn = $id('tv60Continue');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> പരിശോധിക്കുന്നു...';
 
     try {
-      var lastId = localStorage.getItem('noor_last_teacher');
-      $id('tv60Remember').checked = isKnown
-        ? (lastId === teacher.teacher_id)
-        : !!lastId;
-    } catch(e) {}
+      var r = await supabaseClient.from('teachers').select('*').eq('teacher_id', tid).maybeSingle();
+      if (r.error) throw r.error;
+      if (!r.data) { errEl.textContent = '❌ Teacher ID കണ്ടെത്തിയില്ല: ' + tid; void errEl.offsetWidth; errEl.classList.add('show'); try { $id('tv60Id').focus(); } catch(ex) {} return; }
+      if (r.data.is_active === false) { errEl.textContent = '🚫 ഈ അക്കൗണ്ട് നിഷ്ക്രിയമാണ്. അഡ്മിനെ ബന്ധപ്പെടുക.'; void errEl.offsetWidth; errEl.classList.add('show'); return; }
+
+      TV60.pendingTeacher = r.data;
+      TV60.teacher = r.data;
+      window.currentTeacher = r.data;
+      updateTeacherInfoBox(r.data);
+      _tv60ShowStep(2);
+    } catch(err) {
+      console.error('Continue error:', err);
+      errEl.textContent = '❌ ' + (err.message || 'Connection error');
+      void errEl.offsetWidth; errEl.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-arrow-right"></i><span>തുടരുക</span>';
+    }
+  }
+
+  function showTeacherLogin(teacher) {
+    var isKnown = !!teacher;
+    if (isKnown) {
+      TV60.teacher = teacher; TV60.currentTeacherData = teacher; TV60.pendingTeacher = teacher;
+      window.currentTeacher = teacher; window.isTeacherMode = true;
+      currentUser = null; window.currentUser = null;
+      $id('tv60Id').value = teacher.teacher_id || '';
+      updateTeacherInfoBox(teacher);
+    } else {
+      TV60.teacher = null; TV60.currentTeacherData = null; TV60.pendingTeacher = null;
+      window.currentTeacher = null;
+      $id('tv60Id').value = '';
+      try { var saved = localStorage.getItem('noor_last_teacher'); if (saved) $id('tv60Id').value = saved; } catch(e) {}
+      resetTeacherInfoBox();
+    }
+    $id('tv60Pwd').value = '';
+    $id('tv60Error').classList.remove('show');
+    var cBtn = $id('tv60Continue'); if (cBtn) { cBtn.disabled = false; cBtn.innerHTML = '<i class="fas fa-arrow-right"></i><span>തുടരുക</span>'; }
+    var sBtn = $id('tv60Submit'); if (sBtn) { sBtn.disabled = false; sBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>'; }
+    try { var lastId = localStorage.getItem('noor_last_teacher'); $id('tv60Remember').checked = isKnown ? (lastId === teacher.teacher_id) : !!lastId; } catch(e) {}
 
     var modalEl = $id('teacherLoginV60');
     modalEl.classList.add('open');
     document.body.style.overflow = 'hidden';
 
-    // Focus appropriately
-    setTimeout(function() {
-      var target = isKnown ? $id('tv60Pwd') : ($id('tv60Id').value ? $id('tv60Pwd') : $id('tv60Id'));
-      try { target.focus({ preventScroll: true }); } catch(e) { target.focus(); }
-    }, 250);
+    if (isKnown) _tv60ShowStep(2); else _tv60ShowStep(1);
   }
   window.showTeacherLoginV60 = showTeacherLogin;
   window.showTeacherLogin = showTeacherLogin;
 
-function closeTeacherLogin(redirect) {
-  $id('teacherLoginV60').classList.remove('open');
-  document.body.style.overflow = '';
-  // If redirect flag is true, go to login.html
-  if (redirect === true) {
-    window.location.href = 'login.html';
+  function closeTeacherLogin(redirect) {
+    $id('teacherLoginV60').classList.remove('open');
+    document.body.style.overflow = '';
+    if (redirect === true) window.location.href = 'login.html';
   }
-}
-window.closeTeacherLogin = closeTeacherLogin;
-
+  window.closeTeacherLogin = closeTeacherLogin;
 
   // ─── Eye Toggle ───
   $id('tv60Eye').addEventListener('click', function() {
@@ -970,121 +1067,76 @@ window.closeTeacherLogin = closeTeacherLogin;
     this.className = inp.type === 'password' ? 'fas fa-eye tv60-eye' : 'fas fa-eye-slash tv60-eye';
   });
 
-  // 🔙 ROBUST CANCEL — null-safe redirect
+  // ─── Continue button (Step 1) ───
+  var _continueBtn = $id('tv60Continue');
+  if (_continueBtn) _continueBtn.addEventListener('click', function(e) { e.preventDefault(); tv60ContinueWithId(); });
+
+  // ─── Change ID button (Step 2 → Step 1) ───
+  var _changeIdBtn = $id('tv60ChangeId');
+  if (_changeIdBtn) _changeIdBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    TV60.pendingTeacher = null;
+    $id('tv60Pwd').value = '';
+    $id('tv60Error').classList.remove('show');
+    _tv60ShowStep(1);
+  });
+
+  // ─── Cancel button ───
   var _cancelBtn = $id('tv60Cancel');
-  if (_cancelBtn) {
-    _cancelBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (typeof window.GO_TO_LOGIN === 'function') {
-        window.GO_TO_LOGIN();
-      } else {
-        window.location.href = 'login.html';
-      }
-    });
-  }
+  if (_cancelBtn) _cancelBtn.addEventListener('click', function(e) {
+    e.preventDefault(); e.stopPropagation();
+    if (typeof window.GO_TO_LOGIN === 'function') window.GO_TO_LOGIN();
+    else window.location.href = 'login.html';
+  });
 
   $id('tv60Forgot').addEventListener('click', function() {
-    var t = TV60.teacher || {};
+    var t = TV60.pendingTeacher || TV60.teacher || {};
     alert('🔐 Teacher Password Reset\n\nTeacher ID: ' + (t.teacher_id || '—') + '\nName: ' + (t.name || '—') + '\n\nSuper Admin-നെ ബന്ധപ്പെടുക:\n📞 7034678818');
   });
 
-    // ─── Form Submit — Teacher ID + Password together ───
+  // ─── Form submit (only Step 2) ───
   $id('tv60Form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
 
+    if (TV60.loginStep !== 2 || !TV60.pendingTeacher) { await tv60ContinueWithId(); return; }
     if (!navigator.onLine) { showToast('📴 ഇന്റർനെറ്റ് ഇല്ല', 'error'); return; }
 
-    var tid = ($id('tv60Id').value || '').trim().toUpperCase();
     var pwd = ($id('tv60Pwd').value || '').trim();
-
     var errEl = $id('tv60Error');
+    errEl.classList.remove('show');
 
-    // ─── Validation ───
-    if (!tid) {
-      errEl.textContent = '❌ Teacher ID നൽകുക';
-      errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
-      try { $id('tv60Id').focus(); } catch(ex) {}
-      return;
-    }
-    if (!/^TR[A-Z0-9]+$/.test(tid)) {
-      errEl.textContent = '❌ Teacher ID കൃത്യമായി നൽകുക';
-      errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
-      try { $id('tv60Id').focus(); } catch(ex) {}
-      return;
-    }
-    if (!pwd) {
-      errEl.textContent = '❌ Password നൽകുക';
-      errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
-      try { $id('tv60Pwd').focus(); } catch(ex) {}
-      return;
-    }
+    if (!pwd) { errEl.textContent = '❌ Password നൽകുക'; void errEl.offsetWidth; errEl.classList.add('show'); try { $id('tv60Pwd').focus(); } catch(ex) {} return; }
 
     var btn = $id('tv60Submit');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> പരിശോധിക്കുന്നു...';
 
     try {
-      // ─── Fetch teacher from DB ───
-      var r = await supabaseClient.from('teachers')
-        .select('*').eq('teacher_id', tid).maybeSingle();
-
-      if (r.error) throw r.error;
-
-      if (!r.data) {
-        errEl.textContent = '❌ Teacher ID കണ്ടെത്തിയില്ല: ' + tid;
-        errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
-        try { $id('tv60Id').focus(); } catch(ex) {}
-        return;
-      }
-
-      if (r.data.is_active === false) {
-        errEl.textContent = '🚫 ഈ അക്കൗണ്ട് നിഷ്ക്രിയമാണ്. അഡ്മിനെ ബന്ധപ്പെടുക.';
-        errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
-        return;
-      }
-
-      // ─── Verify password ───
-      if (pwd !== r.data.password) {
+      var teacher = TV60.pendingTeacher;
+      if (pwd !== teacher.password) {
         errEl.textContent = '❌ തെറ്റായ Password. വീണ്ടും ശ്രമിക്കുക.';
-        errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
+        void errEl.offsetWidth; errEl.classList.add('show');
         $id('tv60Pwd').value = '';
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
         try { $id('tv60Pwd').focus(); } catch(ex) {}
-        // Shake effect
         var wrap = $id('tv60Pwd').closest('.tv60-input-wrap');
         if (wrap) { wrap.style.animation = 'tv60Shake .4s'; setTimeout(function(){ wrap.style.animation=''; }, 500); }
         return;
       }
+      if ($id('tv60Remember').checked) { try { localStorage.setItem('noor_last_teacher', teacher.teacher_id); } catch(ex) {} }
+      else { try { localStorage.removeItem('noor_last_teacher'); } catch(ex) {} }
 
-      // ─── Remember teacher ID ───
-      if ($id('tv60Remember').checked) {
-        try { localStorage.setItem('noor_last_teacher', tid); } catch(ex) {}
-      } else {
-        try { localStorage.removeItem('noor_last_teacher'); } catch(ex) {}
-      }
-
-      // ─── Success → enter dashboard ───
-      TV60.teacher = r.data;
-      TV60.currentTeacherData = r.data;
-      window.currentTeacher = r.data;
-      window.isTeacherMode = true;
+      TV60.teacher = teacher; TV60.currentTeacherData = teacher;
+      window.currentTeacher = teacher; window.isTeacherMode = true;
       currentUser = null; window.currentUser = null;
 
       btn.innerHTML = '<i class="fas fa-check"></i> സ്വാഗതം...';
-
-      await enterTeacherDashboard(r.data);
-
+      await enterTeacherDashboard(teacher);
     } catch(err) {
       console.error('Teacher login error:', err);
       errEl.textContent = '❌ ' + (err.message || 'Connection error');
-      errEl.classList.remove('show'); void errEl.offsetWidth; errEl.classList.add('show');
+      void errEl.offsetWidth; errEl.classList.add('show');
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>പ്രവേശിക്കുക</span>';
     }
@@ -1263,7 +1315,7 @@ window.closeTeacherLogin = closeTeacherLogin;
       var photo = s.photo && s.photo.startsWith('http')
         ? '<img src="' + esc(s.photo) + '" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;" alt="">'
         : '<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,#0891b2,#22d3ee);color:#fff;font-weight:900;font-size:.8rem;vertical-align:middle;margin-right:8px;">' + (s.name || '?').charAt(0).toUpperCase() + '</span>';
-      h += '<tr><td style="color:#0891b2;font-weight:800;">' + esc(s.roll || '—') + '</td>' +
+      h += '<tr data-sid="' + esc(s.studentid) + '" style="cursor:pointer;"><td style="color:#0891b2;font-weight:800;">' + esc(s.roll || '—') + '</td>' +
         '<td>' + photo + '<strong>' + esc(s.name) + '</strong></td>' +
         '<td style="color:#64748b;font-size:.76rem;">' + esc(s.studentid) + '</td>' +
         '<td style="color:#64748b;">' + esc(s.fathername || '—') + '</td>' +
@@ -3948,18 +4000,16 @@ window.closeTeacherLogin = closeTeacherLogin;
     table.parentNode.insertBefore(toolbar, table);
 
     // Make rows clickable
-    table.querySelectorAll('tbody tr').forEach(function(row){
-      var sids = row.textContent.match(/NSM\d+|[A-Z]{2,}\d+/);
-      if (!sids) return;
-      var sid = sids[0];
-      if (sid) {
-        row.style.cursor = 'pointer';
-        row.title = 'Tap for full profile';
-        row.onclick = function(e){
-          if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
-          window.td60OpenStudentDetail(sid);
-        };
-      }
+    // Make rows clickable (using data-sid)
+    table.querySelectorAll('tbody tr[data-sid]').forEach(function(row){
+      var sid = row.dataset.sid;
+      if (!sid) return;
+      row.style.cursor = 'pointer';
+      row.title = 'Tap for full profile';
+      row.onclick = function(e){
+        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+        window.td60OpenStudentDetail(sid);
+      };
     });
   }
 
@@ -4040,6 +4090,116 @@ window.closeTeacherLogin = closeTeacherLogin;
   console.log('   💡 td60RenderPerformanceChart()');
   console.log('   💡 td60OpenTeacherProfile()');
 })();
-</script>  
+</script>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔄 TEACHER ↔ SUPER ADMIN LIVE SYNC                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="teacher-live-sync">
+(function(){
+  'use strict';
+  console.log('🔄 Teacher Live Sync starting...');
+
+  var _syncChannel = null;
+  var _syncDebounce = null;
+  var SYNCED_TABLES = ['exam_marks','attendance_records','timetable','homework','notice_board','namaz_log','students','student_creations'];
+  var SAFE_TABS = ['students','analytics','timetable','homework','notice','namaz','creations'];
+
+  function attachSync() {
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    if (!teacher || !teacher.teacher_id) return;
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+    if (_syncChannel) { try { supabaseClient.removeChannel(_syncChannel); } catch(e){} _syncChannel = null; }
+
+    try {
+      _syncChannel = supabaseClient.channel('teacher_sync_' + teacher.teacher_id);
+      SYNCED_TABLES.forEach(function(tbl) {
+        _syncChannel = _syncChannel.on('postgres_changes',
+          { event: '*', schema: 'public', table: tbl },
+          function(payload) { handleChange(tbl, payload); });
+      });
+      _syncChannel.subscribe();
+      console.log('✅ Live sync attached for', teacher.teacher_id);
+    } catch(e) { console.warn('Live sync error:', e); }
+  }
+
+  function handleChange(table, payload) {
+    if (!window.TV60 || !TV60.activeClass || !TV60.activeTab) return;
+    var active = document.activeElement;
+    if (active && active.closest && active.closest('#td60Panel')) {
+      if (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT') return;
+    }
+    if (SAFE_TABS.indexOf(TV60.activeTab) === -1) {
+      if (TV60.activeTab === 'marks' || TV60.activeTab === 'attendance') {
+        if (typeof showToast === 'function') showToast('🔄 Data changed externally — refresh to see', 'info');
+      }
+      return;
+    }
+    if (_syncDebounce) clearTimeout(_syncDebounce);
+    _syncDebounce = setTimeout(function() {
+      _syncDebounce = null;
+      if (!TV60.activeTab || !TV60.activeClass) return;
+      console.log('🔄 Live refresh:', table, '→ tab:', TV60.activeTab);
+      document.querySelectorAll('.td60-tab').forEach(function(t) {
+        if (t.dataset.tab === TV60.activeTab) t.click();
+      });
+    }, 2000);
+  }
+
+  var _lastTid = null;
+  setInterval(function() {
+    var teacher = window.currentTeacher || (window.TV60 && TV60.teacher);
+    var tid = teacher ? teacher.teacher_id : null;
+    if (tid && tid !== _lastTid) { _lastTid = tid; setTimeout(attachSync, 1000); }
+    if (!tid && _lastTid) {
+      _lastTid = null;
+      if (_syncChannel) { try { supabaseClient.removeChannel(_syncChannel); } catch(e){} _syncChannel = null; }
+    }
+  }, 2000);
+
+  window.addEventListener('beforeunload', function() {
+    if (_syncChannel) { try { supabaseClient.removeChannel(_syncChannel); } catch(e){} }
+  });
+
+  console.log('✅ Teacher Live Sync ready');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- 🔄 ADMIN ↔ TEACHER LIVE SYNC                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script id="admin-live-sync">
+(function(){
+  'use strict';
+  var _adminChannel = null;
+  var _adminDebounce = null;
+  var TABLES = ['exam_marks','attendance_records','timetable','homework','notice_board','namaz_log','students'];
+
+  function attachAdminSync() {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+    if (_adminChannel) { try { supabaseClient.removeChannel(_adminChannel); } catch(e){} }
+    _adminChannel = supabaseClient.channel('admin_sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, function(p) {
+        if (typeof showToast === 'function' && p.new) showToast('🔔 ' + (p.new.title || 'New notification'), 'info');
+      });
+    TABLES.forEach(function(tbl) {
+      _adminChannel = _adminChannel.on('postgres_changes',
+        { event: '*', schema: 'public', table: tbl },
+        function() {
+          if (_adminDebounce) clearTimeout(_adminDebounce);
+          _adminDebounce = setTimeout(function() {
+            if (typeof window.renderAdminPanel === 'function') window.renderAdminPanel();
+            else if (typeof window.loadAdminDashboard === 'function') window.loadAdminDashboard();
+          }, 2000);
+        });
+    });
+    _adminChannel.subscribe();
+    console.log('✅ Admin live sync attached');
+  }
+
+  setTimeout(attachAdminSync, 2500);
+})();
+</script>
+</body>
+</html>
 </body>
 </html>
