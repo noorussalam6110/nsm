@@ -12441,20 +12441,7 @@ window.completeLogin = async function(student) {
   else init();
 
   function updateModalState(){
-    var ids = [
-      'globalModal','passbookModal','studentWithdrawalModal','notificationsModal',
-      'editProfileModal','topperModal','topperCropModal','uploadCreationModal',
-      'notesModal','noticeBoardModal','forgotModal','findStudentIdModal',
-      'helpModal','passwordSetupModal','pwdResetModal',
-      'quizModal','rewardsModal','addFriendModal','avatarCustomizerModal',
-      'reportModal','posterPopupV102','receiptModalV79','waBotPanelV80',
-      'pwdMgrModalV82','tsModalV81','teacherLoginV60','multiMonthFeeModal',
-      'feeMgrModal','deleteConfirmOverlay','chatImageLightbox','imgPreviewOverlay',
-      'photoPickerSheet','nv112Picker','nv112HistoryModal',
-      'td60NamazHistoryModal','td60StudentDetailModal','teacherIdPromptModal',
-      'rejectCreationModal','creationsOverlay','publicFeedOverlay',
-      'studentFeesOverlay','helpModal'
-    ];
+    var ids = ['globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal','topperModal','topperCropModal','uploadCreationModal','notesModal','noticeBoardModal','forgotModal','findStudentIdModal','helpModal','passwordSetupModal','pwdResetModal'];
     var anyOpen = false;
     ids.forEach(function(id){
       var el = document.getElementById(id);
@@ -12481,29 +12468,10 @@ window.completeLogin = async function(student) {
     else document.body.classList.remove('modal-open');
   }
 
-  // ⭐ v141: Fast periodic check (setTimeout — bypasses setInterval throttle)
-  (function fastCheck(){
-    updateModalState();
-    setTimeout(fastCheck, 250);
-  })();
-
   window.updateModalState = updateModalState;
 
   document.addEventListener('DOMContentLoaded', function(){
-    var watchIds = [
-      'globalModal','passbookModal','studentWithdrawalModal','notificationsModal',
-      'editProfileModal','topperModal','topperCropModal','uploadCreationModal',
-      'notesModal','noticeBoardModal','forgotModal','findStudentIdModal',
-      'helpModal','creationLightbox','creationsOverlay','posterPreviewOverlay',
-      'publicFeedOverlay','studentFeesOverlay','passwordSetupModal','pwdResetModal',
-      'quizModal','rewardsModal','addFriendModal','avatarCustomizerModal',
-      'reportModal','posterPopupV102','receiptModalV79','waBotPanelV80',
-      'pwdMgrModalV82','tsModalV81','teacherLoginV60','multiMonthFeeModal',
-      'feeMgrModal','deleteConfirmOverlay','chatImageLightbox','imgPreviewOverlay',
-      'photoPickerSheet','nv112Picker','nv112HistoryModal',
-      'td60NamazHistoryModal','td60StudentDetailModal','teacherIdPromptModal',
-      'rejectCreationModal','aiPanel'
-    ];
+    var watchIds = ['globalModal','passbookModal','studentWithdrawalModal','notificationsModal','editProfileModal','topperModal','topperCropModal','uploadCreationModal','notesModal','noticeBoardModal','forgotModal','findStudentIdModal','helpModal','creationLightbox','creationsOverlay','posterPreviewOverlay','publicFeedOverlay','studentFeesOverlay','passwordSetupModal','pwdResetModal'];
     var mo = new MutationObserver(updateModalState);
     watchIds.forEach(function(id){
       var el = document.getElementById(id);
@@ -15886,15 +15854,8 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
     font-size: 1.5rem;
   }
 }
-body.ai-panel-open .chat-fab,
-body.modal-open .chat-fab,
-body.chat-panel-open .chat-fab,
-body.has-modal .chat-fab { display: none !important; }
-
-body.ai-panel-open .ai-fab,
-body.modal-open .ai-fab,
-body.chat-panel-open .ai-fab,
-body.has-modal .ai-fab { display: none !important; }
+body.ai-panel-open .chat-fab { display: none !important; }
+body.modal-open .chat-fab { display: none !important; }
 
 /* Chat Panel */
 .chat-panel {
@@ -46006,7 +45967,6 @@ document.addEventListener('touchend', function(e) {
   var MODAL_IDS = [
     'globalModal', 'passbookModal', 'studentWithdrawalModal',
     'notificationsModal', 'editProfileModal', 'topperModal',
-    'yourCustomModalId',
     'topperCropModal', 'uploadCreationModal', 'notesModal',
     'noticeBoardModal', 'findStudentIdModal', 'helpModal',
     'creationLightbox', 'quizModal', 'rewardsModal',
@@ -46254,6 +46214,309 @@ document.addEventListener('touchend', function(e) {
   console.log('   📱 Compact headers');
   console.log('   💫 Ripple + haptic');
   console.log('   💡 V140_DEBUG() — check');
+})();
+</script>
+<script id="chat-fab-fix-v141">
+(function(){
+  'use strict';
+  console.log('💬 Chat FAB Fix v141 loading...');
+
+  // ═══════════════════════════════════════════════════
+  // 🎨 CSS — Force hide when any modal/panel open
+  // ═══════════════════════════════════════════════════
+  var css = document.createElement('style');
+  css.id = 'chat-fab-fix-v141-css';
+  css.textContent = `
+    /* ─── Base hide when modal-open class exists ─── */
+    body.modal-open .chat-fab,
+    body.modal-open .ai-fab,
+    body.ai-panel-open .chat-fab,
+    body.chat-panel-open .chat-fab,
+    body.teacher-login-open .chat-fab,
+    body.receipt-open .chat-fab,
+    body.poster-open .chat-fab,
+    body.quiz-open .chat-fab {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* ─── Hide chat FAB whenever ANY modal is visible ─── */
+    body.has-modal .chat-fab {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(css);
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 DETECT ANY VISIBLE MODAL → TOGGLE body class
+  // ═══════════════════════════════════════════════════
+  var MODAL_IDS = [
+    'globalModal','passbookModal','studentWithdrawalModal',
+    'notificationsModal','editProfileModal','topperModal',
+    'topperCropModal','uploadCreationModal','notesModal',
+    'noticeBoardModal','findStudentIdModal','helpModal',
+    'creationLightbox','quizModal','rewardsModal',
+    'addFriendModal','avatarCustomizerModal','reportModal',
+    'posterPopupV102','receiptModalV79','waBotPanelV80',
+    'pwdMgrModalV82','tsModalV81','teacherLoginV60',
+    'multiMonthFeeModal','feeMgrModal','deleteConfirmOverlay',
+    'chatImageLightbox','imgPreviewOverlay','photoPickerSheet',
+    'nv112Picker','nv112HistoryModal','chatPanel',
+    'td60NamazHistoryModal','td60StudentDetailModal',
+    'teacherIdPromptModal','rejectCreationModal',
+    'chatPanel','creationsOverlay','publicFeedOverlay',
+    'studentFeesOverlay','aiPanel'
+  ];
+
+  function checkModals() {
+    var anyOpen = false;
+
+    for (var i = 0; i < MODAL_IDS.length; i++) {
+      var el = document.getElementById(MODAL_IDS[i]);
+      if (!el) continue;
+
+      // Skip chat FAB itself
+      if (MODAL_IDS[i] === 'chatFab' || MODAL_IDS[i] === 'aiFab') continue;
+
+      var isOpen = false;
+
+      // Display flex/block
+      if (el.style.display === 'flex' || el.style.display === 'block') isOpen = true;
+
+      // Class-based
+      if (el.classList.contains('open') ||
+          el.classList.contains('active') ||
+          el.classList.contains('show')) isOpen = true;
+
+      // Chat panel special
+      if (MODAL_IDS[i] === 'chatPanel' && el.classList.contains('open')) isOpen = true;
+
+      // AI panel special
+      if (MODAL_IDS[i] === 'aiPanel' && el.classList.contains('open')) isOpen = true;
+
+      if (isOpen) { anyOpen = true; break; }
+    }
+
+    if (anyOpen) {
+      document.body.classList.add('has-modal');
+    } else {
+      document.body.classList.remove('has-modal');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔄 OBSERVE ALL MODALS for open/close changes
+  // ═══════════════════════════════════════════════════
+  function observeModal(id) {
+    var el = document.getElementById(id);
+    if (!el || el._v141) return;
+    el._v141 = true;
+
+    new MutationObserver(function() {
+      setTimeout(checkModals, 30);
+    }).observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
+  }
+
+  function observeAll() {
+    MODAL_IDS.forEach(observeModal);
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 HOOK CHAT/AI FAB TOGGLES to be safer
+  // ═══════════════════════════════════════════════════
+  var _origToggleChat = window.toggleAIChat;
+  if (typeof _origToggleChat === 'function' && !_origToggleChat._v141) {
+    window.toggleAIChat = function() {
+      var r = _origToggleChat.apply(this, arguments);
+      setTimeout(checkModals, 100);
+      setTimeout(checkModals, 400);
+      return r;
+    };
+    window.toggleAIChat._v141 = true;
+  }
+
+  var _origOpenChat = window.openChatPanel;
+  if (typeof _origOpenChat === 'function' && !_origOpenChat._v141) {
+    window.openChatPanel = function() {
+      var r = _origOpenChat.apply(this, arguments);
+      document.body.classList.add('chat-panel-open');
+      setTimeout(checkModals, 100);
+      return r;
+    };
+    window.openChatPanel._v141 = true;
+  }
+
+  var _origCloseChat = window.closeChatPanel;
+  if (typeof _origCloseChat === 'function' && !_origCloseChat._v141) {
+    window.closeChatPanel = function() {
+      var r = _origCloseChat.apply(this, arguments);
+      document.body.classList.remove('chat-panel-open');
+      setTimeout(checkModals, 100);
+      return r;
+    };
+    window.closeChatPanel._v141 = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 ALSO HOOK openModal/closeModal globally
+  // ═══════════════════════════════════════════════════
+  var _origOpenModal = window.openModal;
+  if (typeof _origOpenModal === 'function' && !_origOpenModal._v141) {
+    window.openModal = function(id) {
+      var r = _origOpenModal.apply(this, arguments);
+      setTimeout(checkModals, 50);
+      return r;
+    };
+    window.openModal._v141 = true;
+  }
+
+  var _origCloseModal = window.closeModal;
+  if (typeof _origCloseModal === 'function' && !_origCloseModal._v141) {
+    window.closeModal = function(id) {
+      var r = _origCloseModal.apply(this, arguments);
+      setTimeout(checkModals, 50);
+      setTimeout(checkModals, 250);
+      return r;
+    };
+    window.closeModal._v141 = true;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🔁 PERIODIC SAFETY — checks every 800ms
+  // ═══════════════════════════════════════════════════
+  setInterval(checkModals, 800);
+
+  // ═══════════════════════════════════════════════════
+  // 🎯 ADDITIONAL — Force hide inside modal wrappers
+  // ═══════════════════════════════════════════════════
+  function forceHideFabs() {
+    var chatFab = document.getElementById('chatFab');
+    var aiFab = document.getElementById('aiFab');
+    var anyModal = document.querySelector(
+      '[id$="Modal"][style*="display: flex"], ' +
+      '[id$="Modal"][style*="display:flex"], ' +
+      '[id$="Modal"].open, ' +
+      '[id$="Modal"].active, ' +
+      '.chat-panel.open, ' +
+      '.quiz-modal-overlay.open, ' +
+      '.avatar-customizer-modal.open, ' +
+      '.add-friend-modal.open, ' +
+      '.report-modal-overlay.open, ' +
+      '.poster-popup-overlay.open'
+    );
+
+    if (anyModal) {
+      if (chatFab && !chatFab._v141Hidden) {
+        chatFab.style.setProperty('display', 'none', 'important');
+        chatFab.style.setProperty('opacity', '0', 'important');
+        chatFab._v141Hidden = true;
+      }
+      if (aiFab && !aiFab._v141Hidden) {
+        aiFab.style.setProperty('display', 'none', 'important');
+        aiFab.style.setProperty('opacity', '0', 'important');
+        aiFab._v141Hidden = true;
+      }
+    } else {
+      if (chatFab && chatFab._v141Hidden) {
+        chatFab.style.removeProperty('display');
+        chatFab.style.removeProperty('opacity');
+        chatFab._v141Hidden = false;
+      }
+      if (aiFab && aiFab._v141Hidden) {
+        aiFab.style.removeProperty('display');
+        aiFab.style.removeProperty('opacity');
+        aiFab._v141Hidden = false;
+      }
+    }
+  }
+
+  setInterval(forceHideFabs, 400);
+
+  // ═══════════════════════════════════════════════════
+  // 🚀 INIT
+  // ═══════════════════════════════════════════════════
+  function init() {
+    observeAll();
+    checkModals();
+    forceHideFabs();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 1000);
+      setTimeout(init, 3000);
+      setTimeout(init, 6000);
+    });
+  } else {
+    setTimeout(init, 1000);
+    setTimeout(init, 3000);
+    setTimeout(init, 6000);
+  }
+
+  // Re-observe when new modals appear
+  var _bodyMo = new MutationObserver(function(muts) {
+    var shouldReobserve = false;
+    muts.forEach(function(m) {
+      if (m.type === 'childList' && m.addedNodes.length > 0) {
+        shouldReobserve = true;
+      }
+    });
+    if (shouldReobserve) {
+      setTimeout(function() {
+        observeAll();
+        checkModals();
+      }, 300);
+    }
+  });
+  if (document.body) {
+    _bodyMo.observe(document.body, { childList: true });
+  }
+
+  // ═══════════════════════════════════════════════════
+  // 🐛 DEBUG
+  // ═══════════════════════════════════════════════════
+  window.CHAT_FAB_DEBUG = function() {
+    console.log('=== CHAT FAB DEBUG v141 ===');
+    console.log('Body has-modal?', document.body.classList.contains('has-modal'));
+    console.log('Body classes:', document.body.className);
+
+    var chatFab = document.getElementById('chatFab');
+    if (chatFab) {
+      var cs = getComputedStyle(chatFab);
+      console.log('Chat FAB display:', cs.display);
+      console.log('Chat FAB z-index:', cs.zIndex);
+      console.log('Chat FAB hidden by v141?', !!chatFab._v141Hidden);
+    }
+
+    var aiFab = document.getElementById('aiFab');
+    if (aiFab) {
+      var acs = getComputedStyle(aiFab);
+      console.log('AI FAB display:', acs.display);
+    }
+
+    // Which modals are currently open?
+    var openModals = [];
+    MODAL_IDS.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var open = el.style.display === 'flex' ||
+                 el.style.display === 'block' ||
+                 el.classList.contains('open') ||
+                 el.classList.contains('active');
+      if (open) openModals.push(id);
+    });
+    console.log('Open modals:', openModals);
+
+    if (typeof showToast === 'function') showToast('💬 Check console', 'info');
+  };
+
+  console.log('✅ Chat FAB Fix v141 ready');
+  console.log('   💡 CHAT_FAB_DEBUG() — diagnose');
 })();
 </script>
 </body>
