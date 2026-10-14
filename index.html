@@ -11416,7 +11416,7 @@ async function askNotificationPermission(){
 async function checkUnreadNotifications(){
   if(!supabaseClient)return 0;
   try{
-    var r=await supabaseClient.from('notifications').select('id, created_at').eq('target_type','all').order('created_at',{ascending:false}).limit(50);
+    var r=await supabaseClient.from('notifications').select('id, created_at').in('target_type',['all','admin']).order('created_at',{ascending:false}).limit(50);
     if(r.error)return 0;
     var lastRead=parseInt(localStorage.getItem('lastReadNotifTime')||'0');
     var unread=(r.data||[]).filter(function(n){return new Date(n.created_at).getTime()>lastRead;});
@@ -11445,7 +11445,7 @@ async function openGuestNotifications(){
   list.innerHTML='<div class="text-center py-3" style="color:#64748b;">Loading...</div>';
   if(!supabaseClient){list.innerHTML='<div class="text-center py-3" style="color:#64748b;">System loading...</div>';return;}
   try{
-    var r=await supabaseClient.from('notifications').select('*').eq('target_type','all').order('created_at',{ascending:false}).limit(30);
+    var r=await supabaseClient.from('notifications').select('*').in('target_type',['all','admin']).order('created_at',{ascending:false}).limit(30);
     if(!r.data||r.data.length===0){list.innerHTML='<div class="text-center py-4" style="color:#64748b;">🔕 No notifications</div>';return;}
     list.innerHTML=r.data.map(function(n){
       var c=n.type==='urgent'?'urgent':n.type==='important'?'important':'';
