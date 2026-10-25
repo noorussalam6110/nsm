@@ -44005,14 +44005,13 @@ textarea.cmp-form-input{min-height:120px;resize:vertical;line-height:1.55;}
   position: relative;
   overflow: hidden;
   border-radius: 24px;
-  /* ✨ Gap FIX: Top & Bottom margin added */
   margin: 8px 0 26px 0; 
-  padding: 20px 22px;
+  /* ✨ FIX: പാഡിംഗ് 22px-ൽ നിന്ന് 30px ആക്കി കൂട്ടി (ഐക്കണുകൾ ഉള്ളിലേക്ക് വരാൻ) */
+  padding: 22px 30px; 
   background: linear-gradient(135deg, #2e1065 0%, #4c1d95 35%, #7c3aed 70%, #db2777 100%);
   background-size: 250% 250%;
   animation: sksbvHeroFlow 10s ease infinite;
   
-  /* Deep 3D Shadow */
   box-shadow:
     0 20px 40px -15px rgba(124, 58, 237, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.15) inset,
@@ -44024,7 +44023,8 @@ textarea.cmp-form-input{min-height:120px;resize:vertical;line-height:1.55;}
   visibility: visible !important;
   height: auto !important;
   align-items: center;
-  gap: 18px;
+  /* ✨ FIX: Gap 18px-ൽ നിന്ന് 22px ആക്കി (ഐക്കണും ടെക്സ്റ്റും തമ്മിൽ അകലം) */
+  gap: 22px; 
   transition: transform .35s cubic-bezier(.34,1.4,.64,1), box-shadow .35s ease;
   -webkit-tap-highlight-color: transparent;
   min-height: 104px;
@@ -44046,7 +44046,6 @@ textarea.cmp-form-input{min-height:120px;resize:vertical;line-height:1.55;}
   50%     { background-position: 100% 50%; }
 }
 
-/* ✨ Glassmorphism Orbs inside */
 .sksbv-hero-reg::before {
   content: '';
   position: absolute;
@@ -44063,7 +44062,6 @@ textarea.cmp-form-input{min-height:120px;resize:vertical;line-height:1.55;}
   100% { transform: translate(-30px, 30px) scale(1.2); }
 }
 
-/* Shine Effect */
 .sksbv-hero-reg::after {
   content: '';
   position: absolute;
@@ -44082,14 +44080,15 @@ textarea.cmp-form-input{min-height:120px;resize:vertical;line-height:1.55;}
 
 /* 🪶 Golden Feather Icon */
 .sksbv-hero-icon {
-  width: 68px;
-  height: 68px;
-  border-radius: 20px;
+  /* ✨ FIX: വലിപ്പം 68px-ൽ നിന്ന് 64px ആക്കി ചെറുതാക്കി */
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
   background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   flex-shrink: 0;
   position: relative;
   z-index: 2;
@@ -44152,15 +44151,16 @@ textarea.cmp-form-input{min-height:120px;resize:vertical;line-height:1.55;}
 
 /* ➡️ Golden Arrow */
 .sksbv-hero-arrow {
-  width: 50px;
-  height: 50px;
+  /* ✨ FIX: അമ്പടയാളത്തിന്റെ വലിപ്പം 50px-ൽ നിന്ന് 46px ആക്കി */
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
   color: #4c1d95;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
   position: relative;
   z-index: 2;
@@ -44175,25 +44175,25 @@ textarea.cmp-form-input{min-height:120px;resize:vertical;line-height:1.55;}
 /* 📱 Mobile Optimizations */
 @media (max-width: 600px) {
   .sksbv-hero-reg {
-    padding: 18px 18px;
-    gap: 14px;
+    /* ✨ Mobile-ലും പാഡിംഗ് കൂട്ടി ഐക്കണുകൾ അകത്തേക്ക് കൊണ്ടുവന്നു */
+    padding: 18px 22px;
+    gap: 16px;
     border-radius: 22px;
-    margin: 6px 0 22px 0; /* Mobile gap adjusted */
+    margin: 6px 0 22px 0; 
     min-height: 96px;
   }
   .sksbv-hero-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 1.5rem;
-    border-radius: 16px;
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
+    border-radius: 15px;
   }
   .sksbv-hero-title { font-size: 1.05rem; }
   .sksbv-hero-sub   { font-size: .74rem; }
-  .sksbv-hero-arrow { width: 42px; height: 42px; font-size: 1rem; }
+  .sksbv-hero-arrow { width: 40px; height: 40px; font-size: .95rem; }
   .sksbv-hero-badge { font-size: .55rem; padding: 3px 10px; margin-bottom: 6px; }
 }
 </style>
-
 <script id="sksbv-hero-js">
 (function(){
   'use strict';
