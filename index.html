@@ -43446,5 +43446,220 @@ setInterval(function(){
   console.log('✅ v150 ready');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 👑 v800.0 — ADMIN PIN VIEW & MANAGER                       -->
+<!-- Students ടാബിൽ പിൻ കാണാനും മാറ്റാനും ഉള്ള സൗകര്യം             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script id="admin-pin-view-v800">
+(function(){
+'use strict';
+console.log('👑 Admin PIN View v800 loading...');
+
+// 1. Students ടേബിളിൽ PIN കോളം ചേർക്കുകയും ബട്ടൺ വെക്കുകയും ചെയ്യുന്നു
+function injectAdminPinUI() {
+  var tab = document.getElementById('adminStudentsTab');
+  if (!tab) return;
+
+  // A. ടൂൾബാറിൽ 'PIN Manager' ബട്ടൺ ചേർക്കുക
+  var toolbar = tab.querySelector('.admin-toolbar');
+  if (toolbar && !toolbar.querySelector('.btn-pin-manager')) {
+    var btnMgr = document.createElement('button');
+    btnMgr.className = 'btn-update btn-pin-manager';
+    btnMgr.style.cssText = 'background:linear-gradient(100deg,#059669,#10b981);color:#fff;font-weight:800;';
+    btnMgr.innerHTML = '<i class="fas fa-key"></i> PIN Manager';
+    btnMgr.onclick = openPinManagerModal;
+    toolbar.appendChild(btnMgr);
+  }
+
+  // B. ടേബിളിൽ PIN കോളം ചേർക്കുക
+  var wrap = document.getElementById('adminStudentsWrap');
+  if (!wrap) return;
+  var table = wrap.querySelector('table');
+  if (!table) return;
+
+  var thead = table.querySelector('thead tr');
+  if (thead && !thead.querySelector('.th-admin-pin')) {
+    var th = document.createElement('th');
+    th.className = 'th-admin-pin';
+    th.textContent = 'PIN';
+    th.style.cssText = 'text-align:center;font-size:.6rem;text-transform:uppercase;color:#059669;';
+    var lastTh = thead.querySelector('th:last-child');
+    if (lastTh) thead.insertBefore(th, lastTh);
+    else thead.appendChild(th);
+  }
+
+  // C. ഓരോ വരിയിലും പിൻ കാണിക്കുക
+  var students = (typeof studentsAdminData !== 'undefined') ? studentsAdminData : [];
+
+  table.querySelectorAll('tbody tr').forEach(function(row) {
+    if (row.querySelector('td[colspan]')) return;
+    if (row.querySelector('.td-admin-pin')) return;
+
+    var sid = row.dataset.sid;
+    if (!sid) {
+      var ref = row.querySelector('[onclick*="editStudent"]') || row.querySelector('[onclick*="deleteStudent"]');
+      if (ref) {
+        var m = (ref.getAttribute('onclick') || '').match(/'([^']+)'/);
+        if (m) { sid = m[1]; row.dataset.sid = sid; }
+      }
+    }
+    if (!sid) return;
+
+    var stu = students.find(function(x) { return x.studentid === sid; });
+    var hasPin = stu && stu.pin && String(stu.pin).length === 4;
+
+    var td = document.createElement('td');
+    td.className = 'td-admin-pin';
+    td.style.cssText = 'text-align:center;';
+
+    if (hasPin) {
+      td.innerHTML = '<span onclick="revealPin(this, \'' + stu.pin + '\')" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;background:rgba(5,150,105,.15);color:#059669;font-weight:900;font-size:.7rem;cursor:pointer;border:1px solid rgba(5,150,105,.35);user-select:none;">🔒 <span style="letter-spacing:2px;">••••</span></span>';
+    } else {
+      td.innerHTML = '<span style="color:#94a3b8;font-size:.7rem;font-weight:700;">—</span>';
+    }
+
+    var cells = row.children;
+    var lastCell = cells[cells.length - 1];
+    if (lastCell && lastCell.querySelector('.btn-sm, .admin-actions')) row.insertBefore(td, lastCell);
+    else row.appendChild(td);
+  });
+}
+
+// 2. പിൻ റിവീൽ ചെയ്യാനുള്ള ഫങ്ക്ഷൻ
+window.revealPin = function(el, pin) {
+  var span = el.querySelector('span');
+  if (!span) return;
+  if (span.textContent === '••••') { span.textContent = pin; span.style.letterSpacing = '1px'; }
+  else { span.textContent = '••••'; span.style.letterSpacing = '2px'; }
+};
+
+// 3. PIN Manager മോഡൽ (ഒരുമിച്ച് എല്ലാം കാണാനും മാറ്റാനും)
+window.openPinManagerModal = async function() {
+  var cls = window.currentAdminClass || '';
+  if (!cls || cls === 'all') { if (typeof showToast === 'function') showToast('⚠️ ഒരു ക്ലാസ് തിരഞ്ഞെടുക്കുക', 'error'); return; }
+
+  var old = document.getElementById('adminPinManagerModal');
+  if (old) old.remove();
+
+  if (typeof showLoading === 'function') showLoading(true);
+  try {
+    var r = await supabaseClient.from('students').select('studentid,name,roll,pin,is_inactive').eq('class', cls).order('roll');
+    if (typeof showLoading === 'function') showLoading(false);
+    
+    var students = r.data || [];
+    var modal = document.createElement('div');
+    modal.id = 'adminPinManagerModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(3,8,28,.92);backdrop-filter:blur(16px);z-index:100850;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;';
+
+    var rows = students.map(function(s, i) {
+      var hasPin = s.pin && String(s.pin).length === 4;
+      return '<tr data-sid="' + s.studentid + '" style="' + (s.is_inactive ? 'opacity:.5;' : '') + '">' +
+        '<td style="padding:9px;text-align:center;color:#64748b;font-size:.75rem;">' + (i+1) + '</td>' +
+        '<td style="padding:9px;font-weight:800;color:#0891b2;">' + (s.roll||'—') + '</td>' +
+        '<td style="padding:9px;font-weight:700;">' + s.name + '</td>' +
+        '<td style="padding:9px;text-align:center;">' +
+          '<input type="tel" class="pm-pin-input" maxlength="4" value="' + (hasPin ? s.pin : '') + '" placeholder="----" ' +
+          'oninput="this.value=this.value.replace(/[^0-9]/g,\'\').slice(0,4);" ' +
+          'style="width:70px;padding:6px;border:1.5px solid #cbd5e1;border-radius:8px;text-align:center;font-size:15px;font-weight:800;letter-spacing:2px;">' +
+          '<button type="button" onclick="this.previousElementSibling.value=Math.floor(1000+Math.random()*9000)" ' +
+          'style="margin-left:4px;background:#8b5cf6;color:#fff;border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;">🎲</button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+
+    modal.innerHTML =
+      '<div style="background:#fff;border-radius:22px;max-width:720px;width:100%;margin:auto;max-height:calc(100dvh - 32px);display:flex;flex-direction:column;overflow:hidden;">' +
+        '<div style="padding:16px 20px;background:linear-gradient(135deg,#059669,#34d399);color:#fff;display:flex;justify-content:space-between;align-items:center;">' +
+          '<h3 style="margin:0;font-size:1rem;font-weight:900;">🔐 PIN Manager — Class ' + cls + '</h3>' +
+          '<button onclick="document.getElementById(\'adminPinManagerModal\').remove()" style="background:rgba(255,255,255,.22);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1rem;cursor:pointer;">✕</button>' +
+        '</div>' +
+        '<div style="padding:14px 18px;overflow-y:auto;flex:1;">' +
+          '<table style="width:100%;border-collapse:collapse;font-size:.82rem;">' +
+            '<thead><tr style="background:#f0fdf4;">' +
+              '<th style="padding:10px 8px;font-size:.62rem;color:#059669;text-transform:uppercase;width:40px;text-align:center;">#</th>' +
+              '<th style="padding:10px 8px;text-align:left;font-size:.62rem;color:#059669;text-transform:uppercase;">Roll</th>' +
+              '<th style="padding:10px 8px;text-align:left;font-size:.62rem;color:#059669;text-transform:uppercase;">Name</th>' +
+              '<th style="padding:10px 8px;text-align:center;font-size:.62rem;color:#059669;text-transform:uppercase;">PIN</th>' +
+            '</tr></thead>' +
+            '<tbody>' + rows + '</tbody>' +
+          '</table>' +
+        '</div>' +
+        '<div style="padding:14px 18px;background:#f8fafc;border-top:1px solid rgba(100,116,139,.1);display:flex;justify-content:flex-end;">' +
+          '<button onclick="saveAdminPins()" style="padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(100deg,#059669,#34d399);color:#fff;font-weight:800;font-size:.86rem;cursor:pointer;box-shadow:0 8px 20px -8px rgba(5,150,105,.6);">💾 Save All PINs</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+  } catch(e) {
+    if (typeof showLoading === 'function') showLoading(false);
+    if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error');
+  }
+};
+
+// 4. PIN Manager-ൽ നിന്ന് സേവ് ചെയ്യുമ്പോൾ
+window.saveAdminPins = async function() {
+  var rows = document.querySelectorAll('#adminPinManagerModal tbody tr');
+  var updates = [];
+  rows.forEach(function(row) {
+    var sid = row.dataset.sid;
+    var inp = row.querySelector('.pm-pin-input');
+    if (!sid || !inp) return;
+    var val = inp.value.trim();
+    if (val && (val.length !== 4 || !/^\d{4}$/.test(val))) return; // Skip invalid
+    updates.push({ sid: sid, pin: val || null });
+  });
+
+  if (!updates.length) { if (typeof showToast === 'function') showToast('⚠️ മാറ്റങ്ങൾ ഒന്നുമില്ല', 'info'); return; }
+
+  if (typeof showLoading === 'function') showLoading(true);
+  var count = 0;
+  for (var i = 0; i < updates.length; i++) {
+    var r = await supabaseClient.from('students').update({ pin: updates[i].pin }).eq('studentid', updates[i].sid);
+    if (!r.error) count++;
+  }
+  if (typeof showLoading === 'function') showLoading(false);
+  
+  if (typeof showToast === 'function') showToast('✅ ' + count + ' പേരുടെ പിൻ സേവ് ചെയ്തു', 'success');
+  if (typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 80 });
+  document.getElementById('adminPinManagerModal').remove();
+  
+  if (typeof loadStudentsForAdmin === 'function') loadStudentsForAdmin();
+};
+
+// 5. ഹൂക്കുകൾ (സ്വയം പ്രവർത്തിക്കാൻ)
+var _origLoad = window.loadStudentsForAdmin;
+if (typeof _origLoad === 'function' && !_origLoad._v800) {
+  window.loadStudentsForAdmin = async function() {
+    var r = await _origLoad.apply(this, arguments);
+    setTimeout(injectAdminPinUI, 300);
+    setTimeout(injectAdminPinUI, 1000);
+    return r;
+  };
+  window.loadStudentsForAdmin._v800 = true;
+}
+
+var _origSwitch = window.switchAdminTab;
+if (typeof _origSwitch === 'function' && !_origSwitch._v800) {
+  window.switchAdminTab = function(tab) {
+    var r = _origSwitch.apply(this, arguments);
+    if (tab === 'students') { setTimeout(injectAdminPinUI, 400); }
+    return r;
+  };
+  window.switchAdminTab._v800 = true;
+}
+
+// വിൻഡോ ലോഡ് ആകുമ്പോൾ പ്രവർത്തിപ്പിക്കാൻ
+setTimeout(injectAdminPinUI, 2500);
+setInterval(function() {
+  var admin = document.getElementById('adminSection');
+  if (admin && admin.style.display === 'block') {
+    var tab = document.querySelector('.admin-tab.active');
+    if (tab && tab.dataset.tab === 'students') injectAdminPinUI();
+  }
+}, 3000);
+
+})();
+</script>
 </body>
 </html>
