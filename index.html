@@ -42652,148 +42652,33 @@ tr.adm-row-inactive-hidden { display: none !important; }
 <!-- 📱 v600.0 — iOS STYLE FULLSCREEN PIN PAD                 -->
 <!-- UID കഴിഞ്ഞ് പുതിയ സ്ക്രീനിൽ പിൻ ചോദിക്കുന്നു                  -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<style id="ios-pin-v600-css">
-/* iOS Passcode Full Screen */
-.ios-pin-overlay {
-  position: fixed;
-  inset: 0;
-  background: #1c1c1e; /* iOS Dark Mode Background */
-  z-index: 100999;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  animation: iosPinFadeIn 0.3s ease;
-}
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 📱 v601.0 — ALL-IN-ONE iOS PIN PAD (Login, Setup, Change) -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<style id="ios-pin-final-css">
+.ios-pin-overlay { position: fixed; inset: 0; background: #1c1c1e; z-index: 100999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; animation: iosPinFadeIn 0.3s ease; }
 .ios-pin-overlay.open { display: flex; }
-@keyframes iosPinFadeIn {
-  from { opacity: 0; transform: scale(1.05); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.ios-pin-header {
-  text-align: center;
-  margin-bottom: 40px;
-  color: #fff;
-}
-.ios-pin-title {
-  font-size: 1.4rem;
-  font-weight: 500;
-  margin: 0 0 8px;
-  letter-spacing: -0.5px;
-}
-.ios-pin-sub {
-  font-size: 0.95rem;
-  color: #ebebf5;
-  opacity: 0.6;
-  margin: 0;
-}
-
-/* Dots Container */
-.ios-pin-dots {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 60px;
-  min-height: 20px;
-}
-.ios-pin-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1.5px solid #ebebf5;
-  background: transparent;
-  transition: all 0.2s;
-}
-.ios-pin-dot.filled {
-  background: #ebebf5;
-}
-.ios-pin-dot.error {
-  border-color: #ff453a;
-  background: #ff453a;
-  animation: iosPinShake 0.4s ease;
-}
-
-/* Keypad */
-.ios-keypad {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  max-width: 320px;
-  width: 100%;
-}
-.ios-key {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1); /* iOS translucent button */
-  border: none;
-  color: #fff;
-  font-size: 2rem;
-  font-weight: 400;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.1s;
-}
-.ios-key:active, .ios-key.active {
-  background: rgba(255, 255, 255, 0.25);
-}
-.ios-key.empty {
-  background: transparent;
-  pointer-events: none;
-}
-.ios-key .ios-key-letters {
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  margin-top: -2px;
-}
-.ios-key.delete-btn {
-  background: transparent;
-  font-size: 1.3rem;
-  padding-top: 5px;
-}
-.ios-key.delete-btn:active {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Cancel Button */
-.ios-pin-cancel {
-  position: absolute;
-  bottom: 40px;
-  right: 30px;
-  background: transparent;
-  border: none;
-  color: #0a84ff;
-  font-size: 1.05rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 10px;
-}
-.ios-pin-cancel:active { opacity: 0.5; }
-
-@keyframes iosPinShake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  50% { transform: translateX(8px); }
-  75% { transform: translateX(-8px); }
-}
-
-/* Hide bottom nav if visible */
-body.ios-pin-active .mob-bottom-nav,
-body.ios-pin-active .ai-fab,
-body.ios-pin-active .chat-fab { display: none !important; }
-
-@media (max-width: 400px) {
-  .ios-key { width: 68px; height: 68px; font-size: 1.8rem; }
-  .ios-keypad { gap: 16px; }
-}
+@keyframes iosPinFadeIn { from { opacity: 0; transform: scale(1.05); } to { opacity: 1; transform: scale(1); } }
+.ios-pin-header { text-align: center; margin-bottom: 40px; color: #fff; }
+.ios-pin-title { font-size: 1.4rem; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.5px; }
+.ios-pin-sub { font-size: 0.95rem; color: #ebebf5; opacity: 0.6; margin: 0; }
+.ios-pin-dots { display: flex; gap: 20px; margin-bottom: 60px; min-height: 20px; }
+.ios-pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #ebebf5; background: transparent; transition: all 0.2s; }
+.ios-pin-dot.filled { background: #ebebf5; }
+.ios-pin-dot.error { border-color: #ff453a; background: #ff453a; animation: iosPinShake 0.4s ease; }
+.ios-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 320px; width: 100%; }
+.ios-key { width: 76px; height: 76px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; color: #fff; font-size: 2rem; font-weight: 400; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
+.ios-key:active, .ios-key.active { background: rgba(255, 255, 255, 0.25); }
+.ios-key.empty { background: transparent; pointer-events: none; }
+.ios-key .ios-key-letters { font-size: 0.6rem; font-weight: 600; letter-spacing: 1.5px; margin-top: -2px; }
+.ios-key.delete-btn { background: transparent; font-size: 1.3rem; padding-top: 5px; }
+.ios-key.delete-btn:active { background: rgba(255, 255, 255, 0.1); }
+.ios-pin-cancel { position: absolute; bottom: 40px; right: 30px; background: transparent; border: none; color: #0a84ff; font-size: 1.05rem; font-weight: 500; cursor: pointer; padding: 10px; }
+.ios-pin-forgot { position: absolute; bottom: 40px; left: 30px; background: transparent; border: none; color: #0a84ff; font-size: 1.05rem; font-weight: 500; cursor: pointer; padding: 10px; }
+.ios-pin-cancel:active, .ios-pin-forgot:active { opacity: 0.5; }
+@keyframes iosPinShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-8px); } }
+body.ios-pin-active .mob-bottom-nav, body.ios-pin-active .ai-fab, body.ios-pin-active .chat-fab { display: none !important; }
+@media (max-width: 400px) { .ios-key { width: 68px; height: 68px; font-size: 1.8rem; } .ios-keypad { gap: 16px; } }
 </style>
 
 <div id="iosPinOverlay" class="ios-pin-overlay">
@@ -42801,50 +42686,39 @@ body.ios-pin-active .chat-fab { display: none !important; }
     <h2 class="ios-pin-title" id="iosPinTitle">Enter Passcode</h2>
     <p class="ios-pin-sub" id="iosPinSub">Authenticate to unlock Portal</p>
   </div>
-
-  <div class="ios-pin-dots" id="iosPinDots">
-    <!-- Dots injected via JS -->
-  </div>
-
+  <div class="ios-pin-dots" id="iosPinDots"></div>
   <div class="ios-keypad">
     <button class="ios-key" onclick="IOS_PIN_type('1')">1</button>
     <button class="ios-key" onclick="IOS_PIN_type('2')">2<span class="ios-key-letters">ABC</span></button>
     <button class="ios-key" onclick="IOS_PIN_type('3')">3<span class="ios-key-letters">DEF</span></button>
-    
     <button class="ios-key" onclick="IOS_PIN_type('4')">4<span class="ios-key-letters">GHI</span></button>
     <button class="ios-key" onclick="IOS_PIN_type('5')">5<span class="ios-key-letters">JKL</span></button>
     <button class="ios-key" onclick="IOS_PIN_type('6')">6<span class="ios-key-letters">MNO</span></button>
-    
     <button class="ios-key" onclick="IOS_PIN_type('7')">7<span class="ios-key-letters">PQRS</span></button>
     <button class="ios-key" onclick="IOS_PIN_type('8')">8<span class="ios-key-letters">TUV</span></button>
     <button class="ios-key" onclick="IOS_PIN_type('9')">9<span class="ios-key-letters">WXYZ</span></button>
-    
     <button class="ios-key empty"></button>
     <button class="ios-key" onclick="IOS_PIN_type('0')">0</button>
     <button class="ios-key delete-btn" onclick="IOS_PIN_delete()"><i class="fas fa-backspace"></i></button>
   </div>
-
-  <!-- പുതിയത്: Forgot PIN ബട്ടൺ -->
-  <button class="ios-pin-forgot" id="iosPinForgotBtn" onclick="IOS_PIN_forgot()" style="position:absolute;bottom:40px;left:30px;background:transparent;border:none;color:#0a84ff;font-size:1.05rem;font-weight:500;cursor:pointer;padding:10px;">Forgot PIN?</button>
-  
+  <button class="ios-pin-forgot" id="iosPinForgotBtn" onclick="IOS_PIN_forgot()" style="display:none;">Forgot PIN?</button>
   <button class="ios-pin-cancel" onclick="IOS_PIN_close()">Cancel</button>
 </div>
 
-<script id="ios-pin-v601-js">
+<script id="ios-pin-master-js">
 (function(){
 'use strict';
-console.log('📱 iOS PIN + Admin + Self-Setup v601 loading...');
+console.log('📱 iOS PIN Master System loading...');
 
-// Settings & State
 let PIN_LENGTH = 4;
 let currentPin = "";
 let targetStudent = null;
-let pinMode = 'login'; // 'login' or 'setup' or 'confirm'
+let pinMode = 'login'; 
 let firstSetupPin = "";
 let PIN_CFG = { selfSetup: true, forceSetup: false };
 
 // ═══════════════════════════════════════════════════════
-// 📥 LOAD PIN SETTINGS FROM DB
+// 📥 LOAD SETTINGS FROM DB
 // ═══════════════════════════════════════════════════════
 async function loadSettings() {
   try {
@@ -42853,40 +42727,30 @@ async function loadSettings() {
       if (s.key === 'pin_self_setup') PIN_CFG.selfSetup = String(s.value).toLowerCase() === 'true';
       if (s.key === 'pin_force_setup') PIN_CFG.forceSetup = String(s.value).toLowerCase() === 'true';
     });
-  } catch(e) { console.warn('Settings load error', e); }
+    window.PIN_CFG = PIN_CFG;
+  } catch(e) {}
 }
-setTimeout(loadSettings, 1500);
+setTimeout(loadSettings, 1000);
 
 // ═══════════════════════════════════════════════════════
-// 🎨 UI RENDER HELPERS
+// 🎨 UI HELPERS
 // ═══════════════════════════════════════════════════════
 function renderDots() {
   let html = '';
-  for (let i = 0; i < PIN_LENGTH; i++) {
-    html += '<div class="ios-pin-dot" id="iosDot_' + i + '"></div>';
-  }
+  for (let i = 0; i < PIN_LENGTH; i++) html += '<div class="ios-pin-dot" id="iosDot_' + i + '"></div>';
   document.getElementById('iosPinDots').innerHTML = html;
 }
-
 function updateDots() {
   for (let i = 0; i < PIN_LENGTH; i++) {
     const dot = document.getElementById('iosDot_' + i);
-    if (i < currentPin.length) {
-      dot.classList.add('filled');
-      dot.classList.remove('error');
-    } else {
-      dot.classList.remove('filled');
-      dot.classList.remove('error');
-    }
+    if (i < currentPin.length) { dot.classList.add('filled'); dot.classList.remove('error'); }
+    else { dot.classList.remove('filled'); dot.classList.remove('error'); }
   }
 }
-
-function haptic() {
-  if (navigator.vibrate) try { navigator.vibrate(10); } catch(e){}
-}
+function haptic() { if (navigator.vibrate) try { navigator.vibrate(10); } catch(e){} }
 
 // ═══════════════════════════════════════════════════════
-// 🎬 OPEN / CLOSE PIN PAD
+// 🎬 OPEN / CLOSE
 // ═══════════════════════════════════════════════════════
 window.IOS_PIN_open = function(student, mode) {
   targetStudent = student;
@@ -42899,16 +42763,20 @@ window.IOS_PIN_open = function(student, mode) {
   
   const title = document.getElementById('iosPinTitle');
   const sub = document.getElementById('iosPinSub');
+  const forgotBtn = document.getElementById('iosPinForgotBtn');
   
   if (pinMode === 'login') {
     title.textContent = "Enter Passcode";
     sub.textContent = "Authenticate " + (student.name || 'Student');
+    if (forgotBtn) forgotBtn.style.display = 'block';
   } else if (pinMode === 'setup') {
     title.textContent = "Create a Passcode";
-    sub.textContent = "Enter a new 4-digit PIN for " + (student.name || 'Student');
-  } else if (pinMode === 'confirm') {
-    title.textContent = "Confirm Passcode";
-    sub.textContent = "Re-enter the new PIN";
+    sub.textContent = "Enter a new 4-digit PIN";
+    if (forgotBtn) forgotBtn.style.display = 'none';
+  } else if (pinMode === 'change') {
+    title.textContent = "Enter Current PIN";
+    sub.textContent = "Verify to change PIN";
+    if (forgotBtn) forgotBtn.style.display = 'block';
   }
   
   document.getElementById('iosPinOverlay').classList.add('open');
@@ -42924,17 +42792,14 @@ window.IOS_PIN_close = function() {
 };
 
 // ═══════════════════════════════════════════════════════
-// ⌨️ TYPING & VERIFYING
+// ⌨️ TYPING & LOGIC
 // ═══════════════════════════════════════════════════════
 window.IOS_PIN_type = function(num) {
   if (currentPin.length >= PIN_LENGTH) return;
   haptic();
   currentPin += num;
   updateDots();
-  
-  if (currentPin.length === PIN_LENGTH) {
-    setTimeout(processPin, 250);
-  }
+  if (currentPin.length === PIN_LENGTH) setTimeout(processPin, 200);
 };
 
 window.IOS_PIN_delete = function() {
@@ -42947,81 +42812,77 @@ window.IOS_PIN_delete = function() {
 function processPin() {
   if (!targetStudent) return;
   
-  // MODE: LOGIN (Verify)
-  if (pinMode === 'login') {
+  if (pinMode === 'login' || pinMode === 'change_verify') {
     const storedPin = String(targetStudent.pin || '').trim();
-    if (currentPin !== storedPin) return showError();
+    if (currentPin !== storedPin) return showError("Incorrect PIN");
     
     haptic();
-    const student = targetStudent;
-    IOS_PIN_close();
-    doLogin(student);
+    if (pinMode === 'login') {
+      const s = targetStudent;
+      IOS_PIN_close();
+      doLogin(s);
+    } else {
+      pinMode = 'change_new';
+      currentPin = "";
+      document.getElementById('iosPinTitle').textContent = "Create New PIN";
+      document.getElementById('iosPinSub').textContent = "Enter new 4-digit PIN";
+      document.getElementById('iosPinForgotBtn').style.display = 'none';
+      updateDots();
+    }
   }
-  
-  // MODE: SETUP (Store & Go to confirm)
-  else if (pinMode === 'setup') {
+  else if (pinMode === 'setup' || pinMode === 'change_new') {
     firstSetupPin = currentPin;
     currentPin = "";
-    pinMode = 'confirm';
-    
+    pinMode = (pinMode === 'setup') ? 'setup_confirm' : 'change_confirm';
     document.getElementById('iosPinTitle').textContent = "Confirm Passcode";
     document.getElementById('iosPinSub').textContent = "Re-enter the new PIN";
     updateDots();
   }
-  
-  // MODE: CONFIRM (Match & Save)
-  else if (pinMode === 'confirm') {
+  else if (pinMode === 'setup_confirm' || pinMode === 'change_confirm') {
     if (currentPin !== firstSetupPin) {
       showError("Passcodes didn't match");
-      // Reset to setup mode after a short delay
       setTimeout(() => {
-        pinMode = 'setup';
-        currentPin = "";
-        firstSetupPin = "";
+        pinMode = (pinMode === 'setup_confirm') ? 'setup' : 'change_new';
+        currentPin = ""; firstSetupPin = "";
         document.getElementById('iosPinTitle').textContent = "Create a Passcode";
-        document.getElementById('iosPinSub').textContent = "Enter a new 4-digit PIN";
         updateDots();
       }, 1000);
       return;
     }
-    
-    // Save PIN to DB
-    saveAndLogin(targetStudent, currentPin);
+    savePinAndLogin(targetStudent, currentPin, pinMode);
   }
 }
 
 function showError(msg) {
   haptic();
-  for (let i = 0; i < PIN_LENGTH; i++) {
-    document.getElementById('iosDot_' + i).classList.add('error');
-  }
+  for (let i = 0; i < PIN_LENGTH; i++) document.getElementById('iosDot_' + i).classList.add('error');
   if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch(e){}
-  
   if (msg && typeof showToast === 'function') showToast(msg, 'error');
-  
-  setTimeout(() => {
-    currentPin = "";
-    updateDots();
-  }, 500);
+  setTimeout(() => { currentPin = ""; updateDots(); }, 500);
 }
 
-async function saveAndLogin(student, pin) {
-  const btn = document.getElementById('iosPinDots');
-  btn.style.opacity = '0.5';
-  
+async function savePinAndLogin(student, pin, mode) {
+  document.getElementById('iosPinDots').style.opacity = '0.5';
   try {
     const r = await supabaseClient.from('students').update({ pin: pin }).eq('studentid', student.studentid);
     if (r.error) throw r.error;
     
     student.pin = pin;
+    if (window.currentUser) window.currentUser.pin = pin;
+    
     haptic();
     if (typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 70, origin: { y: .6 } });
-    
     IOS_PIN_close();
-    doLogin(student);
+    
+    if (mode === 'setup_confirm') {
+      doLogin(student);
+    } else {
+      if (typeof showToast === 'function') showToast('✅ PIN updated successfully!', 'success');
+      if (typeof closeModal === 'function') closeModal('globalModal');
+    }
   } catch(e) {
     showError('Failed to save PIN');
-    btn.style.opacity = '1';
+    document.getElementById('iosPinDots').style.opacity = '1';
   }
 }
 
@@ -43029,6 +42890,9 @@ async function doLogin(student) {
   if (typeof showLoading === 'function') showLoading(true);
   try {
     if (typeof window.completeLogin === 'function') await window.completeLogin(student);
+    // ✅ ലോഡിംഗ് സ്ക്രീൻ തൽക്ഷണം മാറ്റാൻ
+    if (typeof showLoading === 'function') showLoading(false); 
+    if (typeof enableBodyScroll === 'function') enableBodyScroll();
   } catch(err) {
     if (typeof showToast === 'function') showToast('❌ Login Error', 'error');
     if (typeof showLoading === 'function') showLoading(false);
@@ -43036,146 +42900,126 @@ async function doLogin(student) {
 }
 
 // ═══════════════════════════════════════════════════════
-// 🪝 INTERCEPT LOGIN FORM
+// 🔑 FORGOT PIN
+// ═══════════════════════════════════════════════════════
+window.IOS_PIN_forgot = function() {
+  if (!targetStudent) return;
+  let phone = prompt("🔐 സുരക്ഷയ്ക്കായി, അക്കൗണ്ടിൽ രജിസ്റ്റർ ചെയ്ത ഫോൺ നമ്പർ നൽകുക:");
+  if (phone === null) return;
+  phone = phone.trim().replace(/[^0-9]/g, '').slice(-10);
+  if (!phone) return;
+
+  if (typeof showLoading === 'function') showLoading(true);
+  supabaseClient.from('students').select('phone, parent_mobile').eq('studentid', targetStudent.studentid).single().then(function(res) {
+    if (typeof showLoading === 'function') showLoading(false);
+    if (res.error || !res.data) return showToast('❌ വിവരങ്ങൾ ലഭ്യമായില്ല', 'error');
+
+    let dbPhone = String(res.data.phone || '').replace(/[^0-9]/g, '').slice(-10);
+    let dbParent = String(res.data.parent_mobile || '').replace(/[^0-9]/g, '').slice(-10);
+
+    if (phone === dbPhone || phone === dbParent) {
+      showToast('✅ ഫോൺ നമ്പർ വെരിഫൈ ചെയ്തു!', 'success');
+      haptic();
+      IOS_PIN_close();
+      setTimeout(function() {
+        IOS_PIN_open(targetStudent, 'setup');
+        document.getElementById('iosPinTitle').textContent = "Reset Passcode";
+        document.getElementById('iosPinSub').textContent = "Create a new 4-digit PIN";
+      }, 300);
+    } else {
+      showToast('❌ തെറ്റായ ഫോൺ നമ്പർ. ദയവായി അഡ്മിനെ ബന്ധപ്പെടുക', 'error');
+      if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch(e){}
+    }
+  });
+};
+
+// ═══════════════════════════════════════════════════════
+// 🪝 HOOK LOGIN FLOW (UID STEP)
 // ═══════════════════════════════════════════════════════
 function hookLoginFlow() {
   const form = document.getElementById('loginForm');
   if (!form || form._v601Hooked) return;
   
   form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
+    e.preventDefault(); e.stopImmediatePropagation();
     
     const sidInput = document.getElementById('studentId');
     if (!sidInput) return;
-    
     const raw = sidInput.value.trim().toUpperCase();
-    if (!raw) {
-      if (typeof showToast === 'function') showToast('Student ID നൽകുക', 'error');
-      return;
-    }
+    if (!raw) return showToast('Student ID നൽകുക', 'error');
     
-    // ─── 1. ADMIN ACCESS BYPASS ───
     const ap = (typeof DEFAULT_ADMIN_PASSWORD !== 'undefined') ? DEFAULT_ADMIN_PASSWORD : 'MADRASA2026';
     const savedAp = localStorage.getItem('admin_password') || ap;
     
+    // Admin Login Bypass
     if (raw === savedAp || raw === ap) {
       if (typeof showLoading === 'function') showLoading(true);
       try {
-        isAdminMode = true; 
-        currentAdminClass = '';
+        isAdminMode = true; currentAdminClass = '';
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('adminSection').style.display = 'block';
         document.getElementById('dashboardSection').style.display = 'none';
-        
         if (typeof loadAllSettings === 'function') await loadAllSettings();
-        
         document.getElementById('adminClassSelector').value = '';
         document.getElementById('adminMainContent').style.display = 'none';
         document.getElementById('noClassMsg').style.display = 'block';
         document.getElementById('selectedClassBadge').style.display = 'none';
         document.getElementById('adminSettingsTab').style.display = 'none';
-        
         localStorage.setItem('noor_last_id', raw);
         if (typeof showToast === 'function') showToast('🔐 Admin Panel', 'success');
         if (typeof enableBodyScroll === 'function') enableBodyScroll();
-      } catch(err) {
-        if (typeof showToast === 'function') showToast('❌ Admin Error', 'error');
-      }
+      } catch(err) {}
       if (typeof showLoading === 'function') showLoading(false);
       return;
     }
     
-    // ─── 2. STUDENT ACCESS ───
+    // Student Login
     if (typeof showLoading === 'function') showLoading(true);
     try {
       const r = await supabaseClient.from('students').select('*').eq('studentid', raw).single();
-      
       if (r.error || !r.data) {
         if (typeof showToast === 'function') showToast('❌ Student ID കണ്ടെത്തിയില്ല', 'error');
         if (typeof showLoading === 'function') showLoading(false);
         return;
       }
-      
       const student = r.data;
       if (typeof showLoading === 'function') showLoading(false);
       
-      if (student.is_blocked === true) {
-        if (typeof showBlockedScreen === 'function') showBlockedScreen(student);
-        return;
-      }
-      if (student.is_inactive === true) {
-        if (typeof showInactiveScreen === 'function') showInactiveScreen(student);
-        return;
-      }
+      if (student.is_blocked === true) return showBlockedScreen(student);
+      if (student.is_inactive === true) return showInactiveScreen(student);
       
       const hasPin = student.pin && String(student.pin).trim().length === 4;
-      
       if (hasPin) {
-        // ✅ Has PIN → Login
         IOS_PIN_open(student, 'login');
       } else if (PIN_CFG.selfSetup) {
-        // ✅ No PIN + Self Setup ON → Ask to Create
         IOS_PIN_open(student, 'setup');
       } else {
-        // ✅ No PIN + Self Setup OFF → Direct Login
         doLogin(student);
       }
-      
     } catch(err) {
       if (typeof showToast === 'function') showToast('❌ ' + err.message, 'error');
       if (typeof showLoading === 'function') showLoading(false);
     }
-  }, true); // Capture phase
-  
+  }, true);
   form._v601Hooked = true;
 }
-
-setTimeout(hookLoginFlow, 2500);
+setTimeout(hookLoginFlow, 2000);
 setTimeout(hookLoginFlow, 5000);
-setInterval(hookLoginFlow, 5000);
 
-// Desktop Keyboard Support
 document.addEventListener('keydown', function(e) {
   const overlay = document.getElementById('iosPinOverlay');
   if (!overlay || !overlay.classList.contains('open')) return;
-  
   if (e.key >= '0' && e.key <= '9') IOS_PIN_type(e.key);
   else if (e.key === 'Backspace') IOS_PIN_delete();
   else if (e.key === 'Escape') IOS_PIN_close();
 });
 
-console.log('✅ iOS PIN v601 (Full Features) ready');
-})();
-</script>
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!-- ⚙️ v602.0 — PIN SETTINGS UI (Admin & Student Profile)     -->
-<!-- ═══════════════════════════════════════════════════════════ -->
-<script id="pin-extras-v602-js">
-(function(){
-'use strict';
-console.log('⚙️ PIN Extras v602 loading...');
-
 // ═══════════════════════════════════════════════════════
-// 1️⃣ അഡ്മിൻ സെറ്റിംഗ്സ് UI (Admin Side)
+// 👑 ADMIN SETTINGS UI INJECTION
 // ═══════════════════════════════════════════════════════
-window.PIN_CFG = window.PIN_CFG || { selfSetup: true, forceSetup: false };
-
-async function loadPinSettings() {
-  try {
-    const r = await supabaseClient.from('settings').select('key,value').in('key', ['pin_self_setup', 'pin_force_setup']);
-    (r.data || []).forEach(s => {
-      if (s.key === 'pin_self_setup') window.PIN_CFG.selfSetup = String(s.value).toLowerCase() === 'true';
-      if (s.key === 'pin_force_setup') window.PIN_CFG.forceSetup = String(s.value).toLowerCase() === 'true';
-    });
-  } catch(e) {}
-}
-
 function addAdminPinSettings() {
   var tab = document.getElementById('adminSettingsTab');
-  if (!tab) return;
-  if (tab.querySelector('.pin-settings-section')) return;
-
+  if (!tab || tab.querySelector('.pin-settings-section')) return;
   var container = tab.querySelector('[style*="padding:20px"][style*="background:#f8fafc"]') || tab.querySelector('div');
   if (!container) return;
 
@@ -43186,59 +43030,46 @@ function addAdminPinSettings() {
     '<h5 style="margin:0 0 12px;font-size:.95rem;font-weight:900;color:#5b21b6;display:flex;align-items:center;gap:8px;"><i class="fas fa-shield-alt"></i> Student PIN Settings</h5>' +
     '<div onclick="PIN_TOGGLE(\'selfSetup\')" style="display:flex;align-items:center;justify-content:space-between;background:#fff;padding:11px 14px;border-radius:12px;margin-bottom:8px;border:1px solid rgba(100,116,139,.12);cursor:pointer;">' +
       '<div style="flex:1;"><strong style="display:block;font-size:.84rem;color:#0f172a;font-weight:800;">Allow Self-Setup & Change</strong><small style="font-size:.7rem;color:#64748b;">Students-നു സ്വന്തം PIN സെറ്റ് ചെയ്യാനും മാറ്റാനും അനുവദിക്കുക</small></div>' +
-      '<button class="pin-switch ' + (window.PIN_CFG.selfSetup ? 'on' : '') + '" id="pinSwitchSelfSetup" style="position:relative;width:48px;height:28px;border-radius:28px;background:' + (window.PIN_CFG.selfSetup ? '#8b5cf6' : '#cbd5e1') + ';border:none;cursor:pointer;transition:.3s;"><span style="position:absolute;top:3px;left:' + (window.PIN_CFG.selfSetup ? '23px' : '3px') + ';width:22px;height:22px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 2px 5px rgba(0,0,0,.2);"></span></button>' +
+      '<button class="pin-switch ' + (PIN_CFG.selfSetup ? 'on' : '') + '" id="pinSwitchSelfSetup" style="position:relative;width:48px;height:28px;border-radius:28px;background:' + (PIN_CFG.selfSetup ? '#8b5cf6' : '#cbd5e1') + ';border:none;cursor:pointer;transition:.3s;"><span style="position:absolute;top:3px;left:' + (PIN_CFG.selfSetup ? '23px' : '3px') + ';width:22px;height:22px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 2px 5px rgba(0,0,0,.2);"></span></button>' +
     '</div>' +
     '<div onclick="PIN_TOGGLE(\'forceSetup\')" style="display:flex;align-items:center;justify-content:space-between;background:#fff;padding:11px 14px;border-radius:12px;border:1px solid rgba(100,116,139,.12);cursor:pointer;">' +
       '<div style="flex:1;"><strong style="display:block;font-size:.84rem;color:#0f172a;font-weight:800;">Force Setup on First Login</strong><small style="font-size:.7rem;color:#64748b;">PIN ഇല്ലാത്ത students-നെ login-നു മുൻപ് PIN സെറ്റ് ചെയ്യാൻ നിർബന്ധിക്കുക</small></div>' +
-      '<button class="pin-switch ' + (window.PIN_CFG.forceSetup ? 'on' : '') + '" id="pinSwitchForceSetup" style="position:relative;width:48px;height:28px;border-radius:28px;background:' + (window.PIN_CFG.forceSetup ? '#8b5cf6' : '#cbd5e1') + ';border:none;cursor:pointer;transition:.3s;"><span style="position:absolute;top:3px;left:' + (window.PIN_CFG.forceSetup ? '23px' : '3px') + ';width:22px;height:22px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 2px 5px rgba(0,0,0,.2);"></span></button>' +
+      '<button class="pin-switch ' + (PIN_CFG.forceSetup ? 'on' : '') + '" id="pinSwitchForceSetup" style="position:relative;width:48px;height:28px;border-radius:28px;background:' + (PIN_CFG.forceSetup ? '#8b5cf6' : '#cbd5e1') + ';border:none;cursor:pointer;transition:.3s;"><span style="position:absolute;top:3px;left:' + (PIN_CFG.forceSetup ? '23px' : '3px') + ';width:22px;height:22px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 2px 5px rgba(0,0,0,.2);"></span></button>' +
     '</div>';
 
   var allH5 = container.querySelectorAll('h5');
   var dbStatsH5 = null;
   allH5.forEach(function(h) { if (/Database Stats/i.test(h.textContent)) dbStatsH5 = h; });
-  if (dbStatsH5 && dbStatsH5.parentNode) {
-    dbStatsH5.parentNode.insertBefore(section, dbStatsH5);
-  } else {
-    container.appendChild(section);
-  }
+  if (dbStatsH5 && dbStatsH5.parentNode) dbStatsH5.parentNode.insertBefore(section, dbStatsH5);
+  else container.appendChild(section);
 }
 
 window.PIN_TOGGLE = async function(key) {
-  window.PIN_CFG[key] = !window.PIN_CFG[key];
-  var newVal = window.PIN_CFG[key];
+  PIN_CFG[key] = !PIN_CFG[key];
+  var newVal = PIN_CFG[key];
   var switchEl = document.getElementById(key === 'selfSetup' ? 'pinSwitchSelfSetup' : 'pinSwitchForceSetup');
-  
   if (switchEl) {
     switchEl.style.background = newVal ? '#8b5cf6' : '#cbd5e1';
     switchEl.querySelector('span').style.left = newVal ? '23px' : '3px';
   }
-
   try {
     var dbKey = key === 'selfSetup' ? 'pin_self_setup' : 'pin_force_setup';
     await supabaseClient.from('settings').upsert({ key: dbKey, value: newVal ? 'true' : 'false' }, { onConflict: 'key' });
     if (typeof showToast === 'function') showToast((key === 'selfSetup' ? 'Self-Setup' : 'Force Setup') + ': ' + (newVal ? 'ON' : 'OFF'), 'success');
-  } catch(e) {
-    window.PIN_CFG[key] = !newVal; // rollback
-    if (switchEl) {
-      switchEl.style.background = !newVal ? '#8b5cf6' : '#cbd5e1';
-      switchEl.querySelector('span').style.left = !newVal ? '23px' : '3px';
-    }
-    if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error');
-  }
+  } catch(e) { PIN_CFG[key] = !newVal; }
 };
 
 // ═══════════════════════════════════════════════════════
-// 2️⃣ സ്റ്റുഡന്റ് പ്രൊഫൈൽ UI (Change PIN)
+// 👤 STUDENT PROFILE "CHANGE PIN" BUTTON
 // ═══════════════════════════════════════════════════════
 var _origProfile = window.showProfileCard;
-if (typeof _origProfile === 'function' && !_origProfile._v602) {
+if (typeof _origProfile === 'function' && !_origProfile._v601) {
   window.showProfileCard = function() {
     var r = _origProfile.apply(this, arguments);
     setTimeout(function() {
-      if (!window.currentUser) return;
+      if (!window.currentUser || !PIN_CFG.selfSetup) return;
       var body = document.getElementById('modalContentBody');
       if (!body || body.querySelector('.btn-change-pin')) return;
-      
       var btnRow = body.querySelector('.d-flex.gap-2.mt-4');
       if (!btnRow) return;
 
@@ -43247,250 +43078,44 @@ if (typeof _origProfile === 'function' && !_origProfile._v602) {
       btn.className = 'btn-change-pin';
       btn.style.cssText = 'width:100%;padding:12px;border-radius:12px;border:1.5px solid rgba(139,92,246,.3);background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#5b21b6;font-family:inherit;font-weight:800;font-size:.86rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;min-height:46px;';
       btn.innerHTML = '<i class="fas fa-key"></i> ' + (hasPin ? 'Change Security PIN' : 'Set Security PIN');
-      btn.onclick = function() {
-        if (typeof window.IOS_PIN_open === 'function') {
-          // 'change' mode ഉപയോഗിച്ച് iOS പാഡ് ഓപ്പൺ ചെയ്യുന്നു
-          window.IOS_PIN_open(window.currentUser, 'change');
-        } else {
-          if (typeof showToast === 'function') showToast('❌ PIN system not ready', 'error');
-        }
-      };
+      btn.onclick = function() { IOS_PIN_open(window.currentUser, 'change'); };
       btnRow.appendChild(btn);
     }, 150);
     return r;
   };
-  window.showProfileCard._v602 = true;
+  window.showProfileCard._v601 = true;
 }
 
-// ═══════════════════════════════════════════════════════
-// 3️⃣ iOS PIN-ലേക്ക് 'Change' മോഡ് ചേർക്കുന്നു
-// ═══════════════════════════════════════════════════════
-// വി601-ൽ ഉള്ള ഫങ്ക്ഷനുകൾ ഓവർറൈഡ് ചെയ്യുന്നു
-setTimeout(function() {
-  if (typeof window.IOS_PIN_open !== 'function') return;
-
-  var _origOpen = window.IOS_PIN_open;
-  window.IOS_PIN_open = function(student, mode) {
-    if (mode === 'change') {
-      window._iosPinMode = 'change_verify';
-      window._iosNewPin = "";
-      _origOpen(student, 'login'); // Re-use login UI for verification
-      document.getElementById('iosPinTitle').textContent = "Enter Current PIN";
-      document.getElementById('iosPinSub').textContent = "Verify to change PIN";
-      return;
-    }
-    _origOpen(student, mode);
-  };
-
-  // processPin ഫങ്ക്ഷൻ റീ-റൈറ്റ് ചെയ്യുന്നു
-  var _origProcess = window._processPin; // (പഴയത് ലോക്കൽ ആണെങ്കിൽ ഇത് ബാധകമല്ല, അതിനാൽ നമ്മൾ നേരിട്ട് ചെക്ക് ചെയ്യാം)
-  
-  // v601-ലെ പഴയ processPin-നെ മാറ്റിസ്ഥാപിക്കാൻ
-  if (typeof window.IOS_PIN_type === 'function') {
-    var _origType = window.IOS_PIN_type;
-    window.IOS_PIN_type = function(num) {
-      if (window._iosPinMode === 'change_verify' || window._iosPinMode === 'change_new' || window._iosPinMode === 'change_confirm') {
-        // കസ്റ്റം ചെക്കിംഗ്
-        var currentPin = document.getElementById('iosPinDots').querySelectorAll('.filled').length;
-        if (currentPin >= 4) return;
-        
-        // ഡോട്ട് ഫിൽ ചെയ്യുക
-        var dots = document.getElementById('iosPinDots').querySelectorAll('.ios-pin-dot');
-        dots[currentPin].classList.add('filled');
-        window._iosTempPin = (window._iosTempPin || '') + num;
-        
-        if (window._iosTempPin.length === 4) {
-          setTimeout(handleChangeFlow, 250);
-        }
-      } else {
-        _origType(num);
-      }
-    };
-  }
-
-  // ഡിലീറ്റ് ഫങ്ക്ഷൻ
-  var _origDelete = window.IOS_PIN_delete;
-  window.IOS_PIN_delete = function() {
-    if (window._iosPinMode && window._iosPinMode.indexOf('change') === 0) {
-      if (!window._iosTempPin || window._iosTempPin.length === 0) return;
-      window._iosTempPin = window._iosTempPin.slice(0, -1);
-      var dots = document.getElementById('iosPinDots').querySelectorAll('.ios-pin-dot');
-      dots[window._iosTempPin.length].classList.remove('filled');
-    } else {
-      _origDelete();
-    }
-  };
-
-}, 3500); // v601 ലോഡ് ആയതിന് ശേഷം
-
-async function handleChangeFlow() {
-  var mode = window._iosPinMode;
-  var pin = window._iosTempPin;
-  var student = window._IOS_PIN_TARGET || window.currentUser; // v601-ൽ സ്റ്റുഡന്റ് സ്റ്റോർ ചെയ്യുന്ന രീതി
-  
-  // v601-ലെ targetStudent വേരിയബിൾ ആക്സസ് ചെയ്യാൻ പറ്റാത്തതിനാൽ, currentUser ഉപയോഗിക്കുന്നു
-  if (!student) student = window.currentUser;
-
-  if (mode === 'change_verify') {
-    if (pin !== String(student.pin)) {
-      if (typeof showToast === 'function') showToast('❌ തെറ്റായ നിലവിലെ PIN', 'error');
-      if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch(e){}
-      resetIosDots();
-      return;
-    }
-    // വെരിഫിക്കേഷൻ വിജയിച്ചു
-    window._iosPinMode = 'change_new';
-    window._iosTempPin = "";
-    resetIosDots();
-    document.getElementById('iosPinTitle').textContent = "Create New PIN";
-    document.getElementById('iosPinSub').textContent = "Enter new 4-digit PIN";
-  } 
-  else if (mode === 'change_new') {
-    window._iosNewPin = pin;
-    window._iosPinMode = 'change_confirm';
-    window._iosTempPin = "";
-    resetIosDots();
-    document.getElementById('iosPinTitle').textContent = "Confirm New PIN";
-    document.getElementById('iosPinSub').textContent = "Re-enter new PIN";
-  } 
-  else if (mode === 'change_confirm') {
-    if (pin !== window._iosNewPin) {
-      if (typeof showToast === 'function') showToast('❌ PIN തമ്മിൽ ഒത്തുപോകുന്നില്ല', 'error');
-      // റീസെറ്റ് ചെയ്ത് വീണ്ടും പുതിയ പിൻ ചോദിക്കുന്നു
-      window._iosPinMode = 'change_new';
-      window._iosTempPin = "";
-      resetIosDots();
-      document.getElementById('iosPinTitle').textContent = "Create New PIN";
-      return;
-    }
-    // സേവ് ചെയ്യുന്നു
-    try {
-      var r = await supabaseClient.from('students').update({ pin: pin }).eq('studentid', student.studentid);
-      if (r.error) throw r.error;
-      
-      student.pin = pin;
-      if (window.currentUser) window.currentUser.pin = pin;
-      
-      if (typeof showToast === 'function') showToast('✅ പുതിയ PIN സേവ് ചെയ്തു!', 'success');
-      if (typeof confetti !== 'undefined') confetti({ particleCount: 100, spread: 70 });
-      if (navigator.vibrate) try { navigator.vibrate([20, 40, 20]); } catch(e){}
-      
-      // എല്ലാം ക്ലോസ് ചെയ്യുന്നു
-      window._iosPinMode = null;
-      if (typeof window.IOS_PIN_close === 'function') window.IOS_PIN_close();
-      if (typeof closeModal === 'function') closeModal('globalModal');
-      
-    } catch(e) {
-      if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error');
-    }
-  }
-}
-
-function resetIosDots() {
-  window._iosTempPin = "";
-  var dots = document.getElementById('iosPinDots').querySelectorAll('.ios-pin-dot');
-  dots.forEach(d => d.classList.remove('filled'));
-}
-
-// ═══════════════════════════════════════════════════════
-// 🚀 INIT HOOKS
-// ═══════════════════════════════════════════════════════
-setTimeout(loadPinSettings, 1500);
-setTimeout(addAdminPinSettings, 3000);
-setTimeout(addAdminPinSettings, 6000);
-
-// അഡ്മിൻ സെറ്റിംഗ്സ് ഓപ്പൺ ചെയ്യുമ്പോഴെല്ലാം UI ചേർക്കാൻ
 setInterval(function() {
   var admin = document.getElementById('adminSection');
   if (admin && admin.style.display === 'block') {
     var st = document.getElementById('adminSettingsTab');
     if (st && st.style.display === 'block') addAdminPinSettings();
   }
-}, 4000);
+}, 3000);
 
-console.log('✅ PIN Extras v602 ready');
+console.log('✅ iOS PIN Master System loaded');
 })();
-</script> 
+</script>
+
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- 🔑 v603.0 — FORGOT PIN & PHONE VERIFICATION              -->
+<!-- ⚡ v700.0 — PERFORMANCE BOOSTER (Loading Fix)             -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<script id="forgot-pin-v603-js">
+<script id="performance-booster-v700">
 (function(){
 'use strict';
-console.log('🔑 Forgot PIN v603 loading...');
-
-// v601-ൽ നിന്നുള്ള സ്റ്റുഡന്റ് വിവരങ്ങൾ ഇവിടെ സ്റ്റോർ ചെയ്യുന്നു
-window._IOS_CURRENT_STUDENT = null;
-var _origIOSOpen = window.IOS_PIN_open;
-
-if (typeof _origIOSOpen === 'function') {
-  window.IOS_PIN_open = function(student, mode) {
-    window._IOS_CURRENT_STUDENT = student;
-    // ലോഗിൻ മോഡിൽ മാത്രം Forgot PIN ബട്ടൺ കാണിക്കുക, മറ്റു മോഡുകളിൽ മറയ്ക്കുക
-    var forgotBtn = document.getElementById('iosPinForgotBtn');
-    if (forgotBtn) {
-      forgotBtn.style.display = (mode === 'login' || !mode) ? 'block' : 'none';
+// ലോഡിംഗ് സ്ക്രീൻ കുടുങ്ങിയാൽ 1 സെക്കൻഡിനുള്ളിൽ ഓട്ടോമാറ്റിക് ആയി മാറ്റാൻ
+setInterval(function(){
+  var loader = document.getElementById('loadingOverlay');
+  var dash = document.getElementById('dashboardSection');
+  var admin = document.getElementById('adminSection');
+  if (loader && loader.style.display === 'flex') {
+    if ((dash && dash.style.display === 'block') || (admin && admin.style.display === 'block')) {
+      loader.style.display = 'none';
+      if (typeof enableBodyScroll === 'function') enableBodyScroll();
     }
-    return _origIOSOpen.apply(this, arguments);
-  };
-}
-
-// ═══════════════════════════════════════════════════════
-// 📱 FORGOT PIN ക്ലിക്ക് ചെയ്യുമ്പോൾ
-// ═══════════════════════════════════════════════════════
-window.IOS_PIN_forgot = function() {
-  var student = window._IOS_CURRENT_STUDENT;
-  if (!student) return;
-
-  // 1. ഫോൺ നമ്പർ ചോദിക്കുന്നു
-  var phone = prompt("🔐 സുരക്ഷയ്ക്കായി, നിങ്ങളുടെ അക്കൗണ്ടിൽ രജിസ്റ്റർ ചെയ്ത ഫോൺ നമ്പർ നൽകുക:\n(ഉദാ: 9876543210)");
-  if (phone === null) return; // Cancel അമർത്തിയാൽ
-  phone = phone.trim();
-
-  if (!phone || phone.length < 10) {
-    if (typeof showToast === 'function') showToast('❌ ശരിയായ ഫോൺ നമ്പർ നൽകുക', 'error');
-    return;
   }
-
-  if (typeof showLoading === 'function') showLoading(true);
-
-  // 2. ഡാറ്റാബേസിൽ ഈ ഫോൺ നമ്പർ ഈ കുട്ടിയുടേതാണോ എന്ന് ചെക്ക് ചെയ്യുന്നു
-  supabaseClient.from('students')
-    .select('phone, parent_mobile')
-    .eq('studentid', student.studentid)
-    .single()
-    .then(function(res) {
-      if (typeof showLoading === 'function') showLoading(false);
-
-      if (res.error || !res.data) {
-        if (typeof showToast === 'function') showToast('❌ വിവരങ്ങൾ ലഭ്യമായില്ല', 'error');
-        return;
-      }
-
-      var dbPhone = String(res.data.phone || '').replace(/[^0-9]/g, '').slice(-10);
-      var dbParentPhone = String(res.data.parent_mobile || '').replace(/[^0-9]/g, '').slice(-10);
-      var inputPhone = phone.replace(/[^0-9]/g, '').slice(-10);
-
-      // 3. ഫോൺ നമ്പർ മാച്ച് ആകുന്നുണ്ടോ?
-      if (inputPhone === dbPhone || inputPhone === dbParentPhone) {
-        if (typeof showToast === 'function') showToast('✅ ഫോൺ നമ്പർ വെരിഫൈ ചെയ്തു!', 'success');
-        if (navigator.vibrate) try { navigator.vibrate([20, 40, 20]); } catch(e){}
-        
-        // പുതിയ പിൻ സെറ്റ് ചെയ്യാൻ 'setup' മോഡിലേക്ക് മാറുന്നു
-        // v601-ൽ 'setup' എന്നത് ആദ്യമായി പിൻ സെറ്റ് ചെയ്യാനുള്ളതാണ്, അത് ഇവിടെ റീസെറ്റിനും വർക്ക് ചെയ്യും
-        window.IOS_PIN_close(); // നിലവിലുള്ളത് ക്ലോസ് ചെയ്യുന്നു
-        setTimeout(function() {
-          window.IOS_PIN_open(student, 'setup'); 
-          document.getElementById('iosPinTitle').textContent = "Reset Passcode";
-          document.getElementById('iosPinSub').textContent = "Create a new 4-digit PIN";
-        }, 300);
-        
-      } else {
-        if (typeof showToast === 'function') showToast('❌ തെറ്റായ ഫോൺ നമ്പർ. ദയവായി അഡ്മിനെ ബന്ധപ്പെടുക', 'error');
-        if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch(e){}
-      }
-    });
-};
+}, 1000);
 })();
 </script>
 </body>
