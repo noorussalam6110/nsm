@@ -43516,5 +43516,651 @@ tr.adm-row-inactive-hidden { display: none !important; }
   console.log('✅ PIN DOM Lite ready');
 })();
 </script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔊 v500.0 — VOICE GREETING ON LOGIN                      -->
+<!-- Text-to-Speech with Admin controls                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<style id="voice-greeting-v500-css">
+.voice-greeting-settings{background:linear-gradient(135deg,#eff6ff,#fce7f3);border:1.5px solid rgba(139,92,246,.35);border-radius:16px;padding:16px;margin-bottom:16px}
+.voice-greeting-settings h5{margin:0 0 12px;font-size:.95rem;font-weight:900;color:#5b21b6;display:flex;align-items:center;gap:8px}
+.vg-field{margin-bottom:10px}
+.vg-field label{display:block;font-size:.76rem;font-weight:800;color:#475569;margin-bottom:5px}
+.vg-field input,.vg-field select,.vg-field textarea{width:100%;padding:10px 12px;border:1.5px solid rgba(100,116,139,.25);border-radius:10px;font-family:inherit;font-size:15px;color:#0f172a;background:#fff;outline:none}
+.vg-field textarea{min-height:70px;resize:vertical;font-size:14px}
+.vg-field input:focus,.vg-field select:focus,.vg-field textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.12)}
+.vg-row{display:flex;gap:8px}
+.vg-row>*{flex:1}
+.vg-btn{padding:10px 14px;border-radius:10px;border:none;font-family:inherit;font-weight:800;font-size:.8rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px}
+.vg-btn.save{background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff}
+.vg-btn.test{background:linear-gradient(100deg,#059669,#34d399);color:#fff}
+.vg-btn.reset{background:#f1f5f9;color:#475569;border:1.5px solid rgba(100,116,139,.2)}
+.vg-toggle{display:flex;align-items:center;justify-content:space-between;background:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(100,116,139,.15);margin-bottom:12px;cursor:pointer;user-select:none}
+.vg-toggle-text{font-size:.84rem;font-weight:800;color:#0f172a}
+.vg-toggle-text small{display:block;font-size:.68rem;color:#64748b;margin-top:2px;font-weight:600}
+.vg-switch{position:relative;width:48px;height:28px;border-radius:28px;background:#cbd5e1;transition:background .25s;flex-shrink:0;border:none;cursor:pointer}
+.vg-switch.on{background:linear-gradient(100deg,#8b5cf6,#a78bfa)}
+.vg-switch::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .25s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 5px rgba(0,0,0,.2)}
+.vg-switch.on::after{left:23px}
+.vg-speaking-pill{position:fixed;bottom:110px;right:20px;z-index:9999980;background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#fff;padding:12px 18px;border-radius:50px;font-size:.78rem;font-weight:800;display:none;align-items:center;gap:10px;box-shadow:0 15px 35px -12px rgba(139,92,246,.7);animation:vgSlideUp .35s ease}
+.vg-speaking-pill.show{display:flex}
+@keyframes vgSlideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.vg-wave{display:flex;gap:2px;align-items:center;height:20px}
+.vg-wave span{display:block;width:3px;height:100%;background:#fff;border-radius:2px;animation:vgWave 1s ease-in-out infinite}
+.vg-wave span:nth-child(1){animation-delay:0s;height:50%}
+.vg-wave span:nth-child(2){animation-delay:.15s;height:80%}
+.vg-wave span:nth-child(3){animation-delay:.3s;height:100%}
+.vg-wave span:nth-child(4){animation-delay:.15s;height:80%}
+.vg-wave span:nth-child(5){animation-delay:0s;height:50%}
+@keyframes vgWave{0%,100%{transform:scaleY(.5)}50%{transform:scaleY(1)}}
+</style>
+
+<div class="vg-speaking-pill" id="vgSpeakingPill">
+  <div class="vg-wave"><span></span><span></span><span></span><span></span><span></span></div>
+  <span>Speaking...</span>
+</div>
+
+<script id="voice-greeting-v500-js">
+(function(){
+'use strict';
+console.log('🔊 Voice Greeting v500 loading...');
+
+var VG = {
+  enabled: true,
+  template: 'അസ്സലാമു അലൈക്കും [name]. നൂറുസ്സലാം മദ്രസ സ്റ്റുഡന്റ് പോർട്ടലിലേക്ക് സ്വാഗതം. [time]',
+  lang: 'ml-IN',
+  rate: 0.9,
+  pitch: 1.0,
+  volume: 0.9,
+  voiceName: null,
+  loaded: false
+};
+window.VG = VG;
+
+// ═══════════════════════════════════════════════════════
+// 🎤 PRIME TTS (iOS workaround — enables speech after delay)
+// ═══════════════════════════════════════════════════════
+function primeTTS(){
+  if(!('speechSynthesis' in window)) return;
+  try {
+    var u = new SpeechSynthesisUtterance('');
+    u.volume = 0;
+    u.rate = 10;
+    window.speechSynthesis.speak(u);
+    console.log('🎤 TTS engine primed (iOS-safe)');
+  } catch(e){}
+}
+document.addEventListener('click', function vgPrimeOnce(){
+  primeTTS();
+  document.removeEventListener('click', vgPrimeOnce);
+}, { once: true });
+document.addEventListener('touchstart', function vgPrimeTouch(){
+  primeTTS();
+  document.removeEventListener('touchstart', vgPrimeTouch);
+}, { once: true, passive: true });
+
+// ═══════════════════════════════════════════════════════
+// 📥 LOAD SETTINGS
+// ═══════════════════════════════════════════════════════
+async function loadVoiceSettings(){
+  if(typeof supabaseClient === 'undefined' || !supabaseClient) return;
+  try {
+    var r = await supabaseClient.from('settings').select('key,value').in('key', [
+      'voice_greeting_enabled','voice_greeting_template','voice_greeting_lang',
+      'voice_greeting_rate','voice_greeting_pitch','voice_greeting_voice'
+    ]);
+    (r.data || []).forEach(function(s){
+      if(s.key === 'voice_greeting_enabled') VG.enabled = String(s.value).toLowerCase() === 'true';
+      if(s.key === 'voice_greeting_template' && s.value) VG.template = s.value;
+      if(s.key === 'voice_greeting_lang' && s.value) VG.lang = s.value;
+      if(s.key === 'voice_greeting_rate') VG.rate = parseFloat(s.value) || 0.9;
+      if(s.key === 'voice_greeting_pitch') VG.pitch = parseFloat(s.value) || 1.0;
+      if(s.key === 'voice_greeting_voice') VG.voiceName = s.value || null;
+    });
+    VG.loaded = true;
+    console.log('✅ Voice settings loaded:', VG);
+  } catch(e){ console.warn('loadVoiceSettings:', e); }
+}
+
+// ═══════════════════════════════════════════════════════
+// 🎤 PICK BEST VOICE
+// ═══════════════════════════════════════════════════════
+function pickVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  var voices = window.speechSynthesis.getVoices();
+  if(!voices || voices.length === 0) return null;
+  if(VG.voiceName){
+    var custom = voices.find(function(v){ return v.name === VG.voiceName; });
+    if(custom) return custom;
+  }
+  var prefs = [VG.lang, 'ml-IN', 'ml', 'hi-IN', 'en-IN', 'en-GB', 'en-US', 'en'];
+  for(var i = 0; i < prefs.length; i++){
+    var lang = prefs[i];
+    var v = voices.find(function(v){ return v.lang === lang; });
+    if(v) return v;
+    var prefix = lang.split('-')[0];
+    v = voices.find(function(v){ return v.lang && v.lang.toLowerCase().startsWith(prefix.toLowerCase()); });
+    if(v) return v;
+  }
+  return voices[0] || null;
+}
+
+// ═══════════════════════════════════════════════════════
+// 🔊 SPEAK
+// ═══════════════════════════════════════════════════════
+function showPill(){ var p = document.getElementById('vgSpeakingPill'); if(p) p.classList.add('show'); }
+function hidePill(){ var p = document.getElementById('vgSpeakingPill'); if(p) p.classList.remove('show'); }
+
+function speakGreeting(student){
+  if(!VG.enabled){ console.log('🔇 Voice greeting disabled'); return; }
+  if(!('speechSynthesis' in window)){ console.warn('TTS not supported'); return; }
+  if(!student) return;
+
+  try { window.speechSynthesis.cancel(); } catch(e){}
+
+  var hour = new Date().getHours();
+  var isMal = VG.lang && VG.lang.indexOf('ml') === 0;
+  var timeGreet;
+  if(isMal){
+    timeGreet = hour < 5 ? 'ശുഭ രാത്രി' : hour < 12 ? 'സുപ്രഭാതം' : hour < 17 ? 'ശുഭ ഉച്ച' : hour < 21 ? 'ശുഭ സായാഹ്നം' : 'ശുഭ രാത്രി';
+  } else {
+    timeGreet = hour < 5 ? 'Good night' : hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : hour < 21 ? 'Good evening' : 'Good night';
+  }
+
+  var msg = VG.template
+    .replace(/\[name\]/g, student.name || 'Student')
+    .replace(/\[class\]/g, student.class || '')
+    .replace(/\[time\]/g, timeGreet);
+
+  var utter = new SpeechSynthesisUtterance(msg);
+  utter.lang = VG.lang;
+  utter.rate = VG.rate;
+  utter.pitch = VG.pitch;
+  utter.volume = VG.volume;
+
+  var voice = pickVoice();
+  if(voice){ utter.voice = voice; console.log('🎤 Voice:', voice.name, '(' + voice.lang + ')'); }
+
+  utter.onstart = function(){ showPill(); console.log('🔊 Speaking:', msg); };
+  utter.onend = function(){ hidePill(); };
+  utter.onerror = function(e){ hidePill(); console.warn('TTS error:', e); };
+
+  try {
+    window.speechSynthesis.speak(utter);
+    var estMs = Math.max(3000, msg.length * 90);
+    setTimeout(hidePill, estMs + 3000);
+  } catch(e){
+    console.warn('speakGreeting:', e);
+    hidePill();
+  }
+}
+window.vgSpeak = speakGreeting;
+
+// ═══════════════════════════════════════════════════════
+// 🎬 PREP VOICES
+// ═══════════════════════════════════════════════════════
+function prepVoices(){
+  if(!('speechSynthesis' in window)) return;
+  var load = function(){
+    var v = window.speechSynthesis.getVoices();
+    if(v.length > 0) console.log('🎤 Voices ready:', v.length);
+  };
+  load();
+  window.speechSynthesis.onvoiceschanged = load;
+}
+prepVoices();
+
+// ═══════════════════════════════════════════════════════
+// 🪝 HOOK LOGIN
+// ═══════════════════════════════════════════════════════
+function hookLogin(){
+  if(typeof window.completeLogin !== 'function' || window.completeLogin._vgHooked){
+    setTimeout(hookLogin, 1000);
+    return;
+  }
+  var _orig = window.completeLogin;
+  window.completeLogin = async function(student){
+    var r = await _orig.apply(this, arguments);
+    if(student && student.name){
+      setTimeout(function(){
+        speakGreeting({ name: student.name, class: student.class || '' });
+      }, 1800);
+    }
+    return r;
+  };
+  window.completeLogin._vgHooked = true;
+  console.log('✅ Login hooked for voice greeting');
+}
+
+setTimeout(loadVoiceSettings, 1000);
+setTimeout(hookLogin, 2500);
+setTimeout(hookLogin, 5000);
+
+// ═══════════════════════════════════════════════════════
+// 🎛️ ADMIN SETTINGS UI
+// ═══════════════════════════════════════════════════════
+function buildSettingsUI(){
+  var tab = document.getElementById('adminSettingsTab');
+  if(!tab) return false;
+  if(tab.querySelector('.voice-greeting-settings')) return true;
+  var container = tab.querySelector('[style*="padding:20px"][style*="background:#f8fafc"]') || tab.querySelector('div');
+  if(!container) return false;
+
+  var voices = ('speechSynthesis' in window) ? window.speechSynthesis.getVoices() : [];
+  var voiceOpts = '<option value="">Auto (Auto-detect)</option>';
+  voices.forEach(function(v){
+    voiceOpts += '<option value="' + v.name.replace(/"/g,'&quot;') + '"' + (VG.voiceName === v.name ? ' selected' : '') + '>' + v.name + ' (' + v.lang + ')</option>';
+  });
+
+  var section = document.createElement('div');
+  section.className = 'voice-greeting-settings';
+  section.innerHTML =
+    '<h5><i class="fas fa-volume-up"></i> Voice Greeting on Login</h5>' +
+    '<div class="vg-toggle" onclick="vgToggle()">' +
+      '<div class="vg-toggle-text">🔊 Enable Voice Greeting<small>Student login ചെയ്യുമ്പോൾ greeting voice കേൾക്കും</small></div>' +
+      '<button class="vg-switch ' + (VG.enabled ? 'on' : '') + '" id="vgSwitchBtn" type="button"></button>' +
+    '</div>' +
+    '<div class="vg-field">' +
+      '<label>📝 Greeting Message</label>' +
+      '<textarea id="vgTemplate" maxlength="300">' + (VG.template || '') + '</textarea>' +
+      '<div style="font-size:.66rem;color:#64748b;margin-top:4px;line-height:1.5;">' +
+        '<b>[name]</b> = Student name &nbsp;•&nbsp; <b>[class]</b> = Class &nbsp;•&nbsp; <b>[time]</b> = Auto greeting' +
+      '</div>' +
+    '</div>' +
+    '<div class="vg-row">' +
+      '<div class="vg-field"><label>🌐 Language</label>' +
+        '<select id="vgLang">' +
+          '<option value="ml-IN"' + (VG.lang === 'ml-IN' ? ' selected' : '') + '>Malayalam (ml-IN)</option>' +
+          '<option value="hi-IN"' + (VG.lang === 'hi-IN' ? ' selected' : '') + '>Hindi (hi-IN)</option>' +
+          '<option value="en-IN"' + (VG.lang === 'en-IN' ? ' selected' : '') + '>English India (en-IN)</option>' +
+          '<option value="en-US"' + (VG.lang === 'en-US' ? ' selected' : '') + '>English US (en-US)</option>' +
+        '</select></div>' +
+      '<div class="vg-field"><label>🎤 Voice</label>' +
+        '<select id="vgVoice">' + voiceOpts + '</select></div>' +
+    '</div>' +
+    '<div class="vg-row">' +
+      '<div class="vg-field"><label>⚡ Speed (0.5 - 1.5)</label>' +
+        '<input type="number" id="vgRate" min="0.5" max="1.5" step="0.1" value="' + VG.rate + '"></div>' +
+      '<div class="vg-field"><label>🎵 Pitch (0.5 - 2)</label>' +
+        '<input type="number" id="vgPitch" min="0.5" max="2" step="0.1" value="' + VG.pitch + '"></div>' +
+    '</div>' +
+    '<div class="vg-row" style="margin-top:8px;">' +
+      '<button class="vg-btn test" onclick="vgTest()"><i class="fas fa-play"></i> Test</button>' +
+      '<button class="vg-btn save" onclick="vgSave()"><i class="fas fa-save"></i> Save</button>' +
+      '<button class="vg-btn reset" onclick="vgReset()"><i class="fas fa-rotate-left"></i> Reset</button>' +
+    '</div>';
+
+  var h5s = container.querySelectorAll('h5');
+  var dbH = null;
+  h5s.forEach(function(h){ if(/Database Stats/i.test(h.textContent)) dbH = h; });
+  if(dbH && dbH.parentNode) dbH.parentNode.insertBefore(section, dbH);
+  else container.appendChild(section);
+
+  setTimeout(function(){
+    var voices2 = window.speechSynthesis.getVoices();
+    var sel = document.getElementById('vgVoice');
+    if(sel && voices2.length > 0){
+      var cur = sel.value;
+      var opts = '<option value="">Auto (Auto-detect)</option>';
+      voices2.forEach(function(v){
+        opts += '<option value="' + v.name.replace(/"/g,'&quot;') + '"' + (cur === v.name ? ' selected' : '') + '>' + v.name + ' (' + v.lang + ')</option>';
+      });
+      sel.innerHTML = opts;
+    }
+  }, 500);
+  return true;
+}
+
+window.vgToggle = function(){
+  VG.enabled = !VG.enabled;
+  var btn = document.getElementById('vgSwitchBtn');
+  if(btn) btn.classList.toggle('on', VG.enabled);
+  if(navigator.vibrate) try { navigator.vibrate(8); } catch(e){}
+};
+
+window.vgTest = function(){
+  var prev = { template: VG.template, lang: VG.lang, rate: VG.rate, pitch: VG.pitch, voiceName: VG.voiceName, enabled: VG.enabled };
+  VG.template = document.getElementById('vgTemplate').value || VG.template;
+  VG.lang = document.getElementById('vgLang').value;
+  VG.rate = parseFloat(document.getElementById('vgRate').value) || 0.9;
+  VG.pitch = parseFloat(document.getElementById('vgPitch').value) || 1.0;
+  VG.voiceName = document.getElementById('vgVoice').value || null;
+  VG.enabled = true;
+  var testStudent = { name: window.currentUser ? window.currentUser.name : 'Test Student', class: window.currentUser ? window.currentUser.class : '10' };
+  speakGreeting(testStudent);
+  setTimeout(function(){ Object.assign(VG, prev); }, 200);
+};
+
+window.vgSave = async function(){
+  VG.template = document.getElementById('vgTemplate').value || VG.template;
+  VG.lang = document.getElementById('vgLang').value;
+  VG.rate = parseFloat(document.getElementById('vgRate').value) || 0.9;
+  VG.pitch = parseFloat(document.getElementById('vgPitch').value) || 1.0;
+  VG.voiceName = document.getElementById('vgVoice').value || null;
+  try {
+    var updates = [
+      { key: 'voice_greeting_enabled', value: String(VG.enabled) },
+      { key: 'voice_greeting_template', value: VG.template },
+      { key: 'voice_greeting_lang', value: VG.lang },
+      { key: 'voice_greeting_rate', value: String(VG.rate) },
+      { key: 'voice_greeting_pitch', value: String(VG.pitch) },
+      { key: 'voice_greeting_voice', value: VG.voiceName || '' }
+    ];
+    for(var i = 0; i < updates.length; i++){
+      await supabaseClient.from('settings').upsert(updates[i], { onConflict: 'key' });
+    }
+    if(typeof showToast === 'function') showToast('✅ Voice greeting saved','success');
+  } catch(e){
+    if(typeof showToast === 'function') showToast('❌ ' + e.message,'error');
+  }
+};
+
+window.vgReset = function(){
+  if(!confirm('Reset to default?')) return;
+  VG.enabled = true;
+  VG.template = 'അസ്സലാമു അലൈക്കും [name]. നൂറുസ്സലാം മദ്രസ സ്റ്റുഡന്റ് പോർട്ടലിലേക്ക് സ്വാഗതം. [time]';
+  VG.lang = 'ml-IN';
+  VG.rate = 0.9;
+  VG.pitch = 1.0;
+  VG.voiceName = null;
+  var t=document.getElementById('vgTemplate'); if(t) t.value=VG.template;
+  var l=document.getElementById('vgLang'); if(l) l.value=VG.lang;
+  var r=document.getElementById('vgRate'); if(r) r.value=VG.rate;
+  var p=document.getElementById('vgPitch'); if(p) p.value=VG.pitch;
+  var v=document.getElementById('vgVoice'); if(v) v.value='';
+  var sw=document.getElementById('vgSwitchBtn'); if(sw) sw.classList.add('on');
+};
+
+setTimeout(function(){ buildSettingsUI(); }, 3000);
+setTimeout(function(){ buildSettingsUI(); }, 6000);
+setInterval(function(){
+  var admin = document.getElementById('adminSection');
+  if(admin && admin.style.display === 'block'){
+    var st = document.getElementById('adminSettingsTab');
+    if(st && st.style.display === 'block') buildSettingsUI();
+  }
+}, 4000);
+
+// ═══════════════════════════════════════════════════════
+// 🐛 DEBUG
+// ═══════════════════════════════════════════════════════
+window.VG_debug = function(){
+  console.log('=== VOICE GREETING v500 ===');
+  console.log('Config:', VG);
+  console.log('Supported:', 'speechSynthesis' in window);
+  if('speechSynthesis' in window){
+    var voices = window.speechSynthesis.getVoices();
+    console.log('Total voices:', voices.length);
+    voices.slice(0, 15).forEach(function(v){ console.log('  • ' + v.name + ' — ' + v.lang); });
+  }
+  if(typeof showToast === 'function') showToast('🔊 Check console','info');
+};
+
+window.VG_test = function(){
+  speakGreeting({
+    name: window.currentUser ? window.currentUser.name : 'Test Student',
+    class: window.currentUser ? window.currentUser.class : '10'
+  });
+};
+
+console.log('✅ Voice Greeting v500 ready');
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🎭 v501.0 — VOICE CHARACTER SELECTOR                     -->
+<!-- Male / Female / Child — pitch-based simulation            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<style id="voice-char-v501-css">
+.vg-char-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.vg-char-opt{padding:14px 8px;border-radius:12px;border:2px solid rgba(100,116,139,.2);background:#fff;cursor:pointer;text-align:center;transition:all .25s;user-select:none;-webkit-tap-highlight-color:transparent}
+.vg-char-opt:hover{border-color:#8b5cf6;background:#f5f3ff;transform:translateY(-2px)}
+.vg-char-opt:active{transform:scale(.96)}
+.vg-char-opt.active{border-color:#8b5cf6;background:linear-gradient(135deg,#f5f3ff,#ede9fe);box-shadow:0 4px 12px -6px rgba(139,92,246,.4)}
+.vg-char-opt .vgc-emoji{font-size:1.9rem;display:block;margin-bottom:6px;line-height:1;transition:transform .25s}
+.vg-char-opt.active .vgc-emoji{transform:scale(1.15)}
+.vg-char-opt .vgc-name{font-size:.76rem;font-weight:900;color:#0f172a;line-height:1.2}
+.vg-char-opt .vgc-desc{font-size:.58rem;color:#64748b;margin-top:3px;font-weight:700}
+.vg-char-test-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+.vg-char-test-row button{padding:8px;border-radius:9px;border:1px solid rgba(100,116,139,.25);background:#fff;font-family:inherit;font-size:.68rem;font-weight:800;cursor:pointer;color:#475569;transition:all .2s;min-height:36px}
+.vg-char-test-row button:hover{background:#f5f3ff;border-color:#8b5cf6;color:#7c3aed}
+.vg-char-test-row button:active{transform:scale(.95)}
+.vg-char-info{background:#ecfeff;border:1px solid rgba(8,145,178,.3);border-radius:9px;padding:8px 12px;font-size:.68rem;color:#0891b2;font-weight:700;line-height:1.55;margin-top:8px}
+</style>
+
+<script id="voice-char-v501-js">
+(function(){
+'use strict';
+console.log('🎭 Voice Character v501 loading...');
+
+var VC = { character: 'adult_male', loaded: false };
+window.VC = VC;
+
+// ═══════════════════════════════════════════════════════
+// 🎯 DETECT VOICE GENDER BY NAME
+// ═══════════════════════════════════════════════════════
+function detectGender(voiceName){
+  if(!voiceName) return 'unknown';
+  var n = voiceName.toLowerCase();
+  if(/\b(kalpana|lekha|priya|swara|heera|geeta|veena|zira|samantha|victoria|susan|karen|moira|tessa|fiona|female|woman)\b/.test(n)) return 'female';
+  if(/\b(ravi|rishi|hemant|madhur|david|mark|james|john|paul|george|thomas|daniel|alex|fred|diego|jorge|juan|carles|male|man)\b/.test(n)) return 'male';
+  if(/google uk english male|google us english male/.test(n)) return 'male';
+  if(/google uk english female|google us english female/.test(n)) return 'female';
+  return 'unknown';
+}
+
+// ═══════════════════════════════════════════════════════
+// 🎯 PICK VOICE BY CHARACTER
+// ═══════════════════════════════════════════════════════
+function pickVoiceForCharacter(character){
+  if(!('speechSynthesis' in window)) return null;
+  var voices = window.speechSynthesis.getVoices();
+  if(!voices || voices.length === 0) return null;
+
+  var lang = (window.VG && VG.lang) || 'ml-IN';
+  var langPrefix = lang.split('-')[0];
+  var langVoices = voices.filter(function(v){
+    return v.lang === lang || (v.lang && v.lang.toLowerCase().startsWith(langPrefix.toLowerCase()));
+  });
+  if(langVoices.length === 0) langVoices = voices.slice();
+
+  if(character === 'child'){
+    // No real child voices — pitch handles simulation
+    return null;
+  }
+
+  var wantGender = character === 'adult_male' ? 'male' : character === 'adult_female' ? 'female' : null;
+  if(!wantGender) return null;
+
+  // First: try same-language matching gender
+  var match = langVoices.find(function(v){ return detectGender(v.name) === wantGender; });
+  if(match){
+    console.log('🎯 Found ' + wantGender + ' voice in ' + lang + ':', match.name);
+    return match.name;
+  }
+
+  // Fallback: any language matching gender
+  match = voices.find(function(v){ return detectGender(v.name) === wantGender; });
+  if(match){
+    console.log('🎯 Found ' + wantGender + ' voice (other lang):', match.name, '(' + match.lang + ')');
+    return match.name;
+  }
+
+  console.log('⚠️ No ' + wantGender + ' voice found — using pitch simulation');
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════
+// 🎬 APPLY CHARACTER
+// ═══════════════════════════════════════════════════════
+function applyCharacter(character, silent){
+  VC.character = character;
+  var pitch, rate;
+  if(character === 'adult_male'){ pitch = 0.65; rate = 0.9; }
+  else if(character === 'adult_female'){ pitch = 1.1; rate = 0.9; }
+  else if(character === 'child'){ pitch = 1.75; rate = 1.1; }
+  else { pitch = 1.0; rate = 0.9; }
+
+  if(window.VG){
+    VG.pitch = pitch;
+    VG.rate = rate;
+    var vn = pickVoiceForCharacter(character);
+    if(vn) VG.voiceName = vn;
+    else if(character === 'child') VG.voiceName = null;
+  }
+
+  document.querySelectorAll('.vg-char-opt').forEach(function(el){
+    el.classList.toggle('active', el.dataset.char === character);
+  });
+
+  if(!silent && navigator.vibrate) try { navigator.vibrate(10); } catch(e){}
+  console.log('🎭 Character:', character, '| pitch:', pitch, '| rate:', rate, '| voice:', (window.VG && VG.voiceName) || 'auto');
+}
+
+window.VC_set = function(character){
+  applyCharacter(character, false);
+  var pf = document.getElementById('vgPitch'); if(pf) pf.value = VG.pitch.toFixed(1);
+  var rf = document.getElementById('vgRate'); if(rf) rf.value = VG.rate.toFixed(1);
+  var vf = document.getElementById('vgVoice'); if(vf) vf.value = VG.voiceName || '';
+};
+
+window.VC_test = function(character){
+  var prev = window.VG ? { pitch: VG.pitch, rate: VG.rate, voiceName: VG.voiceName, enabled: VG.enabled } : null;
+  applyCharacter(character, true);
+  if(window.VG) VG.enabled = true;
+  var testStudent = { name: 'Test Student', class: '10' };
+  if(window.currentUser) testStudent = { name: currentUser.name, class: currentUser.class };
+  if(typeof window.vgSpeak === 'function') window.vgSpeak(testStudent);
+  setTimeout(function(){
+    if(prev && window.VG) Object.assign(window.VG, prev);
+    var pf = document.getElementById('vgPitch'); if(pf && prev) pf.value = prev.pitch;
+    var rf = document.getElementById('vgRate'); if(rf && prev) rf.value = prev.rate;
+    var vf = document.getElementById('vgVoice'); if(vf && prev) vf.value = prev.voiceName || '';
+  }, 600);
+};
+
+// ═══════════════════════════════════════════════════════
+// 🎨 INJECT CHARACTER UI INTO SETTINGS
+// ═══════════════════════════════════════════════════════
+function injectCharacterUI(){
+  var section = document.querySelector('.voice-greeting-settings');
+  if(!section) return false;
+  if(section.querySelector('.vg-char-row')) return true;
+
+  var pitchInput = section.querySelector('input#vgPitch');
+  var targetRow = pitchInput ? pitchInput.closest('.vg-row') : null;
+  if(!targetRow) return false;
+
+  var charBlock = document.createElement('div');
+  charBlock.className = 'vg-field';
+  charBlock.innerHTML =
+    '<label>🎭 Voice Character (ശബ്ദ തരം)</label>' +
+    '<div class="vg-char-row">' +
+      '<div class="vg-char-opt" data-char="adult_male" onclick="VC_set(\'adult_male\')">' +
+        '<span class="vgc-emoji">👨</span>' +
+        '<div class="vgc-name">Male</div>' +
+        '<div class="vgc-desc">പുരുഷ ശബ്ദം</div>' +
+      '</div>' +
+      '<div class="vg-char-opt" data-char="adult_female" onclick="VC_set(\'adult_female\')">' +
+        '<span class="vgc-emoji">👩</span>' +
+        '<div class="vgc-name">Female</div>' +
+        '<div class="vgc-desc">സ്ത്രീ ശബ്ദം</div>' +
+      '</div>' +
+      '<div class="vg-char-opt" data-char="child" onclick="VC_set(\'child\')">' +
+        '<span class="vgc-emoji">👶</span>' +
+        '<div class="vgc-name">Child</div>' +
+        '<div class="vgc-desc">കുട്ടിയുടെ ശബ്ദം</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="vg-char-test-row">' +
+      '<button type="button" onclick="VC_test(\'adult_male\')">▶️ Male</button>' +
+      '<button type="button" onclick="VC_test(\'adult_female\')">▶️ Female</button>' +
+      '<button type="button" onclick="VC_test(\'child\')">▶️ Child</button>' +
+    '</div>' +
+    '<div class="vg-char-info">' +
+      '<i class="fas fa-info-circle"></i> <b>Male voice</b> — pitch താഴ്ത്തി simulate. ' +
+      '<b>Child</b> — pitch കൂട്ടി simulate. ' +
+      'Real male/child voices device-ൽ install ചെയ്താൽ auto-detect ചെയ്യും.' +
+    '</div>';
+
+  targetRow.parentNode.insertBefore(charBlock, targetRow);
+  applyCharacter(VC.character, true);
+  console.log('✅ Character UI injected');
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════
+// 🪝 PATCH vgTest & vgSave
+// ═══════════════════════════════════════════════════════
+var _origVgTest = window.vgTest;
+window.vgTest = function(){
+  applyCharacter(VC.character, true);
+  if(typeof _origVgTest === 'function') return _origVgTest.apply(this, arguments);
+};
+
+var _origVgSave = window.vgSave;
+window.vgSave = async function(){
+  applyCharacter(VC.character, true);
+  if(typeof _origVgSave === 'function') await _origVgSave.apply(this, arguments);
+  try {
+    await supabaseClient.from('settings').upsert({ key: 'voice_greeting_character', value: VC.character }, { onConflict: 'key' });
+    if(typeof showToast === 'function') showToast('✅ Character saved','success');
+  } catch(e){ console.warn('save char:', e); }
+};
+
+// ═══════════════════════════════════════════════════════
+// 📥 LOAD CHARACTER FROM DB
+// ═══════════════════════════════════════════════════════
+async function loadCharacter(){
+  if(typeof supabaseClient === 'undefined' || !supabaseClient) return;
+  try {
+    var r = await supabaseClient.from('settings').select('value').eq('key','voice_greeting_character').maybeSingle();
+    if(r.data && r.data.value){
+      VC.character = r.data.value;
+      VC.loaded = true;
+      setTimeout(function(){ applyCharacter(VC.character, true); }, 500);
+      console.log('✅ Character loaded:', VC.character);
+    }
+  } catch(e){}
+}
+
+setTimeout(loadCharacter, 1200);
+setTimeout(loadCharacter, 3000);
+
+// ═══════════════════════════════════════════════════════
+// 🔄 RE-INJECT ON SETTINGS OPEN
+// ═══════════════════════════════════════════════════════
+setTimeout(injectCharacterUI, 4500);
+setTimeout(injectCharacterUI, 7500);
+setInterval(function(){
+  var admin = document.getElementById('adminSection');
+  if(admin && admin.style.display === 'block'){
+    var st = document.getElementById('adminSettingsTab');
+    if(st && st.style.display === 'block') injectCharacterUI();
+  }
+}, 3000);
+
+// ═══════════════════════════════════════════════════════
+// 🐛 DEBUG
+// ═══════════════════════════════════════════════════════
+window.VC_debug = function(){
+  console.log('=== VOICE CHARACTER v501 ===');
+  console.log('Current character:', VC.character);
+  console.log('VG pitch:', window.VG ? VG.pitch : '?');
+  console.log('VG rate:', window.VG ? VG.rate : '?');
+  console.log('VG voice:', window.VG ? VG.voiceName : '?');
+  console.log('--- Available voices ---');
+  if('speechSynthesis' in window){
+    window.speechSynthesis.getVoices().forEach(function(v){
+      var g = detectGender(v.name);
+      var tag = g === 'male' ? '👨' : g === 'female' ? '👩' : '❓';
+      console.log(tag + ' ' + v.name + ' — ' + v.lang);
+    });
+  }
+  if(typeof showToast === 'function') showToast('🎭 Check console','info');
+};
+
+console.log('✅ Voice Character v501 ready');
+})();
+</script>
+
 </body>
 </html>
