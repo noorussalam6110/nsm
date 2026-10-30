@@ -322,7 +322,7 @@ body:not(.login-active)::before{content:'';position:fixed;inset:-30%;z-index:0;p
 .pala-amount{font-size:clamp(2.4rem,8vw,3.4rem);font-weight:900;line-height:1;margin-top:14px;display:inline-block;background:linear-gradient(100deg,#fff,#67e8f9 55%,#a9cdff);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;letter-spacing:-1px}
 .pala-status{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;font-weight:700;color:#fff;margin-top:8px}
 .pala-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.pala-btn{border:none;font-family:inherit;font-weight:800;font-size:.84rem;padding:12px 22px;border-radius:15px;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:.22s}
+.pala-btn{border:none;font-family:inherit;font-weight:800;font-size:.84rem;padding:12px 22px;border-radius:15px;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:.22s;position:relative;overflow:hidden}
 .pala-btn.primary{background:#fff;color:#1a4fc4}
 .pala-btn.ghost{background:rgba(255,255,255,.2);color:#fff;border:1.4px solid rgba(255,255,255,.35)}
 .pala-btn:hover{opacity:.92}
@@ -437,7 +437,7 @@ body:not(.login-active)::before{content:'';position:fixed;inset:-30%;z-index:0;p
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-tx{text-align:center;padding:30px 10px;color:#64748b}
 .empty-state{padding:30px;text-align:center;color:#64748b;font-size:.88rem}
-.btn-load,.btn-update,.btn-pdf,.btn-cancel,.btn-gradient{border:none;font-family:inherit;font-weight:800;cursor:pointer;transition:.22s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn-load,.btn-update,.btn-pdf,.btn-cancel,.btn-gradient{border:none;font-family:inherit;font-weight:800;cursor:pointer;transition:.22s;display:inline-flex;align-items:center;gap:8px;justify-content:center;position:relative;overflow:hidden}
 .btn-load{padding:9px 19px;border-radius:40px;background:linear-gradient(100deg,#1e6be0,#1547a8);color:#fff;font-size:.79rem}
 .btn-update{padding:12px 28px;border-radius:60px;background:linear-gradient(100deg,#22d3ee,#2b7cf0);color:#fff;font-size:.88rem}
 .btn-pdf{background:linear-gradient(100deg,#b91c1c,#ef4444);color:#fff;padding:8px 16px;border-radius:40px;font-size:.72rem}
@@ -36900,15 +36900,7 @@ document.addEventListener('touchend', function(e) {
         transform: scale(0.94) !important;
       }
 
-      .action-tile .v140-ripple {
-        position: absolute;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(59,130,246,0.35) 0%, rgba(59,130,246,0) 70%);
-        transform: scale(0);
-        animation: v140Ripple 0.6s ease-out;
-        pointer-events: none;
-        z-index: 1;
-      }
+      /* Ripple CSS removed */
 
       @keyframes v140Ripple {
         to { transform: scale(3.5); opacity: 0; }
@@ -37109,33 +37101,9 @@ document.addEventListener('touchend', function(e) {
   // ═══════════════════════════════════════════════════
   // 🎯 RIPPLE EFFECT ON TAP
   // ═══════════════════════════════════════════════════
-  function attachRipple(el) {
-    if (!el || el._v140Ripple) return;
-    el._v140Ripple = true;
-
-    el.addEventListener('touchstart', function(e) {
-      var rect = el.getBoundingClientRect();
-      var t = e.touches[0];
-      var size = Math.max(rect.width, rect.height);
-
-      var ripple = document.createElement('span');
-      ripple.className = 'v140-ripple';
-      ripple.style.width = size + 'px';
-      ripple.style.height = size + 'px';
-      ripple.style.left = (t.clientX - rect.left - size / 2) + 'px';
-      ripple.style.top = (t.clientY - rect.top - size / 2) + 'px';
-
-      // Remove previous ripple
-      var old = el.querySelector('.v140-ripple');
-      if (old) old.remove();
-
-      el.appendChild(ripple);
-
-      setTimeout(function() {
-        if (ripple.parentNode) ripple.remove();
-      }, 650);
-    }, { passive: true });
-  }
+      function attachRipple(el) {
+        return; // Ripple effect removed to fix button size bug
+      }
 
   function attachRipples() {
     document.querySelectorAll('.action-tile, .hub-card, .stat-card-neon, .btn-load, .btn-update, .btn-cancel, .pala-btn, .nsm-btn-primary').forEach(attachRipple);
