@@ -6075,11 +6075,36 @@ async function showExtracurricular(){
 /* ============================================================ */
 function showProfileCard(){
   modalTitleSpan.innerText="👤 Profile";
-  var p=hasPhoto(currentUser.photo)?'<img src="'+currentUser.photo+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:3.5rem;font-weight:800;color:#fff;">'+(currentUser.avatar||'S')+'</span>';
+  var p=hasPhoto(currentUser.photo)?'<img src="'+currentUser.photo+'" style="width:100% !important;height:100% !important;object-fit:cover;">':'<span style="font-size:4rem;font-weight:800;color:#fff;">'+(currentUser.avatar||'S')+'</span>';
   
   var html = '<div class="text-center mb-3">';
-  // 🔥 പ്രൊഫൈൽ പിക്ചർ വലുതാക്കാൻ !important ഉപയോഗിച്ചു (150px)
-  html += '<div class="profile-photo-wrapper mx-auto mb-2"><div class="avatar-neon" style="width:150px !important; height:150px !important; border-radius:50% !important; border:4px solid #fff; box-shadow:0 8px 24px -8px rgba(0,0,0,0.3);">'+p+'</div><div class="photo-edit-btn" onclick="openProfilePhotoPicker()" style="width:40px !important; height:40px !important; font-size:1.1rem !important;"><i class="fas fa-camera"></i></div></div>';
+  html += '<div class="profile-photo-wrapper mx-auto mb-2" style="width:150px; height:150px;"><div class="avatar-neon" style="width:150px !important; height:150px !important; border-radius:50% !important; border:4px solid #fff; box-shadow:0 8px 24px -8px rgba(0,0,0,0.3);">'+p+'</div><div class="photo-edit-btn" onclick="openProfilePhotoPicker()" style="width:44px !important; height:44px !important; font-size:1.2rem !important; bottom:0; right:0;"><i class="fas fa-camera"></i></div></div>';
+  html += '<h4 style="color:#0f172a;margin-bottom:4px;font-weight:900;font-size:1.3rem;">'+escapeHtml(currentUser.name)+'</h4>';
+  html += '<small style="color:#64748b;font-weight:700;font-size:.85rem;">Class '+(currentUser.class||'—')+' • Roll '+(currentUser.roll||'—')+'</small></div>';
+
+  var hasPin = window.currentUser.pin && String(window.currentUser.pin).length === 4;
+  
+  // Change PIN - നേരിട്ട് പുതിയ പിൻ സെറ്റ് ചെയ്യാൻ 'setup' മോഡിലേക്ക് പോകുന്നു
+  html += '<button onclick="closeModal(\'globalModal\'); setTimeout(function(){ IOS_PIN_open(window.currentUser, \'setup\'); }, 150);" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid rgba(139,92,246,.3);background:linear-gradient(135deg,#f5f3ff,#ede9fe);color:#5b21b6;font-family:inherit;font-weight:800;font-size:.86rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;box-shadow:0 4px 12px -4px rgba(139,92,246,.3);"><i class="fas fa-shield-alt"></i> ' + (hasPin ? 'Change Security PIN' : 'Set Security PIN') + '</button>';
+
+  html += '<div style="background:#f8fafc;padding:12px 16px;border-radius:16px;border:1px solid rgba(100,116,139,.15);font-size:.9rem;">';
+  html += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(100,116,139,.2);"><small style="color:#64748b;font-weight:700;">Student ID</small><span style="color:#0f172a;font-weight:800;">'+escapeHtml(currentUser.studentId)+'</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(100,116,139,.2);"><small style="color:#64748b;font-weight:700;">Roll</small><span style="color:#0f172a;font-weight:800;">'+escapeHtml(currentUser.roll||'N/A')+'</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(100,116,139,.2);"><small style="color:#64748b;font-weight:700;">Father</small><span style="color:#0f172a;font-weight:800;">'+escapeHtml(currentUser.fatherName||'N/A')+'</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(100,116,139,.2);"><small style="color:#64748b;font-weight:700;">Phone</small><span style="color:#0f172a;font-weight:800;">'+escapeHtml(currentUser.phone||'N/A')+'</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(100,116,139,.2);"><small style="color:#64748b;font-weight:700;">DOB</small><span style="color:#0f172a;font-weight:800;">'+(currentUser.dob?formatDate(currentUser.dob):'N/A')+'</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(100,116,139,.2);"><small style="color:#64748b;font-weight:700;">Blood</small><span style="color:#0f172a;font-weight:800;">'+escapeHtml(currentUser.bloodGroup||'N/A')+'</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;padding:8px 0;"><small style="color:#64748b;font-weight:700;">Address</small><span style="color:#0f172a;font-weight:800;text-align:right;max-width:65%;">'+escapeHtml(currentUser.address||'N/A')+'</span></div>';
+  html += '</div>';
+  
+  html += '<div class="d-flex gap-2 mt-4 flex-wrap">';
+  html += '<button class="btn-update flex-grow-1" onclick="closeModal(\'globalModal\'); setTimeout(function(){ openEditProfile(); }, 150);" style="background:linear-gradient(100deg,#1e6be0,#22d3ee);color:#fff;box-shadow:0 8px 20px -8px rgba(30,107,224,.7);padding:12px;font-size:.9rem;"><i class="fas fa-pen"></i> Edit Profile</button>';
+  html += '<button class="btn-update flex-grow-1" onclick="closeModal(\'globalModal\'); setTimeout(function(){ showIdCard(); }, 150);" style="background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#fff;box-shadow:0 8px 20px -8px rgba(245,158,11,.7);padding:12px;font-size:.9rem;"><i class="fas fa-id-card"></i> ID Card</button>';
+  html += '</div>';
+  
+  modalBodyDiv.innerHTML=html;
+  modal.style.display='flex';
+}
   html += '<h4 style="color:#0f172a;margin-bottom:4px;font-weight:900;font-size:1.3rem;">'+escapeHtml(currentUser.name)+'</h4>';
   html += '<small style="color:#64748b;font-weight:700;font-size:.85rem;">Class '+(currentUser.class||'—')+' • Roll '+(currentUser.roll||'—')+'</small></div>';
 
@@ -6119,7 +6144,7 @@ function openEditProfile(){
   document.getElementById('editPhone').value=currentUser.phone||'';
   document.getElementById('editBloodGroup').value=currentUser.bloodGroup||'';
   document.getElementById('editAddress').value=currentUser.address||'';
-  document.getElementById('editPassword').value='';
+  // editPassword ഒഴിവാക്കിയതിനാൽ ഇവിടെ നിന്ന് കളഞ്ഞു
   var prev=document.getElementById('editPhotoPreview');
   if(prev){
     var p=hasPhoto(currentUser.photo)?'<img src="'+currentUser.photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':'<span style="font-size:2rem;font-weight:800;color:#fff;">'+(currentUser.avatar||'S')+'</span>';
@@ -42715,7 +42740,7 @@ tr.adm-row-inactive-hidden { display: none !important; }
 .ios-pin-cancel, .ios-pin-forgot { background: transparent; border: none; color: #0a84ff; font-size: 1.05rem; font-weight: 500; cursor: pointer; padding: 12px 10px; -webkit-tap-highlight-color: transparent; min-height: 44px; }
 .ios-pin-cancel:active, .ios-pin-forgot:active { opacity: 0.5; }
 @keyframes iosPinShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-8px); } }
-body.ios-pin-active .mob-bottom-nav, body.ios-pin-active .ai-fab, body.ios-pin-active .chat-fab { display: none !important; }
+body.ios-pin-active .mob-bottom-nav, body.ios-pin-active .ai-fab, body.ios-pin-active .chat-fab, body.ios-pin-active #chatFab, body.ios-pin-active #waBotFab { display: none !important; }
 @media (max-width: 400px) { .ios-key { width: 62px; height: 62px; font-size: 1.65rem; } .ios-keypad { gap: 14px; } .ios-pin-header { margin-bottom: 22px; } .ios-pin-title { font-size: 1.15rem; } .ios-pin-sub { font-size: 0.85rem; } .ios-pin-dots { margin-bottom: 32px; gap: 14px; } .ios-pin-dot { width: 12px; height: 12px; } .ios-pin-actions { margin-top: 18px; } }
 @media (max-height: 640px) { .ios-pin-header { margin-bottom: 18px; } .ios-pin-dots { margin-bottom: 28px; } .ios-key { width: 62px; height: 62px; font-size: 1.65rem; } .ios-keypad { gap: 14px; } .ios-pin-actions { margin-top: 16px; } }
 </style>
