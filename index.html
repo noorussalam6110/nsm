@@ -42948,11 +42948,21 @@ function hookLoginFlow() {
     const raw = sidInput.value.trim().toUpperCase();
     if (!raw) return showToast('Student ID നൽകുക', 'error');
     
-    const ap = (typeof DEFAULT_ADMIN_PASSWORD !== 'undefined') ? DEFAULT_ADMIN_PASSWORD : 'MADRASA2026';
-    const savedAp = localStorage.getItem('admin_password') || ap;
+    // പുതിയ സുരക്ഷാ ഫിക്സ്: ഡാറ്റാബേസിൽ നിന്ന് മാത്രം അഡ്മിൻ പാസ്‌വേഡ് എടുക്കുക
+    let actualAdminPass = 'MADRASA2026'; 
+    try {
+      const sr = await supabaseClient.from('settings').select('value').eq('key', 'adminPassword').maybeSingle();
+      if (sr.data && sr.data.value) {
+        actualAdminPass = sr.data.value; // ഡാറ്റാബേസിലെ പുതിയ പാസ്‌വേഡ്
+      } else {
+        actualAdminPass = localStorage.getItem('admin_password') || 'MADRASA2026';
+      }
+    } catch(e) {
+      actualAdminPass = localStorage.getItem('admin_password') || 'MADRASA2026';
+    }
     
-    // Admin Login Bypass
-    if (raw === savedAp || raw === ap) {
+    // Admin Login Bypass (പുതിയ പാസ്‌വേഡ് മാത്രം ചെക്ക് ചെയ്യും)
+    if (raw === actualAdminPass) {
       if (typeof showLoading === 'function') showLoading(true);
       try {
         isAdminMode = true; currentAdminClass = '';
