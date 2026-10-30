@@ -2825,17 +2825,14 @@ setTimeout(loadMalayalamFontForPDF, 2000);
     <div class="action-tile" data-action="results" onclick="showResultsModal()"><div class="action-ico c-results"><i class="fas fa-chart-simple"></i></div><h6>റിസൾട്ട്</h6></div>
     <div class="action-tile" data-action="attendance" onclick="showAttendanceReport()"><div class="action-ico c-attendance"><i class="fas fa-calendar-week"></i></div><h6>ഹാജർ</h6></div>
     <div class="action-tile" data-action="moral" onclick="showMoralValuesModal()"><div class="action-ico c-moral"><i class="fas fa-hand-holding-heart"></i></div><h6>മൂല്യം</h6></div>
-    <div class="action-tile" data-action="profile" onclick="showProfileCard()"><div class="action-ico c-profile"><i class="fas fa-user-astronaut"></i></div><h6>പ്രൊഫൈൽ</h6></div>
     <div class="action-tile" data-action="marks" onclick="showExamMarks()"><div class="action-ico c-marks"><i class="fas fa-file-alt"></i></div><h6>മാർക്സ്</h6></div>
     <div class="action-tile" data-action="timetable" onclick="showTimetable()"><div class="action-ico c-timetable"><i class="fas fa-clock"></i></div><h6>ടൈംടേബിൾ</h6></div>
     <div class="action-tile" data-action="homework" onclick="showHomework()"><div class="action-ico c-homework"><i class="fas fa-book"></i></div><h6>ഹോംവർക്ക്</h6></div>
     <div class="action-tile" data-action="library" onclick="showLibrary()"><div class="action-ico c-library"><i class="fas fa-book-open"></i></div><h6>ലൈബ്രറി</h6></div>
     <div class="action-tile" data-action="idcard" onclick="showIdCard()"><div class="action-ico c-idcard"><i class="fas fa-id-card"></i></div><h6>ID കാർഡ്</h6></div>
-    <div class="action-tile" data-action="palathulli" onclick="openPassbook()"><div class="action-ico c-palathulli"><i class="fas fa-piggy-bank"></i></div><h6>പലതുള്ളി</h6></div>
     <div class="action-tile" data-action="extracurricular" onclick="showExtracurricular()"><div class="action-ico c-activity"><i class="fas fa-palette"></i></div><h6>ആക്ടിവിറ്റി</h6></div>
     <div class="action-tile" data-action="competitions" onclick="showCompetitions()"><div class="action-ico c-competition"><i class="fas fa-trophy"></i></div><h6>മൽസരങ്ങൾ</h6></div>
     <div class="action-tile" data-action="creations" onclick="openCreationsGallery()"><div class="action-ico c-creations"><i class="fas fa-paint-brush"></i></div><h6>കലാസൃഷ്ടി</h6></div>
-    <div class="action-tile" data-action="sksbv" onclick="goToSKSBV()"><div class="action-ico" style="background:linear-gradient(145deg,#0891b2,#22d3ee)"><i class="fas fa-users"></i></div><h6>സാഹിത്യ സമാജം</h6></div>
     <div class="action-tile" data-action="report" onclick="openReportOptions()"><div class="action-ico c-report"><i class="fas fa-file-pdf"></i></div><h6>Report</h6></div>
     <div class="action-tile" data-action="studentzone" onclick="goToStudentZone()"><div class="action-ico cy"><i class="fas fa-graduation-cap"></i></div><h6>Student Zone</h6></div>
     <div class="action-tile" data-action="fees" onclick="goToFees()"><div class="action-ico gold"><i class="fas fa-money-bill-wave"></i></div><h6>ഫീസ്</h6></div>
@@ -11516,16 +11513,24 @@ async function checkUnreadNotifications(){
   try{
     // 👇 Admin-നു admin notifications കൂടി കാണണം
     var isAdmin = (typeof isAdminMode !== 'undefined' && isAdminMode) || window.isAdminMode === true;
-    var q = supabaseClient.from('notifications').select('id, created_at');
+    var q = supabaseClient.from('notifications').select('id, created_at, target_type, target_student, target_class, title');
     if (isAdmin) {
       q = q.in('target_type', ['all', 'admin']);
+    } else if (currentUser) {
+      var _cls = (currentUser.class && currentUser.class !== 'N/A') ? String(currentUser.class) : '__none__';
+      var _sid = currentUser.studentId;
+      q = q.or('target_type.eq.all,target_student.eq.' + _sid + ',and(target_type.eq.class,target_class.eq.' + _cls + ')');
     } else {
       q = q.eq('target_type', 'all');
     }
     var r = await q.order('created_at',{ascending:false}).limit(50);
     if(r.error)return 0;
     var lastRead=parseInt(localStorage.getItem('lastReadNotifTime')||'0');
-    var unread=(r.data||[]).filter(function(n){return new Date(n.created_at).getTime()>lastRead;});
+    var unread=(r.data||[]).filter(function(n){
+      if (!n) return false;
+      if (n.target_type === 'teacher' || n.target_type === 'admin') return false;
+      return new Date(n.created_at).getTime() > lastRead;
+    });
     await updateAppBadge(unread.length);
     var lb=document.getElementById('loginNotifBadge');
     if(lb){
@@ -15380,8 +15385,7 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
 
     const newTiles = [
       { action: 'quiz', icon: '🎯', label: 'Quiz', color: 'linear-gradient(145deg,#667eea,#764ba2)', onclick: 'openQuizModal()' },
-      { action: 'rewards', icon: '🎁', label: 'Rewards', color: 'linear-gradient(145deg,#fbbf24,#f59e0b)', onclick: 'openRewardsModal()' },
-      { action: 'avatar', icon: '🎨', label: 'Avatar', color: 'linear-gradient(145deg,#ec4899,#f472b6)', onclick: 'openAvatarCustomizer()' }
+      { action: 'rewards', icon: '🎁', label: 'Rewards', color: 'linear-gradient(145deg,#fbbf24,#f59e0b)', onclick: 'openRewardsModal()' }
     ];
 
     newTiles.forEach(t => {
@@ -18674,8 +18678,7 @@ setTimeout(function() {
     if (grid.querySelector('[data-action="avatar_custom"]')) return;
 
     const tiles = [
-      { action: 'avatar_custom', icon: '🎨', label: 'Avatar', color: 'linear-gradient(145deg,#a855f7,#ec4899)', onclick: 'window.openAvatarCustomizer()' },
-      { action: 'class_chat', icon: '💬', label: 'Chat', color: 'linear-gradient(145deg,#22c55e,#10b981)', onclick: 'window.openChatPanel()' }
+      { action: 'avatar_custom', icon: '🎨', label: 'Avatar', color: 'linear-gradient(145deg,#a855f7,#ec4899)', onclick: 'window.openAvatarCustomizer()' }
     ];
 
     tiles.forEach(t => {
@@ -23331,74 +23334,6 @@ CREATE INDEX IF NOT EXISTS idx_creation_likes_lookup ON creation_likes(creation_
   console.log('   • Admin → XP Bonus tab');
   console.log('   • Presets + Custom amounts');
   console.log('   • Individual + Batch add');
-})();
-</script>
-
-<script>
-/* ═══════════════════════════════════════════════════════ */
-/* 🎨 v41.0 — QUICK ACTIONS CLEANUP                         */
-/* Remove duplicates + Hide Tasbeeh tile                    */
-/* ═══════════════════════════════════════════════════════ */
-(function(){
-  'use strict';
-  console.log('🎨 Quick Actions Cleanup v41.0 loading...');
-
-  function cleanupQuickActions() {
-    var grid = document.getElementById('quickActionsGrid');
-    if (!grid) return;
-
-    // ─── 1. Remove duplicate Avatar tile ───
-    var avatarTiles = grid.querySelectorAll('.action-tile[data-action="avatar"]');
-    // Keep the one from v29 (has onclick openAvatarCustomizer), remove v28's
-    avatarTiles.forEach(function(tile) {
-      // v28 version — remove it
-      tile.remove();
-      console.log('🗑️ Removed duplicate Avatar tile');
-    });
-
-    // ─── 3. Verify no duplicates remain ───
-    var actions = {};
-    grid.querySelectorAll('.action-tile').forEach(function(tile) {
-      var action = tile.dataset.action;
-      if (!action) return;
-      if (actions[action]) {
-        tile.remove();
-        console.log('🗑️ Removed duplicate action:', action);
-      } else {
-        actions[action] = true;
-      }
-    });
-
-    console.log('✅ Quick Actions cleaned —', grid.querySelectorAll('.action-tile:not([style*="display: none"])').length, 'visible tiles');
-  }
-
-  // Run after tiles load
-  setTimeout(cleanupQuickActions, 500);
-  setTimeout(cleanupQuickActions, 1500);
-  setTimeout(cleanupQuickActions, 3000);
-  setTimeout(cleanupQuickActions, 5000);
-
-  // Watch for re-additions
-  var dash = document.getElementById('dashboardSection');
-  if (dash) {
-    new MutationObserver(function(mutations) {
-      mutations.forEach(function(m) {
-        if (m.addedNodes.length > 0) {
-          m.addedNodes.forEach(function(n) {
-            if (n.nodeType === 1 && n.classList && n.classList.contains('action-tile')) {
-              setTimeout(cleanupQuickActions, 200);
-            }
-          });
-        }
-      });
-    }).observe(dash, { childList: true, subtree: true });
-  }
-
-  // Expose manual trigger
-  window.cleanupQuickActions = cleanupQuickActions;
-
-  console.log('✅ Quick Actions Cleanup v41.0 ready');
-  console.log('   💡 Run cleanupQuickActions() to re-run manually');
 })();
 </script>
 
@@ -35011,13 +34946,17 @@ document.addEventListener('touchend', function(e) {
     var loggedIn = body.classList.contains('logged-in');
     var isAdmin = window.isAdminMode === true;
     var isTeacher = window.isTeacherMode === true;
+    var pinActive = body.classList.contains('ios-pin-active') ||
+                    body.classList.contains('modal-open') ||
+                    body.classList.contains('ai-panel-open') ||
+                    body.classList.contains('chat-panel-open');
     var adminSec = document.getElementById('adminSection');
     var adminVisible = adminSec && adminSec.style.display === 'block';
 
-    // Chat FAB → only logged-in students
+    // Chat FAB → only logged-in students (hidden during PIN entry)
     var cf = document.getElementById('chatFab');
     if (cf) {
-      if (loggedIn && window.currentUser && !isAdmin && !isTeacher) {
+      if (loggedIn && window.currentUser && !isAdmin && !isTeacher && !pinActive) {
         cf.classList.add('show');
         cf.style.setProperty('display', 'flex', 'important');
       } else {
@@ -42921,7 +42860,8 @@ function showError(msg) {
 async function savePinAndLogin(student, pin, mode) {
   document.getElementById('iosPinDots').style.opacity = '0.5';
   try {
-    const r = await supabaseClient.from('students').update({ pin: pin }).eq('studentid', student.studentid);
+    const _pinSid = student.studentid || student.studentId;
+    const r = await supabaseClient.from('students').update({ pin: pin }).eq('studentid', _pinSid);
     if (r.error) throw r.error;
     
     student.pin = pin;
@@ -42939,7 +42879,8 @@ async function savePinAndLogin(student, pin, mode) {
       
       setTimeout(function() {
         IOS_PIN_close();
-        if (mode === 'setup_confirm') {
+        // Only re-login if from actual login flow (student.studentid comes from DB)
+        if (mode === 'setup_confirm' && student.studentid) {
           doLogin(student);
         } else {
           if (typeof showToast === 'function') showToast('✅ PIN updated successfully!', 'success');
@@ -42976,7 +42917,8 @@ window.IOS_PIN_forgot = function() {
   if (!phone) return;
 
   if (typeof showLoading === 'function') showLoading(true);
-  supabaseClient.from('students').select('phone, parent_mobile').eq('studentid', targetStudent.studentid).single().then(function(res) {
+  var _fpSid = targetStudent.studentid || targetStudent.studentId;
+  supabaseClient.from('students').select('phone, parent_mobile').eq('studentid', _fpSid).single().then(function(res) {
     if (typeof showLoading === 'function') showLoading(false);
     if (res.error || !res.data) return showToast('❌ വിവരങ്ങൾ ലഭ്യമായില്ല', 'error');
 
