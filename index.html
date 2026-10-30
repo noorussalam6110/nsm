@@ -210,7 +210,7 @@ body:not(.login-active)::before{content:'';position:fixed;inset:-30%;z-index:0;p
 .nsm-input#studentId::placeholder{text-transform:none;letter-spacing:0;font-weight:500}
 .nsm-hint{font-size:.66rem!important;color:#fff!important;-webkit-text-fill-color:#fff!important;display:flex;align-items:center;gap:5px;font-weight:700;text-shadow:0 2px 5px rgba(0,0,0,.95);opacity:.95}
 .nsm-hint i{color:#ffd966!important}
-.nsm-btn-primary{width:100%;border:none;padding:13px 22px;border-radius:14px;font-family:inherit;font-weight:800;font-size:.94rem;letter-spacing:.8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;background:linear-gradient(100deg,#1547a8 0%,#2b7cf0 40%,#22d3ee 75%,#3b8bff 100%)!important;background-size:220% 100%!important;animation:btnBlueFlow 6s ease infinite;box-shadow:0 16px 34px -14px rgba(34,211,238,.95),0 0 0 1px rgba(212,175,55,.55) inset!important;position:relative;overflow:hidden;transition:all .3s!important}
+.nsm-btn-primary{width:100%;border:none;padding:13px 22px;border-radius:14px;font-family:inherit;font-weight:800;font-size:.94rem;letter-spacing:.8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;background:linear-gradient(100deg,#1547a8 0%,#2b7cf0 40%,#22d3ee 75%,#3b8bff 100%)!important;box-shadow:0 16px 34px -14px rgba(34,211,238,.95),0 0 0 1px rgba(212,175,55,.55) inset!important;position:relative;overflow:hidden;transition:opacity 0.2s!important;height:auto!important;min-height:50px!important;flex-shrink:0!important}
 @keyframes btnBlueFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 .nsm-btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent 30%,rgba(255,215,120,.4) 50%,transparent 70%);transition:left .75s ease}
 .nsm-btn-primary:hover{transform:translateY(-2px);box-shadow:0 22px 44px -14px rgba(34,211,238,1),0 0 0 1.5px rgba(255,215,120,.8) inset!important}
@@ -902,16 +902,46 @@ body.ai-panel-open .ai-fab{display:none!important}
   .nsm-card-sub{font-size:.62rem!important;letter-spacing:2.5px!important}
   .nsm-tabs{padding:3px!important;margin-bottom:12px!important}
   .nsm-tab{padding:9px 6px!important;font-size:.7rem!important;min-height:36px!important}
-  .nsm-form{gap:11px!important; align-items: stretch !important}
+  .nsm-form{gap:12px!important; align-items: stretch !important; display: flex !important; flex-direction: column !important;}
   .nsm-input-wrap{min-height:46px!important;padding:0 12px!important;border-radius:12px!important}
   .nsm-input{padding:11px 0!important;font-size:16px!important}
   .nsm-input::placeholder{font-size:13px!important}
   .nsm-hint{font-size:.62rem!important}
-  /* 🔧 iOS Safari Flex Stretch & Hover Bug Fix */
-  .nsm-btn-primary{height:48px!important;max-height:48px!important;flex-shrink:0!important;flex-grow:0!important;padding:0 18px!important;font-size:.88rem!important;border-radius:13px!important;justify-content:center!important;transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease !important; -webkit-appearance:none!important; transform: none !important}
-  .nsm-btn-secondary{height:46px!important;max-height:46px!important;flex-shrink:0!important;flex-grow:0!important;padding:0 16px!important;font-size:.82rem!important;border-radius:13px!important;justify-content:center!important;transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease !important; -webkit-appearance:none!important; transform: none !important}
+  
+  /* 🔧 iOS Safari Flex Stretch & Button Bug Fix v2 */
+  .nsm-btn-primary, .nsm-btn-secondary {
+    height: auto !important;
+    min-height: 50px !important;
+    max-height: none !important;
+    flex: none !important;
+    padding: 10px 15px !important;
+    border-radius: 13px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: normal !important;
+    line-height: 1.3 !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    transition: opacity 0.2s ease !important;
+    animation: none !important; /* iOS Safari repaint bug fix */
+  }
+  
+  .nsm-btn-primary { font-size: .82rem !important; }
+  .nsm-btn-secondary { font-size: .78rem !important; }
+  
+  /* Home & Teacher Access കണ്ടെയ്നർ നീളുന്നത് തടയാൻ */
+  .nsm-form > div[style*="display:flex"] {
+    flex: none !important;
+    height: auto !important;
+    min-height: 50px !important;
+  }
+  
   .nsm-btn-primary::before, .nsm-btn-primary::after { display: none !important; }
-  .nsm-btn-primary:active, .nsm-btn-secondary:active { transform: none !important; opacity: 0.8 !important; }
+  .nsm-btn-primary:active, .nsm-btn-secondary:active { transform: none !important; opacity: 0.7 !important; }
+  .nsm-btn-primary span, .nsm-btn-secondary span { display: inline-block; text-align: center; }
   .nsm-card-footer{margin-top:12px!important;padding-top:10px!important}
   .nsm-footer-chips span{font-size:.54rem!important;padding:4px 10px!important}
   .nsm-copyright{margin-top:6px!important;font-size:.56rem!important}
@@ -4581,6 +4611,9 @@ if(studentIdInput)studentIdInput.addEventListener('input',function(){
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   if (!supabaseClient) { showToast('System loading. Refresh.', 'error'); return; }
+  
+  // iOS Keyboard ഉടൻ ക്ലോസ് ചെയ്യാൻ
+  if (document.activeElement) document.activeElement.blur();
 
   var raw = studentIdInput.value.trim().toUpperCase();
   if (!raw) { showToast('Enter Student ID', 'error'); return; }
@@ -42697,18 +42730,19 @@ body.ios-pin-active .mob-bottom-nav, body.ios-pin-active .ai-fab, body.ios-pin-a
   </div>
   <div class="ios-pin-dots" id="iosPinDots"></div>
   <div class="ios-keypad">
-    <button class="ios-key" onclick="IOS_PIN_type('1')">1</button>
-    <button class="ios-key" onclick="IOS_PIN_type('2')">2<span class="ios-key-letters">ABC</span></button>
-    <button class="ios-key" onclick="IOS_PIN_type('3')">3<span class="ios-key-letters">DEF</span></button>
-    <button class="ios-key" onclick="IOS_PIN_type('4')">4<span class="ios-key-letters">GHI</span></button>
-    <button class="ios-key" onclick="IOS_PIN_type('5')">5<span class="ios-key-letters">JKL</span></button>
-    <button class="ios-key" onclick="IOS_PIN_type('6')">6<span class="ios-key-letters">MNO</span></button>
-    <button class="ios-key" onclick="IOS_PIN_type('7')">7<span class="ios-key-letters">PQRS</span></button>
-    <button class="ios-key" onclick="IOS_PIN_type('8')">8<span class="ios-key-letters">TUV</span></button>
-    <button class="ios-key" onclick="IOS_PIN_type('9')">9<span class="ios-key-letters">WXYZ</span></button>
-    <button class="ios-key empty"></button>
-    <button class="ios-key" onclick="IOS_PIN_type('0')">0</button>
-    <button class="ios-key delete-btn" onclick="IOS_PIN_delete()"><i class="fas fa-backspace"></i></button>
+  <div class="ios-keypad">
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('1')">1</button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('2')">2<span class="ios-key-letters">ABC</span></button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('3')">3<span class="ios-key-letters">DEF</span></button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('4')">4<span class="ios-key-letters">GHI</span></button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('5')">5<span class="ios-key-letters">JKL</span></button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('6')">6<span class="ios-key-letters">MNO</span></button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('7')">7<span class="ios-key-letters">PQRS</span></button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('8')">8<span class="ios-key-letters">TUV</span></button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('9')">9<span class="ios-key-letters">WXYZ</span></button>
+    <button type="button" class="ios-key empty"></button>
+    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('0')">0</button>
+    <button type="button" class="ios-key delete-btn" onpointerdown="event.preventDefault(); IOS_PIN_delete()"><i class="fas fa-backspace"></i></button>
   </div>
   <button class="ios-pin-forgot" id="iosPinForgotBtn" onclick="IOS_PIN_forgot()" style="display:none;">Forgot PIN?</button>
   <button class="ios-pin-cancel" onclick="IOS_PIN_close()">Cancel</button>
@@ -43489,447 +43523,6 @@ setInterval(function(){
   }, 4000);
 
   console.log('✅ v150 ready');
-})();
-</script>
-
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!-- 📱 v250.0 — MOBILE BUTTON ZOOM FIX                        -->
-<!-- ═══════════════════════════════════════════════════════════ -->
-<style id="mobile-no-zoom-v250">
-/* ═══════════════════════════════════════════════════════ */
-/* 1️⃣ Kill ALL hover-transform effects on touch devices   */
-/* (iOS sticks :hover after tap → buttons look huge)      */
-/* ═══════════════════════════════════════════════════════ */
-@media (hover: none), (pointer: coarse), (max-width: 900px) {
-
-  /* All elements that scale UP on hover */
-  .action-tile:hover,
-  .action-tile:hover .action-ico,
-  .avatar-neon:hover,
-  .emoji-item:hover,
-  .emoji-cat-btn:hover,
-  .ai-send:hover:not(:disabled),
-  .ai-suggestion:hover,
-  .wa-bot-fab:hover,
-  .chat-fab:hover,
-  .lb-card:hover,
-  .hub-card:hover,
-  .reward-card:hover,
-  .palathulli-hero:hover,
-  .mission-item:hover,
-  .quiz-option:hover:not(.disabled),
-  .sksbv-hero-reg:hover,
-  .stat-card-neon:hover,
-  .creation-card:hover,
-  .friend-item:hover,
-  .chat-dropdown-item:hover,
-  .popup-option:hover,
-  .nfc-scan-btn:hover,
-  .nfc-continue-btn:hover,
-  .pin-chip:hover,
-  .pin-manager-btn:active,
-  .pm-gen-btn:active,
-  .ios-key:hover,
-  .chat-action-btn:hover,
-  .chat-header-action:hover,
-  .reward-redeem-btn:hover:not(:disabled),
-  .downloaded-card:hover,
-  .lesson-card:hover,
-  .notice-item:hover,
-  .download-card:hover,
-  .library-item:hover,
-  .guide-detail-btn:hover,
-  .guide-back-btn:hover {
-    transform: none !important;
-  }
-
-  /* Also disable focus-transform expansions */
-  .avatar-neon:focus,
-  .emoji-item:focus,
-  .emoji-cat-btn:focus,
-  .ai-send:focus,
-  .quiz-option:focus,
-  .sksbv-hero-reg:focus {
-    transform: none !important;
-    outline: none !important;
-  }
-
-  /* Empty hover-state backgrounds shouldn't expand */
-  .btn-load:hover,
-  .btn-update:hover,
-  .btn-cancel:hover,
-  .btn-pdf:hover,
-  .pala-btn:hover,
-  .nsm-btn-primary:hover,
-  .nsm-btn-secondary:hover,
-  .admin-tab:hover:not(.active),
-  .chat-tab:hover,
-  .chat-tab-side:hover,
-  .mob-nav-item:hover:not(.active) {
-    transform: none !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════ */
-/* 2️⃣ Harden tap behavior — no zoom, no long-press select  */
-/* ═══════════════════════════════════════════════════════ */
-button,
-[role="button"],
-.action-tile,
-.mob-nav-item,
-.nsm-tab,
-.admin-tab,
-.btn-load,
-.btn-update,
-.btn-cancel,
-.btn-pdf,
-.icon-btn,
-.theme-toggle,
-.btn-exit,
-.btn-sm,
-.ios-key,
-.ios-pin-cancel,
-.ios-pin-forgot,
-.ios-pin-dot,
-.chat-action-btn,
-.chat-header-action,
-.chat-dropdown-item,
-.chat-tab,
-.chat-tab-side,
-.chat-send-btn,
-.chat-emoji-btn,
-.chat-photo-btn,
-.chat-msg-delete-btn,
-.chat-reaction-pill,
-.pala-btn,
-.reward-redeem-btn,
-.quiz-option,
-.nfc-scan-btn,
-.nfc-continue-btn,
-.emoji-item,
-.emoji-cat-btn,
-.friend-item,
-.action-ico,
-.stat-card-neon,
-.hub-card,
-.lb-card,
-.mission-item,
-.pin-chip,
-.pm-gen-btn,
-.pin-manager-btn,
-.pm-input,
-.popup-option,
-.avatar-color-swatch,
-.av-option,
-.av-style-tab,
-.nsm-nav-link,
-.nsm-nav-badge,
-.notif-badge,
-.new-badge,
-.friend-avatar,
-.reward-card,
-.creation-card,
-.download-card,
-.lesson-card,
-.notice-item,
-.library-item,
-.pin-setting-switch,
-.hero-chip,
-.nav-item {
-  touch-action: manipulation !important;
-  -webkit-tap-highlight-color: transparent !important;
-  -webkit-touch-callout: none !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
-}
-
-/* ═══════════════════════════════════════════════════════ */
-/* 3️⃣ Prevent iOS input focus zoom (font-size < 16px)     */
-/* ═══════════════════════════════════════════════════════ */
-@media (max-width: 900px) {
-  input:not([type="checkbox"]):not([type="radio"]),
-  textarea,
-  select {
-    font-size: 16px !important;
-    -webkit-text-size-adjust: 100% !important;
-    text-size-adjust: 100% !important;
-  }
-
-  /* Re-allow text selection in text fields */
-  input, textarea, [contenteditable] {
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    -webkit-touch-callout: default !important;
-    touch-action: auto !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════ */
-/* 4️⃣ Fixed z-index prevent flip (some buttons z-index    */
-/*    jump on tap due to focus)                            */
-/* ═══════════════════════════════════════════════════════ */
-@media (hover: none) {
-  button:focus,
-  [role="button"]:focus,
-  .action-tile:focus,
-  .ios-key:focus,
-  .chat-action-btn:focus {
-    outline: none !important;
-    box-shadow: none !important;
-  }
-  /* Preserve intentional focus rings only on inputs */
-  input:focus,
-  textarea:focus,
-  select:focus {
-    outline: 2px solid #8b5cf6 !important;
-    outline-offset: 1px !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════ */
-/* 5️⃣ iOS Keypad — extra hardening (rapid taps zoom)      */
-/* ═══════════════════════════════════════════════════════ */
-.ios-key {
-  touch-action: manipulation !important;
-  -webkit-tap-highlight-color: transparent !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -webkit-touch-callout: none !important;
-}
-.ios-keypad {
-  touch-action: manipulation !important;
-  -webkit-tap-highlight-color: transparent !important;
-}
-</style>
-
-<script id="mobile-no-zoom-js-v250">
-/* ═══════════════════════════════════════════════════════════ */
-/* 📱 v250.0 — Double-tap & pinch zoom prevention             */
-/* ═══════════════════════════════════════════════════════════ */
-(function(){
-  'use strict';
-  if (window._mobileZoomFixV250) return;
-  window._mobileZoomFixV250 = true;
-
-  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-  if (!isTouch) {
-    console.log('ℹ️ v250 zoom fix skipped (no touch device)');
-    return;
-  }
-
-  // ═══════════════════════════════════════════════════════
-  // 1️⃣ Prevent double-tap zoom on interactive elements
-  // ═══════════════════════════════════════════════════════
-  var lastTapTime = 0;
-  var lastTapX = 0, lastTapY = 0;
-  var DOUBLE_TAP_MS = 320;
-  var TAP_DISTANCE = 30;
-
-  document.addEventListener('touchend', function(e) {
-    var now = Date.now();
-    var touch = e.changedTouches && e.changedTouches[0];
-    if (!touch) return;
-
-    var dx = Math.abs(touch.clientX - lastTapX);
-    var dy = Math.abs(touch.clientY - lastTapY);
-    var dt = now - lastTapTime;
-
-    // Detect double-tap (within 320ms, < 30px movement)
-    if (dt > 0 && dt <= DOUBLE_TAP_MS && dx < TAP_DISTANCE && dy < TAP_DISTANCE) {
-      var target = e.target;
-      // Only prevent on interactive elements (avoid breaking text selection)
-      var isInteractive = target && (
-        target.closest('button, a, [role="button"], .action-tile, .mob-nav-item, .ios-key, .emoji-item, .chat-dropdown-item, .chat-tab, .nsm-tab, .admin-tab, .pin-chip, .pm-gen-btn, .pin-manager-btn, .quiz-option, .nfc-scan-btn, .nfc-continue-btn, .popup-option, .reward-redeem-btn, .friend-item, .av-option, .av-color-swatch')
-      );
-
-      if (isInteractive) {
-        // ⭐ FIX: Don't block rapid taps on buttons / PIN keypad
-        // iOS already handles double-tap on <button> natively
-        return;
-      }
-    }
-
-    lastTapTime = now;
-    lastTapX = touch.clientX;
-    lastTapY = touch.clientY;
-  }, { passive: false });
-
-  // ═══════════════════════════════════════════════════════
-  // 2️⃣ Prevent pinch zoom (iOS ignores user-scalable=no)
-  // ═══════════════════════════════════════════════════════
-  document.addEventListener('gesturestart', function(e) {
-    e.preventDefault();
-  }, { passive: false });
-
-  document.addEventListener('gesturechange', function(e) {
-    e.preventDefault();
-  }, { passive: false });
-
-  document.addEventListener('gestureend', function(e) {
-    e.preventDefault();
-  }, { passive: false });
-
-  // ═══════════════════════════════════════════════════════
-  // 3️⃣ Prevent scroll-zoom (ctrl+wheel on trackpad)
-  // ═══════════════════════════════════════════════════════
-  document.addEventListener('wheel', function(e) {
-    if (e.ctrlKey) e.preventDefault();
-  }, { passive: false });
-
-  // ═══════════════════════════════════════════════════════
-  // 4️⃣ iOS focus zoom fix — ensure inputs have 16px+
-  // ═══════════════════════════════════════════════════════
-  var fixFontSize = function(el) {
-    if (!el || el._fsFixed) return;
-    if (el.tagName === 'INPUT' && (el.type === 'checkbox' || el.type === 'radio')) return;
-    try {
-      var fs = parseFloat(window.getComputedStyle(el).fontSize) || 0;
-      if (fs < 16) {
-        el.style.fontSize = '16px';
-      }
-      el._fsFixed = true;
-    } catch(e) {}
-  };
-
-  var scanInputs = function(root) {
-    if (!root) return;
-    if (root.matches && root.matches('input, textarea, select')) fixFontSize(root);
-    if (root.querySelectorAll) {
-      root.querySelectorAll('input, textarea, select').forEach(fixFontSize);
-    }
-  };
-
-  // Initial scan
-  var initScan = function() {
-    document.querySelectorAll('input, textarea, select').forEach(fixFontSize);
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initScan);
-  } else {
-    initScan();
-  }
-
-  // Watch for new inputs (modals, dynamic forms)
-  var inputObserver = new MutationObserver(function(muts) {
-    muts.forEach(function(m) {
-      m.addedNodes.forEach(function(n) {
-        if (n.nodeType === 1) scanInputs(n);
-      });
-    });
-  });
-
-  var attachObserver = function() {
-    if (document.body) {
-      inputObserver.observe(document.body, { childList: true, subtree: true });
-    } else {
-      setTimeout(attachObserver, 100);
-    }
-  };
-  attachObserver();
-
-  // ═══════════════════════════════════════════════════════
-  // 5️⃣ Force reset stuck :hover states (iOS Safari bug)
-  // ═══════════════════════════════════════════════════════
-  var lastHoverReset = 0;
-  document.addEventListener('touchend', function(e) {
-    var now = Date.now();
-    if (now - lastHoverReset < 250) return;
-    lastHoverReset = now;
-
-    // Blur any focused element (clears :focus-based scale)
-    var active = document.activeElement;
-    if (active && active !== document.body &&
-        active.tagName !== 'INPUT' &&
-        active.tagName !== 'TEXTAREA' &&
-        active.tagName !== 'SELECT') {
-      // Don't blur inputs (keeps keyboard open)
-      try { active.blur(); } catch(e) {}
-    }
-  }, { passive: true });
-
-  console.log('✅ v250 mobile zoom fix active');
-  console.log('   ✔ Double-tap zoom prevented');
-  console.log('   ✔ Pinch zoom prevented');
-  console.log('   ✔ Hover-scale disabled');
-  console.log('   ✔ Input focus zoom fixed');
-})();
-</script>
-
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!-- 🔧 v234.0 — iOS PIN TRANSITION FIX (Keyboard & Overlay)   -->
-<!-- ═══════════════════════════════════════════════════════════ -->
-<script id="pin-transition-fix-v234">
-(function(){
-  'use strict';
-  console.log('🔧 PIN Transition Fix v234 loading...');
-
-  // 1. iOS-ൽ കീബോർഡ് ഉടൻ ക്ലോസ് ചെയ്യാനും, PIN ഉടനടി കാണാനും ഉള്ള ഫിക്സ്
-  var _origOpen = window.IOS_PIN_open;
-  if (typeof _origOpen === 'function' && !_origOpen._v234) {
-    window.IOS_PIN_open = async function(student, mode) {
-      // 🔥 STEP 1: iOS Keyboard ഉടൻ ക്ലോസ് ചെയ്യുക
-      if (document.activeElement && document.activeElement.tagName === 'INPUT') {
-        document.activeElement.blur();
-      }
-      
-      // 🔥 STEP 2: Scroll Top-ലേക്ക് കൊണ്ടുവരിക (iOS viewport fix)
-      window.scrollTo(0, 0);
-
-      // 🔥 STEP 3: Loading Overlay ഉടൻ ഹൈഡ് ചെയ്യുക
-      var loader = document.getElementById('loadingOverlay');
-      if (loader) loader.style.display = 'none';
-
-      // 🔥 STEP 4: പഴയ ഓവർലേ ഉണ്ടെങ്കിൽ ഉടൻ റീസെറ്റ് ചെയ്യുക
-      var overlay = document.getElementById('iosPinOverlay');
-      if (overlay) overlay.classList.remove('open');
-      
-      // 🔥 STEP 5: കുറച്ചു നേരത്തേക്ക് Overlay ഓപ്പൺ ചെയ്യുക (Loading കാണിക്കാൻ)
-      if (overlay) {
-        overlay.classList.add('open');
-        document.body.classList.add('ios-pin-active');
-      }
-
-      // 🔥 STEP 6: അടിസ്ഥാന ഫങ്ക്ഷൻ വിളിക്കുക (DB-യിൽ നിന്ന് PIN ലോഡ് ചെയ്യാൻ)
-      try {
-        await _origOpen.call(this, student, mode);
-      } catch(e) {
-        console.warn('PIN load error, logging in directly:', e);
-        // എന്തെങ്കിലും എറർ വന്നാൽ നേരിട്ട് ലോഗിൻ ചെയ്യിക്കുക
-        if (typeof window.doLogin === 'function') window.doLogin(student);
-      }
-    };
-    window.IOS_PIN_open._v234 = true;
-    console.log('✅ IOS_PIN_open hardened for iOS');
-  }
-
-  // 2. Login Form Submit ചെയ്യുമ്പോൾ കീബോർഡ് ഉടൻ ക്ലോസ് ചെയ്യുക
-  var form = document.getElementById('loginForm');
-  if (form && !form._v234) {
-    form.addEventListener('submit', function(e) {
-      // UID ഇൻപുട്ടിൽ നിന്ന് ഫോക്കസ് എടുത്തു കളയുക
-      var sidInput = document.getElementById('studentId');
-      if (sidInput) sidInput.blur();
-    }, true);
-    form._v234 = true;
-  }
-  
-  // 3. പൊതുവേയുള്ള ഒരു സേഫ്റ്റി ചെക്ക് (Safety Net)
-  setInterval(function() {
-    var overlay = document.getElementById('iosPinOverlay');
-    var loader = document.getElementById('loadingOverlay');
-    
-    // Overlay ഓപ്പൺ ആണെങ്കിൽ, Loading ഉണ്ടെങ്കിൽ അത് ഹൈഡ് ചെയ്യുക
-    if (overlay && overlay.classList.contains('open')) {
-      if (loader && loader.style.display === 'flex') {
-        loader.style.display = 'none';
-      }
-    }
-  }, 500);
-
-  console.log('✅ v234 ready — No more stuck keyboard!');
 })();
 </script>
 </body>
