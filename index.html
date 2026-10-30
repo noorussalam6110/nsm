@@ -15322,13 +15322,17 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
         time_taken: timeTaken,
         answers: quizState.answers
       });
+      
       if (qInsert.error) {
-        console.error('Quiz insert error:', qInsert.error);
-        if (typeof showToast === 'function') showToast('⚠️ Quiz saved failed (Check DB)', 'error');
+        console.error("Supabase Insert Error:", qInsert.error);
+        showToast('❌ DB Error: ' + qInsert.error.message, 'error');
       } else {
         await awardXP(xpEarned, `Quiz: ${score}/${total}`);
       }
-    } catch(e) { console.warn(e); }
+    } catch(e) { 
+      console.warn(e); 
+      showToast('❌ System Error: ' + e.message, 'error');
+    }
 
     body.innerHTML = `
       <div class="quiz-result">
