@@ -7060,7 +7060,7 @@ async function downloadStudentsPDF(){
 
     doc.autoTable({
       startY: tableStartY,
-      head: [['#', 'Roll', 'Name', 'Class', 'Phone', 'Student ID', 'Signature']],
+      head: [['#', 'Roll', 'Name', 'Class', 'Student ID', 'Phone', 'Signature']],
       body: tableBody, theme: 'grid',
       styles: { fontSize: 8, cellPadding: 6, textColor: [0, 0, 0], lineColor: [200, 215, 240], lineWidth: 0.3 },
       headStyles: { fillColor: [21, 71, 168], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 9, halign: 'center' },
@@ -42728,6 +42728,11 @@ function haptic() { if (navigator.vibrate) try { navigator.vibrate(10); } catch(
 // 🎬 OPEN / CLOSE
 // ═══════════════════════════════════════════════════════
 window.IOS_PIN_open = function(student, mode) {
+  // ✅ Fix: Mobile Keyboard Auto-Close (Blur active input)
+  if (document.activeElement && typeof document.activeElement.blur === 'function') {
+    document.activeElement.blur();
+  }
+
   targetStudent = student;
   pinMode = mode || 'login';
   currentPin = "";
