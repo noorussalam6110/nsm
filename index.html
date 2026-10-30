@@ -902,13 +902,16 @@ body.ai-panel-open .ai-fab{display:none!important}
   .nsm-card-sub{font-size:.62rem!important;letter-spacing:2.5px!important}
   .nsm-tabs{padding:3px!important;margin-bottom:12px!important}
   .nsm-tab{padding:9px 6px!important;font-size:.7rem!important;min-height:36px!important}
-  .nsm-form{gap:11px!important}
+  .nsm-form{gap:11px!important; align-items: stretch !important}
   .nsm-input-wrap{min-height:46px!important;padding:0 12px!important;border-radius:12px!important}
   .nsm-input{padding:11px 0!important;font-size:16px!important}
   .nsm-input::placeholder{font-size:13px!important}
   .nsm-hint{font-size:.62rem!important}
-  .nsm-btn-primary{padding:13px 18px!important;font-size:.88rem!important;min-height:48px!important;border-radius:13px!important}
-  .nsm-btn-secondary{padding:12px 16px!important;font-size:.82rem!important;min-height:46px!important;border-radius:13px!important}
+  /* 🔧 iOS Safari Flex Stretch & Hover Bug Fix */
+  .nsm-btn-primary{height:48px!important;max-height:48px!important;flex-shrink:0!important;flex-grow:0!important;padding:0 18px!important;font-size:.88rem!important;border-radius:13px!important;justify-content:center!important;transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease !important; -webkit-appearance:none!important; transform: none !important}
+  .nsm-btn-secondary{height:46px!important;max-height:46px!important;flex-shrink:0!important;flex-grow:0!important;padding:0 16px!important;font-size:.82rem!important;border-radius:13px!important;justify-content:center!important;transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease !important; -webkit-appearance:none!important; transform: none !important}
+  .nsm-btn-primary::before, .nsm-btn-primary::after { display: none !important; }
+  .nsm-btn-primary:active, .nsm-btn-secondary:active { transform: none !important; opacity: 0.8 !important; }
   .nsm-card-footer{margin-top:12px!important;padding-top:10px!important}
   .nsm-footer-chips span{font-size:.54rem!important;padding:4px 10px!important}
   .nsm-copyright{margin-top:6px!important;font-size:.56rem!important}
@@ -43742,9 +43745,9 @@ button,
       );
 
       if (isInteractive) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
+        // ⭐ FIX: Don't block rapid taps on buttons / PIN keypad
+        // iOS already handles double-tap on <button> natively
+        return;
       }
     }
 
@@ -43852,6 +43855,81 @@ button,
   console.log('   ✔ Pinch zoom prevented');
   console.log('   ✔ Hover-scale disabled');
   console.log('   ✔ Input focus zoom fixed');
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔧 v234.0 — iOS PIN TRANSITION FIX (Keyboard & Overlay)   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script id="pin-transition-fix-v234">
+(function(){
+  'use strict';
+  console.log('🔧 PIN Transition Fix v234 loading...');
+
+  // 1. iOS-ൽ കീബോർഡ് ഉടൻ ക്ലോസ് ചെയ്യാനും, PIN ഉടനടി കാണാനും ഉള്ള ഫിക്സ്
+  var _origOpen = window.IOS_PIN_open;
+  if (typeof _origOpen === 'function' && !_origOpen._v234) {
+    window.IOS_PIN_open = async function(student, mode) {
+      // 🔥 STEP 1: iOS Keyboard ഉടൻ ക്ലോസ് ചെയ്യുക
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+        document.activeElement.blur();
+      }
+      
+      // 🔥 STEP 2: Scroll Top-ലേക്ക് കൊണ്ടുവരിക (iOS viewport fix)
+      window.scrollTo(0, 0);
+
+      // 🔥 STEP 3: Loading Overlay ഉടൻ ഹൈഡ് ചെയ്യുക
+      var loader = document.getElementById('loadingOverlay');
+      if (loader) loader.style.display = 'none';
+
+      // 🔥 STEP 4: പഴയ ഓവർലേ ഉണ്ടെങ്കിൽ ഉടൻ റീസെറ്റ് ചെയ്യുക
+      var overlay = document.getElementById('iosPinOverlay');
+      if (overlay) overlay.classList.remove('open');
+      
+      // 🔥 STEP 5: കുറച്ചു നേരത്തേക്ക് Overlay ഓപ്പൺ ചെയ്യുക (Loading കാണിക്കാൻ)
+      if (overlay) {
+        overlay.classList.add('open');
+        document.body.classList.add('ios-pin-active');
+      }
+
+      // 🔥 STEP 6: അടിസ്ഥാന ഫങ്ക്ഷൻ വിളിക്കുക (DB-യിൽ നിന്ന് PIN ലോഡ് ചെയ്യാൻ)
+      try {
+        await _origOpen.call(this, student, mode);
+      } catch(e) {
+        console.warn('PIN load error, logging in directly:', e);
+        // എന്തെങ്കിലും എറർ വന്നാൽ നേരിട്ട് ലോഗിൻ ചെയ്യിക്കുക
+        if (typeof window.doLogin === 'function') window.doLogin(student);
+      }
+    };
+    window.IOS_PIN_open._v234 = true;
+    console.log('✅ IOS_PIN_open hardened for iOS');
+  }
+
+  // 2. Login Form Submit ചെയ്യുമ്പോൾ കീബോർഡ് ഉടൻ ക്ലോസ് ചെയ്യുക
+  var form = document.getElementById('loginForm');
+  if (form && !form._v234) {
+    form.addEventListener('submit', function(e) {
+      // UID ഇൻപുട്ടിൽ നിന്ന് ഫോക്കസ് എടുത്തു കളയുക
+      var sidInput = document.getElementById('studentId');
+      if (sidInput) sidInput.blur();
+    }, true);
+    form._v234 = true;
+  }
+  
+  // 3. പൊതുവേയുള്ള ഒരു സേഫ്റ്റി ചെക്ക് (Safety Net)
+  setInterval(function() {
+    var overlay = document.getElementById('iosPinOverlay');
+    var loader = document.getElementById('loadingOverlay');
+    
+    // Overlay ഓപ്പൺ ആണെങ്കിൽ, Loading ഉണ്ടെങ്കിൽ അത് ഹൈഡ് ചെയ്യുക
+    if (overlay && overlay.classList.contains('open')) {
+      if (loader && loader.style.display === 'flex') {
+        loader.style.display = 'none';
+      }
+    }
+  }, 500);
+
+  console.log('✅ v234 ready — No more stuck keyboard!');
 })();
 </script>
 </body>
