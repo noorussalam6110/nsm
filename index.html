@@ -934,9 +934,21 @@ body.ai-panel-open .ai-fab{display:none!important}
   
   /* Home & Teacher Access കണ്ടെയ്നർ നീളുന്നത് തടയാൻ */
   .nsm-form > div[style*="display:flex"] {
-    flex: none !important;
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
     height: auto !important;
     min-height: 50px !important;
+    gap: 10px !important;
+  }
+  
+  /* Force equal width for both side-by-side buttons */
+  .nsm-form > div[style*="display:flex"] > .nsm-btn-secondary {
+    flex: 1 1 0% !important;
+    width: 0 !important; /* Overrides default width: 100% */
+    padding: 10px 5px !important;
+    font-size: 0.75rem !important;
+    min-height: 46px !important;
   }
   
   .nsm-btn-primary::before, .nsm-btn-primary::after { display: none !important; }
@@ -1147,10 +1159,15 @@ body.ai-panel-open .ai-fab{display:none!important}
   #dashboardSection > .container,#adminSection > .container{padding-bottom:180px!important}
 }
 @media(max-width:520px){
-  .nsm-hero{height:160px;max-height:160px;padding:18px 20px 18px 24px;border-radius:0 0 20px 20px}
-  .nsm-hero-content::before{font-size:3.2rem;margin:0 0 2px -4px}
-  .nsm-hero-title{font-size:1.05rem!important;line-height:1.3!important}
-  .nsm-hero-highlight{font-size:1.05rem!important}
+  .nsm-hero{height:150px;max-height:150px;padding:16px 20px 16px 24px;border-radius:0 0 20px 20px}
+  .nsm-hero-content::before{font-size:2.8rem;margin:0 0 2px -4px}
+  .nsm-hero-title{font-size:1.02rem!important;line-height:1.28!important}
+  .nsm-hero-highlight{font-size:1.02rem!important}
+@media(max-width:400px){
+  .nsm-hero{height:130px!important;max-height:130px!important;padding:12px 16px 12px 20px!important}
+  .nsm-hero-content::before{font-size:2.4rem!important;margin:0 0 0 -4px!important}
+  .nsm-hero-title{font-size:.94rem!important;line-height:1.25!important}
+  .nsm-hero-highlight{font-size:.94rem!important}
   .nsm-hero-deco{font-size:4rem!important}
   .nsm-login-side{padding:12px 14px 8px;margin-top:-12px}
   .nsm-card{padding:18px 16px 14px;border-radius:20px}
@@ -42693,8 +42710,10 @@ tr.adm-row-inactive-hidden { display: none !important; }
 <!-- 📱 v601.0 — ALL-IN-ONE iOS PIN PAD (Login, Setup, Change) -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <style id="ios-pin-final-css">
-.ios-pin-overlay { position: fixed; inset: 0; background: #1c1c1e; z-index: 100999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; animation: iosPinFadeIn 0.3s ease; }
+.ios-pin-overlay { position: fixed; inset: 0; background: #1c1c1e; z-index: 100999; display: none; flex-direction: column; align-items: center; padding: max(24px, env(safe-area-inset-top, 24px)) 20px max(20px, env(safe-area-inset-bottom, 20px)); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; animation: iosPinFadeIn 0.3s ease; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
 .ios-pin-overlay.open { display: flex; }
+.ios-pin-overlay > .ios-pin-header { margin-top: auto; }
+.ios-pin-overlay > .ios-pin-actions { margin-bottom: auto; }
 @keyframes iosPinFadeIn { from { opacity: 0; transform: scale(1.05); } to { opacity: 1; transform: scale(1); } }
 .ios-pin-header { text-align: center; margin-bottom: 40px; color: #fff; }
 .ios-pin-title { font-size: 1.4rem; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.5px; }
@@ -42706,21 +42725,23 @@ tr.adm-row-inactive-hidden { display: none !important; }
 .ios-pin-dot.success { border-color: #30d158; background: #30d158; transform: scale(1.2); box-shadow: 0 0 22px rgba(48,209,88,.9); }
 .ios-pin-dot.error { border-color: #ff453a; background: #ff453a; animation: iosPinShake 0.4s ease; box-shadow: 0 0 14px rgba(255,69,58,.7); }
 @keyframes iosDotPop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.4); opacity: 1; } 100% { transform: scale(1.15); opacity: 1; } }
-.ios-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 320px; width: 100%; }
-.ios-key { width: 76px; height: 76px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; color: #fff; font-size: 2rem; font-weight: 400; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
-.ios-key { transition: background 0.15s, transform 0.15s cubic-bezier(.34,1.56,.64,1) !important; }
+.ios-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 320px; width: 100%; justify-items: center; align-items: center; flex-shrink: 0; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.ios-key { width: 76px; height: 76px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; color: #fff; font-size: 2rem; font-weight: 400; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-appearance: none; appearance: none; outline: none; touch-action: manipulation; transition: background 0.1s; }
+.ios-key .ios-key-letters, .ios-key i { pointer-events: none; }
+.ios-key { transition: background 0.08s ease-out, transform 0.08s ease-out !important; will-change: transform, background; }
 .ios-key:active, .ios-key.active { background: rgba(255, 255, 255, 0.3); transform: scale(0.88); }
 .ios-key.empty { background: transparent; pointer-events: none; }
 .ios-key .ios-key-letters { font-size: 0.6rem; font-weight: 600; letter-spacing: 1.5px; margin-top: -2px; }
 .ios-key.delete-btn { background: transparent; font-size: 1.3rem; padding-top: 5px; }
 .ios-key.delete-btn:active { transform: scale(0.88) rotate(-8deg); }
 .ios-key.delete-btn:active { background: rgba(255, 255, 255, 0.1); }
-.ios-pin-cancel { position: absolute; bottom: 40px; right: 30px; background: transparent; border: none; color: #0a84ff; font-size: 1.05rem; font-weight: 500; cursor: pointer; padding: 10px; }
-.ios-pin-forgot { position: absolute; bottom: 40px; left: 30px; background: transparent; border: none; color: #0a84ff; font-size: 1.05rem; font-weight: 500; cursor: pointer; padding: 10px; }
+.ios-pin-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 320px; margin-top: 24px; padding: 0 8px; flex-shrink: 0; gap: 12px; }
+.ios-pin-cancel, .ios-pin-forgot { background: transparent; border: none; color: #0a84ff; font-size: 1.05rem; font-weight: 500; cursor: pointer; padding: 12px 10px; -webkit-tap-highlight-color: transparent; min-height: 44px; }
 .ios-pin-cancel:active, .ios-pin-forgot:active { opacity: 0.5; }
 @keyframes iosPinShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-8px); } }
 body.ios-pin-active .mob-bottom-nav, body.ios-pin-active .ai-fab, body.ios-pin-active .chat-fab { display: none !important; }
-@media (max-width: 400px) { .ios-key { width: 68px; height: 68px; font-size: 1.8rem; } .ios-keypad { gap: 16px; } }
+@media (max-width: 400px) { .ios-key { width: 62px; height: 62px; font-size: 1.65rem; } .ios-keypad { gap: 14px; } .ios-pin-header { margin-bottom: 22px; } .ios-pin-title { font-size: 1.15rem; } .ios-pin-sub { font-size: 0.85rem; } .ios-pin-dots { margin-bottom: 32px; gap: 14px; } .ios-pin-dot { width: 12px; height: 12px; } .ios-pin-actions { margin-top: 18px; } }
+@media (max-height: 640px) { .ios-pin-header { margin-bottom: 18px; } .ios-pin-dots { margin-bottom: 28px; } .ios-key { width: 62px; height: 62px; font-size: 1.65rem; } .ios-keypad { gap: 14px; } .ios-pin-actions { margin-top: 16px; } }
 </style>
 
 <div id="iosPinOverlay" class="ios-pin-overlay">
@@ -42730,22 +42751,23 @@ body.ios-pin-active .mob-bottom-nav, body.ios-pin-active .ai-fab, body.ios-pin-a
   </div>
   <div class="ios-pin-dots" id="iosPinDots"></div>
   <div class="ios-keypad">
-  <div class="ios-keypad">
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('1')">1</button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('2')">2<span class="ios-key-letters">ABC</span></button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('3')">3<span class="ios-key-letters">DEF</span></button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('4')">4<span class="ios-key-letters">GHI</span></button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('5')">5<span class="ios-key-letters">JKL</span></button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('6')">6<span class="ios-key-letters">MNO</span></button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('7')">7<span class="ios-key-letters">PQRS</span></button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('8')">8<span class="ios-key-letters">TUV</span></button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('9')">9<span class="ios-key-letters">WXYZ</span></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('1')">1</button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('2')">2<span class="ios-key-letters">ABC</span></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('3')">3<span class="ios-key-letters">DEF</span></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('4')">4<span class="ios-key-letters">GHI</span></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('5')">5<span class="ios-key-letters">JKL</span></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('6')">6<span class="ios-key-letters">MNO</span></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('7')">7<span class="ios-key-letters">PQRS</span></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('8')">8<span class="ios-key-letters">TUV</span></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('9')">9<span class="ios-key-letters">WXYZ</span></button>
     <button type="button" class="ios-key empty"></button>
-    <button type="button" class="ios-key" onpointerdown="event.preventDefault(); IOS_PIN_type('0')">0</button>
-    <button type="button" class="ios-key delete-btn" onpointerdown="event.preventDefault(); IOS_PIN_delete()"><i class="fas fa-backspace"></i></button>
+    <button type="button" class="ios-key" onpointerdown="IOS_PIN_type('0')">0</button>
+    <button type="button" class="ios-key delete-btn" onpointerdown="IOS_PIN_delete()"><i class="fas fa-backspace"></i></button>
   </div>
-  <button class="ios-pin-forgot" id="iosPinForgotBtn" onclick="IOS_PIN_forgot()" style="display:none;">Forgot PIN?</button>
-  <button class="ios-pin-cancel" onclick="IOS_PIN_close()">Cancel</button>
+  <div class="ios-pin-actions">
+    <button class="ios-pin-forgot" id="iosPinForgotBtn" onclick="IOS_PIN_forgot()" style="display:none;">Forgot PIN?</button>
+    <button class="ios-pin-cancel" onclick="IOS_PIN_close()">Cancel</button>
+  </div>
 </div>
 
 <script id="ios-pin-master-js">
