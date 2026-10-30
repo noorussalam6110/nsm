@@ -43488,5 +43488,371 @@ setInterval(function(){
   console.log('✅ v150 ready');
 })();
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 📱 v250.0 — MOBILE BUTTON ZOOM FIX                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<style id="mobile-no-zoom-v250">
+/* ═══════════════════════════════════════════════════════ */
+/* 1️⃣ Kill ALL hover-transform effects on touch devices   */
+/* (iOS sticks :hover after tap → buttons look huge)      */
+/* ═══════════════════════════════════════════════════════ */
+@media (hover: none), (pointer: coarse), (max-width: 900px) {
+
+  /* All elements that scale UP on hover */
+  .action-tile:hover,
+  .action-tile:hover .action-ico,
+  .avatar-neon:hover,
+  .emoji-item:hover,
+  .emoji-cat-btn:hover,
+  .ai-send:hover:not(:disabled),
+  .ai-suggestion:hover,
+  .wa-bot-fab:hover,
+  .chat-fab:hover,
+  .lb-card:hover,
+  .hub-card:hover,
+  .reward-card:hover,
+  .palathulli-hero:hover,
+  .mission-item:hover,
+  .quiz-option:hover:not(.disabled),
+  .sksbv-hero-reg:hover,
+  .stat-card-neon:hover,
+  .creation-card:hover,
+  .friend-item:hover,
+  .chat-dropdown-item:hover,
+  .popup-option:hover,
+  .nfc-scan-btn:hover,
+  .nfc-continue-btn:hover,
+  .pin-chip:hover,
+  .pin-manager-btn:active,
+  .pm-gen-btn:active,
+  .ios-key:hover,
+  .chat-action-btn:hover,
+  .chat-header-action:hover,
+  .reward-redeem-btn:hover:not(:disabled),
+  .downloaded-card:hover,
+  .lesson-card:hover,
+  .notice-item:hover,
+  .download-card:hover,
+  .library-item:hover,
+  .guide-detail-btn:hover,
+  .guide-back-btn:hover {
+    transform: none !important;
+  }
+
+  /* Also disable focus-transform expansions */
+  .avatar-neon:focus,
+  .emoji-item:focus,
+  .emoji-cat-btn:focus,
+  .ai-send:focus,
+  .quiz-option:focus,
+  .sksbv-hero-reg:focus {
+    transform: none !important;
+    outline: none !important;
+  }
+
+  /* Empty hover-state backgrounds shouldn't expand */
+  .btn-load:hover,
+  .btn-update:hover,
+  .btn-cancel:hover,
+  .btn-pdf:hover,
+  .pala-btn:hover,
+  .nsm-btn-primary:hover,
+  .nsm-btn-secondary:hover,
+  .admin-tab:hover:not(.active),
+  .chat-tab:hover,
+  .chat-tab-side:hover,
+  .mob-nav-item:hover:not(.active) {
+    transform: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 2️⃣ Harden tap behavior — no zoom, no long-press select  */
+/* ═══════════════════════════════════════════════════════ */
+button,
+[role="button"],
+.action-tile,
+.mob-nav-item,
+.nsm-tab,
+.admin-tab,
+.btn-load,
+.btn-update,
+.btn-cancel,
+.btn-pdf,
+.icon-btn,
+.theme-toggle,
+.btn-exit,
+.btn-sm,
+.ios-key,
+.ios-pin-cancel,
+.ios-pin-forgot,
+.ios-pin-dot,
+.chat-action-btn,
+.chat-header-action,
+.chat-dropdown-item,
+.chat-tab,
+.chat-tab-side,
+.chat-send-btn,
+.chat-emoji-btn,
+.chat-photo-btn,
+.chat-msg-delete-btn,
+.chat-reaction-pill,
+.pala-btn,
+.reward-redeem-btn,
+.quiz-option,
+.nfc-scan-btn,
+.nfc-continue-btn,
+.emoji-item,
+.emoji-cat-btn,
+.friend-item,
+.action-ico,
+.stat-card-neon,
+.hub-card,
+.lb-card,
+.mission-item,
+.pin-chip,
+.pm-gen-btn,
+.pin-manager-btn,
+.pm-input,
+.popup-option,
+.avatar-color-swatch,
+.av-option,
+.av-style-tab,
+.nsm-nav-link,
+.nsm-nav-badge,
+.notif-badge,
+.new-badge,
+.friend-avatar,
+.reward-card,
+.creation-card,
+.download-card,
+.lesson-card,
+.notice-item,
+.library-item,
+.pin-setting-switch,
+.hero-chip,
+.nav-item {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 3️⃣ Prevent iOS input focus zoom (font-size < 16px)     */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+  }
+
+  /* Re-allow text selection in text fields */
+  input, textarea, [contenteditable] {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -webkit-touch-callout: default !important;
+    touch-action: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 4️⃣ Fixed z-index prevent flip (some buttons z-index    */
+/*    jump on tap due to focus)                            */
+/* ═══════════════════════════════════════════════════════ */
+@media (hover: none) {
+  button:focus,
+  [role="button"]:focus,
+  .action-tile:focus,
+  .ios-key:focus,
+  .chat-action-btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  /* Preserve intentional focus rings only on inputs */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid #8b5cf6 !important;
+    outline-offset: 1px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 5️⃣ iOS Keypad — extra hardening (rapid taps zoom)      */
+/* ═══════════════════════════════════════════════════════ */
+.ios-key {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+.ios-keypad {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+</style>
+
+<script id="mobile-no-zoom-js-v250">
+/* ═══════════════════════════════════════════════════════════ */
+/* 📱 v250.0 — Double-tap & pinch zoom prevention             */
+/* ═══════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  if (window._mobileZoomFixV250) return;
+  window._mobileZoomFixV250 = true;
+
+  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (!isTouch) {
+    console.log('ℹ️ v250 zoom fix skipped (no touch device)');
+    return;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 1️⃣ Prevent double-tap zoom on interactive elements
+  // ═══════════════════════════════════════════════════════
+  var lastTapTime = 0;
+  var lastTapX = 0, lastTapY = 0;
+  var DOUBLE_TAP_MS = 320;
+  var TAP_DISTANCE = 30;
+
+  document.addEventListener('touchend', function(e) {
+    var now = Date.now();
+    var touch = e.changedTouches && e.changedTouches[0];
+    if (!touch) return;
+
+    var dx = Math.abs(touch.clientX - lastTapX);
+    var dy = Math.abs(touch.clientY - lastTapY);
+    var dt = now - lastTapTime;
+
+    // Detect double-tap (within 320ms, < 30px movement)
+    if (dt > 0 && dt <= DOUBLE_TAP_MS && dx < TAP_DISTANCE && dy < TAP_DISTANCE) {
+      var target = e.target;
+      // Only prevent on interactive elements (avoid breaking text selection)
+      var isInteractive = target && (
+        target.closest('button, a, [role="button"], .action-tile, .mob-nav-item, .ios-key, .emoji-item, .chat-dropdown-item, .chat-tab, .nsm-tab, .admin-tab, .pin-chip, .pm-gen-btn, .pin-manager-btn, .quiz-option, .nfc-scan-btn, .nfc-continue-btn, .popup-option, .reward-redeem-btn, .friend-item, .av-option, .av-color-swatch')
+      );
+
+      if (isInteractive) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }
+
+    lastTapTime = now;
+    lastTapX = touch.clientX;
+    lastTapY = touch.clientY;
+  }, { passive: false });
+
+  // ═══════════════════════════════════════════════════════
+  // 2️⃣ Prevent pinch zoom (iOS ignores user-scalable=no)
+  // ═══════════════════════════════════════════════════════
+  document.addEventListener('gesturestart', function(e) {
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('gesturechange', function(e) {
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('gestureend', function(e) {
+    e.preventDefault();
+  }, { passive: false });
+
+  // ═══════════════════════════════════════════════════════
+  // 3️⃣ Prevent scroll-zoom (ctrl+wheel on trackpad)
+  // ═══════════════════════════════════════════════════════
+  document.addEventListener('wheel', function(e) {
+    if (e.ctrlKey) e.preventDefault();
+  }, { passive: false });
+
+  // ═══════════════════════════════════════════════════════
+  // 4️⃣ iOS focus zoom fix — ensure inputs have 16px+
+  // ═══════════════════════════════════════════════════════
+  var fixFontSize = function(el) {
+    if (!el || el._fsFixed) return;
+    if (el.tagName === 'INPUT' && (el.type === 'checkbox' || el.type === 'radio')) return;
+    try {
+      var fs = parseFloat(window.getComputedStyle(el).fontSize) || 0;
+      if (fs < 16) {
+        el.style.fontSize = '16px';
+      }
+      el._fsFixed = true;
+    } catch(e) {}
+  };
+
+  var scanInputs = function(root) {
+    if (!root) return;
+    if (root.matches && root.matches('input, textarea, select')) fixFontSize(root);
+    if (root.querySelectorAll) {
+      root.querySelectorAll('input, textarea, select').forEach(fixFontSize);
+    }
+  };
+
+  // Initial scan
+  var initScan = function() {
+    document.querySelectorAll('input, textarea, select').forEach(fixFontSize);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initScan);
+  } else {
+    initScan();
+  }
+
+  // Watch for new inputs (modals, dynamic forms)
+  var inputObserver = new MutationObserver(function(muts) {
+    muts.forEach(function(m) {
+      m.addedNodes.forEach(function(n) {
+        if (n.nodeType === 1) scanInputs(n);
+      });
+    });
+  });
+
+  var attachObserver = function() {
+    if (document.body) {
+      inputObserver.observe(document.body, { childList: true, subtree: true });
+    } else {
+      setTimeout(attachObserver, 100);
+    }
+  };
+  attachObserver();
+
+  // ═══════════════════════════════════════════════════════
+  // 5️⃣ Force reset stuck :hover states (iOS Safari bug)
+  // ═══════════════════════════════════════════════════════
+  var lastHoverReset = 0;
+  document.addEventListener('touchend', function(e) {
+    var now = Date.now();
+    if (now - lastHoverReset < 250) return;
+    lastHoverReset = now;
+
+    // Blur any focused element (clears :focus-based scale)
+    var active = document.activeElement;
+    if (active && active !== document.body &&
+        active.tagName !== 'INPUT' &&
+        active.tagName !== 'TEXTAREA' &&
+        active.tagName !== 'SELECT') {
+      // Don't blur inputs (keeps keyboard open)
+      try { active.blur(); } catch(e) {}
+    }
+  }, { passive: true });
+
+  console.log('✅ v250 mobile zoom fix active');
+  console.log('   ✔ Double-tap zoom prevented');
+  console.log('   ✔ Pinch zoom prevented');
+  console.log('   ✔ Hover-scale disabled');
+  console.log('   ✔ Input focus zoom fixed');
+})();
+</script>
 </body>
 </html>
