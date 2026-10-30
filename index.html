@@ -2394,56 +2394,6 @@ setTimeout(loadMalayalamFontForPDF, 2000);
   100% { opacity: 0; transform: translateY(-120px) scale(.6); }
 }
 </style>
-<style id="mobile-button-sticky-hover-fix">
-/* മൊബൈലിൽ ബട്ടണുകൾ ക്ലിക്ക് ചെയ്യുമ്പോൾ വലുതായി നിൽക്കുന്ന പ്രശ്നം പരിഹരിക്കാൻ */
-@media (max-width: 900px) {
-  /* 1. എല്ലാ hover transforms-ഉം മൊബൈലിൽ ഓഫ് ചെയ്യുക (Sticky Hover Fix) */
-  .nsm-btn-primary:hover, .nsm-btn-secondary:hover,
-  .nsm-nav-link:hover, .nsm-tab:hover, .action-tile:hover,
-  .action-tile:hover .action-ico, .stat-card-neon:hover,
-  .lb-card:hover, .hub-card:hover, .pala-btn:hover,
-  .icon-btn:hover, .theme-toggle:hover, .btn-exit:hover,
-  .btn-load:hover, .btn-update:hover, .btn-pdf:hover,
-  .btn-cancel:hover, .admin-tab:hover, .admin-tab:not(.active):hover,
-  .ig-action-btn:hover, .ig-post-avatar:hover, .ig-chip:hover,
-  .chat-tab-side:hover, .ai-head-btn:hover, .ai-suggestion:hover,
-  .mob-nav-item:hover, .ios-key:hover, .ios-key.delete-btn:hover,
-  .adm-mode-btn:hover, .pin-chip:hover, .pin-manager-btn:hover,
-  .fee-child-row button:hover, .report-action-btn:hover,
-  .v140-close-btn:hover, .photo-picker-opt:hover {
-    transform: none !important;
-    box-shadow: none !important;
-    filter: none !important;
-  }
-
-  /* 2. iOS-ന്റെ ഡിഫോൾട്ട് ബട്ടൺ സ്റ്റൈലിംഗ് & സൂം ഡിലേ ഒഴിവാക്കുക */
-  button, .btn, [onclick], .ios-key {
-    -webkit-appearance: none !important;
-    appearance: none !important;
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent !important;
-  }
-
-  /* 3. ടച്ച് ചെയ്യുമ്പോൾ ഉടനടി പ്രതികരിക്കാൻ :active സ്റ്റേറ്റ് നൽകുക */
-  .nsm-btn-primary:active, .nsm-btn-secondary:active,
-  .action-tile:active, .stat-card-neon:active, .lb-card:active,
-  .pala-btn:active, .hub-card:active, .btn-load:active,
-  .btn-update:active, .btn-pdf:active, .btn-cancel:active,
-  .icon-btn:active, .theme-toggle:active, .btn-exit:active,
-  .admin-tab:active, .ios-key:active, .admin-mode-btn:active,
-  .ig-action-btn:active, .pin-manager-btn:active,
-  .v140-close-btn:active, .photo-picker-opt:active {
-    transform: scale(0.94) !important;
-    opacity: 0.8 !important;
-    transition: transform 0.1s ease, opacity 0.1s ease !important;
-  }
-  
-  /* ഐക്കണുകളും ഒരുമിച്ച് ചെറുതാകാൻ */
-  .action-tile:active .action-ico {
-    transform: scale(0.9) !important;
-  }
-}
-</style>
 </head>
 <body>
 
@@ -43595,6 +43545,138 @@ setInterval(function(){
   }, 4000);
 
   console.log('✅ v150 ready');
+})();
+</script>
+<style id="v-final-sticky-hover-fix">
+/* ============================================ */
+/* 🎯 FIX: Mobile Sticky Hover on ALL Buttons  */
+/* ============================================ */
+@media (hover: none), (pointer: coarse), (max-width: 900px) {
+  /* 1. Disable ALL hover transforms & shadows on buttons */
+  button:hover,
+  .btn:hover,
+  [onclick]:hover,
+  [role="button"]:hover,
+  .nsm-btn-primary:hover,
+  .nsm-btn-secondary:hover,
+  .pala-btn:hover,
+  .pala-btn.primary:hover,
+  .pala-btn.ghost:hover,
+  .btn-load:hover,
+  .btn-update:hover,
+  .btn-pdf:hover,
+  .btn-cancel:hover,
+  .btn-gradient:hover,
+  .btn-exit:hover,
+  .icon-btn:hover,
+  .theme-toggle:hover,
+  .nsm-nav-link:hover,
+  .nsm-tab:hover,
+  .admin-tab:hover,
+  .admin-tab:not(.active):hover,
+  .action-tile:hover,
+  .action-tile:hover .action-ico,
+  .stat-card-neon:hover,
+  .lb-card:hover,
+  .hub-card:hover,
+  .download-btn:hover,
+  .cl-like-btn:hover,
+  .cl-delete-btn:hover,
+  .cl-download-btn:hover,
+  .report-action-btn:hover,
+  .photo-picker-opt:hover,
+  .v140-close-btn:hover,
+  .av-option:hover,
+  .friend-item:hover,
+  .pin-chip:hover,
+  .pin-manager-btn:hover,
+  .pm-gen-btn:hover,
+  .ios-key:hover,
+  .ios-key.delete-btn:hover,
+  .ig-action-btn:hover,
+  .ig-post-avatar:hover,
+  .ig-chip:hover,
+  .ig-topbar-btn:hover,
+  .mob-nav-item:hover,
+  .chat-tab-side:hover,
+  .ai-head-btn:hover,
+  .ai-suggestion:hover,
+  .btn-receipt:hover,
+  .fee-child-row button:hover,
+  .sent-req-cancel:hover,
+  .adm-mode-btn:hover {
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* 2. Reset box-shadow on specific buttons that change on hover */
+  .nsm-btn-primary:hover {
+    box-shadow: 0 16px 34px -14px rgba(34,211,238,.95),
+                0 0 0 1px rgba(212,175,55,.55) inset !important;
+  }
+
+  /* 3. Kill the ::before shine animation on hover */
+  .nsm-btn-primary:hover::before {
+    left: -100% !important;
+  }
+
+  /* 4. Provide :active (touch) feedback instead - feels native */
+  .nsm-btn-primary:active,
+  .nsm-btn-secondary:active,
+  .pala-btn:active,
+  .btn-load:active,
+  .btn-update:active,
+  .btn-pdf:active,
+  .btn-cancel:active,
+  .btn-gradient:active,
+  .action-tile:active,
+  .stat-card-neon:active,
+  .lb-card:active,
+  .hub-card:active,
+  .admin-tab:active,
+  .icon-btn:active,
+  .ios-key:active {
+    transform: scale(0.96) !important;
+    opacity: 0.85 !important;
+    transition: transform 0.08s ease, opacity 0.08s ease !important;
+  }
+
+  .action-tile:active .action-ico {
+    transform: scale(0.9) !important;
+  }
+}
+</style>
+
+<script id="v-final-sticky-hover-js">
+(function() {
+  'use strict';
+  if (!('ontouchstart' in window)) return;
+  console.log('📱 Sticky Hover Reset Fix active');
+
+  // Force-clear iOS sticky hover by firing mouseleave/mouseout
+  // after each tap — this resets the "hover" state that iOS caches
+  var _clearTimer = null;
+  document.addEventListener('touchend', function(e) {
+    var el = e.target.closest(
+      'button, .btn, [onclick], [role="button"], ' +
+      '.action-tile, .pala-btn, .nsm-btn-primary, .nsm-btn-secondary, ' +
+      '.lb-card, .hub-card, .admin-tab, .stat-card-neon'
+    );
+    if (!el) return;
+
+    if (_clearTimer) clearTimeout(_clearTimer);
+    _clearTimer = setTimeout(function() {
+      try {
+        el.dispatchEvent(new MouseEvent('mouseleave', { bubbles: false, view: window }));
+        el.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, view: window }));
+      } catch(err) {}
+      // Blur to release :focus state
+      try { if (document.activeElement === el) el.blur(); } catch(err) {}
+      _clearTimer = null;
+    }, 300);
+  }, { passive: true });
+
+  console.log('✅ Sticky hover cleared on tap');
 })();
 </script>
 </body>
