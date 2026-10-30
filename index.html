@@ -2394,6 +2394,56 @@ setTimeout(loadMalayalamFontForPDF, 2000);
   100% { opacity: 0; transform: translateY(-120px) scale(.6); }
 }
 </style>
+<style id="mobile-button-sticky-hover-fix">
+/* മൊബൈലിൽ ബട്ടണുകൾ ക്ലിക്ക് ചെയ്യുമ്പോൾ വലുതായി നിൽക്കുന്ന പ്രശ്നം പരിഹരിക്കാൻ */
+@media (max-width: 900px) {
+  /* 1. എല്ലാ hover transforms-ഉം മൊബൈലിൽ ഓഫ് ചെയ്യുക (Sticky Hover Fix) */
+  .nsm-btn-primary:hover, .nsm-btn-secondary:hover,
+  .nsm-nav-link:hover, .nsm-tab:hover, .action-tile:hover,
+  .action-tile:hover .action-ico, .stat-card-neon:hover,
+  .lb-card:hover, .hub-card:hover, .pala-btn:hover,
+  .icon-btn:hover, .theme-toggle:hover, .btn-exit:hover,
+  .btn-load:hover, .btn-update:hover, .btn-pdf:hover,
+  .btn-cancel:hover, .admin-tab:hover, .admin-tab:not(.active):hover,
+  .ig-action-btn:hover, .ig-post-avatar:hover, .ig-chip:hover,
+  .chat-tab-side:hover, .ai-head-btn:hover, .ai-suggestion:hover,
+  .mob-nav-item:hover, .ios-key:hover, .ios-key.delete-btn:hover,
+  .adm-mode-btn:hover, .pin-chip:hover, .pin-manager-btn:hover,
+  .fee-child-row button:hover, .report-action-btn:hover,
+  .v140-close-btn:hover, .photo-picker-opt:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+
+  /* 2. iOS-ന്റെ ഡിഫോൾട്ട് ബട്ടൺ സ്റ്റൈലിംഗ് & സൂം ഡിലേ ഒഴിവാക്കുക */
+  button, .btn, [onclick], .ios-key {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  /* 3. ടച്ച് ചെയ്യുമ്പോൾ ഉടനടി പ്രതികരിക്കാൻ :active സ്റ്റേറ്റ് നൽകുക */
+  .nsm-btn-primary:active, .nsm-btn-secondary:active,
+  .action-tile:active, .stat-card-neon:active, .lb-card:active,
+  .pala-btn:active, .hub-card:active, .btn-load:active,
+  .btn-update:active, .btn-pdf:active, .btn-cancel:active,
+  .icon-btn:active, .theme-toggle:active, .btn-exit:active,
+  .admin-tab:active, .ios-key:active, .admin-mode-btn:active,
+  .ig-action-btn:active, .pin-manager-btn:active,
+  .v140-close-btn:active, .photo-picker-opt:active {
+    transform: scale(0.94) !important;
+    opacity: 0.8 !important;
+    transition: transform 0.1s ease, opacity 0.1s ease !important;
+  }
+  
+  /* ഐക്കണുകളും ഒരുമിച്ച് ചെറുതാകാൻ */
+  .action-tile:active .action-ico {
+    transform: scale(0.9) !important;
+  }
+}
+</style>
 </head>
 <body>
 
