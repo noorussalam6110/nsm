@@ -15314,7 +15314,7 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
 
     // Save attempt
     try {
-      await supabaseClient.from('quiz_attempts').insert({
+      var qInsert = await supabaseClient.from('quiz_attempts').insert({
         studentid: currentUser.studentId,
         week_year: getWeekKey(),
         score: score,
@@ -15322,7 +15322,12 @@ console.log('✅ Modal scroll fix v27.0 fully loaded');
         time_taken: timeTaken,
         answers: quizState.answers
       });
-      await awardXP(xpEarned, `Quiz: ${score}/${total}`);
+      if (qInsert.error) {
+        console.error('Quiz insert error:', qInsert.error);
+        if (typeof showToast === 'function') showToast('⚠️ Quiz saved failed (Check DB)', 'error');
+      } else {
+        await awardXP(xpEarned, `Quiz: ${score}/${total}`);
+      }
     } catch(e) { console.warn(e); }
 
     body.innerHTML = `
