@@ -10315,9 +10315,13 @@ function renderFeeParentsTable(){
     h += '<td><div style="max-width:220px;">'+uidChips+studentNamesTxt+'</div></td>';
     h += '<td>'+escapeHtml(p.mobile)+'</td>';
     h += '<td>'+formatFeeMonthEN(p.last_paid_month)+'</td>';
-    h += '<td style="color:'+sc+';font-weight:900;">₹'+br.totalPending.toLocaleString()+'</td>';
+    var _prevBal = Number(p.previous_balance) || 0;
+    var _dueCell = '<div style="color:'+sc+';font-weight:900;">₹'+br.totalPending.toLocaleString()+'</div>';
+    if (_prevBal > 0) {
+      _dueCell += '<div style="font-size:.62rem;color:#b45309;font-weight:800;margin-top:2px;">📌 Prev: ₹'+_prevBal.toLocaleString('en-IN')+'</div>';
+    }
+    h += '<td>' + _dueCell + '</td>';
     h += '<td>';
-    h += '<button onclick="markFeePaid('+p.id+')" style="background:linear-gradient(100deg,#059669,#34d399);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;" title="Mark Paid">✅</button>';
     h += '<button onclick="viewPaymentHistoryAdmin('+p.id+')" style="background:linear-gradient(100deg,#f59e0b,#fbbf24);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;" title="History">📜</button>';
     h += '<button onclick="sendFeeWhatsAppAdmin('+p.id+')" style="background:linear-gradient(100deg,#25D366,#128C7E);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;" title="WhatsApp">💬</button>';
     h += '<button onclick="editFeeParent('+p.id+')" style="background:linear-gradient(100deg,#8b5cf6,#a78bfa);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-size:.7rem;font-weight:700;cursor:pointer;margin-right:4px;">✏️</button>';
@@ -35957,6 +35961,35 @@ document.addEventListener('touchend', function(e) {
         // BODY
         '<div style="padding:16px 18px;overflow-y:auto;flex:1 1 auto;">' +
 
+          // 💰 PREVIOUS BALANCE (from earlier years)
+          ((Number(p.previous_balance) || 0) > 0
+            ? '<div style="background:linear-gradient(135deg,#fef3c7,#fde68a);' +
+              'border:1.5px solid rgba(180,83,9,.5);border-radius:12px;' +
+              'padding:12px 14px;margin-bottom:12px;">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">' +
+                '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">' +
+                  '<span style="font-size:1.4rem;">📌</span>' +
+                  '<div style="min-width:0;">' +
+                    '<div style="font-weight:900;color:#78350f;font-size:.86rem;">Previous Balance</div>' +
+                    '<div style="font-size:.68rem;color:#92400e;font-weight:700;margin-top:2px;">മുൻ വർഷത്തെ ബാക്കി</div>' +
+                  '</div>' +
+                '</div>' +
+                '<div style="font-size:1.4rem;font-weight:900;color:#b45309;white-space:nowrap;">₹' +
+                  (Number(p.previous_balance) || 0).toLocaleString('en-IN') +
+                '</div>' +
+              '</div>' +
+              '<label style="display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;' +
+                            'border-top:1px dashed rgba(180,83,9,.35);cursor:pointer;">' +
+                '<input type="checkbox" id="fmIncludePrev" ' +
+                       'onchange="FM_updateUI()" ' +
+                       'style="width:18px;height:18px;accent-color:#b45309;cursor:pointer;">' +
+                '<span style="font-size:.76rem;color:#78350f;font-weight:800;">' +
+                  '✅ ഈ payment-ൽ Previous Balance കൂടി ചേർക്കുക' +
+                '</span>' +
+              '</label>' +
+              '</div>'
+            : '' ) +
+
           // ⭐ ALL PENDING INFO
           (info.pending > 0
             ? '<div style="background:linear-gradient(135deg,#fee2e2,#fecaca);' +
@@ -36145,15 +36178,29 @@ document.addEventListener('touchend', function(e) {
       }
     });
 
+    // 🆕 Include previous balance if checkbox checked
+    var _prevChk = document.getElementById('fmIncludePrev');
+    var _prevAmt = 0;
+    if (_prevChk && _prevChk.checked) {
+      var _p = window._fmCurrentParent;
+      if (_p) _prevAmt = Number(_p.previous_balance) || 0;
+    }
+    total += _prevAmt;
+
     var c = document.getElementById('fmSelCount');
-    if (c) c.textContent = count + ' month' + (count !== 1 ? 's' : '');
+    if (c) {
+      var _lbl = count + ' month' + (count !== 1 ? 's' : '');
+      if (_prevAmt > 0) _lbl += ' + ₹' + _prevAmt.toLocaleString('en-IN') + ' prev';
+      c.textContent = _lbl;
+    }
     var t = document.getElementById('fmTotal');
     if (t) t.textContent = '₹' + total.toLocaleString('en-IN');
 
     var sb = document.getElementById('fmSubmitBtn');
     if (sb) {
-      sb.disabled = count === 0;
-      sb.style.opacity = count === 0 ? '0.5' : '1';
+      var _canSubmit = count > 0 || _prevAmt > 0;
+      sb.disabled = !_canSubmit;
+      sb.style.opacity = _canSubmit ? '1' : '0.5';
     }
   };
 
@@ -36176,10 +36223,22 @@ document.addEventListener('touchend', function(e) {
       }
     });
 
-    if (!selected.length) { showToast('⚠️ ഒരു month select ചെയ്യൂ', 'error'); return; }
+    var _prevChkA = document.getElementById('fmIncludePrev');
+    var _hasPrevA = _prevChkA && _prevChkA.checked && (Number(p.previous_balance) || 0) > 0;
+    if (!selected.length && !_hasPrevA) {
+      showToast('⚠️ ഒരു month select ചെയ്യൂ അല്ലെങ്കിൽ Previous Balance ചേർക്കൂ', 'error');
+      return;
+    }
     selected.sort(function(a, b) { return a.key.localeCompare(b.key); });
 
     var totalAmount = selected.reduce(function(s, x) { return s + x.amount; }, 0);
+    // 🆕 Include previous balance if checkbox checked
+    var _prevChk2 = document.getElementById('fmIncludePrev');
+    var _prevAmt2 = 0;
+    if (_prevChk2 && _prevChk2.checked) {
+      _prevAmt2 = Number(p.previous_balance) || 0;
+      totalAmount += _prevAmt2;
+    }
     var pendingSel = selected.filter(function(x) { return x.status === 'pending'; });
     var advanceSel = selected.filter(function(x) { return x.status === 'advance'; });
     var notes = (document.getElementById('fmNotes').value || '').trim();
@@ -36189,6 +36248,7 @@ document.addEventListener('touchend', function(e) {
       '📅 ' + selected.length + ' months\n' +
       (pendingSel.length ? '   ⏳ ' + pendingSel.length + ' pending\n' : '') +
       (advanceSel.length ? '   💎 ' + advanceSel.length + ' advance\n' : '') +
+      (_prevAmt2 > 0 ? '   📌 ₹' + _prevAmt2.toLocaleString('en-IN') + ' previous balance\n' : '') +
       '\n💵 Total: ₹' + totalAmount.toLocaleString('en-IN') +
       (notes ? '\n📝 ' + notes : '') + '\n\nProceed?';
 
@@ -36212,16 +36272,32 @@ document.addEventListener('touchend', function(e) {
         });
       });
 
-      var newPaidMonths = (Number(p.paid_months) || 0) + selected.length;
-      var lastMonth = selected[selected.length - 1].key;
+      // 🆕 Add previous balance to history
+      if (_prevAmt2 > 0) {
+        history.push({
+          month: 'Previous Balance', amount: _prevAmt2, date: today,
+          paidBy: 'Admin', notes: notes || null,
+          type: 'previous', isAdvance: false
+        });
+      }
 
-      var ur = await supabaseClient.from('fee_parents').update({
+      var newPaidMonths = (Number(p.paid_months) || 0) + selected.length;
+      var lastMonth = selected.length > 0 ? selected[selected.length - 1].key : p.last_paid_month;
+
+      var updatePayload = {
         last_paid_month: lastMonth,
         last_paid_date: today,
         paid_months: newPaidMonths,
         payment_history: history,
         updated_at: new Date().toISOString()
-      }).eq('id', p.id);
+      };
+
+      // 🆕 Clear previous balance if included in payment
+      if (_prevAmt2 > 0) {
+        updatePayload.previous_balance = 0;
+      }
+
+      var ur = await supabaseClient.from('fee_parents').update(updatePayload).eq('id', p.id);
 
       if (ur.error) throw ur.error;
 
@@ -36257,14 +36333,18 @@ document.addEventListener('touchend', function(e) {
       setTimeout(function() {
         if (typeof window.showFeeReceipt === 'function') {
           var label;
-          if (selected.length === 1) {
+          if (selected.length === 0 && _prevAmt2 > 0) {
+            label = 'Previous Balance ₹' + _prevAmt2.toLocaleString('en-IN');
+          } else if (selected.length === 1) {
             label = fmtMl(selected[0].key) + (selected[0].status === 'advance' ? ' (Advance)' : '');
+            if (_prevAmt2 > 0) label += ' + Prev ₹' + _prevAmt2.toLocaleString('en-IN');
           } else {
             label = fmtMl(selected[0].key) + ' → ' + fmtMl(selected[selected.length - 1].key);
             var parts = [];
             if (pendingSel.length) parts.push(pendingSel.length + ' pending');
             if (advanceSel.length) parts.push(advanceSel.length + ' advance');
             if (parts.length) label += ' (' + parts.join(' + ') + ')';
+            if (_prevAmt2 > 0) label += ' + Prev ₹' + _prevAmt2.toLocaleString('en-IN');
           }
           window.showFeeReceipt({
             parent: p.parent_name, amount: totalAmount, month: label,
